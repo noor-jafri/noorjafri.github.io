@@ -1,0 +1,13 @@
+{
+  "name": "personalv2",
+  "version": "1.0.0",
+  "description": "my personal webpage",
+  "main": "index.html",
+  "repository": "https://github.com/nurely/personalv2.git",
+  "author": "Noor Jafri <noor.jafri@paessler.com>",
+  "license": "MIT",
+  "dependencies": {
+    "jquery": "^3.6.0",
+    "nes.css": "^2.3.0"
+  }
+}
