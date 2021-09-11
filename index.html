@@ -14,7 +14,9 @@
         <style>
             body {
                 padding-bottom: 90px;
-                background-image: url('./assets/images/background.jpg');
+                height: 100vh;
+                background: #ffce96;
+                /*background-image: url('./assets/images/background.gif');*/
             }
             .nes-progress {
                 height: 25px;
@@ -27,245 +29,465 @@
                 width: auto;
                 padding: 0px;
             }
-            .row:after {
-                content: "";
-                display: table;
-                clear: both;
-            }
             .container-top-icon {
                 position: absolute;
                 right: 0;
                 top: 0;
-                transform: translate(calc(50% - 12px), -25%)
-            }
-
-            .container-bottom-icon {
-                position: absolute;
-                left: 0;
-                top: 0;
-                bottom: 0;
-                transform: translate(calc(50% - 150px), -25%)
+                transform: translate(calc(50% + 20px), -25%)
             }
             .container {
-                display: grid;
-                grid-template-columns: 1fr 1fr 1fr 1fr;
-                grid-template-rows: 1fr 0.4fr 1fr 0.6fr 1fr 0.75fr 1fr 0.75fr 1fr 0.75fr 1fr 0.75fr;
-                gap: 0px 0px;
-                grid-template-areas:
-    "Intro Intro Intro Intro"
-    "Button-1 Button-2 Button-3 Button-4"
-    "About-Me About-Me About-Me About-Me"
-    "About-Me About-Me About-Me About-Me"
-    "Work-Expierence Work-Expierence Work-Expierence Work-Expierence"
-    "Work-Expierence Work-Expierence Work-Expierence Work-Expierence"
-    "Education Education Education Education"
-    "Education Education Education Education"
-    "Tech-Stack Tech-Stack Tech-Stack Tech-Stack"
-    "Tech-Stack Tech-Stack Tech-Stack Tech-Stack"
-    ". social social ."
-    ". . . .";
+                display: flex;
+                justify-content: center;
+                border: 0px #000000 solid;
+                padding: 10px;
             }
-            .Button-1 { grid-area: Button-1; }
-            .Button-2 { grid-area: Button-2; }
-            .Button-3 { grid-area: Button-3; }
-            .Button-4 { grid-area: Button-4; }
-            .About-Me { grid-area: About-Me; }
-            .Work-Expierence { grid-area: Work-Expierence; }
-            .Education { grid-area: Education; }
-            .Tech-Stack { grid-area: Tech-Stack; }
-            .Intro { grid-area: Intro; }
-            .social { grid-area: social; }
-
+            .sub-container {
+                display: flex;
+                justify-content: center;
+                border: 0px #000000 solid;
+                padding: 10px;
+            }
+            .sub-container-with-borders-primary-1 {
+                display: flex;
+                justify-content: center;
+                border: 3px #7c3f58 dashed;
+                padding: 10px;
+            }
+            .sub-container-with-borders-primary-2 {
+                display: flex;
+                justify-content: center;
+                border: 3px #f1f2da dashed;
+                padding: 10px;
+            }
+            .nes-btn {
+                flex-basis: 22%;
+                justify-content: space-between;
+                margin: 10px;  /* and that, will result in a 10px gap */
+            }
+            span2 {
+                position: absolute;
+                pointer-events: none;
+                background: #000;
+                animation: animate 5s linear infinite;
+            }
+            section2 {
+                height: auto;
+                width: auto;
+            }
+            @keyframes animate {
+                0% {
+                    transform: scale(0) translateY(0) rotate(0deg);
+                    opacity: 0;
+                }
+                10% {
+                    opacity: 1;
+                }
+                90% {
+                    opacity: 1;
+                }
+                100% {
+                    transform: scale(1) translateY(-500%) rotate(360deg);
+                    opacity: 0;
+                }
+            }
         </style>
     </head>
     <body>
+    <section2></section2>
+    <script>
+        function createSquare() {
+
+            const section = document.querySelector('section2')
+            const square =document.createElement('span2')
+            const colors = [
+                '#7db890',
+                '#1e88e9',
+                '#ff7777',
+                '#00303b',
+                '#7c3f58'
+            ]
+
+            let size = Math.random() * 50
+
+
+            square.style.width = 20 + size + 'px'
+            square.style.height = 20 + size + 'px'
+
+            square.style.top = Math.random() * innerHeight + 'px'
+            square.style.left = Math.random() * innerWidth + 'px'
+
+
+
+            const bg = colors[Math.floor(Math.random() * colors.length)]
+
+            square.style.background = bg
+
+            section.appendChild(square)
+
+            setTimeout(() => {
+                square.remove()
+            }, 5000)
+
+        }
+
+        setInterval(createSquare, 150)
+    </script>
+    <!--    Intro Bubble-->
     <div class="container">
-        <div class="Intro">
-            <div class="nes-balloon from-left">
-                <p style="color: #31314f">
+        <div>
+            <div class="nes-balloon from-left" style="background-color: #ffffff">
+                <p style="color: #00303b">
                     <span>
                         Hello adventurer, I am Noor.
                         Welcome to the town of Nooremburg.
                         I have been guarding this page for you.
                         Please have a look and let me know if you find those nasty bugs.
-                    </span></p>
-            </div>
-            <div class="row" style="padding-bottom: 20px;">
-                <img src="assets/images/avatar2.gif"></i>
-            </div>
-        </div>
-        <div class="Button-1">
-            <button type="button" style="width: 90%" class="nes-btn is-primary">Primary</button>
-        </div>
-        <div class="Button-2">
-            <button type="button" style="width: 90%" class="nes-btn is-primary">Primary</button>
-        </div>
-        <div class="Button-3">
-            <button type="button" style="width: 90%" class="nes-btn is-primary">Primary</button>
-        </div>
-        <div class="Button-4">
-            <button type="button" style="width: 90%" class="nes-btn is-primary">Primary</button>
-        </div>
-        <div class="About-Me">
-            <div class="nes-container with-title is-dark" style="background-color: #7dda90">
-                <div class="container-top-icon">
-                    <img src="assets/images/snake.gif"></i>
-                </div>
-                <p class="title">About Me</p>
-                <p style="color: #000000">
-                    Not all who wander are lost. O' adventurer, welcome to my town. I am Noor, a curious spirit of this
-                    town. I am a discoverer like you and always willing to learn. At this moment in time, I am learning
-                    how to exploit <b><i>Event-Driven Architectures</i></b> and <b><i>Domain-Driven-Designs</i></b>
-                    for highly available and scalable solutions. If you are on a journey to build your own solutions,
-                    potions or weapons. I would love to accompany you. I bring diversified knowledge of
-                    <b><i>Cloud Computing, DevOps, IoT and Full-stack development</i></b>. I can be of great help.
-                    Don’t be shy to contact me. We shall slay the dragon together.
+                    </span>
                 </p>
             </div>
+            <div class="sub-container" style="padding-bottom: 20px;">
+                <div style="flex: 1">
+                    <a href="https://www.youtube.com/watch?v=gNCiLIg7xpA&t=141s&ab_channel=PaesslerAG">
+                        <img src="assets/images/avatar2.gif" style="padding-left: 10px"></i>
+                    </a>
+                </div>
+                <div style="align-items: flex-end; padding-right: 20px; padding-top: 10px;">
+                    <a href="https://github.com/nurely">
+                        <i class="nes-icon is-large github"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/nooralijafri/">
+                        <i class="nes-icon is-large linkedin"></i>
+                    </a>
+                    <a href="https://medium.com/@noorjafri">
+                        <i class="nes-icon is-large medium"></i>
+                    </a>
+                    <a href="https://www.facebook.com/noor.ali.jafri/">
+                        <i class="nes-icon is-large facebook"></i>
+                    </a>
+<!--                    <a href="">-->
+<!--                        <i class="nes-icon is-large youtube"></i>-->
+<!--                    </a>-->
+                </div>
+            </div>
         </div>
-        <div class="Work-Expierence">
-            <div class="nes-container with-title is-dark" style="background-color: #7dda90">
-                <div class="container-top-icon" >
-                    <i class="nes-bulbasaur" ></i>
+    </div>
+
+    <!--    Buttons -->
+    <div class="container">
+        <button type="button" class="nes-btn is-primary">Primary</button>
+        <button type="button" class="nes-btn is-primary">Primary</button>
+        <button type="button" class="nes-btn is-primary">Primary</button>
+        <button type="button" class="nes-btn is-primary">Primary</button>
+        <button type="button" class="nes-btn is-primary">Primary</button>
+
+    </div>
+
+    <!--    About Me -->
+    <div class="container">
+        <div class="nes-container with-title is-dark" style="background-color: #7c3f58">
+            <div class="container-top-icon" >
+                <a href="https://www.youtube.com/watch?v=KCiVG6mTor0&ab_channel=josiaal">
+                    <img src="assets/images/mario.gif"></i>
+                </a>
+            </div>
+            <p class="title">About Me</p>
+            <p style="color: #FFFFFF;text-align: justify;">
+                O' adventurer, not all who wander are lost.  Welcome to my town. I am a curious spirit of Nooremberg.
+                I am a discoverer like you and always willing to learn. At this moment in time, I am learning
+                how to exploit <b>Event-Driven Architectures</b> and <b>Domain-Driven-Designs</b> for highly available
+                and scalable solutions to fight the downtime monsters. If you are on a journey to  build your own resilient
+                solutions, potions or weapons. I would love to accompany you. I can offer you ancient knowledge of
+                <b>Cloud Computing, the dark arts of DevOps, the secrets of IoT and the magic of Full-stack development</b>.
+                I can be of great help. Don’t be shy to contact me. We shall slay the down-time dragon together.
+            </p>
+        </div>
+    </div>
+
+    <!--    Experience -->
+    <div class="container">
+        <div class="section">
+            <div class="nes-container with-title is-dark" style="background-color: #f1f2da">
+                <div class="container-top-icon">
+                    <a href="https://github.com/nurely">
+                        <i class="nes-octocat animate"></i>
+                    </a>
                 </div>
                 <p class="title">Work Experience</p>
+                <br>
+                <br>
+                <div class="sub-container-with-borders-primary-1" style="background-color: #f1f2da">
+                    <div class="row">
+                        <div class="col-xs-1">
+                            <img
+                                    src="./assets/images/paessler.png"
+                                    style="width: 100%; height: auto; image-rendering: pixelated; image-rendering: -moz-crisp-edges;"
+                            />
+                        </div>
+                        <div class="col-xs-10">
+                            <h3 style="color: #7c3f58">Paessler AG - Kloud Ingineer</h3>
+                            <p style="color: #7c3f58">March 2018 - Present</p>
+
+                            <a href="#" class="nes-badge is-icon">
+                                <span class="is-warning"><i class="nes-icon star is-small"></i></span>
+                                <span class="is-success">AWS</span>
+                            </a>
+                            <a href="#" class="nes-badge is-icon">
+                                <span class="is-warning"><i class="nes-icon heart is-small"></i></span>
+                                <span class="is-success">NodeJS</span>
+                            </a>
+                            <a href="#" class="nes-badge is-icon">
+                                <span class="is-warning"><i class="nes-icon heart is-small"></i></span>
+                                <span class="is-success">VueJS</span>
+                            </a>
+                            <a href="#" class="nes-badge">
+                                <span class="is-success">Serverless</span>
+                            </a>
+                            <a href="#" class="nes-badge">
+                                <span class="is-success">Python</span>
+                            </a>
+                        </div>
+                        <div class="sub-container">
+                            <p style="color: #7c3f58;text-align: justify;">
+                                I accompanied with seven other wizards was in the journey for the last three years
+                                to create a Cloud Native IoT Monitoring Platform. We did everything from the scratch.
+                                Reading the elder scrolls, dark magic and dark arts on how to build a robust and scalable
+                                solution. You can find more about it on my LinkedIn.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <br>
+                <div class="sub-container-with-borders-primary-1" style="background-color: #f1f2da">
+                    <div class="row">
+                        <div class="col-xs-1">
+                            <img
+                                    src="./assets/images/cloudways.png"
+                                    style="width: 100%; height: auto; image-rendering: pixelated; image-rendering: -moz-crisp-edges;"
+                            />
+                        </div>
+                        <div class="col-xs-10">
+                            <h3 style="color: #7c3f58">Cloudways - Associate Kloud Ingineer</h3>
+                            <p style="color: #7c3f58">December 2015 - March 2017</p>
+
+
+                            <a href="#" class="nes-badge">
+                                <span class="is-dark">Ansible</span>
+                            </a>
+                            <a href="#" class="nes-badge is-icon">
+                                <span class="is-warning"><i class="nes-icon heart is-small"></i></span>
+                                <span class="is-dark">Docker</span>
+                            </a>
+                            <a href="#" class="nes-badge is-icon">
+                                <span class="is-warning"><i class="nes-icon star is-small"></i></span>
+                                <span class="is-dark">AWS</span>
+                            </a>
+
+                            <a href="#" class="nes-badge is-icon">
+                                <span class="is-warning"><i class="nes-icon like is-small"></i></span>
+                                <span class="is-dark">GCE</span>
+                            </a>
+                            <a href="#" class="nes-badge">
+                                <span class="is-dark">Django</span>
+                            </a>
+                        </div>
+                        <div class="sub-container">
+                            <p style="color: #7c3f58;text-align: justify;">
+                                Cloudways is the place where I entered unaware of the dark dark world of Linux, cloud,
+                                containers and APIs. Here I earned lots of XPs from the best wizards in town. The DevOps
+                                team of which I was part of, created a managed hosted platform. Although I joined them
+                                pretty late in the journey but I had fun and time full of gaining more and more XPs.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--    Education -->
+    <div class="container">
+        <div class="section">
+            <div class="nes-container with-title is-dark" style="background-color: #7c3f58">
+                <div class="container-top-icon" >
+                    <img src="assets/images/bat.gif"></i>
+                </div>
+                <p class="title">Education</p>
+                <br>
+                <br>
+                <div class="sub-container-with-borders-primary-2" style="background-color: #7c3f58">
+                    <div class="row">
+                        <div class="col-xs-1">
+                            <img
+                                    src="./assets/images/fulda.png"
+                                    style="width: 100%; height: auto; image-rendering: pixelated; image-rendering: -moz-crisp-edges;"
+                            />
+                        </div>
+                        <div class="col-xs-10">
+                            <h3 style="color: #f1f2da">Fulda University of Applied Science (M.Sc.)</h3>
+                            <p style="color: #f1f2da">April 2017 - April 2019</p>
+
+                            <a href="#" class="nes-badge is-icon">
+                                <span class="is-warning"><i class="nes-icon trophy is-small"></i></span>
+                                <span class="is-success">Cloud</span>
+                            </a>
+                            <a href="#" class="nes-badge is-icon">
+                                <span class="is-warning"><i class="nes-icon heart is-small"></i></span>
+                                <span class="is-success">IoT</span>
+                            </a>
+                            <a href="#" class="nes-badge is-icon">
+                                <span class="is-warning"><i class="nes-icon like is-small"></i></span>
+                                <span class="is-success">IoT</span>
+                            </a>
+                            <a href="#" class="nes-badge is-icon">
+                                <span class="is-warning"><i class="nes-icon coin is-small"></i></span>
+                                <span class="is-success">DDD</span>
+                            </a>
+                            <a href="#" class="nes-badge is-icon">
+                                <span class="is-warning"><i class="nes-icon coin is-small"></i></span>
+                                <span class="is-success">TDD</span>
+                            </a>
+
+                        </div>
+                        <div class="sub-container">
+                            <p style="color: #f1f2da;text-align: justify;">
+                                My first interaction with people living in far away lands. Here I learned secrets of
+                                this magically advanced civilization. How they interact with machines and metals that are
+                                changing the world for over 200 years. I trained myself to work with complex system designs
+                                and how they can be scaled on demand. 100XP Earned.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <br>
+                <div class="sub-container-with-borders-primary-2" style="background-color: #7c3f58">
+                    <div class="row">
+                        <div class="col-xs-1">
+                            <img
+                                    src="./assets/images/ned.png"
+                                    style="width: 100%; height: auto; image-rendering: pixelated; image-rendering: -moz-crisp-edges;"
+                            />
+                        </div>
+                        <div class="col-xs-10">
+                            <h3 style="color: #f1f2da">NED University of Eng. & Tech. (B.Eng.)</h3>
+                            <p style="color: #f1f2da">January 2012 - January 2016</p>
+
+                            <a href="#" class="nes-badge is-icon">
+                                <span class="is-warning"><i class="nes-icon coin is-small"></i></span>
+                                <span class="is-dark">IoT</span>
+                            </a>
+                            <a href="#" class="nes-badge is-icon">
+                                <span class="is-warning"><i class="nes-icon heart is-small"></i></span>
+                                <span class="is-dark">Cloud</span>
+                            </a>
+                            <a href="#" class="nes-badge is-icon">
+                                <span class="is-warning"><i class="nes-icon coin is-small"></i></span>
+                                <span class="is-dark">Web</span>
+                            </a>
+                        </div>
+                        <div class="sub-container">
+                            <p style="color: #f1f2da;text-align: justify;">
+                                A 100 year old schools. Producing hard working scientists and ingeeners ever since it began
+                                its operation. Traversing through a challenging curriculum, I earned +10XP for every subject
+                                passed. 20% of them I don't remember. -700XP Lost.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--    Technologies -->
+    <div class="container">
+        <div class="section">
+            <div class="nes-container with-title is-dark" style="background-color: #f1f2da">
+                <div class="container-top-icon" >
+                    <a href="https://www.youtube.com/watch?v=nDtj-2qnTXk&ab_channel=JonasB.Ingebretsen">
+                        <img src="assets/images/snake.gif"></i>
+                    </a>
+                </div>
+                <p class="title">Tools & Potions</p>
                 <br>
                 <br>
                 <div class="row">
                     <div class="col-xs-1">
                         <img
-                                src="./assets/images/paessler.png"
+                                src="./assets/images/aws.png"
                                 style="width: 100%; height: auto; image-rendering: pixelated; image-rendering: -moz-crisp-edges;"
                         />
                     </div>
-                    <div class="col-xs-10">
-                        <h3 style="color: #31314f">Paessler AG - Cloud Engineer</h3>
-                        <a href="#" class="nes-badge">
-                            <span class="is-dark">NES.css</span>
-                        </a>
-                        <a href="#" class="nes-badge">
-                            <span class="is-dark">NES.css</span>
-                        </a>
-                        <a href="#" class="nes-badge">
-                            <span class="is-dark">NES.css</span>
-                        </a>
-                        <a href="#" class="nes-badge">
-                            <span class="is-dark">NES.css</span>
-                        </a>
-                        <a href="#" class="nes-badge">
-                            <span class="is-dark">NES.css</span>
-                        </a>
-                        <p style="color: #31314f">March 2018 - Present</p>
-                        <p style="color: #31314f">
-                            Not all who wander are lost. O' adventurer, welcome to my town. I am Noor, a curious spirit of this
-                            town. I am a discoverer like you and always willing to learn. At this moment in time, I am learning
-                            how to exploit <b><i>Event-Driven Architectures</i></b> and <b><i>Domain-Driven-Designs</i></b>
-                            for highly available and scalable solutions. If you are on a journey to build your own solutions,
-                            potions or weapons. I would love to accompany you. I bring diversified knowledge of
-                            <b><i>Cloud Computing, DevOps, IoT and Full-stack development</i></b>. I can be of great help.
-                            Don’t be shy to contact me. We shall slay the dragon together.
-                        </p>
+                    <div class="col-xs-1">
+                        <img
+                                src="./assets/images/python.png"
+                                style="width: 100%; height: auto; image-rendering: pixelated; image-rendering: -moz-crisp-edges;"
+                        />
+                    </div>
+                    <div class="col-xs-1">
+                        <img
+                                src="./assets/images/js.png"
+                                style="width: 100%; height: auto; image-rendering: pixelated; image-rendering: -moz-crisp-edges;"
+                        />
+                    </div>
+                    <div class="col-xs-1">
+                        <img
+                                src="./assets/images/serverless.png"
+                                style="width: 100%; height: auto; image-rendering: pixelated; image-rendering: -moz-crisp-edges;"
+                        />
+                    </div>
+                    <div class="col-xs-1">
+                        <img
+                                src="./assets/images/docker.png"
+                                style="width: 100%; height: auto; image-rendering: pixelated; image-rendering: -moz-crisp-edges;"
+                        />
+                    </div>
+                    <div class="col-xs-1">
+                        <img
+                                src="./assets/images/lambda.png"
+                                style="width: 100%; height: auto; image-rendering: pixelated; image-rendering: -moz-crisp-edges;"
+                        />
+                    </div>
+                    <div class="col-xs-1">
+                        <img
+                                src="./assets/images/ansible.png"
+                                style="width: 100%; height: auto; image-rendering: pixelated; image-rendering: -moz-crisp-edges;"
+                        />
+                    </div>
+                    <div class="col-xs-1">
+                        <img
+                                src="./assets/images/bash.png"
+                                style="width: 100%; height: auto; image-rendering: pixelated; image-rendering: -moz-crisp-edges;"
+                        />
+                    </div>
+                    <div class="col-xs-1">
+                        <img
+                                src="./assets/images/django.png"
+                                style="width: 100%; height: auto; image-rendering: pixelated; image-rendering: -moz-crisp-edges;"
+                        />
+                    </div>
+                    <div class="col-xs-1">
+                        <img
+                                src="./assets/images/vue.png"
+                                style="width: 100%; height: auto; image-rendering: pixelated; image-rendering: -moz-crisp-edges;"
+                        />
+                    </div>
+                    <div class="col-xs-1">
+                        <img
+                                src="./assets/images/kubernetes.png"
+                                style="width: 100%; height: auto; image-rendering: pixelated; image-rendering: -moz-crisp-edges;"
+                        />
+                    </div>
+                    <div class="col-xs-1">
+                        <img
+                                src="./assets/images/gce.png"
+                                style="width: 100%; height: auto; image-rendering: pixelated; image-rendering: -moz-crisp-edges;"
+                        />
                     </div>
                 </div>
-<!--                <p style="color: #000000">-->
-<!--                    Lorem Ipsum is simply dummy text of the printing and typesetting industry.-->
-<!--                    Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,-->
-<!--                    when an unknown printer took a galley of type and scrambled it to make a type specimen book.-->
-<!--                    It has survived not only five centuries, but also the leap into electronic typesetting,-->
-<!--                    remaining essentially unchanged. It was popularised in the 1960s with the release-->
-<!--                    of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop-->
-<!--                    publishing software like Aldus PageMaker including versions of Lorem Ipsum.-->
-<!--                </p>-->
             </div>
-        </div>
-        <div class="Education">
-            <div class="nes-container with-title is-dark" style="background-color: #7dda90">
-                <div class="container-top-icon">
-                    <i class="nes-mario"></i>
-                </div>
-                <p class="title">Education</p>
-                <p style="color: #000000">
-                    Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                    Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
-                    when an unknown printer took a galley of type and scrambled it to make a type specimen book.
-                    It has survived not only five centuries, but also the leap into electronic typesetting,
-                    remaining essentially unchanged. It was popularised in the 1960s with the release
-                    of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop
-                    publishing software like Aldus PageMaker including versions of Lorem Ipsum.
-                </p>
-            </div>
-        </div>
-        <div class="Tech-Stack">
-            <div class="nes-container with-title is-dark" style="background-color: #583928">
-                <div class="container-top-icon">
-                    <i class="nes-charmander"></i>
-                </div>
-                <p class="title">Tech Stack</p>
-                <p style="color: #FFFFFF">
-                    Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                    Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
-                    when an unknown printer took a galley of type and scrambled it to make a type specimen book.
-                    It has survived not only five centuries, but also the leap into electronic typesetting,
-                    remaining essentially unchanged. It was popularised in the 1960s with the release
-                    of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop
-                    publishing software like Aldus PageMaker including versions of Lorem Ipsum.
-                </p>
-            </div>
-        </div>
-        <div class="social">
-            <section class="icon-list is-centered" style="padding-left: 20%;">
-                <i class="nes-icon facebook is-large"></i>
-                <i class="nes-icon youtube is-large"></i>
-                <i class="nes-icon github is-large"></i>
-                <i class="nes-icon medium is-large"></i>
-                <i class="nes-icon linkedin is-large"></i>
-            </section>
-            <img src="assets/images/cloudways.png"></i>
-            <img src="assets/images/paessler.png"></i>
-
         </div>
     </div>
 
-<!--    <nav style="padding: 20px;  margin-bottom: 20px;">-->
-<!--        <div class="container">-->
-<!--            <h2 style="margin-bottom: 0;">-->
-<!--                <div class="column">-->
-<!--                    <div class="row">-->
-<!--                        <div class="nes-balloon from-left">-->
-<!--                            <p id="intro" style="color: #dc6912"><span>This is Noor. Welcome to my personal page.</span></p>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                    <div class="row">-->
-<!--                        <img src="assets/images/avatar2.png"></i>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--                <div style="margin-bottom: 0; padding-top: 250px;">-->
-<!--                    <button style="width: auto" type="button" class="nes-btn is-primary">Primary</button>-->
-<!--                    <button style="width: auto" type="button" class="nes-btn is-primary">Primary</button>-->
-<!--                    <button style="width: auto" type="button" class="nes-btn is-primary">Primary</button>-->
-<!--                    <button style="width: auto" type="button" class="nes-btn is-primary">Primary</button>-->
-<!--                </div>-->
-<!--            </h2>-->
-<!--        </div>-->
-<!--    </nav>-->
-
-<!--    <div>-->
-<!--        <section class="icon-list is-right">-->
-<!--            &lt;!&ndash; facebook &ndash;&gt;-->
-<!--            <i class="nes-icon facebook is-large"></i>-->
-
-<!--            &lt;!&ndash; github &ndash;&gt;-->
-<!--            <i class="nes-icon github is-large"></i>-->
-
-<!--            &lt;!&ndash; medium &ndash;&gt;-->
-<!--            <i class="nes-icon medium is-large"></i>-->
-
-<!--            &lt;!&ndash; linkedin &ndash;&gt;-->
-<!--            <i class="nes-icon linkedin is-large"></i>-->
-
-<!--            &lt;!&ndash; youtube &ndash;&gt;-->
-<!--            <i class="nes-icon youtube is-large"></i>-->
-<!--        </section>-->
-<!--    </div>-->
     </body>
 </html>
