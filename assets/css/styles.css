@@ -47,13 +47,24 @@
   --bg: #fff4d3;
   --bg-2: #f1f2da;
   --ink: #2c1d4a;
-  --ink-dim: #4a3870;
-  --ink-mute: #8a7ca8;
-  --c-pink: #d6336c;
+  --ink-dim: #3a2858;
+  --ink-mute: #6a5a8a;
+  --c-pink: #c2185b;
   --c-purple: #7c3f58;
+  /* Darken accents so titles/labels stay readable on cream backgrounds */
+  --c-peach: #b8492a;   /* terracotta — was #ffce96 */
+  --c-gold:  #8a6300;   /* dark amber — was #ffd966 */
+  --c-mint:  #2d6a3f;   /* forest    — was #7db890 */
+  --c-blue:  #0f5f80;   /* deep ocean — was #5fcde4 */
+  --c-red:   #c0294f;
   --shadow-pixel: 4px 4px 0 0 rgba(44,29,74,0.25);
   --shadow-pixel-hover: 6px 6px 0 0 rgba(44,29,74,0.35);
 }
+
+/* Day-mode element fixes for spots where accent colors are used as
+   BACKGROUNDS (so the dark-on-dark text from the new palette would clash). */
+[data-theme="day"] .chip.active { color: var(--bg); }
+[data-theme="day"] .card-rarity { color: var(--bg); }
 
 * { box-sizing: border-box; }
 
