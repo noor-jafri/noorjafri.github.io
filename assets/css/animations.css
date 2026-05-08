@@ -1,0 +1,79 @@
+/* Keyframes */
+
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+
+@keyframes blink {
+  0%, 49%  { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50%      { opacity: 1;   transform: scale(1.2); }
+}
+
+@keyframes drift {
+  from { transform: translateX(-15vw); }
+  to   { transform: translateX(115vw); }
+}
+
+@keyframes particle-rise {
+  0% {
+    transform: scale(0) translateY(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% {
+    transform: scale(1) translateY(-80vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes zoom-in {
+  from { transform: scale(0.85); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+@keyframes toast-in {
+  from { transform: translate(-50%, 30px); opacity: 0; }
+  to   { transform: translate(-50%, 0);    opacity: 1; }
+}
+@keyframes toast-out {
+  to { transform: translate(-50%, 30px); opacity: 0; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,217,102,0.6); }
+  50%      { box-shadow: 0 0 24px 4px rgba(255,217,102,0.6); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translate(0,0); }
+  25%      { transform: translate(-3px, 1px) rotate(-1deg); }
+  50%      { transform: translate(3px, -1px) rotate(1deg); }
+  75%      { transform: translate(-2px, 2px) rotate(0deg); }
+}
+.shake { animation: shake 0.45s ease-in-out; }
+
+@keyframes pop-in {
+  0%   { transform: scale(0.6); opacity: 0; }
+  60%  { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); }
+}
+.pop-in { animation: pop-in 0.35s ease-out; }
+
+@keyframes float-up {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+.reveal { opacity: 0; }
+.reveal.in { animation: float-up 0.5s ease-out forwards; }

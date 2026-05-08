@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1a1230">
+
+  <title>Scroll · Noor Jafri</title>
+  <meta name="description" content="A scroll from the Library of Nooremberg.">
+
+  <link rel="shortcut icon" type="image/png" href="./assets/images/favicon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./assets/css/animations.css">
+  <link rel="stylesheet" href="./assets/css/styles.css">
+  <link rel="stylesheet" href="./assets/css/blog.css">
+</head>
+<body>
+
+  <div class="world-bg" aria-hidden="true"></div>
+  <div class="stars" aria-hidden="true"></div>
+  <div class="scanlines" aria-hidden="true"></div>
+  <div class="crt-vignette" aria-hidden="true"></div>
+
+  <header class="hud" role="banner">
+    <div class="hud-inner">
+      <a class="hud-btn" href="./blog.html">◂ LIBRARY</a>
+      <a class="hud-btn" href="./index.html">◂ HUB</a>
+      <span class="stat"><span class="label">AREA</span><span class="value">SCROLL</span></span>
+      <span class="stat"><span class="label">CLOCK</span><span class="value" id="hud-clock">--:--</span></span>
+      <span class="hud-spacer"></span>
+      <button class="hud-btn" id="theme-toggle">☾/☀</button>
+    </div>
+  </header>
+
+  <section class="section">
+    <a class="back-link" href="./blog.html">◂ BACK TO LIBRARY</a>
+    <div class="panel is-accent">
+      <div class="panel-title">📜 Scroll</div>
+      <div id="post-meta"></div>
+      <article id="post-article" class="post-body"></article>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <p class="sig">RETURN ▸ <a href="./blog.html">library</a> · <a href="./index.html">hub</a></p>
+  </footer>
+
+  <script type="module" src="./assets/js/blog.js"></script>
+</body>
+</html>

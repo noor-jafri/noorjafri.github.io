@@ -1,742 +1,249 @@
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flexboxgrid/6.3.1/flexboxgrid.min.css"
-              type="text/css">
-        <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
-        <link href="https://unpkg.com/nes.css@latest/css/nes.min.css" rel="stylesheet" />
-        <link rel="shortcut icon" type="image/png" href="./assets/images/favicon.png">
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1a1230">
 
-        <!-- Primary Meta Tags -->
-        <title>Noor Jafri - A PixelArt Lover</title>
-        <meta name="title" content="Noor Jafri - A PixelArt Lover">
-        <meta name="description" content="#NoorJafri. Find out more about me.">
+  <title>Noor Jafri · Nooremberg</title>
+  <meta name="description" content="Noor Jafri — Cloud Engineer & pixel-art adventurer. A gamified portfolio: skill cards, quest log, blog, easter eggs.">
 
-        <!-- Open Graph / Facebook -->
-        <meta property="og:type" content="website">
-        <meta property="og:url" content="https://noorjafri.com/">
-        <meta property="og:title" content="Noor Jafri - A PixelArt Lover">
-        <meta property="og:description" content="#NoorJafri. Find out more about me.">
-        <meta property="og:image" content="https://noorjafri.com/assets/images/snake.png">
-        <meta property="fb:app_id" content="382778113498452">
-        <title>
-            Noor Jafri
-        </title>
-        <style>
-            @media (max-width: 700px) {
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://noorjafri.com/">
+  <meta property="og:title" content="Noor Jafri · Nooremberg">
+  <meta property="og:description" content="A gamified, pixel-art portfolio for a cloud-loving wizard.">
+  <meta property="og:image" content="https://noorjafri.com/assets/images/snake.png">
 
-            }
-            body {
-                padding-bottom: 90px;
-                height: 100vh;
-                background: #ffce96;
-            }
-            .nes-progress {
-                height: 25px;
-            }
-            img {
-                max-width: 100%;
-            }
-            .column {
-                float: left;
-                width: auto;
-                padding: 0px;
-            }
-            .container-top-icon {
-                position: absolute;
-                right: 0;
-                top: 0;
-                transform: translate(calc(50% + 20px), -25%)
-            }
-            .container {
-                display: flex;
-                justify-content: center;
-                border: 0px #000000 solid;
-                padding: 10px;
-            }
-            .sub-container {
-                display: flex;
-                justify-content: center;
-                border: 0px #000000 solid;
-                padding: 10px;
-            }
-            .sub-container-with-borders-primary-1 {
-                display: flex;
-                justify-content: center;
-                border: 3px #7c3f58 dashed;
-                padding: 10px;
-            }
-            .sub-container-with-borders-primary-2 {
-                display: flex;
-                justify-content: center;
-                border: 3px #f1f2da dashed;
-                padding: 10px;
-            }
-            .nes-btn {
-                flex-basis: 22%;
-                justify-content: space-between;
-                margin: 10px;  /* and that, will result in a 10px gap */
-            }
-            span2 {
-                position: absolute;
-                pointer-events: none;
-                background: #000;
-                animation: animate 5s linear infinite;
-            }
-            section2 {
-                height: auto;
-                width: auto;
-            }
-            @keyframes animate {
-                0% {
-                    transform: scale(0) translateY(0) rotate(0deg);
-                    opacity: 0;
-                }
-                10% {
-                    opacity: 1;
-                }
-                90% {
-                    opacity: 1;
-                }
-                100% {
-                    transform: scale(1) translateY(-500%) rotate(360deg);
-                    opacity: 0;
-                }
-            }
-        </style>
-    </head>
-    <body>
-    <section2></section2>
-    <script>
-        function createSquare() {
+  <link rel="shortcut icon" type="image/png" href="./assets/images/favicon.png">
 
-            const section = document.querySelector('section2')
-            const square =document.createElement('span2')
-            const colors = [
-                '#7db890',
-                '#1e88e9',
-                '#ff7777',
-                '#00303b',
-                '#7c3f58'
-            ]
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
 
-            let size = Math.random() * 50
+  <link rel="stylesheet" href="./assets/css/animations.css">
+  <link rel="stylesheet" href="./assets/css/styles.css">
+</head>
+<body>
 
+  <!-- Background layers -->
+  <div class="world-bg" aria-hidden="true"></div>
+  <div class="stars" aria-hidden="true"></div>
+  <div class="scanlines" aria-hidden="true"></div>
+  <div class="crt-vignette" aria-hidden="true"></div>
 
-            square.style.width = 20 + size + 'px'
-            square.style.height = 20 + size + 'px'
+  <!-- HUD -->
+  <header class="hud" role="banner">
+    <div class="hud-inner">
+      <span class="stat" title="Player">
+        <span class="label">PLAYER</span>
+        <span class="value">NOOR</span>
+      </span>
+      <span class="stat" title="Class">
+        <span class="label">CLASS</span>
+        <span class="value">CLOUD&nbsp;WIZARD</span>
+      </span>
+      <span class="stat" title="Hit points">
+        <span class="label">HP</span>
+        <span class="heart"></span><span class="heart"></span><span class="heart"></span><span class="heart"></span><span class="heart empty"></span>
+      </span>
+      <span class="stat" title="Years adventuring">
+        <span class="label">YRS</span>
+        <span class="value" id="hud-years">—</span>
+      </span>
+      <span class="stat" title="Local time">
+        <span class="label">CLOCK</span>
+        <span class="value" id="hud-clock">--:--</span>
+      </span>
 
-            square.style.top = Math.random() * innerHeight + 'px'
-            square.style.left = Math.random() * innerWidth + 'px'
+      <span class="hud-spacer"></span>
 
+      <button class="hud-btn" id="theme-toggle" title="Toggle day/night">☾/☀</button>
+      <button class="hud-btn" id="sound-toggle" title="Sound (TODO)">🔇</button>
+      <a class="hud-btn" href="blog.html">BLOG</a>
+    </div>
+  </header>
 
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-avatar">
+      <img src="./assets/images/avatar.gif" alt="Pixel-art avatar of Noor">
+      <div class="platform" aria-hidden="true"></div>
+    </div>
 
-            const bg = colors[Math.floor(Math.random() * colors.length)]
+    <div>
+      <h1 class="hero-title">NOOR JAFRI</h1>
+      <p class="hero-tag">Cloud Wizard · Lvl. 28 · <span class="blink">_</span> press start</p>
 
-            square.style.background = bg
-
-            section.appendChild(square)
-
-            setTimeout(() => {
-                square.remove()
-            }, 5000)
-
-        }
-
-        setInterval(createSquare, 150)
-    </script>
-    <!--    Intro Bubble-->
-    <div class="container">
-        <div>
-            <div class="nes-balloon from-left" style="background-color: #ffffff">
-                <p style="color: #00303b">
-                    <span>
-                        Hello adventurer, I am Noor.
-                        Welcome to the town of Nooremburg.
-                        I have been guarding this page for you.
-                        Please have a look and let me know if you find those nasty bugs.
-                    </span>
-                </p>
-            </div>
-            <div class="sub-container" style="padding-bottom: 20px;">
-                <div style="flex: 1">
-                    <a href="https://www.youtube.com/watch?v=gNCiLIg7xpA&t=141s&ab_channel=PaesslerAG">
-                        <img src="assets/images/avatar.gif" style="padding-left: 10px"></i>
-                    </a>
-                </div>
-                <div style="align-items: flex-end; padding-right: 20px; padding-top: 10px;">
-                    <a href="https://github.com/noor-jafri">
-                        <i class="nes-icon is-large github"></i>
-                    </a>
-                    <a href="https://www.linkedin.com/in/nooralijafri/">
-                        <i class="nes-icon is-large linkedin"></i>
-                    </a>
-                    <a href="https://medium.com/@noorjafri">
-                        <i class="nes-icon is-large medium"></i>
-                    </a>
-                    <a href="https://www.facebook.com/noor.ali.jafri/">
-                        <i class="nes-icon is-large facebook"></i>
-                    </a>
-<!--                    <a href="">-->
-<!--                        <i class="nes-icon is-large youtube"></i>-->
-<!--                    </a>-->
-                </div>
-            </div>
+      <div class="dialogue" role="status" aria-live="polite">
+        <p style="margin:0;"><span class="typed"></span></p>
+        <div class="dialogue-controls">
+          <span class="dialogue-dots" aria-hidden="true"></span>
+          <span style="margin-left:auto;">click to skip ▸</span>
         </div>
+      </div>
+
+      <div class="social-row">
+        <a class="social-btn" href="https://github.com/noor-jafri" rel="noopener">🐙 GITHUB</a>
+        <a class="social-btn" href="https://www.linkedin.com/in/nooralijafri/" rel="noopener">💼 LINKEDIN</a>
+        <a class="social-btn" href="https://medium.com/@noorjafri" rel="noopener">✍️ MEDIUM</a>
+        <a class="social-btn" href="mailto:noorjafri92@gmail.com">✉️ EMAIL</a>
+      </div>
     </div>
+  </section>
 
-    <!--    Buttons -->
-    <div class="container">
-        <a href="#Experience">
-            <button type="button" class="nes-btn is-primary">Experience</button>
-        </a>
-        <a href="#Education">
-            <button type="button" class="nes-btn is-primary">Education</button>
-        </a>
-        <a href="#Technologies">
-            <button type="button" class="nes-btn is-primary">Technologies</button>
-        </a>
-        <a href="https://www.cloudways.com/blog/author/noor-ali/">
-            <button type="button" class="nes-btn is-primary">Tech Blogs</button>
-        </a>
+  <!-- Main menu (game tile grid) -->
+  <nav class="menu-grid" aria-label="Main menu">
+    <a class="menu-tile" data-id="about" href="#about">
+      <span class="icon">📜</span>
+      <span class="title">ABOUT</span>
+      <span class="desc">Read the lore of the wandering wizard.</span>
+      <span class="arrow">▸ ENTER</span>
+    </a>
+    <a class="menu-tile" data-id="skills" href="#skills">
+      <span class="icon">⚔️</span>
+      <span class="title">STATS</span>
+      <span class="desc">Inspect skill cards & XP bars.</span>
+      <span class="arrow">▸ ENTER</span>
+    </a>
+    <a class="menu-tile" data-id="quests" href="#quests">
+      <span class="icon">🗺️</span>
+      <span class="title">QUESTS</span>
+      <span class="desc">Past & present adventures.</span>
+      <span class="arrow">▸ ENTER</span>
+    </a>
+    <a class="menu-tile" data-id="education" href="#education">
+      <span class="icon">🎓</span>
+      <span class="title">SCROLLS</span>
+      <span class="desc">Studied at far-away academies.</span>
+      <span class="arrow">▸ ENTER</span>
+    </a>
+    <a class="menu-tile" data-id="blog" href="blog.html">
+      <span class="icon">📚</span>
+      <span class="title">LIBRARY</span>
+      <span class="desc">Tales, rants, and tech blogs.</span>
+      <span class="arrow">▸ ENTER</span>
+    </a>
+    <a class="menu-tile" data-id="contact" href="#contact">
+      <span class="icon">✉️</span>
+      <span class="title">PIGEON</span>
+      <span class="desc">Send a message to the wizard.</span>
+      <span class="arrow">▸ ENTER</span>
+    </a>
+  </nav>
 
-
+  <!-- About -->
+  <section class="section" id="about">
+    <div class="section-header">
+      <h2>ABOUT ME</h2>
+      <span class="sub">// the long lore</span>
     </div>
-
-    <!--    About Me -->
-    <div class="container" id="AboutMe">
-        <div class="nes-container with-title is-dark" style="background-color: #7c3f58">
-            <div class="container-top-icon" >
-                <a href="https://www.youtube.com/watch?v=KCiVG6mTor0&ab_channel=josiaal">
-                    <img src="assets/images/mario.gif"></i>
-                </a>
-            </div>
-            <p class="title">About Me</p>
-            <p style="color: #FFFFFF;text-align: center; font-size: 13px;">
-                O' adventurer, not all who wander are lost.  Welcome to my town. I am a curious spirit of Nooremberg.
-                I am a discoverer like you and always willing to learn. At this moment in time, I am learning
-                how to exploit <b>Event-Driven Architectures</b> for highly available
-                and scalable solutions to fight the downtime monsters. If you are on a journey to  build your own resilient
-                solutions, potions or weapons. I would love to accompany you. I can offer you ancient knowledge of
-                <b>Cloud Computing, the dark arts of DevOps, the secrets of IoT and the magic of Full-stack development</b>.
-                I can be of great help. Don’t be shy to contact me. We shall slay the down-time dragon together.
-            </p>
-        </div>
+    <div class="panel is-accent">
+      <div class="panel-title">📜 Lore</div>
+      <p class="lore">
+        O' adventurer, not all who wander are lost. Welcome to <b>Nooremberg</b>. I am a curious
+        spirit who's been chasing problems across the cloud since 2015. Right now I'm
+        exploiting <b>event-driven architectures</b> for highly-available, scalable
+        solutions to fight the down-time monsters.
+      </p>
+      <p class="lore">
+        If you're crafting your own resilient solutions, potions, or weapons, I'd love to
+        accompany you. I can offer ancient knowledge of <b>Cloud, DevOps, IoT, and
+        full-stack development</b>. We shall slay the down-time dragon together.
+      </p>
     </div>
+  </section>
 
-    <!--    Experience -->
-    <div class="container" id="Experience">
-        <div class="section">
-            <div class="nes-container with-title is-dark" style="background-color: #f1f2da">
-                <div class="container-top-icon">
-                    <a href="https://github.com/noor-jafri">
-                        <i class="nes-octocat animate"></i>
-                    </a>
-                </div>
-                <p class="title">Work Experience</p>
-                <br>
-                <br>
-                <div class="sub-container-with-borders-primary-1" style="background-color: #f1f2da">
-                    <div class="row">
-                        <div class="col-xs-1">
-                            <img
-                                    src="./assets/images/paessler.png"
-                                    style="width: 100%; height: auto; image-rendering: pixelated; image-rendering: -moz-crisp-edges;"
-                            />
-                        </div>
-                        <div class="col-xs-10">
-                            <h3 style="color: #7c3f58">Paessler AG - Cloud Engineer</h3>
-                            <p style="color: #7c3f58">March 2018 - Present</p>
-
-                            <a href="#" class="nes-badge is-icon">
-                                <span class="is-warning"><i class="nes-icon star is-small"></i></span>
-                                <span class="is-error">AWS</span>
-                            </a>
-                            <a href="#" class="nes-badge is-icon">
-                                <span class="is-warning"><i class="nes-icon heart is-small"></i></span>
-                                <span class="is-error">NodeJS</span>
-                            </a>
-                            <a href="#" class="nes-badge is-icon">
-                                <span class="is-warning"><i class="nes-icon heart is-small"></i></span>
-                                <span class="is-error">VueJS</span>
-                            </a>
-                            <a href="#" class="nes-badge">
-                                <span class="is-error">Serverless</span>
-                            </a>
-                            <a href="#" class="nes-badge">
-                                <span class="is-error">Python</span>
-                            </a>
-                        </div>
-                        <div class="sub-container">
-                            <p style="color: #7c3f58;text-align: center; font-size: 13px;">
-                                I accompanied with seven other wizards was in the journey for the last three years
-                                to create a Cloud Native IoT Monitoring Platform. We did everything from the scratch.
-                                Reading the elder scrolls, dark magic and dark arts on how to build a robust and scalable
-                                solution. You can find more about it on my LinkedIn.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <br>
-                <br>
-                <div class="sub-container-with-borders-primary-1" style="background-color: #f1f2da">
-                    <div class="row">
-                        <div class="col-xs-1">
-                            <img
-                                    src="./assets/images/cloudways.png"
-                                    style="width: 100%; height: auto; image-rendering: pixelated; image-rendering: -moz-crisp-edges;"
-                            />
-                        </div>
-                        <div class="col-xs-10">
-                            <h3 style="color: #7c3f58">Cloudways - Associate Cloud Engineer</h3>
-                            <p style="color: #7c3f58">December 2015 - March 2017</p>
-
-
-                            <a href="#" class="nes-badge">
-                                <span class="is-success">Ansible</span>
-                            </a>
-                            <a href="#" class="nes-badge is-icon">
-                                <span class="is-warning"><i class="nes-icon heart is-small"></i></span>
-                                <span class="is-success">Docker</span>
-                            </a>
-                            <a href="#" class="nes-badge is-icon">
-                                <span class="is-warning"><i class="nes-icon star is-small"></i></span>
-                                <span class="is-success">AWS</span>
-                            </a>
-
-                            <a href="#" class="nes-badge is-icon">
-                                <span class="is-warning"><i class="nes-icon like is-small"></i></span>
-                                <span class="is-success">GCE</span>
-                            </a>
-                            <a href="#" class="nes-badge">
-                                <span class="is-success">Django</span>
-                            </a>
-                        </div>
-                        <div class="sub-container">
-                            <p style="color: #7c3f58;text-align: center; font-size: 13px;">
-                                Cloudways is the place where I entered unaware of the dark dark world of Linux, cloud,
-                                containers and APIs. Here I earned lots of XPs from the best wizards in town. The DevOps
-                                team of which I was part of, created a managed hosted platform. Although I joined them
-                                pretty late in the journey but I had fun and time full of gaining more and more XPs.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <!-- Stats / skills -->
+  <section class="section" id="skills">
+    <div class="section-header">
+      <h2>STATS &amp; SKILL CARDS</h2>
+      <span class="sub">// click cards to flip ✦ filter by type</span>
     </div>
+    <div class="filter-row" id="skill-filters" role="toolbar" aria-label="Filter skills"></div>
+    <div class="cards" id="skills-grid"></div>
+  </section>
 
-    <!--    Education -->
-    <div class="container" id="Education">
-        <div class="section">
-            <div class="nes-container with-title is-dark" style="background-color: #7c3f58">
-                <div class="container-top-icon" >
-                    <img src="assets/images/bat.gif"></i>
-                </div>
-                <p class="title">Education</p>
-                <br>
-                <br>
-                <div class="sub-container-with-borders-primary-2" style="background-color: #7c3f58">
-                    <div class="row">
-                        <div class="col-xs-1">
-                            <img
-                                    src="./assets/images/fulda.png"
-                                    style="width: 100%; height: auto; image-rendering: pixelated; image-rendering: -moz-crisp-edges;"
-                            />
-                        </div>
-                        <div class="col-xs-10">
-                            <h3 style="color: #f1f2da">Fulda University of Applied Science (M.Sc.)</h3>
-                            <p style="color: #f1f2da">April 2017 - April 2019</p>
-
-                            <a href="#" class="nes-badge is-icon">
-                                <span class="is-warning"><i class="nes-icon trophy is-small"></i></span>
-                                <span class="is-success">Cloud</span>
-                            </a>
-                            <a href="#" class="nes-badge is-icon">
-                                <span class="is-warning"><i class="nes-icon heart is-small"></i></span>
-                                <span class="is-success">IoT</span>
-                            </a>
-                            <a href="#" class="nes-badge is-icon">
-                                <span class="is-warning"><i class="nes-icon like is-small"></i></span>
-                                <span class="is-success">IoT</span>
-                            </a>
-                            <a href="#" class="nes-badge is-icon">
-                                <span class="is-warning"><i class="nes-icon coin is-small"></i></span>
-                                <span class="is-success">DDD</span>
-                            </a>
-                            <a href="#" class="nes-badge is-icon">
-                                <span class="is-warning"><i class="nes-icon coin is-small"></i></span>
-                                <span class="is-success">TDD</span>
-                            </a>
-
-                        </div>
-                        <div class="sub-container">
-                            <p style="color: #f1f2da;text-align: center; font-size: 13px;">
-                                My first interaction with people living in far away lands. Here I learned secrets of
-                                this magically advanced civilization. How they interact with machines and metals that are
-                                changing the world for over 200 years. I trained myself to work with complex system designs
-                                and how they can be scaled on demand. 100XP Earned.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <br>
-                <br>
-                <div class="sub-container-with-borders-primary-2" style="background-color: #7c3f58">
-                    <div class="row">
-                        <div class="col-xs-1">
-                            <img
-                                    src="./assets/images/ned.png"
-                                    style="width: 100%; height: auto; image-rendering: pixelated; image-rendering: -moz-crisp-edges;"
-                            />
-                        </div>
-                        <div class="col-xs-10">
-                            <h3 style="color: #f1f2da">NED University of Eng. & Tech. (B.Eng.)</h3>
-                            <p style="color: #f1f2da">January 2012 - January 2016</p>
-
-                            <a href="#" class="nes-badge is-icon">
-                                <span class="is-warning"><i class="nes-icon coin is-small"></i></span>
-                                <span class="is-dark">IoT</span>
-                            </a>
-                            <a href="#" class="nes-badge is-icon">
-                                <span class="is-warning"><i class="nes-icon heart is-small"></i></span>
-                                <span class="is-dark">Cloud</span>
-                            </a>
-                            <a href="#" class="nes-badge is-icon">
-                                <span class="is-warning"><i class="nes-icon coin is-small"></i></span>
-                                <span class="is-dark">Web</span>
-                            </a>
-                        </div>
-                        <div class="sub-container">
-                            <p style="color: #f1f2da;text-align: center; font-size: 13px;">
-                                A 100 year old schools. Producing hard working scientists and ingeeners ever since it began
-                                its operation. Traversing through a challenging curriculum, I earned +10XP for every subject
-                                passed. 20% of them I don't remember. -700XP Lost.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <!-- Quests / experience -->
+  <section class="section" id="quests">
+    <div class="section-header">
+      <h2>QUEST LOG</h2>
+      <span class="sub">// past &amp; present adventures</span>
     </div>
+    <div class="questlog" id="quests-list"></div>
+  </section>
 
-    <!--    Technologies -->
-    <div class="container" id="Technologies">
-        <div class="section">
-            <div class="nes-container with-title is-dark" style="background-color: #f1f2da">
-                <div class="container-top-icon" >
-                    <a href="https://www.youtube.com/watch?v=nDtj-2qnTXk&ab_channel=JonasB.Ingebretsen">
-                        <img src="assets/images/snake.gif"></i>
-                    </a>
-                </div>
-                <p class="title">Tools & Potions</p>
-                <br>
-                <br>
-                <div class="row">
-                    <div class="col-xs-1">
-                        <img
-                                src="./assets/images/aws.png"
-                                style="width: 100%; height: auto; image-rendering: pixelated; image-rendering: -moz-crisp-edges;"
-                        />
-                    </div>
-                    <div class="col-xs-1">
-                        <img
-                                src="./assets/images/python.png"
-                                style="width: 100%; height: auto; image-rendering: pixelated; image-rendering: -moz-crisp-edges;"
-                        />
-                    </div>
-                    <div class="col-xs-1">
-                        <img
-                                src="./assets/images/js.png"
-                                style="width: 100%; height: auto; image-rendering: pixelated; image-rendering: -moz-crisp-edges;"
-                        />
-                    </div>
-                    <div class="col-xs-1">
-                        <img
-                                src="./assets/images/serverless.png"
-                                style="width: 100%; height: auto; image-rendering: pixelated; image-rendering: -moz-crisp-edges;"
-                        />
-                    </div>
-                    <div class="col-xs-1">
-                        <img
-                                src="./assets/images/docker.png"
-                                style="width: 100%; height: auto; image-rendering: pixelated; image-rendering: -moz-crisp-edges;"
-                        />
-                    </div>
-                    <div class="col-xs-1">
-                        <img
-                                src="./assets/images/linux.png"
-                                style="width: 100%; height: auto; image-rendering: pixelated; image-rendering: -moz-crisp-edges;"
-                        />
-                    </div>
-                    <div class="col-xs-1">
-                        <img
-                                src="./assets/images/ansible.png"
-                                style="width: 100%; height: auto; image-rendering: pixelated; image-rendering: -moz-crisp-edges;"
-                        />
-                    </div>
-                    <div class="col-xs-1">
-                        <img
-                                src="./assets/images/bash.png"
-                                style="width: 100%; height: auto; image-rendering: pixelated; image-rendering: -moz-crisp-edges;"
-                        />
-                    </div>
-                    <div class="col-xs-1">
-                        <img
-                                src="./assets/images/django.png"
-                                style="width: 100%; height: auto; image-rendering: pixelated; image-rendering: -moz-crisp-edges;"
-                        />
-                    </div>
-                    <div class="col-xs-1">
-                        <img
-                                src="./assets/images/vue.png"
-                                style="width: 100%; height: auto; image-rendering: pixelated; image-rendering: -moz-crisp-edges;"
-                        />
-                    </div>
-                    <div class="col-xs-1">
-                        <img
-                                src="./assets/images/kubernetes.png"
-                                style="width: 100%; height: auto; image-rendering: pixelated; image-rendering: -moz-crisp-edges;"
-                        />
-                    </div>
-                    <div class="col-xs-1">
-                        <img
-                                src="./assets/images/gce.png"
-                                style="width: 100%; height: auto; image-rendering: pixelated; image-rendering: -moz-crisp-edges;"
-                        />
-                    </div>
-                </div>
-                <br>
-                <br>
-                <div class="nes-container with-title">
-                    <div>
-                        <h3 class="title" style="background: #f1f2da; color: #000000;">XP Level Chart</h3>
-                        <br>
-
-                        <div class="row">
-                            <div class="col-sm-4 col-xs-12" style="color: #000000">
-                                <a href="#" class="nes-badge is-icon">
-                                    <span class="is-warning"><i class="nes-icon heart is-small"></i></span>
-                                    <span class="is-error">AWS</span>
-                                </a>
-                            </div>
-                            <div class="col-xs-6">
-                                <progress
-                                        class="nes-progress is-success"
-                                        value="70"
-                                        max="100"
-                                >
-                                </progress>
-                            </div>
-                        </div>
-                        <br>
-                        <div class="row">
-                            <div class="col-sm-4 col-xs-12" style="color: #000000">
-                                <a href="#" class="nes-badge is-icon">
-                                    <span class="is-warning"><i class="nes-icon heart is-small"></i></span>
-                                    <span class="is-error">Linux</span>
-                                </a>
-                            </div>
-                            <div class="col-xs-6">
-                                <progress
-                                        class="nes-progress is-success"
-                                        value="65"
-                                        max="100"
-                                >
-                                </progress>
-                            </div>
-                        </div>
-                        <br>
-                        <div class="row">
-                            <div class="col-sm-4 col-xs-12" style="color: #000000">
-                                <a href="#" class="nes-badge is-icon">
-                                    <span class="is-error"><i class="nes-icon like is-small"></i></span>
-                                    <span class="is-error">Python</span>
-                                </a>
-                            </div>
-                            <div class="col-xs-6">
-                                <progress
-                                        class="nes-progress is-success"
-                                        value="75"
-                                        max="100"
-                                >
-                                </progress>
-                            </div>
-                        </div>
-                        <br>
-                        <div class="row">
-                            <div class="col-sm-4 col-xs-12" style="color: #000000">
-                                <a href="#" class="nes-badge is-icon">
-                                    <span class="is-warning"><i class="nes-icon coin is-small"></i></span>
-                                    <span class="is-error">JS</span>
-                                </a>
-                            </div>
-                            <div class="col-xs-6">
-                                <progress
-                                        class="nes-progress is-success"
-                                        value="60"
-                                        max="100"
-                                >
-                                </progress>
-                            </div>
-                        </div>
-                        <br>
-                        <div class="row">
-                            <div class="col-sm-4 col-xs-12" style="color: #000000">
-                                <a href="#" class="nes-badge">
-                                    <span class="is-error">Serverless</span>
-                                </a>
-                            </div>
-                            <div class="col-xs-6">
-                                <progress
-                                        class="nes-progress is-success"
-                                        value="80"
-                                        max="100"
-                                >
-                                </progress>
-                            </div>
-                        </div>
-                        <br>
-                        <div class="row">
-                            <div class="col-sm-4 col-xs-12" style="color: #000000">
-                                <a href="#" class="nes-badge is-icon">
-                                    <span class="is-warning"><i class="nes-icon heart is-small"></i></span>
-                                    <span class="is-error">Docker</span>
-                                </a>
-                            </div>
-                            <div class="col-xs-6">
-                                <progress
-                                        class="nes-progress is-success"
-                                        value="70"
-                                        max="100"
-                                >
-                                </progress>
-                            </div>
-                        </div>
-                        <br>
-                        <div class="row">
-                            <div class="col-sm-4 col-xs-12" style="color: #000000">
-                                <a href="#" class="nes-badge is-icon">
-                                    <span class="is-warning"><i class="nes-icon like is-small"></i></span>
-                                    <span class="is-error">Bash</span>
-                                </a>
-                            </div>
-                            <div class="col-xs-6">
-                                <progress
-                                        class="nes-progress is-success"
-                                        value="50"
-                                        max="100"
-                                >
-                                </progress>
-                            </div>
-                        </div>
-                        <br>
-                        <div class="row">
-                            <div class="col-sm-4 col-xs-12" style="color: #000000">
-                                <a href="#" class="nes-badge is-icon">
-                                    <span class="is-warning"><i class="nes-icon coin is-small"></i></span>
-                                    <span class="is-error">Django</span>
-                                </a>
-                            </div>
-                            <div class="col-xs-6">
-                                <progress
-                                        class="nes-progress is-success"
-                                        value="30"
-                                        max="100"
-                                >
-                                </progress>
-                            </div>
-                        </div>
-                        <br>
-                        <div class="row">
-                            <div class="col-sm-4 col-xs-12" style="color: #000000">
-                                <a href="#" class="nes-badge is-icon">
-                                    <span class="is-warning"><i class="nes-icon like is-small"></i></span>
-                                    <span class="is-error">VueJS</span>
-                                </a>
-                            </div>
-                            <div class="col-xs-6">
-                                <progress
-                                        class="nes-progress is-success"
-                                        value="40"
-                                        max="100"
-                                >
-                                </progress>
-                            </div>
-                        </div>
-                        <br>
-                        <div class="row">
-                            <div class="col-sm-4 col-xs-12" style="color: #000000">
-                                <a href="#" class="nes-badge">
-                                    <span class="is-error">Kubernetes</span>
-                                </a>
-                            </div>
-                            <div class="col-xs-6">
-                                <progress
-                                        class="nes-progress is-success"
-                                        value="10"
-                                        max="100"
-                                >
-                                </progress>
-                            </div>
-                        </div>
-                        <br>
-                        <div class="row">
-                            <div class="col-sm-4 col-xs-12" style="color: #000000">
-                                <a href="#" class="nes-badge is-icon">
-                                    <span class="is-warning"><i class="nes-icon heart is-small"></i></span>
-                                    <span class="is-error">GCE</span>
-                                </a>
-                            </div>
-                            <div class="col-xs-6">
-                                <progress
-                                        class="nes-progress is-success"
-                                        value="45"
-                                        max="100"
-                                >
-                                </progress>
-                            </div>
-                        </div>
-                        <br>
-                        <div class="row">
-                            <div class="col-sm-4 col-xs-12" style="color: #000000">
-                                <a href="#" class="nes-badge">
-                                    <span class="is-error">Ansible</span>
-                                </a>
-                            </div>
-                            <div class="col-xs-6">
-                                <progress
-                                        class="nes-progress is-success"
-                                        value="65"
-                                        max="100"
-                                >
-                                </progress>
-                            </div>
-                        </div>
-                        <br>
-                        <div class="row">
-                            <div class="col-sm-4 col-xs-12" style="color: #000000">
-                                <a href="#" class="nes-badge">
-                                    <span class="is-error">Flutter</span>
-                                </a>
-                            </div>
-                            <div class="col-xs-6">
-                                <progress
-                                        class="nes-progress is-success"
-                                        value="15"
-                                        max="100"
-                                >
-                                </progress>
-                            </div>
-                        </div>
-                        <br>
-
-                    </div>
-            </div>
-        </div>
+  <!-- Education -->
+  <section class="section" id="education">
+    <div class="section-header">
+      <h2>SCROLLS &amp; SAGES</h2>
+      <span class="sub">// places of learning</span>
     </div>
+    <div class="questlog" id="education-list"></div>
+  </section>
 
-    </body>
+  <!-- Achievements -->
+  <section class="section" id="achievements">
+    <div class="section-header">
+      <h2>ACHIEVEMENTS</h2>
+      <span class="sub">// hover, click, scroll, type — unlock them all</span>
+    </div>
+    <div class="achievement-list" id="achievements-list"></div>
+    <p style="margin-top:1rem; color: var(--ink-mute); font-size: 1rem;">
+      Hint: try <kbd>↑↑↓↓←→←→ B A</kbd> · or press <kbd>/</kbd> to open the console.
+    </p>
+  </section>
+
+  <!-- Contact -->
+  <section class="section" id="contact">
+    <div class="section-header">
+      <h2>SEND A PIGEON</h2>
+      <span class="sub">// contact</span>
+    </div>
+    <div class="panel">
+      <div class="panel-title">✉️ Pigeon Post</div>
+      <p class="lore">
+        The fastest way to reach me is via
+        <a href="mailto:noorjafri92@gmail.com">noorjafri92@gmail.com</a>
+        or <a href="https://www.linkedin.com/in/nooralijafri/" rel="noopener">LinkedIn</a>.
+        I respond between dragon-slaying sessions.
+      </p>
+      <div class="social-row">
+        <a class="social-btn" href="https://github.com/noor-jafri" rel="noopener">🐙 GITHUB</a>
+        <a class="social-btn" href="https://www.linkedin.com/in/nooralijafri/" rel="noopener">💼 LINKEDIN</a>
+        <a class="social-btn" href="https://medium.com/@noorjafri" rel="noopener">✍️ MEDIUM</a>
+        <a class="social-btn" href="mailto:noorjafri92@gmail.com">✉️ EMAIL</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Hidden chest -->
+  <section class="section secret" id="secret-room">
+    <div class="section-header">
+      <h2 style="color: var(--c-gold);">SECRET CHAMBER</h2>
+      <span class="sub">// you found it</span>
+    </div>
+    <div class="panel is-gold">
+      <div class="panel-title" style="color: var(--c-gold);">🗝️ Chest unlocked</div>
+      <p class="lore">
+        Welcome, traveler. You found the secret. Here is a tiny gift: a
+        <a href="https://www.youtube.com/watch?v=KCiVG6mTor0&ab_channel=josiaal" rel="noopener">pixel-art tutorial</a>
+        I love and the <a href="./assets/color/ayy4-1x.png">Ayy4 palette</a> I use most often.
+      </p>
+      <p class="lore">
+        Type <kbd>secret</kbd> in the console any time to come back here.
+      </p>
+    </div>
+  </section>
+
+  <!-- Tiny clickable chest, half-hidden in the corner. Click to find the room. -->
+  <button class="secret-chest" title="A suspicious coin..." aria-label="Open the chest">🪙</button>
+
+  <footer class="foot">
+    <p>© <span id="foot-year"></span> Noor Jafri · made with pixels &amp; coffee</p>
+    <p class="sig">PRESS START · NOOREMBERG · v2</p>
+  </footer>
+
+  <script>document.getElementById("foot-year").textContent = new Date().getFullYear();</script>
+  <script type="module" src="./assets/js/main.js"></script>
+</body>
 </html>

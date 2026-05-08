@@ -1,0 +1,26 @@
+[
+  {
+    "slug": "welcome-to-nooremberg",
+    "title": "Welcome to Nooremberg",
+    "date": "2026-05-08",
+    "tags": ["meta", "pixel-art"],
+    "excerpt": "A tiny tour of the rebuilt site, the gamified design choices, and the easter eggs hidden behind the scrolls.",
+    "readMin": 3
+  },
+  {
+    "slug": "event-driven-armor",
+    "title": "Forging Event-Driven Armor",
+    "date": "2026-04-12",
+    "tags": ["aws", "architecture", "events"],
+    "excerpt": "Notes from the trenches on building loosely-coupled, event-driven systems on AWS without summoning chaos demons.",
+    "readMin": 7
+  },
+  {
+    "slug": "lambda-spellbook",
+    "title": "The Lambda Spellbook",
+    "date": "2026-02-21",
+    "tags": ["aws", "lambda", "serverless"],
+    "excerpt": "Patterns I keep reaching for when writing serverless functions: idempotency, retries, dead letters, and a few bad jokes.",
+    "readMin": 6
+  }
+]
