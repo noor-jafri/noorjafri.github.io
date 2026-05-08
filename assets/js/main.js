@@ -10,6 +10,15 @@ const html = (s) => {
   return t.content.firstElementChild;
 };
 
+/* Render a skill / quest icon — supports both image paths (legacy) and emoji glyphs (new). */
+const isImagePath = (v) => typeof v === "string" && (v.includes("/") || /\.(png|gif|svg|jpe?g|webp)$/i.test(v));
+const renderIcon = (icon, alt = "", className = "") => {
+  if (!icon) return "";
+  return isImagePath(icon)
+    ? `<img src="${icon}" alt="${alt}">`
+    : `<span class="emoji-icon ${className}" role="img" aria-label="${alt}">${icon}</span>`;
+};
+
 /* ---------- background flair ---------- */
 function spawnStars(count = 60) {
   const layer = $(".stars");
@@ -145,7 +154,7 @@ function renderSkills() {
         <div class="card-inner">
           <div class="card-face front">
             <div class="card-rarity">${rarity}</div>
-            <div class="card-art"><img src="${s.icon}" alt="${s.name}"></div>
+            <div class="card-art">${renderIcon(s.icon, s.name, "card-emoji")}</div>
             <div class="card-name">${s.name}</div>
             <div class="card-type">${s.type}</div>
             <div class="card-stats">
@@ -212,8 +221,8 @@ function renderQuestList(target, items) {
   el.innerHTML = "";
   for (const q of items) {
     const node = html(`
-      <article class="quest ${q.status || ""} reveal">
-        <div class="quest-icon"><img src="${q.icon}" alt=""></div>
+      <article class="quest ${q.status || ""} ${q.highlight || ""} reveal">
+        <div class="quest-icon">${renderIcon(q.icon, q.title, "quest-emoji")}</div>
         <div>
           <h3>${q.title}</h3>
           <div class="meta">${q.period}</div>

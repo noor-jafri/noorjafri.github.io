@@ -2,10 +2,10 @@
 
 export const profile = {
   name: "Noor Jafri",
-  title: "Cloud Engineer & Pixel Adventurer",
+  title: "Cloud Engineer · Founder · Pixel Adventurer",
   location: "Nooremberg",
-  level: 28,
-  class: "Cloud Wizard",
+  level: 30,
+  class: "Cloud Wizard / Token Druid",
   startedYear: 2015,
   social: [
     { name: "GitHub",   icon: "🐙", url: "https://github.com/noor-jafri" },
@@ -45,17 +45,54 @@ export const skills = [
   { name: "Django",     icon: "assets/images/django.png",     type: "Framework", xp: 50, mastery: 45, mana: 60, rarity: "common",
     lore: "Batteries-included wand. Solid for crafting backend fortresses." },
   { name: "GCE",        icon: "assets/images/gce.png",        type: "Cloud",     xp: 55, mastery: 50, mana: 65, rarity: "rare",
-    lore: "Google's Cloud Engine. A second elemental plane for compute." }
+    lore: "Google's Cloud Engine. A second elemental plane for compute." },
+
+  /* ---- New AI/architecture cards forged at DeepMask ---- */
+  { name: "vLLM",                       icon: "🐉", type: "AI",           xp: 84, mastery: 78, mana: 95, rarity: "legendary",
+    lore: "Tames GPU dragons and serves tokens by the thousand. Throughput so high it folds spacetime — or at least the request queue." },
+  { name: "MCP",                        icon: "🔌", type: "AI",           xp: 82, mastery: 76, mana: 80, rarity: "epic",
+    lore: "Model Context Protocol — universal handshake between models and tools. USB-C for LLMs, but with more JSON and less melting." },
+  { name: "A2A",                        icon: "🗣️", type: "AI",           xp: 76, mastery: 70, mana: 78, rarity: "epic",
+    lore: "Agent-to-Agent. Bots whispering to each other in tongues only the prompt-master understands. The new gossip layer of the realm." },
+  { name: "GPU / RDU Inference",        icon: "⚡", type: "AI",           xp: 80, mastery: 74, mana: 92, rarity: "legendary",
+    lore: "Hand-feeding tokens to silicon golems. Hot-swapping inference between GPU and RDU like switching wand cores mid-battle." },
+  { name: "RAG / F.A.G.",               icon: "📂", type: "AI",           xp: 88, mastery: 82, mana: 80, rarity: "legendary",
+    lore: "RAG was the warm-up. F.A.G. — File-Augmented Generation — crawls your filesystem like a Linux greybeard with a flashlight. Yes, the acronym is unfortunate. No, I will not be taking questions." },
+  { name: "Token Economics",            icon: "🪙", type: "AI",           xp: 80, mastery: 78, mana: 70, rarity: "epic",
+    lore: "Models are applications, tokens are coin, capabilities are spell slots, context windows are mana pools. The economy is real and it has a P&L." },
+  { name: "Event-Driven Multi-tenancy", icon: "🌩️", type: "Architecture", xp: 86, mastery: 80, mana: 75, rarity: "legendary",
+    lore: "Combine event-driven patterns with multi-tenant chaos. Like seasoning a stew with thunderbolts — works great until two tenants share a Kafka topic." },
+  { name: "Vibe Coding",                icon: "🎧", type: "Framework",    xp: 62, mastery: 55, mana: 99, rarity: "rare",
+    lore: "Coding by feel. Tests are emergent. Vibes are immaculate. Prod bugs only show up when the playlist ends. Sharpened on KalPal.io." }
 ];
 
 export const quests = [
   {
-    title: "Cloud Engineer @ Paessler AG",
-    period: "March 2018 — Present",
-    icon: "assets/images/paessler.png",
+    title: "Technical CoFounder @ DeepMask.io",
+    period: "2024 — Present",
+    icon: "🎭",
     status: "active",
+    highlight: "legendary",
+    badges: ["vLLM", "MCP", "A2A", "GPU/RDU", "RAG", "F.A.G.", "Multi-tenant", "Event-Driven", "🚀"],
+    lore: "The current epic quest. Forging a unified AI command center where 25+ models live, breathe, and bicker. Treat models like applications, tokens like coin, capabilities like spell slots. Pioneered <b>F.A.G.</b> — File-Augmented Generation — because RAG was cute but my files wanted in on the action (yes, the acronym is unfortunate; no, I am not taking questions). Slayed the model-fragmentation hydra; it grew two more heads, then we slayed those too. Innovated relentlessly with whatever customers begged for, hot-swapped inference between GPUs and RDUs like switching wand cores, and grew the realm to a 2-digit-million valuation along the way.",
+    reward: "+5000 XP · Founder Class Unlocked"
+  },
+  {
+    title: "Solo Builder @ KalPal.io",
+    period: "2024 — Present",
+    icon: "🎧",
+    status: "active",
+    badges: ["Vibe Coding", "AI", "Side Quest"],
+    lore: "Side quest opened to learn the dark art of <b>vibe coding</b>. Built by feel, shipped by faith, debugged by playlist. Tests are 'emergent'. The vibes are non-negotiable.",
+    reward: "+400 XP · Vibes Calibration"
+  },
+  {
+    title: "Cloud Engineer @ Paessler AG",
+    period: "March 2018 — January 2025",
+    icon: "assets/images/paessler.png",
+    status: "completed",
     badges: ["AWS", "Node.js", "VueJS", "Serverless", "Python"],
-    lore: "Joined seven other wizards on a multi-year quest to build a Cloud-Native IoT Monitoring Platform. We read the elder scrolls of distributed systems, performed the dark rituals of CI/CD, and slew the down-time dragon more than once.",
+    lore: "A seven-year campaign with seven other wizards to build a Cloud-Native IoT Monitoring Platform. We read the elder scrolls of distributed systems, performed the dark rituals of CI/CD, and slew the down-time dragon more than once. Sheathed the sword in early 2025 to ride out and found DeepMask.",
     reward: "+1200 XP · Cloud Mastery"
   },
   {

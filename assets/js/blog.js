@@ -148,7 +148,14 @@ async function postPage() {
   if (!article) return;
   const slug = new URLSearchParams(location.search).get("slug");
   if (!slug || !/^[a-z0-9-]+$/i.test(slug)) {
-    article.innerHTML = "<p>No post specified.</p>";
+    article.innerHTML = `
+      <p>No scroll specified, traveler. The library awaits.</p>
+      <p style="margin-top: 1rem;">
+        <a class="hud-btn" href="./blog.html">◂ RETURN TO LIBRARY</a>
+      </p>
+    `;
+    // Bounce after a short pause so the user sees what happened.
+    setTimeout(() => { location.replace("./blog.html"); }, 1500);
     return;
   }
   try {

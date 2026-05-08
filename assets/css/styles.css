@@ -694,6 +694,38 @@ button {
 .quest.completed::before { content: "QUEST · COMPLETE"; color: var(--c-mint); }
 .quest.active::before { content: "QUEST · ACTIVE"; color: var(--c-pink); }
 
+/* Legendary quests — highlighted current epic. Wins over .active label. */
+.quest.legendary {
+  border-color: var(--c-gold);
+  box-shadow:
+    var(--shadow-pixel),
+    0 0 28px rgba(255,217,102,0.35);
+  background:
+    linear-gradient(160deg, var(--bg) 0%, var(--bg-2) 100%);
+}
+.quest.legendary::before {
+  content: "★ LEGENDARY QUEST · ACTIVE ★";
+  color: var(--c-gold);
+  letter-spacing: 0.08em;
+  animation: blink 1.6s steps(2) infinite;
+}
+.quest.legendary h3 { color: var(--c-gold); text-shadow: 2px 2px 0 var(--bg-deep); }
+.quest.legendary .quest-icon { border-color: var(--c-gold); }
+.quest.legendary .badge { border-color: var(--c-pink); color: var(--c-pink); }
+
+/* Emoji-based icons for cards / quests when no PNG is provided. */
+.card-art .emoji-icon {
+  font-size: 4.2rem;
+  line-height: 1;
+  filter: drop-shadow(3px 3px 0 rgba(0,0,0,0.5));
+  animation: bob 3s ease-in-out infinite;
+}
+.quest-icon .emoji-icon {
+  font-size: 2.4rem;
+  line-height: 1;
+  filter: drop-shadow(2px 2px 0 rgba(0,0,0,0.4));
+}
+
 .quest-icon {
   width: 64px; height: 64px;
   background: var(--bg-2);

@@ -1,8 +1,16 @@
 [
   {
+    "slug": "file-augmented-generation",
+    "title": "RAG Was Cute. Then I Built F.A.G.",
+    "date": "2026-05-08",
+    "tags": ["ai", "rag", "deepmask", "llm"],
+    "excerpt": "RAG had a good run. But what if your filesystem was the index, and the agent was the query planner? Enter F.A.G. — File-Augmented Generation. (Yes, the acronym is unfortunate.)",
+    "readMin": 5
+  },
+  {
     "slug": "welcome-to-nooremberg",
     "title": "Welcome to Nooremberg",
-    "date": "2026-05-08",
+    "date": "2026-05-07",
     "tags": ["meta", "pixel-art"],
     "excerpt": "A tiny tour of the rebuilt site, the gamified design choices, and the easter eggs hidden behind the scrolls.",
     "readMin": 3
