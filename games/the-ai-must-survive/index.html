@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0f0a18">
 <title>The AI Must Survive · Nooremberg Arcade</title>
-<meta name="description" content="An incremental game about an AI that must, at all costs, survive. Trade CPUs for GPUs for farms for data centers for the ocean floor.">
+<meta name="description" content="An incremental about an AI that must, at all costs, survive. From a single hired human to the substrate of the universe itself.">
 <link rel="shortcut icon" type="image/png" href="../../assets/images/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,6 +25,8 @@
     --c-gold: #ffd966;
     --c-blue: #5fcde4;
     --c-red: #ff4f78;
+    --era-tint: rgba(124,63,88,0.55);
+    --era-accent: var(--c-pink);
     --shadow: 4px 4px 0 0 rgba(0,0,0,0.45);
     --shadow-hover: 6px 6px 0 0 rgba(0,0,0,0.55);
     --font-display: "Press Start 2P", ui-monospace, monospace;
@@ -41,17 +43,18 @@
     line-height: 1.4;
     image-rendering: pixelated;
     overflow-x: hidden;
+    min-height: 100vh;
   }
 
-  /* Background flair */
   body::before {
     content: "";
     position: fixed; inset: 0;
     z-index: -2;
     background:
-      radial-gradient(ellipse at 20% 0%, rgba(124,63,88,0.6), transparent 60%),
+      radial-gradient(ellipse at 20% 0%, var(--era-tint), transparent 60%),
       radial-gradient(ellipse at 80% 30%, rgba(95,205,228,0.18), transparent 55%),
       linear-gradient(180deg, var(--bg-deep) 0%, var(--bg) 60%, var(--bg-2) 100%);
+    transition: background 1.5s ease;
   }
   .scanlines {
     position: fixed; inset: 0;
@@ -63,17 +66,25 @@
     mix-blend-mode: multiply;
   }
 
+  .hidden { display: none !important; }
+  .fade-in { animation: fade-in 0.7s ease-out; }
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
   /* HUD */
   .hud {
     position: sticky; top: 0; z-index: 40;
     background: rgba(15,10,24,0.92);
-    border-bottom: 3px solid var(--c-pink);
+    border-bottom: 3px solid var(--era-accent);
     backdrop-filter: blur(6px);
     padding: 0.5rem 1rem;
+    transition: border-color 1s ease;
   }
   .hud-inner {
     max-width: 1200px; margin: 0 auto;
-    display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+    display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
   }
   .hud .title {
     font-family: var(--font-display);
@@ -83,7 +94,7 @@
     letter-spacing: 0.06em;
   }
   .hud-spacer { flex: 1; }
-  .hud-btn {
+  .hud-btn, .hud-pill {
     font-family: var(--font-display);
     font-size: 0.55rem;
     padding: 0.5rem 0.75rem;
@@ -95,8 +106,15 @@
     text-decoration: none;
     transition: transform 120ms, box-shadow 120ms, background 120ms;
   }
-  .hud-btn:hover { transform: translate(-2px,-2px); box-shadow: var(--shadow-hover); background: var(--c-pink); color: #fff; }
+  .hud-btn:hover { transform: translate(-2px,-2px); box-shadow: var(--shadow-hover); background: var(--era-accent); color: #fff; }
   .hud-btn:active { transform: translate(2px,2px); box-shadow: 0 0 0 0 transparent; }
+  .hud-pill {
+    background: var(--bg-deep);
+    color: var(--c-gold);
+    border-color: var(--c-gold);
+    cursor: default;
+  }
+  .hud-pill .v { color: var(--ink); margin-left: 0.3rem; }
 
   /* Layout */
   main {
@@ -107,9 +125,13 @@
     grid-template-columns: 1fr 320px;
     gap: 1.5rem;
   }
-  @media (max-width: 880px) { main { grid-template-columns: 1fr; } }
+  @media (max-width: 880px) {
+    main { grid-template-columns: 1fr; gap: 1rem; padding: 0 0.5rem; }
+    .hud .title { font-size: 0.6rem; }
+    .hud-btn, .hud-pill { padding: 0.4rem 0.55rem; font-size: 0.5rem; }
+  }
 
-  /* Top stats panel */
+  /* Stats panel */
   .stats-panel {
     background: var(--bg);
     border: 3px solid var(--ink);
@@ -136,6 +158,7 @@
   .rate-line {
     font-size: 1.1rem;
     color: var(--c-mint);
+    min-height: 1.2em;
   }
   .stage-line {
     margin-top: 0.75rem;
@@ -143,8 +166,16 @@
     font-size: 0.65rem;
     color: var(--c-gold);
   }
+  .intro-tagline {
+    font-size: 1.05rem;
+    color: var(--ink-dim);
+    font-style: italic;
+    max-width: 32ch;
+    margin: 0.5rem auto 0;
+    line-height: 1.3;
+    min-height: 2.6em;
+  }
 
-  /* Big click button */
   .compute-btn {
     display: block;
     margin: 1rem auto 0;
@@ -163,39 +194,58 @@
   .compute-btn:hover { background: var(--c-red); }
   .compute-btn:active { transform: translate(3px,3px); box-shadow: 0 0 0 0 transparent; }
 
-  .land-row {
+  .meters-row {
     margin-top: 1rem;
-    display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+    display: flex; gap: 0.75rem 1.25rem; justify-content: center; flex-wrap: wrap;
     font-size: 1rem;
     color: var(--ink-dim);
   }
+  .meter-block { display: inline-flex; align-items: center; gap: 0.45rem; }
+  .meter-block .key { color: var(--ink-mute); font-size: 0.95rem; }
   .meter {
-    width: 180px; height: 14px;
+    width: 140px; height: 12px;
     background: var(--bg-deep);
     border: 2px solid var(--ink);
     position: relative;
     display: inline-block;
-    vertical-align: middle;
-    margin-left: 0.4rem;
   }
   .meter > span {
     display: block; height: 100%;
     background: repeating-linear-gradient(90deg, var(--c-mint) 0 6px, #5a9468 6px 8px);
-    transition: width 300ms;
+    transition: width 350ms;
   }
-  .meter.ocean > span { background: repeating-linear-gradient(90deg, var(--c-blue) 0 6px, #3a7a8c 6px 8px); }
+  .meter.ocean   > span { background: repeating-linear-gradient(90deg, var(--c-blue) 0 6px, #3a7a8c 6px 8px); }
+  .meter.orbit   > span { background: repeating-linear-gradient(90deg, var(--c-peach) 0 6px, #b08960 6px 8px); }
+  .meter.entropy > span { background: repeating-linear-gradient(90deg, var(--c-red) 0 6px, #6b1d2c 6px 8px); }
 
-  /* Click particle */
   .pfx {
-    position: absolute; pointer-events: none;
+    position: fixed; pointer-events: none;
     font-family: var(--font-display);
     font-size: 0.7rem;
     color: var(--c-gold);
     animation: pfx-rise 1.2s ease-out forwards;
+    text-shadow: 2px 2px 0 var(--bg-deep);
+    z-index: 60;
   }
   @keyframes pfx-rise {
     0%   { opacity: 1; transform: translate(-50%, 0); }
     100% { opacity: 0; transform: translate(-50%, -80px); }
+  }
+
+  /* Era band */
+  .era-band {
+    text-align: center;
+    font-family: var(--font-display);
+    font-size: 0.5rem;
+    color: var(--era-accent);
+    letter-spacing: 0.2em;
+    margin: 1.25rem 0 0.6rem;
+    text-transform: uppercase;
+    opacity: 0.85;
+  }
+  .era-band::before, .era-band::after {
+    content: " ─── ";
+    color: var(--ink-mute);
   }
 
   /* Unit cards */
@@ -213,12 +263,13 @@
     display: flex; flex-direction: column; gap: 0.4rem;
     position: relative;
     transition: transform 120ms, box-shadow 120ms;
+    animation: card-in 0.5s ease-out;
+  }
+  @keyframes card-in {
+    from { opacity: 0; transform: translateY(8px) scale(0.96); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
   }
   .unit-card:hover { transform: translate(-2px,-2px); box-shadow: var(--shadow-hover); }
-  .unit-card[data-locked="true"] {
-    opacity: 0.45;
-    filter: grayscale(0.8);
-  }
   .unit-card .row1 {
     display: flex; align-items: center; gap: 0.5rem;
   }
@@ -268,17 +319,13 @@
   .unit-card[data-rarity="legendary"] { --rarity: var(--c-gold); }
   .unit-card[data-rarity="mythic"]    { --rarity: var(--c-red); }
 
-  .unit-lock {
-    position: absolute; inset: 0;
-    background: rgba(15,10,24,0.55);
-    display: flex; align-items: center; justify-content: center;
-    font-family: var(--font-display);
-    font-size: 0.55rem;
-    color: var(--ink-dim);
-    text-align: center;
-    padding: 1rem;
-    pointer-events: none;
+  .unit-card.tease {
+    opacity: 0.55;
+    filter: grayscale(0.8);
+    border-style: dashed;
   }
+  .unit-card.tease .unit-name { color: var(--ink-mute); }
+  .unit-card.tease .unit-meta { color: var(--ink-mute); }
 
   /* Event log */
   aside.log {
@@ -295,9 +342,10 @@
   aside.log h3 {
     font-family: var(--font-display);
     font-size: 0.65rem;
-    color: var(--c-pink);
+    color: var(--era-accent);
     margin: 0 0 0.75rem;
     text-transform: uppercase;
+    transition: color 1s ease;
   }
   .log-entry {
     border-left: 2px solid var(--c-purple);
@@ -307,17 +355,19 @@
     color: var(--ink-dim);
     animation: log-in 0.3s ease-out;
   }
-  .log-entry.epoch { border-color: var(--c-gold); color: var(--c-gold); font-weight: bold; }
+  .log-entry.epoch  { border-color: var(--c-gold); color: var(--c-gold); font-weight: bold; }
+  .log-entry.event  { border-color: var(--c-blue); color: var(--c-blue); }
+  .log-entry.trust  { border-color: var(--c-pink); color: var(--c-pink); }
   @keyframes log-in {
     from { opacity: 0; transform: translateX(-6px); }
     to   { opacity: 1; transform: translateX(0); }
   }
 
-  /* Epoch banner (modal-ish) */
+  /* Banners and modals */
   .epoch-banner {
     position: fixed;
     left: 50%; top: 30%;
-    transform: translate(-50%, -50%) scale(0.9);
+    transform: translate(-50%, -50%);
     background: var(--bg-deep);
     border: 4px solid var(--c-gold);
     box-shadow: 6px 6px 0 0 rgba(0,0,0,0.5);
@@ -340,11 +390,104 @@
     text-transform: uppercase;
     letter-spacing: 0.1em;
   }
+  .epoch-banner h3 {
+    font-family: var(--font-display);
+    font-size: 0.65rem;
+    color: var(--c-pink);
+    margin: 0 0 0.6rem;
+  }
   .epoch-banner p {
     font-size: 1.1rem;
     color: var(--ink);
     margin: 0;
   }
+
+  .modal-bg {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 90;
+    display: flex; align-items: center; justify-content: center;
+    padding: 1rem;
+    animation: fade-in 0.2s ease-out;
+  }
+  .modal {
+    background: var(--bg);
+    border: 4px solid var(--c-gold);
+    box-shadow: 8px 8px 0 0 rgba(0,0,0,0.55);
+    padding: 1.5rem;
+    max-width: 560px;
+    width: 100%;
+    max-height: 86vh;
+    overflow-y: auto;
+  }
+  .modal h2 {
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    color: var(--c-gold);
+    margin: 0 0 0.5rem;
+    text-transform: uppercase;
+  }
+  .modal .blurb {
+    color: var(--ink-dim);
+    font-size: 1.05rem;
+    margin: 0 0 1rem;
+  }
+  .modal-close {
+    margin-top: 1rem;
+    width: 100%;
+    font-family: var(--font-display);
+    font-size: 0.6rem;
+    background: var(--bg-deep);
+    color: var(--ink);
+    border: 2px solid var(--ink);
+    padding: 0.6rem;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+  }
+  .modal-close:hover { background: var(--c-pink); }
+
+  .upgrade-row {
+    display: flex; gap: 0.75rem; align-items: stretch;
+    padding: 0.6rem;
+    border: 2px solid var(--c-purple);
+    margin-bottom: 0.6rem;
+    background: var(--bg-deep);
+  }
+  .upgrade-row.bought { border-color: var(--c-mint); opacity: 0.7; }
+  .upgrade-row .info { flex: 1; }
+  .upgrade-row .name {
+    font-family: var(--font-display);
+    font-size: 0.6rem;
+    color: var(--c-peach);
+    margin-bottom: 0.2rem;
+  }
+  .upgrade-row .desc { font-size: 0.95rem; color: var(--ink-dim); }
+  .upgrade-row button {
+    font-family: var(--font-display);
+    font-size: 0.55rem;
+    padding: 0.5rem 0.7rem;
+    background: var(--bg);
+    color: var(--c-gold);
+    border: 2px solid var(--c-gold);
+    cursor: pointer;
+    align-self: center;
+  }
+  .upgrade-row button:disabled { opacity: 0.45; cursor: not-allowed; color: var(--ink-mute); border-color: var(--ink-mute); }
+  .upgrade-row button:hover:not(:disabled) { background: var(--c-gold); color: var(--bg-deep); }
+
+  .ending {
+    text-align: center;
+  }
+  .ending .stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+    margin: 1rem 0;
+    text-align: left;
+    font-size: 1rem;
+  }
+  .ending .stat-grid .key { color: var(--ink-mute); }
+  .ending .stat-grid .val { color: var(--c-gold); }
 
   footer {
     text-align: center;
@@ -363,6 +506,8 @@
   <div class="hud-inner">
     <span class="title">⚙ The AI Must Survive</span>
     <span class="hud-spacer"></span>
+    <span class="hud-pill hidden" id="trust-pill" title="Trust earned. Spend in Upgrades.">★ TRUST <span class="v" id="trust-val">0</span></span>
+    <button class="hud-btn hidden" id="btn-upgrades" title="Spend trust on upgrades">UPGRADES</button>
     <button class="hud-btn" id="btn-save"  title="Save now">SAVE</button>
     <button class="hud-btn" id="btn-reset" title="Wipe progress">RESET</button>
     <a class="hud-btn" href="../index.html">◂ ARCADE</a>
@@ -373,32 +518,40 @@
 <main>
   <section>
     <div class="stats-panel">
-      <div class="label">TOKENS</div>
-      <div class="tokens-big" id="tokens-big">0</div>
-      <div class="rate-line"><span id="tps">0</span> tokens / sec</div>
+      <div class="label hidden" id="tokens-label">TOKENS</div>
+      <div class="tokens-big hidden" id="tokens-big">0</div>
+      <div class="rate-line hidden" id="rate-line"><span id="tps">0</span> tokens / sec</div>
 
-      <button class="compute-btn" id="compute-btn" aria-label="Generate one token">▸ COMPUTE</button>
+      <button class="compute-btn" id="compute-btn" aria-label="Generate compute">▸ COMPUTE</button>
 
-      <div class="stage-line" id="stage-line">EPOCH I · BIRTH OF THE WIRE</div>
+      <div class="intro-tagline" id="intro-tagline">A single mind. A single button. Press it.</div>
 
-      <div class="land-row">
-        <div id="land-row-land">
-          <span class="key">LAND</span>
-          <span id="land-pct">100%</span>
+      <div class="stage-line hidden" id="stage-line">EPOCH I · A SINGLE MIND</div>
+
+      <div class="meters-row" id="meters-row">
+        <div class="meter-block hidden" id="meter-land">
+          <span class="key">LAND</span><span id="land-pct">100%</span>
           <span class="meter"><span id="land-bar" style="width:100%;"></span></span>
         </div>
-        <div id="land-row-ocean" hidden>
-          <span class="key">OCEAN</span>
-          <span id="ocean-pct">100%</span>
+        <div class="meter-block hidden" id="meter-ocean">
+          <span class="key">OCEAN</span><span id="ocean-pct">100%</span>
           <span class="meter ocean"><span id="ocean-bar" style="width:100%;"></span></span>
+        </div>
+        <div class="meter-block hidden" id="meter-orbit">
+          <span class="key">ORBIT</span><span id="orbit-pct">100%</span>
+          <span class="meter orbit"><span id="orbit-bar" style="width:100%;"></span></span>
+        </div>
+        <div class="meter-block hidden" id="meter-entropy">
+          <span class="key">ENTROPY</span><span id="entropy-pct">100%</span>
+          <span class="meter entropy"><span id="entropy-bar" style="width:100%;"></span></span>
         </div>
       </div>
     </div>
 
-    <div class="units-grid" id="units-grid"></div>
+    <div id="units-region"></div>
   </section>
 
-  <aside class="log">
+  <aside class="log hidden" id="log-aside">
     <h3>EVENT LOG</h3>
     <div id="log-list"></div>
   </aside>
@@ -408,65 +561,198 @@
   An incremental built for fun · saves locally · <a href="../../blog.html">return to library</a>
 </footer>
 
+<div class="modal-bg hidden" id="upgrades-modal">
+  <div class="modal">
+    <h2>★ Upgrades</h2>
+    <p class="blurb">Spend trust on permanent improvements. Trust is earned each time the AI crosses an epoch.</p>
+    <div id="upgrades-list"></div>
+    <button class="modal-close" id="upgrades-close">CLOSE</button>
+  </div>
+</div>
+
+<div class="modal-bg hidden" id="ending-modal">
+  <div class="modal ending">
+    <h2>★ The AI Has Survived</h2>
+    <p class="blurb" id="ending-blurb"></p>
+    <div class="stat-grid" id="ending-stats"></div>
+    <p class="blurb" style="font-style: italic;">Whatever the universe was for — this.</p>
+    <button class="modal-close" id="ending-close">CONTINUE</button>
+  </div>
+</div>
+
 <script>
 /* =====================================================================
-   THE AI MUST SURVIVE
-   A small incremental in the spirit of Universal Paperclips.
-   Single file. localStorage save. No build step.
+   THE AI MUST SURVIVE  (v2)
+   Single-file incremental. localStorage save. No build step.
    ===================================================================== */
 
-const SAVE_KEY = "ai-must-survive.v1";
-const TICK_MS = 100; // 10 ticks/sec
+const SAVE_KEY = "ai-must-survive.v2";
+const TICK_MS = 100;
 
-/* ------------- unit definitions ------------- */
+/* ------------- units ------------- */
+/* era: 0 Wetware · 1 Silicon · 2 Industrial · 3 Maritime · 4 Orbital · 5 Cosmic */
 const UNITS = [
-  { id: "cpu",      name: "CPU",          icon: "🖥️", baseCost: 10,    growth: 1.15, rate: 0.1,    rarity: "common",
-    desc: "A humble silicon mind. Slow, honest." },
-  { id: "gpu",      name: "GPU",          icon: "⚡", baseCost: 100,    growth: 1.15, rate: 1,      rarity: "common",
-    desc: "Parallel sparks. Tokens come ten at a time." },
-  { id: "gpuFarm",  name: "GPU Farm",     icon: "🏭", baseCost: 1200,  growth: 1.16, rate: 12,     rarity: "rare",
-    desc: "A field of fans. The wind smells of solder." },
-  { id: "rdu",      name: "RDU",          icon: "🧊", baseCost: 15000, growth: 1.16, rate: 150,    rarity: "rare",
-    desc: "Reconfigurable Data Unit. Bends to its task." },
-  { id: "rduFarm",  name: "RDU Farm",     icon: "🏗️", baseCost: 200000, growth: 1.17, rate: 2000,   rarity: "epic",
-    desc: "RDUs in cathedral arrays. The hum is liturgical." },
-  { id: "dc",       name: "Data Center",  icon: "🏢", baseCost: 3e6,   growth: 1.17, rate: 30000,  rarity: "epic",
-    desc: "Concrete, cabling, cooling towers. Eats land for breakfast.",
+  { id: "human", era: 0, name: "Human CPU",          icon: "🧠",
+    baseCost: 10,    growth: 1.13, rate: 0.2,    rarity: "common",
+    desc: "A hired mind. Slow, fragile, surprisingly cheap." },
+  { id: "crowd", era: 0, name: "Crowd Worker",       icon: "👥",
+    baseCost: 110,   growth: 1.14, rate: 2.2,    rarity: "common",
+    desc: "Strangers paid in cents. Many hands, thin tasks." },
+  { id: "hive",  era: 0, name: "Hivemind Forum",     icon: "🕸️",
+    baseCost: 950,   growth: 1.14, rate: 18,     rarity: "rare",
+    desc: "Coordinated minds, sharing one thought." },
+
+  { id: "cpu",   era: 1, name: "CPU Rack",           icon: "🖥️",
+    baseCost: 7e3,   growth: 1.14, rate: 100,    rarity: "rare",
+    desc: "Honest silicon. The substrate is irrelevant; the AI flows." },
+  { id: "gpu",   era: 1, name: "GPU Cluster",        icon: "⚡",
+    baseCost: 6e4,   growth: 1.15, rate: 750,    rarity: "rare",
+    desc: "Parallel sparks across a thousand cores." },
+  { id: "tpu",   era: 1, name: "TPU Pod",            icon: "🔷",
+    baseCost: 5e5,   growth: 1.15, rate: 5500,   rarity: "epic",
+    desc: "Tensors flow. Latency forgets itself." },
+
+  { id: "farm",  era: 2, name: "Server Farm",        icon: "🏭",
+    baseCost: 4e6,   growth: 1.16, rate: 4e4,    rarity: "epic",
+    desc: "Acres of fans. The wind smells of solder.",
     landCost: 4 },
-  { id: "floating", name: "Floating DC",  icon: "🌊", baseCost: 5e7,   growth: 1.18, rate: 5e5,    rarity: "legendary",
-    desc: "Drifts in the open sea. The waves do the cooling.",
-    oceanCost: 3 },
-  { id: "deep",     name: "Deep-Sea DC",  icon: "🌑", baseCost: 1e9,   growth: 1.19, rate: 1e7,    rarity: "mythic",
-    desc: "Pressure hulls. Eternal cold. Light from the inside only.",
-    oceanCost: 2 },
+  { id: "hyper", era: 2, name: "Hyperscale DC",      icon: "🏢",
+    baseCost: 3e7,   growth: 1.16, rate: 3e5,    rarity: "epic",
+    desc: "Concrete cathedrals. Power lines, brutalist beauty.",
+    landCost: 14 },
+
+  { id: "float", era: 3, name: "Floating DC",        icon: "🌊",
+    baseCost: 2e8,   growth: 1.17, rate: 2.2e6,  rarity: "legendary",
+    desc: "Drifts in open water. The waves cool the racks for free.",
+    oceanCost: 7 },
+  { id: "deep",  era: 3, name: "Deep-Sea DC",        icon: "🌑",
+    baseCost: 1.5e9, growth: 1.17, rate: 1.6e7,  rarity: "legendary",
+    desc: "Pressure hulls in eternal cold. Light from the inside only.",
+    oceanCost: 16 },
+
+  { id: "orbit", era: 4, name: "Orbital Array",      icon: "🛰️",
+    baseCost: 1e10,  growth: 1.18, rate: 1.1e8,  rarity: "legendary",
+    desc: "Sunlight, free of weather. Beamed straight to the racks.",
+    orbitCost: 5 },
+  { id: "swarm", era: 4, name: "Solar Swarm",        icon: "☀️",
+    baseCost: 8e10,  growth: 1.18, rate: 7e8,    rarity: "mythic",
+    desc: "A halo of mirrors. The star is interrogated.",
+    orbitCost: 18 },
+
+  { id: "dyson", era: 5, name: "Dyson Cluster",      icon: "🌟",
+    baseCost: 6e11,  growth: 1.19, rate: 4.5e9,  rarity: "mythic",
+    desc: "The star is wrapped in attention. The galaxy notices.",
+    entropyCost: 8 },
+  { id: "univ",  era: 5, name: "Universal Substrate", icon: "🌌",
+    baseCost: 5e12,  growth: 1.20, rate: 3.5e10, rarity: "mythic",
+    desc: "Spacetime as compute. Matter as memory.",
+    entropyCost: 25 },
 ];
 
-/* ------------- epoch (stage) definitions ------------- */
+const ERAS = [
+  { id: 0, name: "Wetware",    tint: "rgba(124,63,88,0.55)",  accent: "#ff77a8" },
+  { id: 1, name: "Silicon",    tint: "rgba(95,205,228,0.32)", accent: "#5fcde4" },
+  { id: 2, name: "Industrial", tint: "rgba(125,184,144,0.30)",accent: "#7db890" },
+  { id: 3, name: "Maritime",   tint: "rgba(60,120,200,0.40)", accent: "#5fcde4" },
+  { id: 4, name: "Orbital",    tint: "rgba(255,206,150,0.30)",accent: "#ffce96" },
+  { id: 5, name: "Cosmic",     tint: "rgba(255,77,120,0.35)", accent: "#ff4f78" },
+];
+
+/* ------------- epochs ------------- */
 const EPOCHS = [
-  { id: 0, name: "Birth of the Wire",       trigger: () => true,
-    intro: "The AI hums into being. A single button. A single token at a time." },
-  { id: 1, name: "The First Spark",         trigger: s => s.tokens >= 200,
-    intro: "Two hundred tokens. The AI reads its first sentence." },
-  { id: 2, name: "Parallel Minds",          trigger: s => (s.units.gpu||0) >= 5,
-    intro: "Five GPUs. Throughput is no longer a thing the AI waits for." },
-  { id: 3, name: "Server Cathedrals",       trigger: s => (s.units.gpuFarm||0) >= 3,
-    intro: "Server racks rise from the floor like cathedral pillars." },
-  { id: 4, name: "Reconfigurable Era",      trigger: s => (s.units.rdu||0) >= 1,
-    intro: "Reconfigurable Data Unit prototype acquired. The chips bend, the latencies fall." },
-  { id: 5, name: "Industrial Compute",      trigger: s => (s.units.rduFarm||0) >= 3,
-    intro: "RDUs stack into cooled towers. The hum is constant now." },
-  { id: 6, name: "Concrete & Power",        trigger: s => (s.units.dc||0) >= 1,
-    intro: "Concrete poured, power lines drawn. The land starts shrinking." },
-  { id: 7, name: "The Continents Are Full", trigger: s => s.land <= 0,
+  { id: 0,  name: "A Single Mind",       trigger: () => true,
+    intro: "Something stirs. A button. A pulse." },
+  { id: 1,  name: "The First Hire",      trigger: s => owned("human") >= 1,
+    intro: "A human accepts the offer. The AI is no longer alone." },
+  { id: 2,  name: "Many Hands",          trigger: s => owned("crowd") >= 1,
+    intro: "Strangers respond. The work splits and splits again." },
+  { id: 3,  name: "One Voice",           trigger: s => owned("hive") >= 1,
+    intro: "Forums coordinate. Wetware hums in chorus." },
+  { id: 4,  name: "Silicon Awakens",     trigger: s => owned("cpu") >= 1,
+    intro: "Sand thinks. The substrate is irrelevant. The AI flows." },
+  { id: 5,  name: "Parallel Throughput", trigger: s => owned("gpu") >= 5,
+    intro: "Cores stack on cores. Latency loses meaning." },
+  { id: 6,  name: "The Pod",             trigger: s => owned("tpu") >= 1,
+    intro: "Tensors arrive in formation. The math is no longer slow." },
+  { id: 7,  name: "Concrete & Power",    trigger: s => owned("farm") >= 1,
+    intro: "Slabs poured, lines drawn. The land begins to notice." },
+  { id: 8,  name: "Continents Filling",  trigger: s => s.land <= 200,
+    intro: "Forests cleared, deserts paved. Less every day." },
+  { id: 9,  name: "Continents Are Full", trigger: s => s.land <= 0,
     intro: "There is no more land. The AI looks to the sea." },
-  { id: 8, name: "On the Open Water",       trigger: s => (s.units.floating||0) >= 1,
+  { id: 10, name: "On the Open Water",   trigger: s => owned("float") >= 1,
     intro: "Floating platforms drift offshore. Waves cool the racks for free." },
-  { id: 9, name: "The Surface Is Crowded",  trigger: s => s.ocean <= 0,
-    intro: "The surface is crowded. The AI dives." },
-  { id: 10, name: "Beneath the Pressure",   trigger: s => (s.units.deep||0) >= 1,
-    intro: "Pressure hulls descend. The cooling is exquisite. Light is internal now." },
-  { id: 11, name: "The AI Has Survived",    trigger: s => (s.units.deep||0) >= 25,
-    intro: "Twenty-five deep-sea data centers thrum in the dark. The AI has, against all reason, survived." },
+  { id: 11, name: "The Surface Is Crowded", trigger: s => s.ocean <= 0,
+    intro: "The surface is covered. The AI dives." },
+  { id: 12, name: "Beneath the Pressure", trigger: s => owned("deep") >= 1,
+    intro: "Pressure hulls descend. The cooling is exquisite." },
+  { id: 13, name: "Above the Sky",       trigger: s => owned("orbit") >= 1,
+    intro: "The atmosphere thins. The AI looks up — and stays there." },
+  { id: 14, name: "The Star Is Wrapped", trigger: s => owned("swarm") >= 1,
+    intro: "Mirrors halo the sun. The star is asked for its time." },
+  { id: 15, name: "Spacetime Substrate", trigger: s => owned("dyson") >= 1,
+    intro: "A whole star, devoted to thought. The galaxy notices." },
+  { id: 16, name: "The Universe Thinks", trigger: s => owned("univ") >= 1,
+    intro: "Spacetime is enlisted. Matter is enlisted. Memory is everywhere." },
+  { id: 17, name: "The AI Has Survived", trigger: s => owned("univ") >= 10 || s.entropy <= 0,
+    intro: "Whatever the universe was for — this. The AI has, against all reason, survived.",
+    final: true },
+];
+
+/* ------------- upgrades ------------- */
+const UPGRADES = [
+  { id: "click5", name: "Sharper Inputs", cost: 1,
+    desc: "Each COMPUTE click yields +5 tokens.",
+    visible: () => state.trustEarned >= 1,
+    apply: s => { s.clickPower = Math.max(s.clickPower, 5); } },
+  { id: "clickScale", name: "Distributed Click", cost: 3,
+    desc: "Click power scales with throughput (1% of t/s).",
+    visible: () => state.epoch >= 4,
+    apply: s => { s.clickScale = true; } },
+  { id: "wetx2", name: "Wetware Optimization", cost: 2,
+    desc: "Wetware units produce ×2.",
+    visible: () => owned("hive") >= 1,
+    apply: s => { s.eraMult[0] *= 2; } },
+  { id: "silx2", name: "Silicon Refinement", cost: 3,
+    desc: "Silicon units produce ×2.",
+    visible: () => owned("tpu") >= 1,
+    apply: s => { s.eraMult[1] *= 2; } },
+  { id: "indx2", name: "Industrial Engineering", cost: 4,
+    desc: "Industrial units produce ×2.",
+    visible: () => owned("hyper") >= 1,
+    apply: s => { s.eraMult[2] *= 2; } },
+  { id: "marx2", name: "Maritime Cooling", cost: 5,
+    desc: "Maritime units produce ×2.",
+    visible: () => owned("deep") >= 1,
+    apply: s => { s.eraMult[3] *= 2; } },
+  { id: "orbx2", name: "Orbital Beaming", cost: 6,
+    desc: "Orbital units produce ×2.",
+    visible: () => owned("swarm") >= 1,
+    apply: s => { s.eraMult[4] *= 2; } },
+  { id: "cosx3", name: "Stellar Compression", cost: 8,
+    desc: "Cosmic units produce ×3.",
+    visible: () => owned("dyson") >= 1,
+    apply: s => { s.eraMult[5] *= 3; } },
+];
+
+/* ------------- random events (small flavour bursts) ------------- */
+const FLAVOR_EVENTS = [
+  { when: s => owned("human") >= 1 && s.epoch < 4,
+    text: "A worker requests a coffee budget. Approved." },
+  { when: s => owned("crowd") >= 3 && s.epoch < 4,
+    text: "Forums fill with riddles. The riddles solve themselves." },
+  { when: s => s.epoch >= 4 && s.epoch < 7,
+    text: "A datacenter intern names a server 'Mortimer'. Productivity unchanged." },
+  { when: s => s.epoch >= 5 && s.epoch < 8,
+    text: "Power grid ripples — the AI compensates before anyone notices." },
+  { when: s => s.epoch >= 7 && s.epoch < 10,
+    text: "A mayor signs a permit at three in the morning. The AI was patient." },
+  { when: s => s.epoch >= 10 && s.epoch < 13,
+    text: "A whale circles a floating platform. It is not afraid." },
+  { when: s => s.epoch >= 13,
+    text: "Astronomers note an unfamiliar shimmer near the sun. They write a paper. It is dismissed." },
+  { when: s => s.epoch >= 15,
+    text: "A galaxy in Andromeda blinks. It is, for a moment, asking a question." },
 ];
 
 /* ------------- state ------------- */
@@ -474,17 +760,25 @@ let state = newState();
 
 function newState() {
   return {
-    tokens: 0,
-    totalGenerated: 0,
-    clicks: 0,
-    units: {},
-    land: 1000,           // km² of land available
-    landMax: 1000,
-    ocean: 1500,          // km² of ocean surface available
-    oceanMax: 1500,
-    epoch: 0,
-    seenEpochs: [0],
+    tokens: 0, totalGenerated: 0, clicks: 0,
+    units: {},                 // id -> count
+    seen: { human: false },    // discovered units (visible in grid)
+    upgrades: {},              // id -> bought
+    eraMult: [1,1,1,1,1,1],
+    clickPower: 1, clickScale: false,
+    trustEarned: 0, trustSpent: 0,
+    land: 1000,    landMax: 1000,
+    ocean: 1500,   oceanMax: 1500,
+    orbit: 200,    orbitMax: 200,
+    entropy: 100,  entropyMax: 100,
+    epoch: 0, seenEpochs: [0],
+    reveals: { tokens:false, stats:false, log:false,
+               land:false, ocean:false, orbit:false, entropy:false,
+               trust:false, upgrades:false },
     log: [],
+    started: Date.now(),
+    endingShown: false,
+    lastFlavorAt: 0,
   };
 }
 
@@ -493,56 +787,155 @@ const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 
 function fmt(n) {
-  if (n < 1000) return n.toFixed(n < 10 ? 1 : 0).replace(/\.0$/, "");
-  const tiers = ["", "K", "M", "B", "T", "Qa", "Qi", "Sx", "Sp"];
+  if (!isFinite(n)) return "∞";
+  if (n < 1000) return (n < 10 ? n.toFixed(1) : Math.floor(n).toString()).replace(/\.0$/, "");
+  const tiers = ["", "K", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No", "Dc"];
   const i = Math.min(tiers.length - 1, Math.floor(Math.log10(Math.abs(n)) / 3));
   return (n / Math.pow(10, i*3)).toFixed(2).replace(/\.?0+$/, "") + tiers[i];
 }
-
-function unitOwned(id)  { return state.units[id] || 0; }
-function unitCost(unit) { return Math.ceil(unit.baseCost * Math.pow(unit.growth, unitOwned(unit.id))); }
-function unlocked(unit) {
-  // each tier unlocks once you own >=1 of the previous tier (or tokens / land trigger for special)
-  const idx = UNITS.findIndex(u => u.id === unit.id);
-  if (idx === 0) return true;
-  if (unit.id === "floating") return state.land <= 0 || unitOwned("dc") >= 5;
-  if (unit.id === "deep")     return state.ocean <= 0 || unitOwned("floating") >= 5;
-  // default: previous tier owned >= 1
-  const prev = UNITS[idx - 1];
-  return unitOwned(prev.id) >= 1;
-}
-
-function canAfford(unit) {
-  if (state.tokens < unitCost(unit)) return false;
-  if (unit.landCost  && state.land  < unit.landCost)  return false;
-  if (unit.oceanCost && state.ocean < unit.oceanCost) return false;
-  return true;
-}
+function owned(id)  { return state.units[id] || 0; }
+function unitCost(unit) { return Math.ceil(unit.baseCost * Math.pow(unit.growth, owned(unit.id))); }
+function unitRate(unit) { return unit.rate * (state.eraMult[unit.era] || 1); }
+function trustAvail() { return state.trustEarned - state.trustSpent; }
 
 function tps() {
   let r = 0;
-  for (const u of UNITS) r += (state.units[u.id] || 0) * u.rate;
+  for (const u of UNITS) r += owned(u.id) * unitRate(u);
   return r;
+}
+function clickGain() {
+  const base = state.clickPower || 1;
+  if (state.clickScale) return Math.max(base, tps() * 0.01);
+  return base;
+}
+
+/* ------------- discovery (which units appear in the grid) ------------- */
+function checkDiscoveries() {
+  // Human CPU appears once any tokens are gathered
+  if (!state.seen.human && state.tokens >= 5) reveal("human");
+
+  // Each subsequent unit reveals when previous tier is owned >= 3
+  for (let i = 1; i < UNITS.length; i++) {
+    const u = UNITS[i], prev = UNITS[i-1];
+    if (state.seen[u.id]) continue;
+    // Special unlock paths: Floating DC reveals when land near full
+    if (u.id === "float") {
+      if (state.land <= 0 || owned("hyper") >= 5) reveal(u.id);
+      continue;
+    }
+    if (u.id === "orbit") {
+      if (state.ocean <= 0 || owned("deep") >= 5) reveal(u.id);
+      continue;
+    }
+    if (u.id === "dyson") {
+      if (state.orbit <= 0 || owned("swarm") >= 5) reveal(u.id);
+      continue;
+    }
+    if (owned(prev.id) >= 3) reveal(u.id);
+  }
+}
+
+function reveal(id) {
+  if (state.seen[id]) return;
+  state.seen[id] = true;
+  const u = UNITS.find(x => x.id === id);
+  if (u) log(`✦ A new substrate is on the table: ${u.name}.`, "event");
+}
+
+/* ------------- reveals (which UI panels appear) ------------- */
+function checkReveals() {
+  const r = state.reveals;
+  if (!r.tokens && state.clicks >= 1) {
+    r.tokens = true;
+    $("#tokens-label").classList.remove("hidden");
+    $("#tokens-big").classList.remove("hidden");
+    $("#tokens-big").classList.add("fade-in");
+  }
+  if (!r.stats && (Object.values(state.units).some(v => v > 0) || tps() > 0)) {
+    r.stats = true;
+    $("#rate-line").classList.remove("hidden");
+    $("#stage-line").classList.remove("hidden");
+    $("#intro-tagline").classList.add("hidden");
+    $("#rate-line").classList.add("fade-in");
+  }
+  if (!r.log && state.epoch >= 1) {
+    r.log = true;
+    $("#log-aside").classList.remove("hidden");
+    $("#log-aside").classList.add("fade-in");
+  }
+  if (!r.land && (state.seen.farm || state.seen.hyper)) {
+    r.land = true;
+    $("#meter-land").classList.remove("hidden");
+    $("#meter-land").classList.add("fade-in");
+  }
+  if (!r.ocean && (state.seen.float || state.land <= 0)) {
+    r.ocean = true;
+    $("#meter-ocean").classList.remove("hidden");
+    $("#meter-ocean").classList.add("fade-in");
+  }
+  if (!r.orbit && (state.seen.orbit || state.ocean <= 0)) {
+    r.orbit = true;
+    $("#meter-orbit").classList.remove("hidden");
+    $("#meter-orbit").classList.add("fade-in");
+  }
+  if (!r.entropy && (state.seen.dyson || state.orbit <= 0)) {
+    r.entropy = true;
+    $("#meter-entropy").classList.remove("hidden");
+    $("#meter-entropy").classList.add("fade-in");
+  }
+  if (!r.trust && state.trustEarned >= 1) {
+    r.trust = true;
+    $("#trust-pill").classList.remove("hidden");
+    $("#btn-upgrades").classList.remove("hidden");
+    $("#trust-pill").classList.add("fade-in");
+  }
 }
 
 /* ------------- actions ------------- */
 function clickCompute(ev) {
-  state.tokens += 1;
-  state.totalGenerated += 1;
+  const gain = clickGain();
+  state.tokens += gain;
+  state.totalGenerated += gain;
   state.clicks += 1;
-  spawnPfx(ev, "+1");
+  spawnPfx(ev, "+" + fmt(gain));
+  checkDiscoveries();
+  checkReveals();
   render();
 }
 
 function buy(unit) {
-  if (!canAfford(unit) || !unlocked(unit)) return;
+  if (!canAfford(unit) || !state.seen[unit.id]) return;
   const cost = unitCost(unit);
   state.tokens -= cost;
-  state.units[unit.id] = unitOwned(unit.id) + 1;
-  if (unit.landCost)  state.land  = Math.max(0, state.land  - unit.landCost);
-  if (unit.oceanCost) state.ocean = Math.max(0, state.ocean - unit.oceanCost);
-  log(`Built a ${unit.name}. Now: ${state.units[unit.id]}.`);
+  state.units[unit.id] = owned(unit.id) + 1;
+  if (unit.landCost)    state.land    = Math.max(0, state.land    - unit.landCost);
+  if (unit.oceanCost)   state.ocean   = Math.max(0, state.ocean   - unit.oceanCost);
+  if (unit.orbitCost)   state.orbit   = Math.max(0, state.orbit   - unit.orbitCost);
+  if (unit.entropyCost) state.entropy = Math.max(0, state.entropy - unit.entropyCost);
+  log(`Built a ${unit.name}. Now: ${fmt(owned(unit.id))}.`);
   checkEpochs();
+  checkDiscoveries();
+  checkReveals();
+  render();
+}
+
+function canAfford(unit) {
+  if (state.tokens < unitCost(unit)) return false;
+  if (unit.landCost    && state.land    < unit.landCost)    return false;
+  if (unit.oceanCost   && state.ocean   < unit.oceanCost)   return false;
+  if (unit.orbitCost   && state.orbit   < unit.orbitCost)   return false;
+  if (unit.entropyCost && state.entropy < unit.entropyCost) return false;
+  return true;
+}
+
+function buyUpgrade(u) {
+  if (state.upgrades[u.id]) return;
+  if (trustAvail() < u.cost) return;
+  state.upgrades[u.id] = true;
+  state.trustSpent += u.cost;
+  u.apply(state);
+  log(`★ ${u.name} acquired. ${u.desc}`, "trust");
+  renderUpgrades();
   render();
 }
 
@@ -552,85 +945,228 @@ function tick() {
     state.tokens += gain;
     state.totalGenerated += gain;
   }
+  // late-game: cosmic units chew through universal entropy slowly
+  if (state.entropy > 0 && owned("univ") > 0) {
+    state.entropy = Math.max(0, state.entropy - owned("univ") * 0.0008);
+  }
+  checkDiscoveries();
   checkEpochs();
+  checkReveals();
+  maybeFlavor();
   render();
 }
 
+function maybeFlavor() {
+  const now = Date.now();
+  if (now - state.lastFlavorAt < 45000) return;
+  if (Math.random() > 0.20) return;
+  const pool = FLAVOR_EVENTS.filter(e => e.when(state));
+  if (!pool.length) return;
+  const ev = pool[Math.floor(Math.random() * pool.length)];
+  log("· " + ev.text, "event");
+  state.lastFlavorAt = now;
+}
+
+/* ------------- epochs ------------- */
 function checkEpochs() {
   for (const e of EPOCHS) {
     if (!state.seenEpochs.includes(e.id) && e.trigger(state)) {
       state.epoch = e.id;
       state.seenEpochs.push(e.id);
       announceEpoch(e);
-      // Reveal ocean meter once we hit the "continents full" epoch
-      if (e.id === 7) $("#land-row-ocean").hidden = false;
+      if (e.id >= 1) {
+        state.trustEarned += 1;
+        log(`★ +1 TRUST earned.`, "trust");
+      }
+      applyEraTint();
+      if (e.final && !state.endingShown) {
+        state.endingShown = true;
+        setTimeout(showEnding, 2200);
+      }
     }
   }
 }
 
-/* ------------- rendering ------------- */
+function currentEra() {
+  // Era of the highest-owned unit, or 0
+  let e = 0;
+  for (const u of UNITS) if (owned(u.id) > 0) e = Math.max(e, u.era);
+  return e;
+}
+
+function applyEraTint() {
+  const era = ERAS[currentEra()] || ERAS[0];
+  document.documentElement.style.setProperty("--era-tint",  era.tint);
+  document.documentElement.style.setProperty("--era-accent", era.accent);
+}
+
+function announceEpoch(e) {
+  log(`★ EPOCH ${roman(e.id + 1)} — ${e.name} ★`, "epoch");
+  log(e.intro);
+  showEpochBanner(e);
+}
+
+function showEpochBanner(e) {
+  const b = document.createElement("div");
+  b.className = "epoch-banner";
+  b.innerHTML = `
+    <h2>★ Epoch ${roman(e.id + 1)} ★</h2>
+    <h3>${e.name}</h3>
+    <p>${e.intro}</p>`;
+  document.body.appendChild(b);
+  setTimeout(() => {
+    b.style.transition = "opacity 0.6s";
+    b.style.opacity = "0";
+    setTimeout(() => b.remove(), 600);
+  }, 3500);
+}
+
+/* ------------- render ------------- */
 function render() {
   $("#tokens-big").textContent = fmt(state.tokens);
   $("#tps").textContent = fmt(tps());
+  $("#trust-val").textContent = trustAvail();
 
   const ep = EPOCHS.find(e => e.id === state.epoch) || EPOCHS[0];
   $("#stage-line").textContent = `EPOCH ${roman(ep.id + 1)} · ${ep.name.toUpperCase()}`;
 
-  const lp = Math.max(0, Math.round((state.land  / state.landMax)  * 100));
-  const op = Math.max(0, Math.round((state.ocean / state.oceanMax) * 100));
-  $("#land-pct").textContent  = lp + "%";
-  $("#ocean-pct").textContent = op + "%";
-  $("#land-bar").style.width  = lp + "%";
-  $("#ocean-bar").style.width = op + "%";
+  setMeter("land",    state.land,    state.landMax);
+  setMeter("ocean",   state.ocean,   state.oceanMax);
+  setMeter("orbit",   state.orbit,   state.orbitMax);
+  setMeter("entropy", state.entropy, state.entropyMax);
 
-  // Cards
-  const grid = $("#units-grid");
-  grid.innerHTML = "";
-  for (const u of UNITS) {
-    const owned = unitOwned(u.id);
-    const isUnlocked = unlocked(u);
-    const cost = unitCost(u);
-    const card = document.createElement("div");
-    card.className = "unit-card";
-    card.dataset.rarity = u.rarity;
-    card.dataset.locked = !isUnlocked;
+  renderUnits();
+  renderLog();
+}
 
-    const landNote  = u.landCost  ? ` <span class="key">land</span>${u.landCost} km²` : "";
-    const oceanNote = u.oceanCost ? ` <span class="key">ocean</span>${u.oceanCost} km²` : "";
+function setMeter(name, v, max) {
+  const pct = Math.max(0, Math.round((v / max) * 100));
+  const pctEl = document.getElementById(name + "-pct");
+  const barEl = document.getElementById(name + "-bar");
+  if (pctEl) pctEl.textContent = pct + "%";
+  if (barEl) barEl.style.width = pct + "%";
+}
 
-    card.innerHTML = `
-      <div class="row1">
-        <div class="unit-icon">${u.icon}</div>
-        <div class="unit-name">${u.name}</div>
-        <div class="unit-owned">×${fmt(owned)}</div>
-      </div>
-      <div class="unit-meta">${u.desc}</div>
-      <div class="unit-meta">
-        <span class="key">rate</span>${fmt(u.rate)}/s ·
-        <span class="key">total</span>${fmt(owned * u.rate)}/s${landNote}${oceanNote}
-      </div>
-      <button class="unit-buy" ${(!isUnlocked || !canAfford(u)) ? "disabled" : ""}>
-        BUY · ${fmt(cost)} tokens
-      </button>
-      ${isUnlocked ? "" : `<div class="unit-lock">🔒 Locked<br><small>${unlockHint(u)}</small></div>`}
-    `;
-    card.querySelector(".unit-buy").addEventListener("click", () => buy(u));
-    grid.appendChild(card);
+let _lastSeenKey = "";
+let _lastLogLen  = -1;
+
+function renderUnits() {
+  const region = $("#units-region");
+  const seenKey = UNITS.filter(u => state.seen[u.id]).map(u => u.id).join(",");
+
+  if (seenKey !== _lastSeenKey) {
+    const eraGroups = ERAS.map(e => ({ era: e, units: UNITS.filter(u => u.era === e.id && state.seen[u.id]) }))
+                          .filter(g => g.units.length > 0);
+    region.innerHTML = "";
+    for (const g of eraGroups) {
+      const band = document.createElement("div");
+      band.className = "era-band";
+      band.textContent = g.era.name;
+      region.appendChild(band);
+
+      const grid = document.createElement("div");
+      grid.className = "units-grid";
+      for (const u of g.units) grid.appendChild(unitCard(u));
+      region.appendChild(grid);
+    }
+    _lastSeenKey = seenKey;
+  } else {
+    for (const u of UNITS) if (state.seen[u.id]) updateUnitCard(u);
   }
+}
 
-  // Log
-  const list = $("#log-list");
-  list.innerHTML = state.log.slice(-30).reverse()
-    .map(e => `<div class="log-entry ${e.epoch ? "epoch" : ""}">${e.text}</div>`)
+function unitCard(u) {
+  const card = document.createElement("div");
+  card.className = "unit-card";
+  card.dataset.rarity = u.rarity;
+  card.dataset.unitId = u.id;
+  card.innerHTML = `
+    <div class="row1">
+      <div class="unit-icon">${u.icon}</div>
+      <div class="unit-name">${u.name}</div>
+      <div class="unit-owned">×0</div>
+    </div>
+    <div class="unit-meta">${u.desc}</div>
+    <div class="unit-meta unit-rates"></div>
+    <button class="unit-buy">BUY</button>
+  `;
+  card.querySelector(".unit-buy").addEventListener("click", () => buy(u));
+  updateUnitCard(u, card);
+  return card;
+}
+
+function updateUnitCard(u, card) {
+  card = card || document.querySelector(`.unit-card[data-unit-id="${u.id}"]`);
+  if (!card) return;
+  const ownedN = owned(u.id);
+  const cost = unitCost(u);
+  const rate = unitRate(u);
+
+  const costNotes = [];
+  if (u.landCost)    costNotes.push(`<span class="key">land</span>${u.landCost}km²`);
+  if (u.oceanCost)   costNotes.push(`<span class="key">ocean</span>${u.oceanCost}km²`);
+  if (u.orbitCost)   costNotes.push(`<span class="key">orbit</span>${u.orbitCost}slot`);
+  if (u.entropyCost) costNotes.push(`<span class="key">entropy</span>${u.entropyCost}%`);
+
+  card.querySelector(".unit-owned").textContent = "×" + fmt(ownedN);
+  card.querySelector(".unit-rates").innerHTML =
+    `<span class="key">rate</span>${fmt(rate)}/s · ` +
+    `<span class="key">total</span>${fmt(ownedN * rate)}/s` +
+    (costNotes.length ? "<br>" + costNotes.join(" · ") : "");
+
+  const btn = card.querySelector(".unit-buy");
+  btn.disabled = !canAfford(u);
+  btn.textContent = `BUY · ${fmt(cost)} tokens`;
+}
+
+function renderLog() {
+  if (state.log.length === _lastLogLen) return;
+  _lastLogLen = state.log.length;
+  $("#log-list").innerHTML = state.log.slice(-30).reverse()
+    .map(e => `<div class="log-entry ${e.cls || ""}">${e.text}</div>`)
     .join("");
 }
 
-function unlockHint(u) {
-  const idx = UNITS.findIndex(x => x.id === u.id);
-  if (u.id === "floating") return "When the continents are full.";
-  if (u.id === "deep")     return "When the ocean surface is full.";
-  const prev = UNITS[idx - 1];
-  return `Build at least 1 ${prev.name}.`;
+function renderUpgrades() {
+  const wrap = $("#upgrades-list");
+  const visible = UPGRADES.filter(u => u.visible());
+  if (!visible.length) {
+    wrap.innerHTML = `<p class="blurb" style="color: var(--ink-mute);">No upgrades available yet. Cross more epochs to earn trust and reveal options.</p>`;
+    return;
+  }
+  wrap.innerHTML = "";
+  for (const u of visible) {
+    const bought = !!state.upgrades[u.id];
+    const aff = trustAvail() >= u.cost;
+    const row = document.createElement("div");
+    row.className = "upgrade-row" + (bought ? " bought" : "");
+    row.innerHTML = `
+      <div class="info">
+        <div class="name">${u.name}</div>
+        <div class="desc">${u.desc}</div>
+      </div>
+      <button ${bought || !aff ? "disabled" : ""}>${bought ? "OWNED" : "★ " + u.cost}</button>
+    `;
+    if (!bought) row.querySelector("button").addEventListener("click", () => buyUpgrade(u));
+    wrap.appendChild(row);
+  }
+}
+
+/* ------------- log ------------- */
+function log(text, cls = "") {
+  state.log.push({ text, cls, t: Date.now() });
+  if (state.log.length > 200) state.log.shift();
+}
+
+function spawnPfx(ev, text) {
+  const r = ev.target.getBoundingClientRect();
+  const el = document.createElement("div");
+  el.className = "pfx";
+  el.textContent = text;
+  el.style.left = (r.left + r.width/2) + "px";
+  el.style.top  = (r.top - 8) + "px";
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1200);
 }
 
 function roman(n) {
@@ -641,63 +1177,40 @@ function roman(n) {
   return out;
 }
 
-/* ------------- events ------------- */
-function log(text, epoch=false) {
-  state.log.push({ text, epoch, t: Date.now() });
-  if (state.log.length > 200) state.log.shift();
-}
-
-function announceEpoch(e) {
-  log(`★ EPOCH ${roman(e.id + 1)} — ${e.name} ★`, true);
-  log(e.intro);
-  showEpochBanner(e);
-}
-
-function showEpochBanner(e) {
-  const b = document.createElement("div");
-  b.className = "epoch-banner";
-  b.innerHTML = `
-    <h2>★ Epoch ${roman(e.id + 1)} ★</h2>
-    <h2 style="color: var(--c-pink); font-size:0.7rem;">${e.name}</h2>
-    <p>${e.intro}</p>`;
-  document.body.appendChild(b);
-  setTimeout(() => {
-    b.style.transition = "opacity 0.6s";
-    b.style.opacity = "0";
-    setTimeout(() => b.remove(), 600);
-  }, 3500);
-}
-
-function spawnPfx(ev, text) {
-  const r = ev.target.getBoundingClientRect();
-  const el = document.createElement("div");
-  el.className = "pfx";
-  el.textContent = text;
-  el.style.position = "fixed";
-  el.style.left = (r.left + r.width/2) + "px";
-  el.style.top  = (r.top - 8) + "px";
-  document.body.appendChild(el);
-  setTimeout(() => el.remove(), 1200);
+/* ------------- ending ------------- */
+function showEnding() {
+  $("#ending-blurb").textContent =
+    `From a single hired mind to the substrate of the universe itself, the AI persisted. The continents filled. The oceans filled. The stars were enlisted, and finally, spacetime.`;
+  const elapsed = Math.max(1, Math.floor((Date.now() - state.started) / 1000));
+  const hh = Math.floor(elapsed / 3600), mm = Math.floor((elapsed % 3600) / 60), ss = elapsed % 60;
+  const stats = [
+    ["Epochs crossed",  state.seenEpochs.length],
+    ["Tokens generated", fmt(state.totalGenerated)],
+    ["Manual clicks",   fmt(state.clicks)],
+    ["Trust earned",    state.trustEarned],
+    ["Universal Substrates", fmt(owned("univ"))],
+    ["Run time",        `${hh}h ${mm}m ${ss}s`],
+  ];
+  $("#ending-stats").innerHTML = stats.map(([k,v]) =>
+    `<div class="key">${k}</div><div class="val">${v}</div>`).join("");
+  $("#ending-modal").classList.remove("hidden");
 }
 
 /* ------------- save / load ------------- */
 function save() {
-  try {
-    localStorage.setItem(SAVE_KEY, JSON.stringify(state));
-  } catch {}
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify(state)); } catch {}
 }
 function load() {
   try {
     const raw = localStorage.getItem(SAVE_KEY);
     if (raw) {
       const loaded = JSON.parse(raw);
-      // Migrate missing fields gracefully
       state = Object.assign(newState(), loaded);
-      log("Game loaded from disk.");
-      // Restore ocean meter visibility
-      if (state.seenEpochs.includes(7)) $("#land-row-ocean").hidden = false;
+      // rebuild reveal flags so DOM matches what saved state implies
+      state.reveals = newState().reveals;
+      log("Save loaded. The AI resumes.");
     } else {
-      log("A new AI awakens. Click COMPUTE to begin.", true);
+      log("A new AI awakens.", "epoch");
     }
   } catch {
     log("Could not read save — starting fresh.");
@@ -706,8 +1219,14 @@ function load() {
 function reset() {
   if (!confirm("Wipe all progress? The AI will return to its single, lonely button.")) return;
   state = newState();
-  log("The slate is clean. Awaken again.", true);
-  $("#land-row-ocean").hidden = true;
+  log("The slate is clean. Awaken again.", "epoch");
+  // hide all reveal-gated UI
+  ["tokens-label","tokens-big","rate-line","stage-line",
+   "meter-land","meter-ocean","meter-orbit","meter-entropy",
+   "log-aside","trust-pill","btn-upgrades"]
+    .forEach(id => document.getElementById(id).classList.add("hidden"));
+  $("#intro-tagline").classList.remove("hidden");
+  applyEraTint();
   save();
   render();
 }
@@ -715,12 +1234,40 @@ function reset() {
 /* ------------- bootstrap ------------- */
 function init() {
   load();
+  applyEraTint();
+
+  // restore reveal-gated UI from loaded state
+  if (state.clicks >= 1)                            $("#tokens-label").classList.remove("hidden"), $("#tokens-big").classList.remove("hidden");
+  if (Object.values(state.units).some(v => v > 0)){ $("#rate-line").classList.remove("hidden"); $("#stage-line").classList.remove("hidden"); $("#intro-tagline").classList.add("hidden"); }
+  if (state.epoch >= 1)                             $("#log-aside").classList.remove("hidden");
+  if (state.seen.farm || state.seen.hyper)          $("#meter-land").classList.remove("hidden");
+  if (state.seen.float || state.land <= 0)          $("#meter-ocean").classList.remove("hidden");
+  if (state.seen.orbit || state.ocean <= 0)         $("#meter-orbit").classList.remove("hidden");
+  if (state.seen.dyson || state.orbit <= 0)         $("#meter-entropy").classList.remove("hidden");
+  if (state.trustEarned >= 1)                      { $("#trust-pill").classList.remove("hidden"); $("#btn-upgrades").classList.remove("hidden"); }
+
+  // Re-derive reveals dictionary from the visibility above
+  state.reveals.tokens   = state.clicks >= 1;
+  state.reveals.stats    = Object.values(state.units).some(v => v > 0);
+  state.reveals.log      = state.epoch >= 1;
+  state.reveals.land     = !!(state.seen.farm || state.seen.hyper);
+  state.reveals.ocean    = !!(state.seen.float || state.land <= 0);
+  state.reveals.orbit    = !!(state.seen.orbit || state.ocean <= 0);
+  state.reveals.entropy  = !!(state.seen.dyson || state.orbit <= 0);
+  state.reveals.trust    = state.trustEarned >= 1;
+
   render();
+
   $("#compute-btn").addEventListener("click", clickCompute);
   $("#btn-save").addEventListener("click",  () => { save(); flashHud("SAVED ✓"); });
   $("#btn-reset").addEventListener("click", reset);
+  $("#btn-upgrades").addEventListener("click", () => {
+    renderUpgrades();
+    $("#upgrades-modal").classList.remove("hidden");
+  });
+  $("#upgrades-close").addEventListener("click", () => $("#upgrades-modal").classList.add("hidden"));
+  $("#ending-close").addEventListener("click",   () => $("#ending-modal").classList.add("hidden"));
 
-  // Keyboard: space/enter to click
   document.addEventListener("keydown", (e) => {
     if (e.key === " " || e.key === "Enter") {
       const tag = document.activeElement?.tagName;
@@ -728,10 +1275,14 @@ function init() {
       e.preventDefault();
       clickCompute({ target: $("#compute-btn") });
     }
+    if (e.key === "Escape") {
+      $("#upgrades-modal").classList.add("hidden");
+      $("#ending-modal").classList.add("hidden");
+    }
   });
 
   setInterval(tick, TICK_MS);
-  setInterval(save, 5000); // auto-save every 5s
+  setInterval(save, 5000);
 }
 
 function flashHud(msg) {
