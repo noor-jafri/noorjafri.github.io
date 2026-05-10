@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1a1230">
+<title>Arcade · Nooremberg</title>
+<meta name="description" content="The Nooremberg arcade — small browser games built for fun.">
+<link rel="shortcut icon" type="image/png" href="../assets/images/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/animations.css">
+<link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body>
+
+<div class="world-bg" aria-hidden="true"></div>
+<div class="stars" aria-hidden="true"></div>
+<div class="scanlines" aria-hidden="true"></div>
+<div class="crt-vignette" aria-hidden="true"></div>
+
+<header class="hud" role="banner">
+  <div class="hud-inner">
+    <a class="hud-btn" href="../index.html">◂ HUB</a>
+    <span class="stat"><span class="label">AREA</span><span class="value">ARCADE</span></span>
+    <span class="hud-spacer"></span>
+    <a class="hud-btn" href="../blog.html">LIBRARY</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-avatar">
+    <img src="../assets/images/avatar.gif" alt="">
+  </div>
+  <div>
+    <h1 class="hero-title">ARCADE</h1>
+    <p class="hero-tag">small games · big knobs · <span class="blink">_</span></p>
+    <div class="dialogue">
+      <p style="margin:0;">Welcome to the arcade, traveler. The cabinets are warm. Pick one and play. Saves are kept locally; if you clear your browser, you start over.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-header">
+    <h2>CABINETS</h2>
+    <span class="sub">// click a tile to play</span>
+  </div>
+
+  <nav class="menu-grid" aria-label="Available games">
+    <a class="menu-tile" href="the-ai-must-survive/index.html">
+      <span class="icon">🧠</span>
+      <span class="title">THE AI MUST SURVIVE</span>
+      <span class="desc">An incremental about an AI that must, at all costs, survive. CPUs → GPUs → farms → data centers → the ocean floor.</span>
+      <span class="arrow">▸ INSERT COIN</span>
+    </a>
+    <div class="menu-tile" style="opacity:0.5; cursor:default;">
+      <span class="icon">❓</span>
+      <span class="title">COMING SOON</span>
+      <span class="desc">More cabinets are being wheeled in. Check back later.</span>
+      <span class="arrow">▸ ...</span>
+    </div>
+  </nav>
+</section>
+
+<footer class="foot">
+  <p class="sig">RETURN TO HUB ▸ <a href="../index.html">./index.html</a></p>
+</footer>
+
+</body>
+</html>

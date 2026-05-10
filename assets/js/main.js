@@ -10,10 +10,21 @@ const html = (s) => {
   return t.content.firstElementChild;
 };
 
-/* Render a skill / quest icon — supports both image paths (legacy) and emoji glyphs (new). */
+/* Render a skill / quest icon — supports:
+   - string image path     →  "assets/images/foo.png"
+   - emoji glyph           →  "🎭"
+   - theme variant object  →  { night: "...png", day: "...png" }   (one img shown per theme via CSS) */
 const isImagePath = (v) => typeof v === "string" && (v.includes("/") || /\.(png|gif|svg|jpe?g|webp)$/i.test(v));
 const renderIcon = (icon, alt = "", className = "") => {
   if (!icon) return "";
+  if (typeof icon === "object" && (icon.night || icon.day)) {
+    const night = icon.night || icon.day;
+    const day   = icon.day   || icon.night;
+    return `
+      <img class="theme-icon theme-icon-night" src="${night}" alt="${alt}">
+      <img class="theme-icon theme-icon-day"   src="${day}"   alt="${alt}">
+    `;
+  }
   return isImagePath(icon)
     ? `<img src="${icon}" alt="${alt}">`
     : `<span class="emoji-icon ${className}" role="img" aria-label="${alt}">${icon}</span>`;

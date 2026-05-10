@@ -48,42 +48,43 @@ export const skills = [
     lore: "Google's Cloud Engine. A second elemental plane for compute." },
 
   /* ---- New AI/architecture cards forged at DeepMask ---- */
-  { name: "vLLM",                       icon: "🐉", type: "AI",           xp: 84, mastery: 78, mana: 95, rarity: "legendary",
-    lore: "Tames GPU dragons and serves tokens by the thousand. Throughput so high it folds spacetime — or at least the request queue." },
-  { name: "MCP",                        icon: "🔌", type: "AI",           xp: 82, mastery: 76, mana: 80, rarity: "epic",
-    lore: "Model Context Protocol — universal handshake between models and tools. USB-C for LLMs, but with more JSON and less melting." },
-  { name: "A2A",                        icon: "🗣️", type: "AI",           xp: 76, mastery: 70, mana: 78, rarity: "epic",
-    lore: "Agent-to-Agent. Bots whispering to each other in tongues only the prompt-master understands. The new gossip layer of the realm." },
-  { name: "GPU / RDU Inference",        icon: "⚡", type: "AI",           xp: 80, mastery: 74, mana: 92, rarity: "legendary",
-    lore: "Hand-feeding tokens to silicon golems. Hot-swapping inference between GPU and RDU like switching wand cores mid-battle." },
-  { name: "RAG / F.A.G.",               icon: "📂", type: "AI",           xp: 88, mastery: 82, mana: 80, rarity: "legendary",
-    lore: "RAG was the warm-up. F.A.G. — File-Augmented Generation — crawls your filesystem like a Linux greybeard with a flashlight. Yes, the acronym is unfortunate. No, I will not be taking questions." },
-  { name: "Token Economics",            icon: "🪙", type: "AI",           xp: 80, mastery: 78, mana: 70, rarity: "epic",
-    lore: "Models are applications, tokens are coin, capabilities are spell slots, context windows are mana pools. The economy is real and it has a P&L." },
-  { name: "Event-Driven Multi-tenancy", icon: "🌩️", type: "Architecture", xp: 86, mastery: 80, mana: 75, rarity: "legendary",
-    lore: "Combine event-driven patterns with multi-tenant chaos. Like seasoning a stew with thunderbolts — works great until two tenants share a Kafka topic." },
-  { name: "Vibe Coding",                icon: "🎧", type: "Framework",    xp: 62, mastery: 55, mana: 99, rarity: "rare",
-    lore: "Coding by feel. Tests are emergent. Vibes are immaculate. Prod bugs only show up when the playlist ends. Sharpened on KalPal.io." }
+  { name: "vLLM",                       icon: "assets/images/vllm.png",          type: "AI",           xp: 84, mastery: 78, mana: 95, rarity: "legendary",
+    lore: "Speaks to GPU dragons. They breathe tokens by the thousand." },
+  { name: "MCP",                        icon: "assets/images/mcp.png",           type: "AI",           xp: 82, mastery: 76, mana: 80, rarity: "epic",
+    lore: "A common tongue for models and tools, so they may finally talk without bickering." },
+  { name: "A2A",                        icon: "assets/images/a2a.png",           type: "AI",           xp: 76, mastery: 70, mana: 78, rarity: "epic",
+    lore: "Agents whispering to agents in low voices. Sometimes plans. Sometimes mischief." },
+  { name: "GPU / RDU Inference",        icon: "assets/images/gpu.png",           type: "AI",           xp: 80, mastery: 74, mana: 92, rarity: "legendary",
+    lore: "Silicon golems that gobble tokens. Swap them when one grows tired." },
+  { name: "RAG / F.A.G.",               icon: "assets/images/file.png",          type: "AI",           xp: 88, mastery: 82, mana: 80, rarity: "legendary",
+    lore: "RAG fetches the right scroll. F.A.G. just walks into the library and opens every drawer." },
+  { name: "Event-Driven Multi-tenancy", icon: "assets/images/even-driven.png",   type: "Architecture", xp: 86, mastery: 80, mana: 75, rarity: "legendary",
+    lore: "A bazaar of stalls, each listening for its own town crier. Quiet most days. Loud on others." },
+  { name: "Vibe Coding",                icon: "🎧",                              type: "Framework",    xp: 62, mastery: 55, mana: 99, rarity: "rare",
+    lore: "Coding by ear, not by tome. Tests show up when they please." }
 ];
 
 export const quests = [
   {
     title: "Technical CoFounder @ DeepMask.io",
     period: "2024 — Present",
-    icon: "🎭",
+    icon: {
+      night: "assets/images/deepmask-light.png", /* light glyph for dark bg */
+      day:   "assets/images/deepmask-dark.png"   /* dark glyph for light bg */
+    },
     status: "active",
     highlight: "legendary",
     badges: ["vLLM", "MCP", "A2A", "GPU/RDU", "RAG", "F.A.G.", "Multi-tenant", "Event-Driven", "🚀"],
-    lore: "The current epic quest. Forging a unified AI command center where 25+ models live, breathe, and bicker. Treat models like applications, tokens like coin, capabilities like spell slots. Pioneered <b>F.A.G.</b> — File-Augmented Generation — because RAG was cute but my files wanted in on the action (yes, the acronym is unfortunate; no, I am not taking questions). Slayed the model-fragmentation hydra; it grew two more heads, then we slayed those too. Innovated relentlessly with whatever customers begged for, hot-swapped inference between GPUs and RDUs like switching wand cores, and grew the realm to a 2-digit-million valuation along the way.",
+    lore: "A guildhall for 25+ AI minds who train, brew, and bicker together. We taught the filesystem to speak alongside the index — we call it <b>F.A.G.</b> We slayed the model-fragmentation hydra. Twice. The party has grown, the realm has reached a 2-digit-million valuation, and the quest continues.",
     reward: "+5000 XP · Founder Class Unlocked"
   },
   {
     title: "Solo Builder @ KalPal.io",
     period: "2024 — Present",
-    icon: "🎧",
+    icon: "assets/images/kalpal.png",
     status: "active",
     badges: ["Vibe Coding", "AI", "Side Quest"],
-    lore: "Side quest opened to learn the dark art of <b>vibe coding</b>. Built by feel, shipped by faith, debugged by playlist. Tests are 'emergent'. The vibes are non-negotiable.",
+    lore: "A small cottage on the edge of town where I'm apprenticing in <b>vibe coding</b>. Built by feel, shipped by faith, debugged by playlist.",
     reward: "+400 XP · Vibes Calibration"
   },
   {
@@ -135,7 +136,8 @@ export const achievements = [
   { id: "secret-room",   icon: "🗝️", title: "Found the Secret",    desc: "Discovered the hidden chest." },
   { id: "blog-reader",   icon: "📖", title: "Library Patron",      desc: "Visited the blog." },
   { id: "all-tiles",     icon: "🌟", title: "Full Explorer",       desc: "Hovered every menu tile." },
-  { id: "theme-switch",  icon: "☀️", title: "Day & Night",         desc: "Toggled the theme." }
+  { id: "theme-switch",  icon: "☀️", title: "Day & Night",         desc: "Toggled the theme." },
+  { id: "snake-spotted", icon: "❗", title: "Tactical Espionage",  desc: "?! ... A wild Snake appeared." }
 ];
 
 /* Tiny site-wide constants */

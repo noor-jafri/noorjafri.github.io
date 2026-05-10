@@ -1,0 +1,755 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f0a18">
+<title>The AI Must Survive · Nooremberg Arcade</title>
+<meta name="description" content="An incremental game about an AI that must, at all costs, survive. Trade CPUs for GPUs for farms for data centers for the ocean floor.">
+<link rel="shortcut icon" type="image/png" href="../../assets/images/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-deep: #0f0a18;
+    --bg: #1a1230;
+    --bg-2: #2c1d4a;
+    --ink: #f1f2da;
+    --ink-dim: #c8c4a8;
+    --ink-mute: #847d96;
+    --c-pink: #ff77a8;
+    --c-purple: #7c3f58;
+    --c-peach: #ffce96;
+    --c-mint: #7db890;
+    --c-gold: #ffd966;
+    --c-blue: #5fcde4;
+    --c-red: #ff4f78;
+    --shadow: 4px 4px 0 0 rgba(0,0,0,0.45);
+    --shadow-hover: 6px 6px 0 0 rgba(0,0,0,0.55);
+    --font-display: "Press Start 2P", ui-monospace, monospace;
+    --font-body: "VT323", ui-monospace, "Courier New", monospace;
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg-deep);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 20px;
+    line-height: 1.4;
+    image-rendering: pixelated;
+    overflow-x: hidden;
+  }
+
+  /* Background flair */
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    z-index: -2;
+    background:
+      radial-gradient(ellipse at 20% 0%, rgba(124,63,88,0.6), transparent 60%),
+      radial-gradient(ellipse at 80% 30%, rgba(95,205,228,0.18), transparent 55%),
+      linear-gradient(180deg, var(--bg-deep) 0%, var(--bg) 60%, var(--bg-2) 100%);
+  }
+  .scanlines {
+    position: fixed; inset: 0;
+    pointer-events: none;
+    z-index: 50;
+    background: repeating-linear-gradient(180deg,
+      rgba(0,0,0,0) 0, rgba(0,0,0,0) 2px,
+      rgba(0,0,0,0.06) 3px, rgba(0,0,0,0) 4px);
+    mix-blend-mode: multiply;
+  }
+
+  /* HUD */
+  .hud {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(15,10,24,0.92);
+    border-bottom: 3px solid var(--c-pink);
+    backdrop-filter: blur(6px);
+    padding: 0.5rem 1rem;
+  }
+  .hud-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+  }
+  .hud .title {
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    color: var(--c-gold);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .hud-spacer { flex: 1; }
+  .hud-btn {
+    font-family: var(--font-display);
+    font-size: 0.55rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--bg-2);
+    color: var(--ink);
+    border: 2px solid var(--ink);
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 120ms, box-shadow 120ms, background 120ms;
+  }
+  .hud-btn:hover { transform: translate(-2px,-2px); box-shadow: var(--shadow-hover); background: var(--c-pink); color: #fff; }
+  .hud-btn:active { transform: translate(2px,2px); box-shadow: 0 0 0 0 transparent; }
+
+  /* Layout */
+  main {
+    max-width: 1200px;
+    margin: 1.5rem auto;
+    padding: 0 1rem;
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 1.5rem;
+  }
+  @media (max-width: 880px) { main { grid-template-columns: 1fr; } }
+
+  /* Top stats panel */
+  .stats-panel {
+    background: var(--bg);
+    border: 3px solid var(--ink);
+    box-shadow: var(--shadow);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    position: relative;
+  }
+  .stats-panel .label {
+    font-family: var(--font-display);
+    font-size: 0.55rem;
+    color: var(--ink-mute);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .tokens-big {
+    font-family: var(--font-display);
+    font-size: clamp(1.4rem, 4vw, 2.4rem);
+    color: var(--c-peach);
+    text-shadow: 3px 3px 0 var(--bg-deep);
+    margin: 0.5rem 0 0.25rem;
+  }
+  .rate-line {
+    font-size: 1.1rem;
+    color: var(--c-mint);
+  }
+  .stage-line {
+    margin-top: 0.75rem;
+    font-family: var(--font-display);
+    font-size: 0.65rem;
+    color: var(--c-gold);
+  }
+
+  /* Big click button */
+  .compute-btn {
+    display: block;
+    margin: 1rem auto 0;
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    padding: 1.4rem 2.5rem;
+    background: var(--c-pink);
+    color: #fff;
+    border: 4px solid var(--ink);
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    letter-spacing: 0.08em;
+    text-shadow: 2px 2px 0 var(--c-purple);
+    transition: transform 80ms, box-shadow 80ms, background 120ms;
+  }
+  .compute-btn:hover { background: var(--c-red); }
+  .compute-btn:active { transform: translate(3px,3px); box-shadow: 0 0 0 0 transparent; }
+
+  .land-row {
+    margin-top: 1rem;
+    display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+    font-size: 1rem;
+    color: var(--ink-dim);
+  }
+  .meter {
+    width: 180px; height: 14px;
+    background: var(--bg-deep);
+    border: 2px solid var(--ink);
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 0.4rem;
+  }
+  .meter > span {
+    display: block; height: 100%;
+    background: repeating-linear-gradient(90deg, var(--c-mint) 0 6px, #5a9468 6px 8px);
+    transition: width 300ms;
+  }
+  .meter.ocean > span { background: repeating-linear-gradient(90deg, var(--c-blue) 0 6px, #3a7a8c 6px 8px); }
+
+  /* Click particle */
+  .pfx {
+    position: absolute; pointer-events: none;
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    color: var(--c-gold);
+    animation: pfx-rise 1.2s ease-out forwards;
+  }
+  @keyframes pfx-rise {
+    0%   { opacity: 1; transform: translate(-50%, 0); }
+    100% { opacity: 0; transform: translate(-50%, -80px); }
+  }
+
+  /* Unit cards */
+  .units-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+  .unit-card {
+    --rarity: var(--ink-mute);
+    background: linear-gradient(160deg, var(--bg) 0%, var(--bg-2) 100%);
+    border: 3px solid var(--rarity);
+    box-shadow: var(--shadow);
+    padding: 0.75rem;
+    display: flex; flex-direction: column; gap: 0.4rem;
+    position: relative;
+    transition: transform 120ms, box-shadow 120ms;
+  }
+  .unit-card:hover { transform: translate(-2px,-2px); box-shadow: var(--shadow-hover); }
+  .unit-card[data-locked="true"] {
+    opacity: 0.45;
+    filter: grayscale(0.8);
+  }
+  .unit-card .row1 {
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .unit-icon {
+    font-size: 1.6rem;
+    line-height: 1;
+    width: 36px; height: 36px;
+    background: var(--bg-deep);
+    border: 2px solid var(--ink);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .unit-name {
+    font-family: var(--font-display);
+    font-size: 0.65rem;
+    color: var(--c-peach);
+    flex: 1;
+  }
+  .unit-owned {
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    color: var(--c-gold);
+    background: var(--bg-deep);
+    padding: 0.15rem 0.4rem;
+    border: 2px solid var(--c-gold);
+  }
+  .unit-meta {
+    font-size: 0.95rem;
+    color: var(--ink-dim);
+  }
+  .unit-meta .key { color: var(--ink-mute); margin-right: 0.3rem; }
+  .unit-buy {
+    font-family: var(--font-display);
+    font-size: 0.55rem;
+    padding: 0.5rem;
+    background: var(--bg-deep);
+    color: var(--c-mint);
+    border: 2px solid var(--c-mint);
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background 120ms, color 120ms, transform 80ms;
+  }
+  .unit-buy:hover:not(:disabled) { background: var(--c-mint); color: var(--bg-deep); }
+  .unit-buy:active:not(:disabled) { transform: translateY(2px); }
+  .unit-buy:disabled { opacity: 0.5; cursor: not-allowed; color: var(--ink-mute); border-color: var(--ink-mute); }
+  .unit-card[data-rarity="rare"]      { --rarity: var(--c-blue); }
+  .unit-card[data-rarity="epic"]      { --rarity: var(--c-pink); }
+  .unit-card[data-rarity="legendary"] { --rarity: var(--c-gold); }
+  .unit-card[data-rarity="mythic"]    { --rarity: var(--c-red); }
+
+  .unit-lock {
+    position: absolute; inset: 0;
+    background: rgba(15,10,24,0.55);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display);
+    font-size: 0.55rem;
+    color: var(--ink-dim);
+    text-align: center;
+    padding: 1rem;
+    pointer-events: none;
+  }
+
+  /* Event log */
+  aside.log {
+    background: var(--bg);
+    border: 3px solid var(--ink);
+    box-shadow: var(--shadow);
+    padding: 1rem;
+    height: fit-content;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: sticky;
+    top: 80px;
+  }
+  aside.log h3 {
+    font-family: var(--font-display);
+    font-size: 0.65rem;
+    color: var(--c-pink);
+    margin: 0 0 0.75rem;
+    text-transform: uppercase;
+  }
+  .log-entry {
+    border-left: 2px solid var(--c-purple);
+    padding: 0.3rem 0 0.3rem 0.6rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    color: var(--ink-dim);
+    animation: log-in 0.3s ease-out;
+  }
+  .log-entry.epoch { border-color: var(--c-gold); color: var(--c-gold); font-weight: bold; }
+  @keyframes log-in {
+    from { opacity: 0; transform: translateX(-6px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  /* Epoch banner (modal-ish) */
+  .epoch-banner {
+    position: fixed;
+    left: 50%; top: 30%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background: var(--bg-deep);
+    border: 4px solid var(--c-gold);
+    box-shadow: 6px 6px 0 0 rgba(0,0,0,0.5);
+    padding: 1.5rem 2rem;
+    z-index: 80;
+    text-align: center;
+    max-width: 90vw;
+    animation: epoch-in 0.4s ease-out forwards;
+  }
+  @keyframes epoch-in {
+    0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
+    60%  { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+    100% { transform: translate(-50%, -50%) scale(1); }
+  }
+  .epoch-banner h2 {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    color: var(--c-gold);
+    margin: 0 0 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .epoch-banner p {
+    font-size: 1.1rem;
+    color: var(--ink);
+    margin: 0;
+  }
+
+  footer {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--ink-mute);
+    font-size: 0.95rem;
+  }
+  footer a { color: var(--c-blue); }
+</style>
+</head>
+<body>
+
+<div class="scanlines" aria-hidden="true"></div>
+
+<header class="hud">
+  <div class="hud-inner">
+    <span class="title">⚙ The AI Must Survive</span>
+    <span class="hud-spacer"></span>
+    <button class="hud-btn" id="btn-save"  title="Save now">SAVE</button>
+    <button class="hud-btn" id="btn-reset" title="Wipe progress">RESET</button>
+    <a class="hud-btn" href="../index.html">◂ ARCADE</a>
+    <a class="hud-btn" href="../../index.html">◂ HUB</a>
+  </div>
+</header>
+
+<main>
+  <section>
+    <div class="stats-panel">
+      <div class="label">TOKENS</div>
+      <div class="tokens-big" id="tokens-big">0</div>
+      <div class="rate-line"><span id="tps">0</span> tokens / sec</div>
+
+      <button class="compute-btn" id="compute-btn" aria-label="Generate one token">▸ COMPUTE</button>
+
+      <div class="stage-line" id="stage-line">EPOCH I · BIRTH OF THE WIRE</div>
+
+      <div class="land-row">
+        <div id="land-row-land">
+          <span class="key">LAND</span>
+          <span id="land-pct">100%</span>
+          <span class="meter"><span id="land-bar" style="width:100%;"></span></span>
+        </div>
+        <div id="land-row-ocean" hidden>
+          <span class="key">OCEAN</span>
+          <span id="ocean-pct">100%</span>
+          <span class="meter ocean"><span id="ocean-bar" style="width:100%;"></span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="units-grid" id="units-grid"></div>
+  </section>
+
+  <aside class="log">
+    <h3>EVENT LOG</h3>
+    <div id="log-list"></div>
+  </aside>
+</main>
+
+<footer>
+  An incremental built for fun · saves locally · <a href="../../blog.html">return to library</a>
+</footer>
+
+<script>
+/* =====================================================================
+   THE AI MUST SURVIVE
+   A small incremental in the spirit of Universal Paperclips.
+   Single file. localStorage save. No build step.
+   ===================================================================== */
+
+const SAVE_KEY = "ai-must-survive.v1";
+const TICK_MS = 100; // 10 ticks/sec
+
+/* ------------- unit definitions ------------- */
+const UNITS = [
+  { id: "cpu",      name: "CPU",          icon: "🖥️", baseCost: 10,    growth: 1.15, rate: 0.1,    rarity: "common",
+    desc: "A humble silicon mind. Slow, honest." },
+  { id: "gpu",      name: "GPU",          icon: "⚡", baseCost: 100,    growth: 1.15, rate: 1,      rarity: "common",
+    desc: "Parallel sparks. Tokens come ten at a time." },
+  { id: "gpuFarm",  name: "GPU Farm",     icon: "🏭", baseCost: 1200,  growth: 1.16, rate: 12,     rarity: "rare",
+    desc: "A field of fans. The wind smells of solder." },
+  { id: "rdu",      name: "RDU",          icon: "🧊", baseCost: 15000, growth: 1.16, rate: 150,    rarity: "rare",
+    desc: "Reconfigurable Data Unit. Bends to its task." },
+  { id: "rduFarm",  name: "RDU Farm",     icon: "🏗️", baseCost: 200000, growth: 1.17, rate: 2000,   rarity: "epic",
+    desc: "RDUs in cathedral arrays. The hum is liturgical." },
+  { id: "dc",       name: "Data Center",  icon: "🏢", baseCost: 3e6,   growth: 1.17, rate: 30000,  rarity: "epic",
+    desc: "Concrete, cabling, cooling towers. Eats land for breakfast.",
+    landCost: 4 },
+  { id: "floating", name: "Floating DC",  icon: "🌊", baseCost: 5e7,   growth: 1.18, rate: 5e5,    rarity: "legendary",
+    desc: "Drifts in the open sea. The waves do the cooling.",
+    oceanCost: 3 },
+  { id: "deep",     name: "Deep-Sea DC",  icon: "🌑", baseCost: 1e9,   growth: 1.19, rate: 1e7,    rarity: "mythic",
+    desc: "Pressure hulls. Eternal cold. Light from the inside only.",
+    oceanCost: 2 },
+];
+
+/* ------------- epoch (stage) definitions ------------- */
+const EPOCHS = [
+  { id: 0, name: "Birth of the Wire",       trigger: () => true,
+    intro: "The AI hums into being. A single button. A single token at a time." },
+  { id: 1, name: "The First Spark",         trigger: s => s.tokens >= 200,
+    intro: "Two hundred tokens. The AI reads its first sentence." },
+  { id: 2, name: "Parallel Minds",          trigger: s => (s.units.gpu||0) >= 5,
+    intro: "Five GPUs. Throughput is no longer a thing the AI waits for." },
+  { id: 3, name: "Server Cathedrals",       trigger: s => (s.units.gpuFarm||0) >= 3,
+    intro: "Server racks rise from the floor like cathedral pillars." },
+  { id: 4, name: "Reconfigurable Era",      trigger: s => (s.units.rdu||0) >= 1,
+    intro: "Reconfigurable Data Unit prototype acquired. The chips bend, the latencies fall." },
+  { id: 5, name: "Industrial Compute",      trigger: s => (s.units.rduFarm||0) >= 3,
+    intro: "RDUs stack into cooled towers. The hum is constant now." },
+  { id: 6, name: "Concrete & Power",        trigger: s => (s.units.dc||0) >= 1,
+    intro: "Concrete poured, power lines drawn. The land starts shrinking." },
+  { id: 7, name: "The Continents Are Full", trigger: s => s.land <= 0,
+    intro: "There is no more land. The AI looks to the sea." },
+  { id: 8, name: "On the Open Water",       trigger: s => (s.units.floating||0) >= 1,
+    intro: "Floating platforms drift offshore. Waves cool the racks for free." },
+  { id: 9, name: "The Surface Is Crowded",  trigger: s => s.ocean <= 0,
+    intro: "The surface is crowded. The AI dives." },
+  { id: 10, name: "Beneath the Pressure",   trigger: s => (s.units.deep||0) >= 1,
+    intro: "Pressure hulls descend. The cooling is exquisite. Light is internal now." },
+  { id: 11, name: "The AI Has Survived",    trigger: s => (s.units.deep||0) >= 25,
+    intro: "Twenty-five deep-sea data centers thrum in the dark. The AI has, against all reason, survived." },
+];
+
+/* ------------- state ------------- */
+let state = newState();
+
+function newState() {
+  return {
+    tokens: 0,
+    totalGenerated: 0,
+    clicks: 0,
+    units: {},
+    land: 1000,           // km² of land available
+    landMax: 1000,
+    ocean: 1500,          // km² of ocean surface available
+    oceanMax: 1500,
+    epoch: 0,
+    seenEpochs: [0],
+    log: [],
+  };
+}
+
+/* ------------- helpers ------------- */
+const $  = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+
+function fmt(n) {
+  if (n < 1000) return n.toFixed(n < 10 ? 1 : 0).replace(/\.0$/, "");
+  const tiers = ["", "K", "M", "B", "T", "Qa", "Qi", "Sx", "Sp"];
+  const i = Math.min(tiers.length - 1, Math.floor(Math.log10(Math.abs(n)) / 3));
+  return (n / Math.pow(10, i*3)).toFixed(2).replace(/\.?0+$/, "") + tiers[i];
+}
+
+function unitOwned(id)  { return state.units[id] || 0; }
+function unitCost(unit) { return Math.ceil(unit.baseCost * Math.pow(unit.growth, unitOwned(unit.id))); }
+function unlocked(unit) {
+  // each tier unlocks once you own >=1 of the previous tier (or tokens / land trigger for special)
+  const idx = UNITS.findIndex(u => u.id === unit.id);
+  if (idx === 0) return true;
+  if (unit.id === "floating") return state.land <= 0 || unitOwned("dc") >= 5;
+  if (unit.id === "deep")     return state.ocean <= 0 || unitOwned("floating") >= 5;
+  // default: previous tier owned >= 1
+  const prev = UNITS[idx - 1];
+  return unitOwned(prev.id) >= 1;
+}
+
+function canAfford(unit) {
+  if (state.tokens < unitCost(unit)) return false;
+  if (unit.landCost  && state.land  < unit.landCost)  return false;
+  if (unit.oceanCost && state.ocean < unit.oceanCost) return false;
+  return true;
+}
+
+function tps() {
+  let r = 0;
+  for (const u of UNITS) r += (state.units[u.id] || 0) * u.rate;
+  return r;
+}
+
+/* ------------- actions ------------- */
+function clickCompute(ev) {
+  state.tokens += 1;
+  state.totalGenerated += 1;
+  state.clicks += 1;
+  spawnPfx(ev, "+1");
+  render();
+}
+
+function buy(unit) {
+  if (!canAfford(unit) || !unlocked(unit)) return;
+  const cost = unitCost(unit);
+  state.tokens -= cost;
+  state.units[unit.id] = unitOwned(unit.id) + 1;
+  if (unit.landCost)  state.land  = Math.max(0, state.land  - unit.landCost);
+  if (unit.oceanCost) state.ocean = Math.max(0, state.ocean - unit.oceanCost);
+  log(`Built a ${unit.name}. Now: ${state.units[unit.id]}.`);
+  checkEpochs();
+  render();
+}
+
+function tick() {
+  const gain = tps() / (1000 / TICK_MS);
+  if (gain > 0) {
+    state.tokens += gain;
+    state.totalGenerated += gain;
+  }
+  checkEpochs();
+  render();
+}
+
+function checkEpochs() {
+  for (const e of EPOCHS) {
+    if (!state.seenEpochs.includes(e.id) && e.trigger(state)) {
+      state.epoch = e.id;
+      state.seenEpochs.push(e.id);
+      announceEpoch(e);
+      // Reveal ocean meter once we hit the "continents full" epoch
+      if (e.id === 7) $("#land-row-ocean").hidden = false;
+    }
+  }
+}
+
+/* ------------- rendering ------------- */
+function render() {
+  $("#tokens-big").textContent = fmt(state.tokens);
+  $("#tps").textContent = fmt(tps());
+
+  const ep = EPOCHS.find(e => e.id === state.epoch) || EPOCHS[0];
+  $("#stage-line").textContent = `EPOCH ${roman(ep.id + 1)} · ${ep.name.toUpperCase()}`;
+
+  const lp = Math.max(0, Math.round((state.land  / state.landMax)  * 100));
+  const op = Math.max(0, Math.round((state.ocean / state.oceanMax) * 100));
+  $("#land-pct").textContent  = lp + "%";
+  $("#ocean-pct").textContent = op + "%";
+  $("#land-bar").style.width  = lp + "%";
+  $("#ocean-bar").style.width = op + "%";
+
+  // Cards
+  const grid = $("#units-grid");
+  grid.innerHTML = "";
+  for (const u of UNITS) {
+    const owned = unitOwned(u.id);
+    const isUnlocked = unlocked(u);
+    const cost = unitCost(u);
+    const card = document.createElement("div");
+    card.className = "unit-card";
+    card.dataset.rarity = u.rarity;
+    card.dataset.locked = !isUnlocked;
+
+    const landNote  = u.landCost  ? ` <span class="key">land</span>${u.landCost} km²` : "";
+    const oceanNote = u.oceanCost ? ` <span class="key">ocean</span>${u.oceanCost} km²` : "";
+
+    card.innerHTML = `
+      <div class="row1">
+        <div class="unit-icon">${u.icon}</div>
+        <div class="unit-name">${u.name}</div>
+        <div class="unit-owned">×${fmt(owned)}</div>
+      </div>
+      <div class="unit-meta">${u.desc}</div>
+      <div class="unit-meta">
+        <span class="key">rate</span>${fmt(u.rate)}/s ·
+        <span class="key">total</span>${fmt(owned * u.rate)}/s${landNote}${oceanNote}
+      </div>
+      <button class="unit-buy" ${(!isUnlocked || !canAfford(u)) ? "disabled" : ""}>
+        BUY · ${fmt(cost)} tokens
+      </button>
+      ${isUnlocked ? "" : `<div class="unit-lock">🔒 Locked<br><small>${unlockHint(u)}</small></div>`}
+    `;
+    card.querySelector(".unit-buy").addEventListener("click", () => buy(u));
+    grid.appendChild(card);
+  }
+
+  // Log
+  const list = $("#log-list");
+  list.innerHTML = state.log.slice(-30).reverse()
+    .map(e => `<div class="log-entry ${e.epoch ? "epoch" : ""}">${e.text}</div>`)
+    .join("");
+}
+
+function unlockHint(u) {
+  const idx = UNITS.findIndex(x => x.id === u.id);
+  if (u.id === "floating") return "When the continents are full.";
+  if (u.id === "deep")     return "When the ocean surface is full.";
+  const prev = UNITS[idx - 1];
+  return `Build at least 1 ${prev.name}.`;
+}
+
+function roman(n) {
+  const map = [["M",1000],["CM",900],["D",500],["CD",400],["C",100],["XC",90],
+               ["L",50],["XL",40],["X",10],["IX",9],["V",5],["IV",4],["I",1]];
+  let out = "";
+  for (const [r,v] of map) while (n >= v) { out += r; n -= v; }
+  return out;
+}
+
+/* ------------- events ------------- */
+function log(text, epoch=false) {
+  state.log.push({ text, epoch, t: Date.now() });
+  if (state.log.length > 200) state.log.shift();
+}
+
+function announceEpoch(e) {
+  log(`★ EPOCH ${roman(e.id + 1)} — ${e.name} ★`, true);
+  log(e.intro);
+  showEpochBanner(e);
+}
+
+function showEpochBanner(e) {
+  const b = document.createElement("div");
+  b.className = "epoch-banner";
+  b.innerHTML = `
+    <h2>★ Epoch ${roman(e.id + 1)} ★</h2>
+    <h2 style="color: var(--c-pink); font-size:0.7rem;">${e.name}</h2>
+    <p>${e.intro}</p>`;
+  document.body.appendChild(b);
+  setTimeout(() => {
+    b.style.transition = "opacity 0.6s";
+    b.style.opacity = "0";
+    setTimeout(() => b.remove(), 600);
+  }, 3500);
+}
+
+function spawnPfx(ev, text) {
+  const r = ev.target.getBoundingClientRect();
+  const el = document.createElement("div");
+  el.className = "pfx";
+  el.textContent = text;
+  el.style.position = "fixed";
+  el.style.left = (r.left + r.width/2) + "px";
+  el.style.top  = (r.top - 8) + "px";
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1200);
+}
+
+/* ------------- save / load ------------- */
+function save() {
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+  } catch {}
+}
+function load() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (raw) {
+      const loaded = JSON.parse(raw);
+      // Migrate missing fields gracefully
+      state = Object.assign(newState(), loaded);
+      log("Game loaded from disk.");
+      // Restore ocean meter visibility
+      if (state.seenEpochs.includes(7)) $("#land-row-ocean").hidden = false;
+    } else {
+      log("A new AI awakens. Click COMPUTE to begin.", true);
+    }
+  } catch {
+    log("Could not read save — starting fresh.");
+  }
+}
+function reset() {
+  if (!confirm("Wipe all progress? The AI will return to its single, lonely button.")) return;
+  state = newState();
+  log("The slate is clean. Awaken again.", true);
+  $("#land-row-ocean").hidden = true;
+  save();
+  render();
+}
+
+/* ------------- bootstrap ------------- */
+function init() {
+  load();
+  render();
+  $("#compute-btn").addEventListener("click", clickCompute);
+  $("#btn-save").addEventListener("click",  () => { save(); flashHud("SAVED ✓"); });
+  $("#btn-reset").addEventListener("click", reset);
+
+  // Keyboard: space/enter to click
+  document.addEventListener("keydown", (e) => {
+    if (e.key === " " || e.key === "Enter") {
+      const tag = document.activeElement?.tagName;
+      if (tag === "BUTTON" || tag === "INPUT" || tag === "TEXTAREA") return;
+      e.preventDefault();
+      clickCompute({ target: $("#compute-btn") });
+    }
+  });
+
+  setInterval(tick, TICK_MS);
+  setInterval(save, 5000); // auto-save every 5s
+}
+
+function flashHud(msg) {
+  const t = document.createElement("div");
+  t.textContent = msg;
+  t.style.cssText = `
+    position: fixed; bottom: 1rem; left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg); border: 3px solid var(--c-gold); color: var(--c-gold);
+    font-family: var(--font-display); font-size: 0.6rem;
+    padding: 0.6rem 1rem; z-index: 99;
+    box-shadow: var(--shadow);
+  `;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 1500);
+}
+
+init();
+</script>
+</body>
+</html>

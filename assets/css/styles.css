@@ -330,11 +330,48 @@ button {
   display: flex;
   justify-content: center;
 }
+/* Soft moonlight spotlight behind the avatar so dark hair doesn't disappear
+   into the dark background. Day mode uses a warm sunbeam instead. */
+.hero-avatar::before {
+  content: "";
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 240px; height: 240px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at center,
+    rgba(255,206,150,0.28) 0%,
+    rgba(255,119,168,0.18) 35%,
+    rgba(95,205,228,0.10) 60%,
+    transparent 75%
+  );
+  z-index: 0;
+  pointer-events: none;
+  animation: glow-pulse 4s ease-in-out infinite;
+}
+[data-theme="day"] .hero-avatar::before {
+  background: radial-gradient(
+    circle at center,
+    rgba(255,206,150,0.55) 0%,
+    rgba(255,217,102,0.30) 40%,
+    transparent 75%
+  );
+}
 .hero-avatar img {
+  position: relative; /* sit above the spotlight */
+  z-index: 1;
   width: 200px;
   height: 200px;
   object-fit: contain;
-  filter: drop-shadow(4px 4px 0 rgba(0,0,0,0.4));
+  /* Pixel-art rim outline (4 cardinal drop-shadows) so the silhouette
+     stays readable on any background, plus the original drop. */
+  filter:
+    drop-shadow( 2px  0   0 var(--c-purple))
+    drop-shadow(-2px  0   0 var(--c-purple))
+    drop-shadow( 0    2px 0 var(--c-purple))
+    drop-shadow( 0   -2px 0 var(--c-purple))
+    drop-shadow( 4px  4px 0 rgba(0,0,0,0.45));
   animation: bob 2.4s ease-in-out infinite;
   cursor: pointer;
   transition: transform var(--t-fast);
@@ -524,7 +561,7 @@ button {
   --rarity: var(--rarity-common);
   position: relative;
   perspective: 1000px;
-  height: 320px;
+  height: 340px;
   cursor: pointer;
 }
 .card-inner {
@@ -549,9 +586,21 @@ button {
 .card-face.back {
   transform: rotateY(180deg);
   background: linear-gradient(160deg, var(--bg-2) 0%, var(--bg) 100%);
-  padding: 1rem;
+  padding: 1rem 1rem 2.2rem; /* extra bottom space so text never collides with "back" hint */
   font-size: 1rem;
   line-height: 1.35;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.card-face.back > p {
+  /* Long lore safety: take remaining space, clip what doesn't fit, fade the bottom. */
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 0.5rem 0 0;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(180deg, #000 85%, transparent 100%);
+          mask-image: linear-gradient(180deg, #000 85%, transparent 100%);
 }
 
 .card-rarity {
@@ -725,6 +774,16 @@ button {
   line-height: 1;
   filter: drop-shadow(2px 2px 0 rgba(0,0,0,0.4));
 }
+
+/* Theme-variant icons (e.g. DeepMask logo): show one per theme. */
+.theme-icon {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+.theme-icon-day { display: none; }
+[data-theme="day"] .theme-icon-night { display: none; }
+[data-theme="day"] .theme-icon-day   { display: inline-block; }
 
 .quest-icon {
   width: 64px; height: 64px;
@@ -906,6 +965,76 @@ body.secret-unlocked .secret-chest {
 .achievement .a-title { font-family: var(--font-display); font-size: 0.55rem; color: var(--c-gold); margin-bottom: 0.2rem; }
 .achievement.locked .a-icon, .achievement.locked .a-title, .achievement.locked .a-desc {
   filter: grayscale(1) brightness(0.6);
+}
+
+/* ==========================================================================
+   Metal Gear "?!" alert + Snake cameo
+   ========================================================================== */
+
+.mgs-alert {
+  position: fixed;
+  top: 18%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.6);
+  z-index: 95;
+  width: 96px;
+  height: 96px;
+  background: #ffd966;
+  border: 4px solid #1a1230;
+  box-shadow: 6px 6px 0 0 rgba(0,0,0,0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  color: #1a1230;
+  font-size: 4rem;
+  font-weight: bold;
+  animation: mgs-pop 0.18s ease-out forwards, mgs-blink 0.22s steps(2) 0.2s 4;
+}
+.mgs-alert::before {
+  content: "ALERT";
+  position: absolute;
+  bottom: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.6rem;
+  color: var(--c-red);
+  background: #1a1230;
+  padding: 2px 6px;
+  letter-spacing: 0.15em;
+  white-space: nowrap;
+}
+.mgs-alert-fade {
+  animation: mgs-fade 0.55s ease-in forwards;
+}
+
+@keyframes mgs-pop {
+  0%   { transform: translate(-50%, -50%) scale(0.2); opacity: 0; }
+  60%  { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+@keyframes mgs-blink {
+  50% { opacity: 0.35; }
+}
+@keyframes mgs-fade {
+  to { transform: translate(-50%, -50%) scale(0.6); opacity: 0; }
+}
+
+.mgs-snake {
+  position: fixed;
+  bottom: 60px;
+  left: -260px;
+  width: 180px;
+  height: auto;
+  z-index: 94;
+  image-rendering: pixelated;
+  filter: drop-shadow(4px 4px 0 rgba(0,0,0,0.5));
+  pointer-events: none;
+  animation: mgs-slither 5s linear forwards;
+}
+@keyframes mgs-slither {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(calc(100vw + 520px)); }
 }
 
 /* ==========================================================================

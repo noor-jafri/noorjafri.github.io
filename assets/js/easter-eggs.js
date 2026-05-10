@@ -75,7 +75,9 @@ function attachAvatarSpawner() {
   av.addEventListener("click", (e) => {
     clicks++;
     spawnSprite(e.clientX, e.clientY);
-    if (clicks % 5 === 0) {
+    if (clicks === 10) {
+      summonSnake();
+    } else if (clicks % 5 === 0) {
       rainSprites(15);
       toast(`⚡ ${clicks} clicks — keep going!`);
     }
@@ -116,6 +118,37 @@ function rainSprites(count = 20) {
       spawnSprite(Math.random() * window.innerWidth, -10);
     }, i * 60);
   }
+}
+
+/* ---------- Metal Gear: "?!" alert + snake cameo ---------- */
+export function summonSnake() {
+  console.log("[snake] summonSnake() called — kept you waiting, huh?");
+
+  // "?!" alert — classic yellow exclamation appears, then Snake slides through.
+  const alertBox = document.createElement("div");
+  alertBox.className = "mgs-alert";
+  alertBox.textContent = "!";
+  document.body.appendChild(alertBox);
+
+  setTimeout(() => {
+    alertBox.classList.add("mgs-alert-fade");
+    setTimeout(() => alertBox.remove(), 600);
+  }, 1100);
+
+  // Spawn the man himself once the alert is in.
+  setTimeout(() => {
+    const snake = document.createElement("img");
+    snake.src = "./assets/images/snake.gif";
+    snake.alt = "Solid Snake";
+    snake.className = "mgs-snake";
+    snake.onerror = () => console.warn("[snake] snake.gif failed to load — check assets/images/snake.gif");
+    document.body.appendChild(snake);
+    // CSS @keyframes animation runs automatically on append.
+    setTimeout(() => snake.remove(), 5400);
+  }, 900);
+
+  toast("❗ ?! — KEPT YOU WAITING, HUH?");
+  unlockAchievement("snake-spotted");
 }
 
 /* ---------- /help console ---------- */
@@ -171,13 +204,14 @@ function attachConsole() {
   function runCmd(cmd, out) {
     const print = (msg) => out.innerHTML = msg;
     switch (cmd) {
-      case "help":    print("Commands: help, about, skills, contact, blog, theme, secret, achievements, exit"); break;
+      case "help":    print("Commands: help, about, skills, contact, blog, theme, secret, snake, achievements, exit"); break;
       case "about":   document.querySelector("#about")?.scrollIntoView({behavior:"smooth"}); print("→ about"); break;
       case "skills":  document.querySelector("#skills")?.scrollIntoView({behavior:"smooth"}); print("→ skills"); break;
       case "contact": print("✉ noorjafri92@gmail.com  ·  💼 linkedin.com/in/nooralijafri"); break;
       case "blog":    location.href = "blog.html"; break;
       case "theme":   document.querySelector("#theme-toggle")?.click(); print("toggled."); break;
       case "secret":  triggerKonami(); print("✨ unlocked."); break;
+      case "snake":   summonSnake(); print("?! ... a presence is detected."); break;
       case "achievements":
         print(achievements.map(a => `${unlocked.has(a.id) || a.always ? "✔" : "·"} ${a.title}`).join("<br>")); break;
       case "exit": case "close":
