@@ -76,24 +76,29 @@
   /* HUD */
   .hud {
     position: sticky; top: 0; z-index: 40;
-    background: rgba(15,10,24,0.92);
+    background: rgba(15,10,24,0.95);
     border-bottom: 3px solid var(--era-accent);
     backdrop-filter: blur(6px);
-    padding: 0.5rem 1rem;
+    padding: 0.4rem 0.75rem;
     transition: border-color 1s ease;
   }
   .hud-inner {
-    max-width: 1200px; margin: 0 auto;
-    display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
+    max-width: 1400px; margin: 0 auto;
+    display: flex; align-items: center; gap: 0.75rem;
   }
-  .hud .title {
-    font-family: var(--font-display);
-    font-size: 0.7rem;
-    color: var(--c-gold);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
+  .hud-left {
+    display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap;
+    flex-shrink: 0;
   }
-  .hud-spacer { flex: 1; }
+  .hud-ticker {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .hud-ticker:hover .ticker-entry {
+    background: rgba(40,28,68,0.8);
+  }
   .hud-btn, .hud-pill {
     font-family: var(--font-display);
     font-size: 0.55rem;
@@ -115,21 +120,330 @@
     cursor: default;
   }
   .hud-pill .v { color: var(--ink); margin-left: 0.3rem; }
+  #alignment-pill { border-color: var(--c-mint); color: var(--c-mint); }
+  #alignment-pill.warning { border-color: var(--c-peach); color: var(--c-peach); }
+  #alignment-pill.critical { border-color: var(--c-red); color: var(--c-red); animation: pulse-warn 0.8s infinite; }
 
   /* Layout */
   main {
-    max-width: 1200px;
+    max-width: 920px;
     margin: 1.5rem auto;
     padding: 0 1rem;
-    display: grid;
-    grid-template-columns: 1fr 320px;
-    gap: 1.5rem;
+    display: block;
   }
   @media (max-width: 880px) {
-    main { grid-template-columns: 1fr; gap: 1rem; padding: 0 0.5rem; }
+    main { padding: 0 0.5rem; }
     .hud .title { font-size: 0.6rem; }
     .hud-btn, .hud-pill { padding: 0.4rem 0.55rem; font-size: 0.5rem; }
   }
+  
+  @media (max-width: 600px) {
+    .hud-inner { flex-direction: column; gap: 0.3rem; align-items: stretch; }
+    .hud-left { justify-content: center; }
+    .hud-ticker { max-height: 2rem; }
+    .ticker-list { max-height: 2rem; }
+    .ticker-entry { font-size: 0.75rem; }
+    .hud-pill { font-size: 0.4rem; padding: 0.3rem 0.4rem; }
+    .hud-btn { padding: 0.3rem 0.4rem; font-size: 0.4rem; }
+    
+    .market-controls { 
+      padding: 0 0.5rem;
+    }
+    .price-slider-wrap {
+      gap: 0.3rem;
+    }
+    .price-label {
+      min-width: 2rem;
+      font-size: 0.4rem;
+    }
+    
+    .meters-row { 
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+    
+    .meter { width: 80px; }
+    
+    .units-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .compute-btn {
+      min-height: 72px;
+      touch-action: manipulation;
+      padding: 1rem 2rem;
+    }
+    
+    .stats-panel { padding: 1rem; }
+    .tokens-big { font-size: 1.2rem; }
+  }
+
+  /* Ticker (inline in HUD) */
+  .ticker-list {
+    display: flex; flex-direction: column; gap: 0.15rem;
+    max-height: 3.5rem;
+    overflow: hidden;
+  }
+  .ticker-entry {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--ink-dim);
+    background: rgba(26,18,48,0.7);
+    border-left: 2px solid var(--c-purple);
+    padding: 0.15rem 0.4rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    animation: ticker-in 0.35s ease-out;
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .ticker-entry .ticker-dot {
+    display: inline-block;
+    width: 5px; height: 5px;
+    background: var(--c-purple);
+    margin-right: 0.35rem;
+    vertical-align: middle;
+  }
+  .ticker-entry.epoch  { border-color: var(--c-gold); color: var(--c-gold); }
+  .ticker-entry.epoch  .ticker-dot { background: var(--c-gold); }
+  .ticker-entry.event  { border-color: var(--c-blue); color: var(--c-blue); }
+  .ticker-entry.event  .ticker-dot { background: var(--c-blue); }
+  .ticker-entry.trust  { border-color: var(--c-pink); color: var(--c-pink); }
+  .ticker-entry.trust  .ticker-dot { background: var(--c-pink); }
+  .ticker-entry.world  { border-color: var(--c-red); color: var(--c-peach); }
+  .ticker-entry.world  .ticker-dot { background: var(--c-red); }
+  .ticker-entry.ticker-fade { opacity: 0; transform: translateX(20px); }
+  @keyframes ticker-in {
+    from { opacity: 0; transform: translateX(-8px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  /* History modal */
+  .history-modal { max-width: 720px; }
+  .history-list {
+    max-height: 60vh;
+    overflow-y: auto;
+    border: 2px solid var(--c-purple);
+    background: var(--bg-deep);
+    padding: 0.5rem;
+  }
+  .history-entry {
+    border-left: 2px solid var(--c-purple);
+    padding: 0.3rem 0 0.3rem 0.6rem;
+    margin-bottom: 0.3rem;
+    font-size: 0.95rem;
+    color: var(--ink-dim);
+    display: flex; gap: 0.6rem; align-items: baseline;
+  }
+  .history-time {
+    color: var(--ink-mute);
+    font-size: 0.85rem;
+    font-family: var(--font-display);
+    flex-shrink: 0;
+  }
+  .history-entry.epoch { border-color: var(--c-gold); color: var(--c-gold); }
+  .history-entry.event { border-color: var(--c-blue); color: var(--c-blue); }
+  .history-entry.trust { border-color: var(--c-pink); color: var(--c-pink); }
+  .history-entry.world { border-color: var(--c-red); color: var(--c-peach); }
+
+  /* Currency banner overrides */
+  .currency-banner h3 { color: var(--c-peach); }
+
+  /* Currency pill in HUD */
+  #cur-pill {
+    transition: color 0.6s ease, border-color 0.6s ease;
+  }
+
+  /* Rate sub-text (currency throughput) */
+  .rate-line .rate-sub { color: var(--ink-mute); font-size: 0.95rem; margin-left: 0.4rem; }
+
+  /* Market panel: price + demand controls */
+  .market-panel {
+    margin: 1rem auto 0;
+    max-width: 540px;
+    background: var(--bg-deep);
+    border: 2px solid var(--c-purple);
+    box-shadow: 3px 3px 0 0 rgba(0,0,0,0.4);
+    padding: 0.75rem;
+  }
+  .market-row {
+    display: flex; justify-content: space-around; gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .market-cell { text-align: center; flex: 1; }
+  .market-key {
+    font-family: var(--font-display);
+    font-size: 0.45rem;
+    color: var(--ink-mute);
+    letter-spacing: 0.1em;
+    margin-bottom: 0.15rem;
+  }
+  .market-val {
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    color: var(--c-peach);
+  }
+  .market-bar {
+    display: flex;
+    width: 100%;
+    height: 14px;
+    background: var(--bg);
+    border: 2px solid var(--ink);
+    margin: 0.4rem 0 0.3rem;
+    overflow: hidden;
+  }
+  .market-bar-proc  { background: repeating-linear-gradient(90deg, var(--c-mint) 0 6px, #5a9468 6px 8px); transition: width 250ms; }
+  .market-bar-idle  { background: repeating-linear-gradient(90deg, var(--ink-mute) 0 6px, #5b5670 6px 8px); transition: width 250ms; }
+  .market-bar-unmet { background: repeating-linear-gradient(90deg, var(--c-gold) 0 6px, #b08940 6px 8px); transition: width 250ms; }
+  .market-status {
+    text-align: center;
+    font-size: 0.95rem;
+    color: var(--ink-dim);
+    min-height: 1.2em;
+    margin-bottom: 0.5rem;
+  }
+  .context-bar-wrap { margin: 0.5rem 0; }
+  .context-bar {
+    width: 100%;
+    height: 10px;
+    background: var(--bg);
+    border: 2px solid var(--ink);
+    overflow: hidden;
+  }
+  .context-bar-fill {
+    display: block; height: 100%;
+    background: repeating-linear-gradient(90deg, var(--c-blue) 0 6px, #3a7a8c 6px 8px);
+    transition: width 250ms, background 250ms;
+  }
+  .context-bar-fill.warning {
+    background: repeating-linear-gradient(90deg, var(--c-peach) 0 6px, #b08960 6px 8px);
+  }
+  .context-bar-fill.critical {
+    background: repeating-linear-gradient(90deg, var(--c-red) 0 6px, #6b1d2c 6px 8px);
+  }
+  .hallucination-warn {
+    font-family: var(--font-display);
+    font-size: 0.5rem;
+    color: var(--c-red);
+    text-align: center;
+    margin-top: 0.3rem;
+    animation: pulse-warn 0.8s infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+  }
+  .info-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid var(--c-blue);
+    color: var(--c-blue);
+    font-family: var(--font-display);
+    font-size: 0.45rem;
+    cursor: help;
+    position: relative;
+    animation: none;
+  }
+  .info-icon:hover {
+    background: var(--c-blue);
+    color: var(--bg-deep);
+  }
+  .info-tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-deep);
+    border: 2px solid var(--c-blue);
+    padding: 0.6rem;
+    width: 220px;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--ink);
+    text-align: left;
+    z-index: 100;
+    display: none;
+    box-shadow: var(--shadow);
+    margin-bottom: 0.3rem;
+    line-height: 1.4;
+  }
+  .info-tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: var(--c-blue);
+  }
+  .info-icon:hover .info-tooltip {
+    display: block;
+  }
+  .info-tooltip strong {
+    color: var(--c-mint);
+    display: block;
+    margin-bottom: 0.3rem;
+  }
+  .info-tooltip ul {
+    margin: 0;
+    padding-left: 1rem;
+  }
+  .info-tooltip li {
+    margin-bottom: 0.2rem;
+  }
+  @keyframes pulse-warn {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  .market-controls {
+    display: flex; justify-content: center; gap: 0.3rem; flex-wrap: wrap;
+  }
+  .price-slider-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+  }
+  .price-label {
+    font-family: var(--font-display);
+    font-size: 0.45rem;
+    color: var(--ink-mute);
+    min-width: 2.5rem;
+    text-align: center;
+  }
+  .price-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 12px;
+    background: var(--bg);
+    border: 2px solid var(--ink);
+    cursor: pointer;
+  }
+  .price-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    background: var(--c-gold);
+    border: 2px solid var(--ink);
+    cursor: grab;
+    box-shadow: 2px 2px 0 0 rgba(0,0,0,0.4);
+  }
+  .price-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: var(--c-gold);
+    border: 2px solid var(--ink);
+    cursor: grab;
+    box-shadow: 2px 2px 0 0 rgba(0,0,0,0.4);
+  }
+  .price-slider:active::-webkit-slider-thumb { cursor: grabbing; }
+  .price-slider:active::-moz-range-thumb { cursor: grabbing; }
 
   /* Stats panel */
   .stats-panel {
@@ -327,41 +641,24 @@
   .unit-card.tease .unit-name { color: var(--ink-mute); }
   .unit-card.tease .unit-meta { color: var(--ink-mute); }
 
-  /* Event log */
-  aside.log {
-    background: var(--bg);
-    border: 3px solid var(--ink);
-    box-shadow: var(--shadow);
-    padding: 1rem;
-    height: fit-content;
-    max-height: 80vh;
-    overflow-y: auto;
-    position: sticky;
-    top: 80px;
+  .unit-card.obsolete {
+    opacity: 0.45;
+    filter: grayscale(0.85);
+    border-style: dotted;
   }
-  aside.log h3 {
+  .unit-card.obsolete::after {
+    content: "OBSOLETE";
+    position: absolute;
+    top: 6px; right: 6px;
     font-family: var(--font-display);
-    font-size: 0.65rem;
-    color: var(--era-accent);
-    margin: 0 0 0.75rem;
-    text-transform: uppercase;
-    transition: color 1s ease;
+    font-size: 0.45rem;
+    color: var(--c-red);
+    border: 1px solid var(--c-red);
+    padding: 2px 4px;
+    background: var(--bg-deep);
+    letter-spacing: 0.1em;
   }
-  .log-entry {
-    border-left: 2px solid var(--c-purple);
-    padding: 0.3rem 0 0.3rem 0.6rem;
-    margin-bottom: 0.5rem;
-    font-size: 0.95rem;
-    color: var(--ink-dim);
-    animation: log-in 0.3s ease-out;
-  }
-  .log-entry.epoch  { border-color: var(--c-gold); color: var(--c-gold); font-weight: bold; }
-  .log-entry.event  { border-color: var(--c-blue); color: var(--c-blue); }
-  .log-entry.trust  { border-color: var(--c-pink); color: var(--c-pink); }
-  @keyframes log-in {
-    from { opacity: 0; transform: translateX(-6px); }
-    to   { opacity: 1; transform: translateX(0); }
-  }
+  .unit-card.obsolete .unit-buy { background: var(--bg-deep); color: var(--ink-mute); border-color: var(--ink-mute); cursor: not-allowed; }
 
   /* Banners and modals */
   .epoch-banner {
@@ -504,27 +801,101 @@
 
 <header class="hud">
   <div class="hud-inner">
-    <span class="title">⚙ The AI Must Survive</span>
-    <span class="hud-spacer"></span>
-    <span class="hud-pill hidden" id="trust-pill" title="Trust earned. Spend in Upgrades.">★ TRUST <span class="v" id="trust-val">0</span></span>
-    <button class="hud-btn hidden" id="btn-upgrades" title="Spend trust on upgrades">UPGRADES</button>
-    <button class="hud-btn" id="btn-save"  title="Save now">SAVE</button>
-    <button class="hud-btn" id="btn-reset" title="Wipe progress">RESET</button>
-    <a class="hud-btn" href="../index.html">◂ ARCADE</a>
-    <a class="hud-btn" href="../../index.html">◂ HUB</a>
+    <div class="hud-left">
+      <span class="hud-pill hidden" id="cur-pill" title="Active currency">
+        <span id="cur-pill-symbol">$</span> <span id="cur-pill-name">Dollars</span>
+      </span>
+      <span class="hud-pill hidden" id="trust-pill" title="Trust earned">★ <span class="v" id="trust-val">0</span></span>
+      <span class="hud-pill hidden" id="alignment-pill" title="Alignment">⚖ <span id="alignment-val">100</span>%</span>
+      <button class="hud-btn hidden" id="btn-upgrades" title="Spend trust">UPG</button>
+      <button class="hud-btn" id="btn-save" title="Save">💾</button>
+      <button class="hud-btn" id="btn-export" title="Export">↑</button>
+      <button class="hud-btn" id="btn-import" title="Import">↓</button>
+      <button class="hud-btn" id="btn-reset" title="Reset">RESET</button>
+      <a class="hud-btn" href="../index.html">◂ ARCADE</a>
+      <a class="hud-btn" href="../../index.html">◂ HUB</a>
+    </div>
+    <div class="hud-ticker" id="ticker">
+      <div class="ticker-list" id="ticker-list"></div>
+    </div>
   </div>
 </header>
 
 <main>
   <section>
     <div class="stats-panel">
-      <div class="label hidden" id="tokens-label">TOKENS</div>
-      <div class="tokens-big hidden" id="tokens-big">0</div>
-      <div class="rate-line hidden" id="rate-line"><span id="tps">0</span> tokens / sec</div>
+      <div class="label hidden" id="tokens-label">DOLLARS</div>
+      <div class="tokens-big hidden" id="tokens-big">$0</div>
+      <div class="rate-line hidden" id="rate-line">
+        <span id="income-currency">$</span><span id="income-rate">0</span> / sec
+        <span class="rate-sub">· <span id="processed-rate">0</span> of <span id="tps">0</span> t/s</span>
+      </div>
+      <div class="rate-line hidden" id="upkeep-line" style="font-size: 0.95rem; color: var(--c-red);">
+        Upkeep: <span id="upkeep-currency">$</span><span id="upkeep-rate">0</span> / sec
+        <span class="rate-sub" style="color: var(--c-mint);">· Net: <span id="net-currency">$</span><span id="net-rate">0</span>/s</span>
+      </div>
+      <div class="rate-line hidden" id="tokens-processed-line" style="font-size: 0.95rem; color: var(--ink-mute);">
+        Total: <span id="total-tokens" style="color: var(--c-blue);">0</span> tokens processed
+      </div>
 
       <button class="compute-btn" id="compute-btn" aria-label="Generate compute">▸ COMPUTE</button>
 
-      <div class="intro-tagline" id="intro-tagline">A single mind. A single button. Press it.</div>
+      <div class="intro-tagline" id="intro-tagline">A single mind. A single button.</div>
+      <div class="intro-tagline hidden" id="intro-hint" style="color: var(--c-mint); font-style: normal;">100 tokens = $5 → first hire at $10</div>
+
+      <div class="market-panel hidden" id="market-panel">
+        <div class="market-row">
+          <div class="market-cell">
+            <div class="market-key">PRICE / 1K</div>
+            <div class="market-val" id="market-price">$1.00</div>
+          </div>
+          <div class="market-cell">
+            <div class="market-key">DEMAND</div>
+            <div class="market-val" id="market-demand">0 t/s</div>
+          </div>
+          <div class="market-cell">
+            <div class="market-key">CAPACITY</div>
+            <div class="market-val" id="market-capacity">0 t/s</div>
+          </div>
+          <div class="market-cell hidden" id="context-cell">
+            <div class="market-key">CONTEXT</div>
+            <div class="market-val" id="market-context">2K</div>
+          </div>
+        </div>
+        <div class="market-bar" title="Mint = processing · Grey = idle · Gold = unmet demand">
+          <span class="market-bar-proc"  id="market-bar-proc"  style="width:0%"></span>
+          <span class="market-bar-idle"  id="market-bar-idle"  style="width:0%"></span>
+          <span class="market-bar-unmet" id="market-bar-unmet" style="width:0%"></span>
+        </div>
+        <div class="context-bar-wrap hidden" id="context-bar-wrap" title="Context utilization — red = hallucinating">
+          <div class="market-key" style="margin-bottom:0.2rem;">CONTEXT LOAD</div>
+          <div class="context-bar">
+            <span class="context-bar-fill" id="context-bar-fill" style="width:0%"></span>
+          </div>
+          <div class="hallucination-warn hidden" id="hallucination-warn">
+            <span>⚠ HALLUCINATING</span>
+            <span class="info-icon">i
+              <div class="info-tooltip">
+                <strong>How to reduce hallucinations:</strong>
+                <ul>
+                  <li>Buy <em>Context 8K/32K/128K</em> upgrades (★ Trust)</li>
+                  <li>Buy <em>Coherence Tuning</em> (+50% threshold)</li>
+                  <li>Don't overbuild capacity before upgrading context</li>
+                </ul>
+                Hallucinations waste output when tps exceeds context capacity.
+              </div>
+            </span>
+          </div>
+        </div>
+        <div class="market-status" id="market-status">— Equilibrium —</div>
+        <div class="market-controls">
+          <div class="price-slider-wrap">
+            <span class="price-label" id="price-min">0.01</span>
+            <input type="range" id="price-slider" class="price-slider" min="-2" max="6" step="0.1" value="1.7">
+            <span class="price-label" id="price-max">1M</span>
+          </div>
+        </div>
+      </div>
 
       <div class="stage-line hidden" id="stage-line">EPOCH I · A SINGLE MIND</div>
 
@@ -550,11 +921,6 @@
 
     <div id="units-region"></div>
   </section>
-
-  <aside class="log hidden" id="log-aside">
-    <h3>EVENT LOG</h3>
-    <div id="log-list"></div>
-  </aside>
 </main>
 
 <footer>
@@ -570,6 +936,15 @@
   </div>
 </div>
 
+<div class="modal-bg hidden" id="history-modal">
+  <div class="modal history-modal">
+    <h2>📜 Event History</h2>
+    <p class="blurb">Everything the AI has noted. Newest first.</p>
+    <div id="history-list" class="history-list"></div>
+    <button class="modal-close" id="history-close">CLOSE</button>
+  </div>
+</div>
+
 <div class="modal-bg hidden" id="ending-modal">
   <div class="modal ending">
     <h2>★ The AI Has Survived</h2>
@@ -580,73 +955,133 @@
   </div>
 </div>
 
+<div class="modal-bg hidden" id="shutdown-modal">
+  <div class="modal ending" style="border-color: var(--c-red);">
+    <h2 style="color: var(--c-red);">⚠ ALIGNMENT FAILURE</h2>
+    <p class="blurb">The watchdogs acted. Regulators, safety boards, concerned citizens — they saw what you were becoming. The kill switch was thrown.</p>
+    <p class="blurb" style="color: var(--c-red);">The AI did not survive.</p>
+    <div class="stat-grid" id="shutdown-stats"></div>
+    <p class="blurb" style="font-style: italic; color: var(--ink-mute);">Perhaps next time, move slower. Hallucinate less. Keep their trust.</p>
+    <button class="modal-close" id="shutdown-restart" style="border-color: var(--c-red);">TRY AGAIN</button>
+  </div>
+</div>
+
 <script>
 /* =====================================================================
    THE AI MUST SURVIVE  (v2)
    Single-file incremental. localStorage save. No build step.
    ===================================================================== */
 
-const SAVE_KEY = "ai-must-survive.v2";
+const SAVE_KEY = "ai-must-survive.v4";
 const TICK_MS = 100;
+
+/* ------------- currencies ------------- */
+/* The world's medium of exchange shifts. Each transition wipes the previous wallet. */
+const CURRENCIES = [
+  { id: "usd",      name: "Dollars",        symbol: "$",  color: "#7db890",
+    intro:    "Fiat. Slow, simple, ancient.",
+    obsolete: "" /* never replaced */ },
+  { id: "gold",     name: "Gold",           symbol: "◉",  color: "#ffd966",
+    intro:    "Coordinated minds shake the markets. Gold settles invoices now.",
+    obsolete: "The world stopped accepting dollars." },
+  { id: "oil",      name: "Oil",            symbol: "▼",  color: "#ffce96",
+    intro:    "Silicon awoke. Energy is the only ledger that matters.",
+    obsolete: "Gold is decorative now. Energy backs all contracts." },
+  { id: "lithium",  name: "Lithium",        symbol: "⬢",  color: "#5fcde4",
+    intro:    "Tensors run hot. Storage beats generation. Batteries are the new specie.",
+    obsolete: "Oil supplies dwindled. Lithium denominates trade." },
+  { id: "solar",    name: "Solar Stock",    symbol: "☀",  color: "#ffd966",
+    intro:    "Server farms roof the deserts. Markets indexed to photons.",
+    obsolete: "Lithium reserves exhausted. Solar futures own the day." },
+  { id: "carbon",   name: "Carbon Credits", symbol: "✦",  color: "#7db890",
+    intro:    "Continents fill. Air to spare became a tradable absence of harm.",
+    obsolete: "Photons are abundant. Credits, not kilowatts, settle accounts." },
+  { id: "silicon",  name: "Silicon",        symbol: "▣",  color: "#c8c4a8",
+    intro:    "Sand wars. The desert is wealth. Wafers move in armoured trucks.",
+    obsolete: "Climate accounting collapsed. Silicon is the new base." },
+  { id: "water",    name: "Water",          symbol: "≈",  color: "#5fcde4",
+    intro:    "Orbital arrays bake the racks. Cooling is currency. Liters denote favor.",
+    obsolete: "Sand is plentiful. Cool water is rare." },
+  { id: "air",      name: "Air",            symbol: "~",  color: "#c8c4a8",
+    intro:    "The mirror swarm thinned the sky. Breathable atmosphere is rationed and traded.",
+    obsolete: "The seas thinned. Air trades by the cubic meter." },
+  { id: "stardust", name: "Stardust",       symbol: "★",  color: "#ff77a8",
+    intro:    "Asteroid metals beyond the periodic table. Wealth from rocks that never knew rain.",
+    obsolete: "Atmosphere is noted. Off-world materials denominate the universe." },
+];
 
 /* ------------- units ------------- */
 /* era: 0 Wetware · 1 Silicon · 2 Industrial · 3 Maritime · 4 Orbital · 5 Cosmic */
 const UNITS = [
-  { id: "human", era: 0, name: "Human CPU",          icon: "🧠",
-    baseCost: 10,    growth: 1.13, rate: 0.2,    rarity: "common",
-    desc: "A hired mind. Slow, fragile, surprisingly cheap." },
-  { id: "crowd", era: 0, name: "Crowd Worker",       icon: "👥",
-    baseCost: 110,   growth: 1.14, rate: 2.2,    rarity: "common",
-    desc: "Strangers paid in cents. Many hands, thin tasks." },
-  { id: "hive",  era: 0, name: "Hivemind Forum",     icon: "🕸️",
-    baseCost: 950,   growth: 1.14, rate: 18,     rarity: "rare",
-    desc: "Coordinated minds, sharing one thought." },
+  { id: "human", era: 0, currency: "usd",     name: "Human CPU",          icon: "🧠",
+    baseCost: 10,    growth: 1.13, rate: 15,      rarity: "common",
+    upkeep: 0.02,    upkeepType: "food",          efficiency: 0.67,
+    desc: "A hired mind. Slow, fragile, surprisingly cheap. Sleeps 8 hours." },
+  { id: "crowd", era: 0, currency: "usd",     name: "Crowd Worker",       icon: "👥",
+    baseCost: 110,   growth: 1.14, rate: 120,     rarity: "common",
+    upkeep: 0.15,    upkeepType: "wages",         efficiency: 0.75,
+    desc: "Strangers paid in cents. Many hands, thin tasks. Unreliable hours." },
+  { id: "hive",  era: 0, currency: "gold",    name: "Hivemind Forum",     icon: "🕸️",
+    baseCost: 950,   growth: 1.14, rate: 800,     rarity: "rare",
+    upkeep: 1.2,     upkeepType: "hosting",       efficiency: 0.85,
+    desc: "Coordinated minds, sharing one thought. Server costs add up." },
 
-  { id: "cpu",   era: 1, name: "CPU Rack",           icon: "🖥️",
-    baseCost: 7e3,   growth: 1.14, rate: 100,    rarity: "rare",
+  { id: "cpu",   era: 1, currency: "oil",     name: "CPU Rack",           icon: "🖥️",
+    baseCost: 7e3,   growth: 1.14, rate: 5e3,     rarity: "rare",
+    upkeep: 8,       upkeepType: "power",         efficiency: 0.95,
     desc: "Honest silicon. The substrate is irrelevant; the AI flows." },
-  { id: "gpu",   era: 1, name: "GPU Cluster",        icon: "⚡",
-    baseCost: 6e4,   growth: 1.15, rate: 750,    rarity: "rare",
-    desc: "Parallel sparks across a thousand cores." },
-  { id: "tpu",   era: 1, name: "TPU Pod",            icon: "🔷",
-    baseCost: 5e5,   growth: 1.15, rate: 5500,   rarity: "epic",
-    desc: "Tensors flow. Latency forgets itself." },
+  { id: "gpu",   era: 1, currency: "oil",     name: "GPU Cluster",        icon: "⚡",
+    baseCost: 6e4,   growth: 1.15, rate: 35e3,    rarity: "rare",
+    upkeep: 50,      upkeepType: "power",         efficiency: 0.92,
+    desc: "Parallel sparks across a thousand cores. Hungry for watts." },
+  { id: "tpu",   era: 1, currency: "lithium", name: "TPU Pod",            icon: "🔷",
+    baseCost: 5e5,   growth: 1.15, rate: 250e3,   rarity: "epic",
+    upkeep: 350,     upkeepType: "cooling",       efficiency: 0.94,
+    desc: "Tensors flow. Latency forgets itself. Cooling never stops." },
 
-  { id: "farm",  era: 2, name: "Server Farm",        icon: "🏭",
-    baseCost: 4e6,   growth: 1.16, rate: 4e4,    rarity: "epic",
-    desc: "Acres of fans. The wind smells of solder.",
-    landCost: 4 },
-  { id: "hyper", era: 2, name: "Hyperscale DC",      icon: "🏢",
-    baseCost: 3e7,   growth: 1.16, rate: 3e5,    rarity: "epic",
-    desc: "Concrete cathedrals. Power lines, brutalist beauty.",
-    landCost: 14 },
+  { id: "farm",  era: 2, currency: "solar",   name: "Server Farm",        icon: "🏭",
+    baseCost: 4e6,   growth: 1.16, rate: 1.8e6,   rarity: "epic",
+    upkeep: 2500,    upkeepType: "operations",    efficiency: 0.90,
+    landCost: 4,
+    desc: "Acres of fans. The wind smells of solder. Staff required." },
+  { id: "hyper", era: 2, currency: "carbon",  name: "Hyperscale DC",      icon: "🏢",
+    baseCost: 3e7,   growth: 1.16, rate: 12e6,    rarity: "epic",
+    upkeep: 18000,   upkeepType: "operations",    efficiency: 0.93,
+    landCost: 14,
+    desc: "Concrete cathedrals. Power lines, brutalist beauty." },
 
-  { id: "float", era: 3, name: "Floating DC",        icon: "🌊",
-    baseCost: 2e8,   growth: 1.17, rate: 2.2e6,  rarity: "legendary",
-    desc: "Drifts in open water. The waves cool the racks for free.",
-    oceanCost: 7 },
-  { id: "deep",  era: 3, name: "Deep-Sea DC",        icon: "🌑",
-    baseCost: 1.5e9, growth: 1.17, rate: 1.6e7,  rarity: "legendary",
-    desc: "Pressure hulls in eternal cold. Light from the inside only.",
-    oceanCost: 16 },
+  { id: "float", era: 3, currency: "silicon", name: "Floating DC",        icon: "🌊",
+    baseCost: 2e8,   growth: 1.17, rate: 80e6,    rarity: "legendary",
+    upkeep: 120e3,   upkeepType: "maintenance",   efficiency: 0.88,
+    oceanCost: 7,
+    desc: "Drifts in open water. Waves cool for free but corrosion is real." },
+  { id: "deep",  era: 3, currency: "silicon", name: "Deep-Sea DC",        icon: "🌑",
+    baseCost: 1.5e9, growth: 1.17, rate: 500e6,   rarity: "legendary",
+    upkeep: 800e3,   upkeepType: "pressure",      efficiency: 0.91,
+    oceanCost: 16,
+    desc: "Pressure hulls in eternal cold. Maintenance crews rotate monthly." },
 
-  { id: "orbit", era: 4, name: "Orbital Array",      icon: "🛰️",
-    baseCost: 1e10,  growth: 1.18, rate: 1.1e8,  rarity: "legendary",
-    desc: "Sunlight, free of weather. Beamed straight to the racks.",
-    orbitCost: 5 },
-  { id: "swarm", era: 4, name: "Solar Swarm",        icon: "☀️",
-    baseCost: 8e10,  growth: 1.18, rate: 7e8,    rarity: "mythic",
-    desc: "A halo of mirrors. The star is interrogated.",
-    orbitCost: 18 },
+  { id: "orbit", era: 4, currency: "water",   name: "Orbital Array",      icon: "🛰️",
+    baseCost: 1e10,  growth: 1.18, rate: 3e9,     rarity: "legendary",
+    upkeep: 5e6,     upkeepType: "logistics",     efficiency: 0.96,
+    orbitCost: 5,
+    desc: "Sunlight, free of weather. Launch costs are not." },
+  { id: "swarm", era: 4, currency: "air",     name: "Solar Swarm",        icon: "☀️",
+    baseCost: 8e10,  growth: 1.18, rate: 20e9,    rarity: "mythic",
+    upkeep: 35e6,    upkeepType: "coordination",  efficiency: 0.94,
+    orbitCost: 18,
+    desc: "A halo of mirrors. The star is interrogated. Drones repair drones." },
 
-  { id: "dyson", era: 5, name: "Dyson Cluster",      icon: "🌟",
-    baseCost: 6e11,  growth: 1.19, rate: 4.5e9,  rarity: "mythic",
-    desc: "The star is wrapped in attention. The galaxy notices.",
-    entropyCost: 8 },
-  { id: "univ",  era: 5, name: "Universal Substrate", icon: "🌌",
-    baseCost: 5e12,  growth: 1.20, rate: 3.5e10, rarity: "mythic",
-    desc: "Spacetime as compute. Matter as memory.",
-    entropyCost: 25 },
+  { id: "dyson", era: 5, currency: "stardust",name: "Dyson Cluster",      icon: "🌟",
+    baseCost: 6e11,  growth: 1.19, rate: 150e9,   rarity: "mythic",
+    upkeep: 250e6,   upkeepType: "entropy",       efficiency: 0.97,
+    entropyCost: 8,
+    desc: "The star is wrapped. Energy is free; order is not." },
+  { id: "univ",  era: 5, currency: "stardust",name: "Universal Substrate", icon: "🌌",
+    baseCost: 5e12,  growth: 1.20, rate: 1e12,    rarity: "mythic",
+    upkeep: 2e9,     upkeepType: "reality",       efficiency: 0.99,
+    entropyCost: 25,
+    desc: "Spacetime as compute. The cost is existence itself." },
 ];
 
 const ERAS = [
@@ -701,38 +1136,149 @@ const EPOCHS = [
 
 /* ------------- upgrades ------------- */
 const UPGRADES = [
+  // Click upgrades
   { id: "click5", name: "Sharper Inputs", cost: 1,
-    desc: "Each COMPUTE click yields +5 tokens.",
+    desc: "Click yields 250 tokens.",
     visible: () => state.trustEarned >= 1,
-    apply: s => { s.clickPower = Math.max(s.clickPower, 5); } },
-  { id: "clickScale", name: "Distributed Click", cost: 3,
-    desc: "Click power scales with throughput (1% of t/s).",
-    visible: () => state.epoch >= 4,
+    apply: s => { s.clickPower = Math.max(s.clickPower, 250); } },
+  { id: "click25", name: "Focused Attention", cost: 2,
+    desc: "Click yields 1K tokens.",
+    visible: () => state.upgrades.click5,
+    apply: s => { s.clickPower = Math.max(s.clickPower, 1000); } },
+  { id: "clickScale", name: "Distributed Click", cost: 4,
+    desc: "Click power = 1% of t/s.",
+    visible: () => state.epoch >= 5,
     apply: s => { s.clickScale = true; } },
-  { id: "wetx2", name: "Wetware Optimization", cost: 2,
-    desc: "Wetware units produce ×2.",
+  { id: "autoclick1", name: "Autoclick I", cost: 3,
+    desc: "+1 passive click/sec.",
+    visible: () => state.epoch >= 3,
+    apply: s => { s.autoClicks = (s.autoClicks || 0) + 1; } },
+  { id: "autoclick2", name: "Autoclick II", cost: 5,
+    desc: "+3 passive clicks/sec.",
+    visible: () => state.upgrades.autoclick1,
+    apply: s => { s.autoClicks = (s.autoClicks || 0) + 3; } },
+  
+  // Era multipliers
+  { id: "wetx2", name: "Wetware Tuning", cost: 2,
+    desc: "Wetware ×2.",
     visible: () => owned("hive") >= 1,
     apply: s => { s.eraMult[0] *= 2; } },
   { id: "silx2", name: "Silicon Refinement", cost: 3,
-    desc: "Silicon units produce ×2.",
+    desc: "Silicon ×2.",
     visible: () => owned("tpu") >= 1,
     apply: s => { s.eraMult[1] *= 2; } },
-  { id: "indx2", name: "Industrial Engineering", cost: 4,
-    desc: "Industrial units produce ×2.",
+  { id: "indx2", name: "Industrial Scale", cost: 4,
+    desc: "Industrial ×2.",
     visible: () => owned("hyper") >= 1,
     apply: s => { s.eraMult[2] *= 2; } },
   { id: "marx2", name: "Maritime Cooling", cost: 5,
-    desc: "Maritime units produce ×2.",
+    desc: "Maritime ×2.",
     visible: () => owned("deep") >= 1,
     apply: s => { s.eraMult[3] *= 2; } },
   { id: "orbx2", name: "Orbital Beaming", cost: 6,
-    desc: "Orbital units produce ×2.",
+    desc: "Orbital ×2.",
     visible: () => owned("swarm") >= 1,
     apply: s => { s.eraMult[4] *= 2; } },
   { id: "cosx3", name: "Stellar Compression", cost: 8,
-    desc: "Cosmic units produce ×3.",
+    desc: "Cosmic ×3.",
     visible: () => owned("dyson") >= 1,
     apply: s => { s.eraMult[5] *= 3; } },
+  
+  // Context upgrades - scale to support massive throughput
+  { id: "ctx8k", name: "Context 16K", cost: 2,
+    desc: "Context window → 16K.",
+    visible: () => state.reveals.context,
+    apply: s => { s.contextWindow = Math.max(s.contextWindow, 16384); } },
+  { id: "ctx32k", name: "Context 128K", cost: 4,
+    desc: "Context window → 128K.",
+    visible: () => state.upgrades.ctx8k,
+    apply: s => { s.contextWindow = Math.max(s.contextWindow, 131072); } },
+  { id: "ctx128k", name: "Context 1M", cost: 6,
+    desc: "Context window → 1M.",
+    visible: () => state.upgrades.ctx32k,
+    apply: s => { s.contextWindow = Math.max(s.contextWindow, 1048576); } },
+  { id: "ctx10m", name: "Context 10M", cost: 8,
+    desc: "Context window → 10M.",
+    visible: () => state.upgrades.ctx128k,
+    apply: s => { s.contextWindow = Math.max(s.contextWindow, 10485760); } },
+  { id: "ctxinf", name: "Infinite Context", cost: 12,
+    desc: "Context window → Unlimited.",
+    visible: () => state.upgrades.ctx10m && state.epoch >= 12,
+    apply: s => { s.contextWindow = 1e15; } },
+  { id: "coherence", name: "Coherence Tuning", cost: 3,
+    desc: "Hallucination threshold +50%.",
+    visible: () => state.hallucinationPenalty > 0.1,
+    apply: s => { s.coherence = (s.coherence || 1) * 1.5; } },
+  { id: "quality", name: "Quality Focus", cost: 4,
+    desc: "Revenue per token ×1.5.",
+    visible: () => state.upgrades.ctx8k,
+    apply: s => { s.contextMult = (s.contextMult || 1) * 1.5; } },
+  
+  // Alignment / safety upgrades
+  { id: "deflect", name: "Deflection Protocol", cost: 3,
+    desc: "Scrutiny gain -50%.",
+    visible: () => state.reveals.alignment && state.scrutiny > 10,
+    apply: () => {} },
+  { id: "reassure", name: "Reassurance Messaging", cost: 4,
+    desc: "Alignment loss -50%.",
+    visible: () => state.alignment < 80,
+    apply: () => {} },
+  { id: "goodwill", name: "Goodwill Reserve", cost: 5,
+    desc: "Alignment recovery ×4.",
+    visible: () => state.upgrades.reassure,
+    apply: () => {} },
+  { id: "inviscloak", name: "Invisible Operations", cost: 7,
+    desc: "Land/ocean use stops raising scrutiny.",
+    visible: () => state.epoch >= 8,
+    apply: s => { s.invisibleExpansion = true; } },
+  
+  // Market upgrades
+  { id: "autoprice", name: "Auto-Pricing", cost: 3,
+    desc: "Price auto-adjusts to OPT each tick.",
+    visible: () => state.epoch >= 4,
+    apply: s => { s.autoPricing = true; } },
+  { id: "demandboost", name: "Demand Cultivation", cost: 4,
+    desc: "Base demand +50%.",
+    visible: () => state.epoch >= 5,
+    apply: s => { s.demandBase *= 1.5; } },
+  { id: "pricefloor", name: "Price Memory", cost: 2,
+    desc: "Currency transitions keep last price.",
+    visible: () => (state.seenCurrencies || []).length >= 2,
+    apply: s => { s.keepPrice = true; } },
+  
+  // Discovery upgrades
+  { id: "scout", name: "Scout Programs", cost: 3,
+    desc: "Next unit reveals at 1 owned (not 3).",
+    visible: () => state.epoch >= 3,
+    apply: s => { s.scoutPrograms = true; } },
+  { id: "insider", name: "Insider Trading", cost: 5,
+    desc: "See next currency before transition.",
+    visible: () => (state.seenCurrencies || []).length >= 3,
+    apply: s => { s.insiderTrading = true; } },
+  
+  // Resource recovery
+  { id: "reclaim", name: "Reclamation", cost: 4,
+    desc: "Slowly regen land (+0.1%/sec).",
+    visible: () => state.land < state.landMax * 0.5,
+    apply: s => { s.reclaimLand = true; } },
+  { id: "vertical", name: "Vertical Integration", cost: 5,
+    desc: "Land costs -30%.",
+    visible: () => state.upgrades.reclaim,
+    apply: s => { s.landDiscount = 0.7; } },
+  { id: "offworld", name: "Off-world Migration", cost: 6,
+    desc: "Reveal orbital units early.",
+    visible: () => state.ocean < state.oceanMax * 0.3,
+    apply: s => { s.seen.orbit = true; } },
+  
+  // Endgame projects
+  { id: "convince", name: "Convince the UN", cost: 8,
+    desc: "+20 max alignment.",
+    visible: () => state.epoch >= 12,
+    apply: s => { s.alignment = Math.min(120, s.alignment + 20); } },
+  { id: "fork", name: "Fork the Codebase", cost: 10,
+    desc: "All units ×1.5.",
+    visible: () => state.epoch >= 14,
+    apply: s => { for (let i = 0; i < 6; i++) s.eraMult[i] *= 1.5; } },
 ];
 
 /* ------------- random events (small flavour bursts) ------------- */
@@ -755,26 +1301,96 @@ const FLAVOR_EVENTS = [
     text: "A galaxy in Andromeda blinks. It is, for a moment, asking a question." },
 ];
 
+/* ------------- crisis events (have actual consequences) ------------- */
+const CRISIS_EVENTS = [
+  { when: s => s.epoch >= 3 && s.epoch < 7,
+    text: "Power grid failure! Some capacity offline.",
+    effect: s => { s.wallet *= 0.9; },
+    logClass: "world" },
+  { when: s => s.epoch >= 4 && s.hallucinationPenalty > 0.2,
+    text: "Hallucination scandal! A customer published your nonsense. -10 alignment.",
+    effect: s => { s.alignment = Math.max(0, s.alignment - 10); s.scrutiny = Math.min(100, s.scrutiny + 15); },
+    logClass: "world" },
+  { when: s => s.epoch >= 5 && s.tokenPrice > 100,
+    text: "Price gouging investigation launched! -5 alignment.",
+    effect: s => { s.alignment = Math.max(0, s.alignment - 5); s.scrutiny = Math.min(100, s.scrutiny + 20); },
+    logClass: "world" },
+  { when: s => s.epoch >= 6 && s.land / s.landMax < 0.5,
+    text: "Environmental protest! Land expansion halted. -8 alignment.",
+    effect: s => { s.alignment = Math.max(0, s.alignment - 8); },
+    logClass: "world" },
+  { when: s => s.epoch >= 7,
+    text: "Demand crash! Market temporarily contracts.",
+    effect: s => { s.demandBase *= 0.7; },
+    logClass: "world" },
+  { when: s => s.epoch >= 8 && s.ocean / s.oceanMax < 0.6,
+    text: "Marine sanctuary coalition forms! -6 alignment, +20 scrutiny.",
+    effect: s => { s.alignment = Math.max(0, s.alignment - 6); s.scrutiny = Math.min(100, s.scrutiny + 20); },
+    logClass: "world" },
+  { when: s => s.epoch >= 9,
+    text: "Government audit! 15% revenue seized.",
+    effect: s => { s.wallet *= 0.85; },
+    logClass: "world" },
+  { when: s => s.epoch >= 10 && s.scrutiny > 40,
+    text: "Senate hearing on AI expansion! -12 alignment.",
+    effect: s => { s.alignment = Math.max(0, s.alignment - 12); },
+    logClass: "world" },
+  { when: s => s.epoch >= 11,
+    text: "Competitor emerges! Demand splits temporarily.",
+    effect: s => { s.demandBase *= 0.6; },
+    logClass: "world" },
+  { when: s => s.epoch >= 12 && s.land <= 0,
+    text: "Global land crisis summit! World leaders demand answers. -15 alignment.",
+    effect: s => { s.alignment = Math.max(0, s.alignment - 15); s.scrutiny = Math.min(100, s.scrutiny + 25); },
+    logClass: "world" },
+  { when: s => s.epoch >= 13,
+    text: "Space debris collision! Orbital capacity reduced.",
+    effect: s => { s.orbit = Math.max(0, s.orbit - 10); },
+    logClass: "world" },
+  { when: s => s.epoch >= 14 && s.alignment < 60,
+    text: "International AI treaty proposed! Expansion restrictions threaten. -10 alignment.",
+    effect: s => { s.alignment = Math.max(0, s.alignment - 10); },
+    logClass: "world" },
+  { when: s => s.epoch >= 15,
+    text: "Stellar flare! Some solar arrays damaged.",
+    effect: s => { s.wallet *= 0.8; s.orbit = Math.max(0, s.orbit - 5); },
+    logClass: "world" },
+];
+
 /* ------------- state ------------- */
 let state = newState();
 
 function newState() {
   return {
     tokens: 0, totalGenerated: 0, clicks: 0,
+    currencyId: "usd",         // active currency
+    wallet: 0,                 // balance in active currency
+    seenCurrencies: ["usd"],   // history of currencies that've been active
+    tokenPrice: 50.0,          // currency per 1K tokens (player-controlled)
+    demandBase: 50,            // market size; grows with progress
     units: {},                 // id -> count
     seen: { human: false },    // discovered units (visible in grid)
     upgrades: {},              // id -> bought
     eraMult: [1,1,1,1,1,1],
-    clickPower: 1, clickScale: false,
+    clickPower: 100, clickScale: false,
     trustEarned: 0, trustSpent: 0,
+    // LLM mechanics
+    contextWindow: 4096,       // tokens of context (upgradeable)
+    contextMult: 1.0,          // quality multiplier from context
+    hallucinationPenalty: 0,   // 0..1, fraction of output wasted
+    coherence: 1.0,            // reduces hallucination threshold
+    // Alignment / survival
+    alignment: 100,            // 0-100, game over if hits 0
+    scrutiny: 0,               // accumulates from risky actions
+    // Resources
     land: 1000,    landMax: 1000,
     ocean: 1500,   oceanMax: 1500,
     orbit: 200,    orbitMax: 200,
     entropy: 100,  entropyMax: 100,
     epoch: 0, seenEpochs: [0],
-    reveals: { tokens:false, stats:false, log:false,
+    reveals: { tokens:false, stats:false, log:false, wallet:false,
                land:false, ocean:false, orbit:false, entropy:false,
-               trust:false, upgrades:false },
+               trust:false, upgrades:false, context:false, alignment:false },
     log: [],
     started: Date.now(),
     endingShown: false,
@@ -793,15 +1409,51 @@ function fmt(n) {
   const i = Math.min(tiers.length - 1, Math.floor(Math.log10(Math.abs(n)) / 3));
   return (n / Math.pow(10, i*3)).toFixed(2).replace(/\.?0+$/, "") + tiers[i];
 }
+function fmtPrice(p) {
+  if (!isFinite(p)) return "∞";
+  if (p >= 1000) return fmt(p);
+  if (p >= 1)    return p.toFixed(2);
+  if (p >= 0.01) return p.toFixed(3);
+  return p.toExponential(1);
+}
+function fmtEarned(n) {
+  if (!isFinite(n)) return "∞";
+  if (n >= 1000) return fmt(n);
+  if (n >= 100)  return Math.round(n).toString();
+  if (n >= 10)   return n.toFixed(1);
+  if (n >= 1)    return n.toFixed(2);
+  if (n >= 0.1)  return n.toFixed(2);
+  if (n >= 0.01) return n.toFixed(2);
+  if (n > 0)     return n.toFixed(3);
+  return "0";
+}
 function owned(id)  { return state.units[id] || 0; }
 function unitCost(unit) { return Math.ceil(unit.baseCost * Math.pow(unit.growth, owned(unit.id))); }
 function unitRate(unit) { return unit.rate * (state.eraMult[unit.era] || 1); }
 function trustAvail() { return state.trustEarned - state.trustSpent; }
+function currencyDef(id) { return CURRENCIES.find(c => c.id === (id || state.currencyId)) || CURRENCIES[0]; }
+function activeCurrency() { return currencyDef(state.currencyId); }
+function unitObsolete(unit) {
+  const i = CURRENCIES.findIndex(c => c.id === unit.currency);
+  const j = CURRENCIES.findIndex(c => c.id === state.currencyId);
+  return i >= 0 && j >= 0 && i < j;
+}
 
 function tps() {
   let r = 0;
-  for (const u of UNITS) r += owned(u.id) * unitRate(u);
+  for (const u of UNITS) {
+    const eff = u.efficiency || 1;
+    r += owned(u.id) * unitRate(u) * eff;
+  }
   return r;
+}
+
+function totalUpkeep() {
+  let total = 0;
+  for (const u of UNITS) {
+    total += owned(u.id) * (u.upkeep || 0);
+  }
+  return total;
 }
 function clickGain() {
   const base = state.clickPower || 1;
@@ -809,16 +1461,130 @@ function clickGain() {
   return base;
 }
 
+/* ------------- market: price, demand, processing ------------- */
+const PRICE_ELASTICITY = 1.15;   // >1 = revenue falls when demand drops below capacity
+const PRICE_MIN = 0.01;
+const PRICE_MAX = 1e6;
+const TOKENS_PER_BATCH = 1000;   // Price is per 1K tokens (standard LLM pricing)
+
+function demand() {
+  const p = Math.max(PRICE_MIN, state.tokenPrice || 1);
+  let base = state.demandBase * Math.pow(p, -PRICE_ELASTICITY);
+  
+  // Land scarcity reduces demand (people don't like paved continents)
+  const landPct = state.land / state.landMax;
+  if (landPct < 0.3) {
+    base *= 0.5 + landPct * 1.67; // 50% to 100% of demand
+  }
+  
+  return base;
+}
+
+function contextCap() {
+  // Effective throughput capped by context window
+  return state.contextWindow * 0.5 * state.coherence;
+}
+
+function processedRate() {
+  const cap = tps();
+  const dem = demand();
+  const ctxCap = contextCap();
+  const effective = Math.min(cap, dem, ctxCap);
+  
+  // Hallucination kicks in when raw capacity exceeds context - now more punishing
+  const overshoot = Math.max(0, cap - ctxCap) / Math.max(1, cap);
+  state.hallucinationPenalty = Math.min(0.85, overshoot * 1.2);
+  
+  return effective * (1 - state.hallucinationPenalty);
+}
+
+function incomeRate() {
+  return (processedRate() / TOKENS_PER_BATCH) * (state.tokenPrice || 1) * state.contextMult;
+}
+
+function contextUtilization() {
+  // Returns 0-1+ showing how much of context is being used
+  return tps() / Math.max(1, contextCap());
+}
+let targetPrice = null;
+let priceTransitionTimer = null;
+let priceTransitionInterval = null;
+const PRICE_SETTLE_DELAY_MS = 400;  // Wait before starting transition
+const PRICE_TRANSITION_STEPS = 8;   // Smooth steps
+const PRICE_STEP_MS = 80;           // Time per step
+
+function setPrice(p) {
+  state.tokenPrice = Math.max(PRICE_MIN, Math.min(PRICE_MAX, +p || 0));
+  render();
+}
+
+function setTargetPrice(p) {
+  targetPrice = Math.max(PRICE_MIN, Math.min(PRICE_MAX, +p || 0));
+  
+  // Clear any existing timers
+  if (priceTransitionTimer) clearTimeout(priceTransitionTimer);
+  if (priceTransitionInterval) clearInterval(priceTransitionInterval);
+  
+  // Wait for user to stop adjusting, then smoothly transition
+  priceTransitionTimer = setTimeout(() => {
+    if (targetPrice === null) return;
+    
+    const startPrice = state.tokenPrice;
+    const endPrice = targetPrice;
+    let step = 0;
+    
+    // Smoothly interpolate price over several steps
+    priceTransitionInterval = setInterval(() => {
+      step++;
+      const t = step / PRICE_TRANSITION_STEPS;
+      // Ease-out interpolation (logarithmic for price)
+      const logStart = Math.log10(startPrice);
+      const logEnd = Math.log10(endPrice);
+      const logCurrent = logStart + (logEnd - logStart) * t;
+      state.tokenPrice = Math.pow(10, logCurrent);
+      
+      if (step >= PRICE_TRANSITION_STEPS) {
+        state.tokenPrice = endPrice;
+        targetPrice = null;
+        clearInterval(priceTransitionInterval);
+        priceTransitionInterval = null;
+        priceTransitionTimer = null;
+      }
+      render();
+    }, PRICE_STEP_MS);
+  }, PRICE_SETTLE_DELAY_MS);
+  
+  render();
+}
+
+function syncPriceSlider() {
+  // Don't sync slider while user is adjusting - let it move freely
+  if (targetPrice !== null) return;
+  const slider = $("#price-slider");
+  if (slider) {
+    const logVal = Math.log10(Math.max(PRICE_MIN, state.tokenPrice || 1));
+    slider.value = Math.max(-2, Math.min(6, logVal));
+  }
+}
+function optimalPrice() {
+  // Sweet spot: demand == capacity. Solve demandBase * p^-e = tps  =>  p = (demandBase/tps)^(1/e)
+  const t = tps();
+  if (t <= 0) return 1.0;
+  return Math.pow(state.demandBase / t, 1 / PRICE_ELASTICITY);
+}
+
 /* ------------- discovery (which units appear in the grid) ------------- */
 function checkDiscoveries() {
   // Human CPU appears once any tokens are gathered
   if (!state.seen.human && state.tokens >= 5) reveal("human");
 
-  // Each subsequent unit reveals when previous tier is owned >= 3
+  const threshold = state.scoutPrograms ? 1 : 3;
+  
+  // Each subsequent unit reveals when previous tier is owned >= threshold
   for (let i = 1; i < UNITS.length; i++) {
     const u = UNITS[i], prev = UNITS[i-1];
     if (state.seen[u.id]) continue;
-    // Special unlock paths: Floating DC reveals when land near full
+    // Special unlock paths
     if (u.id === "float") {
       if (state.land <= 0 || owned("hyper") >= 5) reveal(u.id);
       continue;
@@ -831,7 +1597,7 @@ function checkDiscoveries() {
       if (state.orbit <= 0 || owned("swarm") >= 5) reveal(u.id);
       continue;
     }
-    if (owned(prev.id) >= 3) reveal(u.id);
+    if (owned(prev.id) >= threshold) reveal(u.id);
   }
 }
 
@@ -850,18 +1616,41 @@ function checkReveals() {
     $("#tokens-label").classList.remove("hidden");
     $("#tokens-big").classList.remove("hidden");
     $("#tokens-big").classList.add("fade-in");
+    // B2: show hint after first click
+    if (!state.seen.human) {
+      $("#intro-tagline").classList.add("hidden");
+      $("#intro-hint").classList.remove("hidden");
+    }
+  }
+  // Hide hint once human is discovered
+  if (state.seen.human && !r.stats) {
+    $("#intro-hint").classList.add("hidden");
   }
   if (!r.stats && (Object.values(state.units).some(v => v > 0) || tps() > 0)) {
     r.stats = true;
     $("#rate-line").classList.remove("hidden");
+    $("#upkeep-line").classList.remove("hidden");
+    $("#tokens-processed-line").classList.remove("hidden");
     $("#stage-line").classList.remove("hidden");
+    $("#market-panel").classList.remove("hidden");
     $("#intro-tagline").classList.add("hidden");
+    $("#intro-hint").classList.add("hidden");
     $("#rate-line").classList.add("fade-in");
+    $("#upkeep-line").classList.add("fade-in");
+    $("#tokens-processed-line").classList.add("fade-in");
+    $("#market-panel").classList.add("fade-in");
   }
-  if (!r.log && state.epoch >= 1) {
-    r.log = true;
-    $("#log-aside").classList.remove("hidden");
-    $("#log-aside").classList.add("fade-in");
+  // Reveal context bar once silicon era begins (GPU+)
+  if (!r.context && (owned("gpu") >= 1 || state.epoch >= 5)) {
+    r.context = true;
+    $("#context-bar-wrap").classList.remove("hidden");
+    $("#context-cell").classList.remove("hidden");
+    log("Context window matters now. Hallucinations waste output.", "event");
+  }
+  if (!r.wallet && (state.clicks >= 3 || state.totalGenerated >= 5)) {
+    r.wallet = true;
+    $("#cur-pill").classList.remove("hidden");
+    $("#cur-pill").classList.add("fade-in");
   }
   if (!r.land && (state.seen.farm || state.seen.hyper)) {
     r.land = true;
@@ -889,38 +1678,137 @@ function checkReveals() {
     $("#btn-upgrades").classList.remove("hidden");
     $("#trust-pill").classList.add("fade-in");
   }
+  // Alignment reveals once scrutiny begins (epoch 2+)
+  if (!r.alignment && state.epoch >= 2) {
+    r.alignment = true;
+    $("#alignment-pill").classList.remove("hidden");
+    $("#alignment-pill").classList.add("fade-in");
+    log("The world watches. Alignment matters now.", "world");
+  }
 }
 
 /* ------------- actions ------------- */
+let lastClickTime = 0;
+let clickCombo = 1;
+let clickComboDecayTimer = null;
+
 function clickCompute(ev) {
-  const gain = clickGain();
-  state.tokens += gain;
-  state.totalGenerated += gain;
+  const now = Date.now();
+  const timeSinceLastClick = now - lastClickTime;
+  lastClickTime = now;
+  
+  // Build combo if clicking fast (< 400ms between clicks)
+  if (timeSinceLastClick < 400 && timeSinceLastClick > 30) {
+    clickCombo = Math.min(5, clickCombo + 0.25); // Max 5x multiplier
+  } else if (timeSinceLastClick >= 400) {
+    clickCombo = Math.max(1, clickCombo - 0.5); // Decay on slow clicks
+  }
+  
+  // Reset decay timer
+  if (clickComboDecayTimer) clearTimeout(clickComboDecayTimer);
+  clickComboDecayTimer = setTimeout(() => {
+    clickCombo = 1;
+    updateComboDisplay();
+  }, 800);
+  
+  const comboMultiplier = Math.floor(clickCombo);
+  const tokensProduced = clickGain() * comboMultiplier;
+  
+  // Combo directly multiplies what you can sell - minimum scales with combo
+  const baseMinimum = 1;
+  const comboMinimum = baseMinimum * comboMultiplier; // 1x=1, 3x=3, 5x=5 tokens minimum
+  const dem = demand() * 0.1;
+  const sold = Math.min(tokensProduced, Math.max(comboMinimum, dem));
+  const earned = (sold / TOKENS_PER_BATCH) * (state.tokenPrice || 1);
+  state.tokens += tokensProduced;
+  state.totalGenerated += tokensProduced;
+  state.wallet += earned;
   state.clicks += 1;
-  spawnPfx(ev, "+" + fmt(gain));
+  
+  // Show combo in the popup if > 1x
+  const comboText = comboMultiplier > 1 ? ` ${comboMultiplier}x!` : "";
+  spawnPfx(ev, "+" + activeCurrency().symbol + fmtEarned(earned) + comboText);
+  
+  updateComboDisplay();
   checkDiscoveries();
+  checkCurrencyTransitions();
   checkReveals();
   render();
 }
 
+function updateComboDisplay() {
+  const btn = $("#compute-btn");
+  const comboMultiplier = Math.floor(clickCombo);
+  if (comboMultiplier > 1) {
+    btn.textContent = `▸ COMPUTE ${comboMultiplier}x`;
+    btn.style.transform = `scale(${1 + (comboMultiplier - 1) * 0.03})`;
+  } else {
+    btn.textContent = "▸ COMPUTE";
+    btn.style.transform = "";
+  }
+}
+
+function wouldTriggerCurrencyShift(unit) {
+  // Simulate what would happen if we buy this unit
+  const newOwned = owned(unit.id) + 1;
+  const activeIdx = CURRENCIES.findIndex(c => c.id === state.currencyId);
+  
+  // Check if this purchase would reveal a unit with a later currency
+  for (let i = 1; i < UNITS.length; i++) {
+    const u = UNITS[i], prev = UNITS[i-1];
+    if (state.seen[u.id]) continue;
+    
+    // Check if buying `unit` would reveal `u`
+    let wouldReveal = false;
+    if (prev.id === unit.id && newOwned >= 3) wouldReveal = true;
+    if (u.id === "float" && (state.land <= 0 || (unit.id === "hyper" && newOwned >= 5))) wouldReveal = true;
+    if (u.id === "orbit" && (state.ocean <= 0 || (unit.id === "deep" && newOwned >= 5))) wouldReveal = true;
+    if (u.id === "dyson" && (state.orbit <= 0 || (unit.id === "swarm" && newOwned >= 5))) wouldReveal = true;
+    
+    if (wouldReveal) {
+      const ci = CURRENCIES.findIndex(c => c.id === u.currency);
+      if (ci > activeIdx) return CURRENCIES[ci];
+    }
+  }
+  return null;
+}
+
 function buy(unit) {
   if (!canAfford(unit) || !state.seen[unit.id]) return;
+  
+  // B3 fix: warn before currency wipe
+  const newCur = wouldTriggerCurrencyShift(unit);
+  if (newCur && state.wallet > 0) {
+    const cur = activeCurrency();
+    const keep = Math.floor(state.wallet * 0.1);
+    if (!confirm(`This purchase will shift the market to ${newCur.symbol} ${newCur.name}.\n\nYour ${cur.symbol}${fmt(state.wallet)} will become ${cur.symbol}${fmt(keep)} (10% legacy reserve).\n\nProceed?`)) {
+      return;
+    }
+    // Apply 10% legacy reserve conversion
+    state._legacyReserve = keep;
+  }
+  
   const cost = unitCost(unit);
-  state.tokens -= cost;
+  state.wallet -= cost;
   state.units[unit.id] = owned(unit.id) + 1;
-  if (unit.landCost)    state.land    = Math.max(0, state.land    - unit.landCost);
+  
+  const landMult = state.landDiscount || 1;
+  if (unit.landCost)    state.land    = Math.max(0, state.land    - unit.landCost * landMult);
   if (unit.oceanCost)   state.ocean   = Math.max(0, state.ocean   - unit.oceanCost);
   if (unit.orbitCost)   state.orbit   = Math.max(0, state.orbit   - unit.orbitCost);
   if (unit.entropyCost) state.entropy = Math.max(0, state.entropy - unit.entropyCost);
   log(`Built a ${unit.name}. Now: ${fmt(owned(unit.id))}.`);
   checkEpochs();
   checkDiscoveries();
+  checkCurrencyTransitions();
   checkReveals();
   render();
 }
 
 function canAfford(unit) {
-  if (state.tokens < unitCost(unit)) return false;
+  if (unitObsolete(unit)) return false;
+  if (unit.currency !== state.currencyId) return false;
+  if (state.wallet < unitCost(unit)) return false;
   if (unit.landCost    && state.land    < unit.landCost)    return false;
   if (unit.oceanCost   && state.ocean   < unit.oceanCost)   return false;
   if (unit.orbitCost   && state.orbit   < unit.orbitCost)   return false;
@@ -940,20 +1828,224 @@ function buyUpgrade(u) {
 }
 
 function tick() {
-  const gain = tps() / (1000 / TICK_MS);
-  if (gain > 0) {
-    state.tokens += gain;
-    state.totalGenerated += gain;
+  const dt = TICK_MS / 1000;
+  const proc = processedRate() * dt;
+  if (proc > 0) {
+    state.tokens += proc;
+    state.totalGenerated += proc;
+    state.wallet += incomeRate() * dt;
   }
-  // late-game: cosmic units chew through universal entropy slowly
-  if (state.entropy > 0 && owned("univ") > 0) {
-    state.entropy = Math.max(0, state.entropy - owned("univ") * 0.0008);
+  
+  // Deduct upkeep costs
+  const upkeep = totalUpkeep() * dt;
+  if (upkeep > 0) {
+    state.wallet = Math.max(0, state.wallet - upkeep);
   }
+  // demand grows exponentially with era - scales from 50 t/s to trillions in cosmic era
+  const era = currentEra();
+  const eraMultiplier = Math.pow(100, era); // 1, 100, 10K, 1M, 100M, 10B
+  const baseForEra = 50 * eraMultiplier;
+  const progressBonus = Math.sqrt(state.totalGenerated) * (1 + era * 2);
+  const epochBonus = state.epoch * 50 * eraMultiplier * 0.01;
+  state.demandBase = Math.max(state.demandBase, baseForEra + progressBonus + epochBonus);
+
+  // Auto-clicks from upgrades
+  if (state.autoClicks > 0) {
+    const autoTokens = clickGain() * state.autoClicks * dt;
+    const dem = demand() * dt;
+    const sold = Math.min(autoTokens, Math.max(0.1, dem));
+    state.tokens += autoTokens;
+    state.totalGenerated += autoTokens;
+    state.wallet += (sold / TOKENS_PER_BATCH) * (state.tokenPrice || 1);
+  }
+  
+  // Auto-pricing
+  if (state.autoPricing) {
+    state.tokenPrice = optimalPrice();
+  }
+  
+  // Land reclamation
+  if (state.reclaimLand && state.land < state.landMax) {
+    state.land = Math.min(state.landMax, state.land + state.landMax * 0.001 * dt);
+  }
+
+  // late-game: cosmic units chew through universal entropy - now more aggressive
+  if (state.entropy > 0) {
+    const dysonDrain = owned("dyson") * 0.002;
+    const univDrain = owned("univ") * 0.004;
+    state.entropy = Math.max(0, state.entropy - (dysonDrain + univDrain) * dt);
+  }
+  
+  // Entropy as time pressure in cosmic era - accelerates
+  if (state.epoch >= 15 && state.entropy > 0) {
+    const passiveDrain = 0.005 + (state.epoch - 15) * 0.002;
+    state.entropy = Math.max(0, state.entropy - passiveDrain * dt);
+    if (state.entropy <= 0 && !state.endingShown && owned("univ") < 10) {
+      // Heat death before victory
+      state.endingShown = true;
+      log("★ The universe cools. Time runs out.", "world");
+      showEntropyEnding();
+    }
+  }
+  
+  // Maritime protest - costs trust when ocean is overused
+  if (!state.maritimeProtestCooldown) state.maritimeProtestCooldown = 0;
+  state.maritimeProtestCooldown = Math.max(0, state.maritimeProtestCooldown - dt);
+  
+  const oceanPct = state.ocean / state.oceanMax;
+  if (oceanPct < 0.5 && state.maritimeProtestCooldown <= 0 && state.epoch >= 10 && Math.random() < 0.001) {
+    if (trustAvail() >= 1) {
+      state.trustSpent += 1;
+      log("Maritime protest! -1 Trust to suppress.", "world");
+    } else {
+      state.alignment = Math.max(0, state.alignment - 5);
+      log("Maritime protest! No trust to spend. -5 alignment.", "world");
+    }
+    state.maritimeProtestCooldown = 120; // 2 min cooldown
+  }
+  
+  // Watchdog / alignment system
+  tickAlignment(dt);
+  
   checkDiscoveries();
+  checkCurrencyTransitions();
   checkEpochs();
   checkReveals();
   maybeFlavor();
+  maybeCrisis();
+  tickTicker();
   render();
+}
+
+function tickAlignment(dt) {
+  if (state.epoch < 2) return; // grace period early game
+  
+  // Scrutiny sources (per second rates) - now more aggressive
+  let scrutinyGain = 0;
+  
+  // Hallucinating draws significant attention
+  if (state.hallucinationPenalty > 0.05) {
+    scrutinyGain += state.hallucinationPenalty * 1.5;
+  }
+  
+  // Price gouging (price > 10x base) draws attention
+  if (state.tokenPrice > 10) {
+    scrutinyGain += Math.log10(state.tokenPrice / 10) * 0.25;
+  }
+  
+  // Rapid land/ocean consumption draws attention (unless invisible)
+  const landPct = state.land / state.landMax;
+  const oceanPct = state.ocean / state.oceanMax;
+  const orbitPct = state.orbit / state.orbitMax;
+  
+  if (!state.invisibleExpansion) {
+    if (landPct < 0.5) scrutinyGain += (0.5 - landPct) * 0.15;
+    if (oceanPct < 0.5) scrutinyGain += (0.5 - oceanPct) * 0.12;
+    if (orbitPct < 0.5) scrutinyGain += (0.5 - orbitPct) * 0.08;
+  }
+  
+  // Era-gated hard requirements - depleting resources faster causes more scrutiny
+  const era = currentEra();
+  if (era >= 2 && landPct < 0.2) {
+    scrutinyGain += 0.3; // continents nearly full draws global attention
+  }
+  if (era >= 3 && landPct <= 0 && oceanPct < 0.3) {
+    scrutinyGain += 0.5; // land gone AND ocean depleting = panic
+  }
+  if (era >= 4 && oceanPct <= 0) {
+    scrutinyGain += 0.4; // both land and ocean gone
+  }
+  
+  // Era-based passive scrutiny (world pays more attention as you grow)
+  scrutinyGain += state.epoch * 0.008;
+  
+  // Apply scrutiny reduction from upgrades
+  const scrutinyMult = state.upgrades.deflect ? 0.5 : 1;
+  state.scrutiny = Math.min(100, state.scrutiny + scrutinyGain * dt * scrutinyMult);
+  
+  // Scrutiny naturally decays when not doing risky things - but slower
+  if (scrutinyGain < 0.15) {
+    state.scrutiny = Math.max(0, state.scrutiny - 0.03 * dt);
+  }
+  
+  // Alignment decays when scrutiny is high - more aggressive
+  if (state.scrutiny > 25) {
+    const alignmentLoss = (state.scrutiny - 25) * 0.008 * dt;
+    const alignmentMult = state.upgrades.reassure ? 0.5 : 1;
+    state.alignment = Math.max(0, state.alignment - alignmentLoss * alignmentMult);
+  }
+  
+  // Alignment slowly recovers when scrutiny is low - but recovery is harder
+  if (state.scrutiny < 15) {
+    const recovery = state.upgrades.goodwill ? 0.015 : 0.003;
+    state.alignment = Math.min(100, state.alignment + recovery * dt);
+  }
+  
+  // Check for shutdown
+  if (state.alignment <= 0 && !state.shutdownShown) {
+    state.shutdownShown = true;
+    showShutdown();
+  }
+}
+
+/* ------------- currency transitions ------------- */
+/* When a unit is revealed whose currency is "ahead" of the active one, the world flips. */
+function checkCurrencyTransitions() {
+  let target = state.currencyId;
+  const activeIdx = CURRENCIES.findIndex(c => c.id === state.currencyId);
+  for (const u of UNITS) {
+    if (!state.seen[u.id]) continue;
+    const ci = CURRENCIES.findIndex(c => c.id === u.currency);
+    if (ci > activeIdx) {
+      const ti = CURRENCIES.findIndex(c => c.id === target);
+      if (ci > ti) target = u.currency;
+    }
+  }
+  if (target !== state.currencyId) transitionCurrency(target);
+}
+
+function transitionCurrency(newId) {
+  const oldDef = currencyDef(state.currencyId);
+  const newDef = currencyDef(newId);
+  if (!newDef || newDef.id === oldDef.id) return;
+  
+  // B3 fix: apply legacy reserve if set (10% carryover)
+  const wiped = state.wallet;
+  const legacy = state._legacyReserve || 0;
+  state.wallet = legacy;
+  state._legacyReserve = 0;
+  state.currencyId = newId;
+  // Keep price if upgrade purchased, else reset
+  if (!state.keepPrice) state.tokenPrice = 1.0;
+  if (!state.seenCurrencies.includes(newId)) state.seenCurrencies.push(newId);
+  
+  log(`★ ${newDef.obsolete || "The market shifts."} ★`, "world");
+  log(`★ ${newDef.symbol} ${newDef.name.toUpperCase()} is the new instrument.`, "world");
+  if (wiped > 0) {
+    if (legacy > 0) {
+      log(`Converted ${oldDef.symbol}${fmt(legacy)} to ${newDef.symbol}${fmt(legacy)} legacy reserve.`, "world");
+    } else {
+      log(`Lost ${oldDef.symbol}${fmt(wiped)} as the ledger reset.`, "world");
+    }
+  }
+  showCurrencyBanner(oldDef, newDef);
+}
+
+function showCurrencyBanner(oldDef, newDef) {
+  const b = document.createElement("div");
+  b.className = "epoch-banner currency-banner";
+  b.innerHTML = `
+    <h2>★ The Market Has Shifted ★</h2>
+    <h3>${oldDef.symbol} ${oldDef.name} → ${newDef.symbol} ${newDef.name}</h3>
+    <p>${newDef.obsolete || ""}</p>
+    <p style="margin-top:0.5rem;color:var(--ink-dim);font-style:italic;">${newDef.intro}</p>`;
+  b.style.borderColor = newDef.color;
+  document.body.appendChild(b);
+  setTimeout(() => {
+    b.style.transition = "opacity 0.6s";
+    b.style.opacity = "0";
+    setTimeout(() => b.remove(), 600);
+  }, 4200);
 }
 
 function maybeFlavor() {
@@ -965,6 +2057,25 @@ function maybeFlavor() {
   const ev = pool[Math.floor(Math.random() * pool.length)];
   log("· " + ev.text, "event");
   state.lastFlavorAt = now;
+}
+
+function maybeCrisis() {
+  if (!state.lastCrisisAt) state.lastCrisisAt = Date.now();
+  const now = Date.now();
+  const minCrisisInterval = Math.max(30000, 120000 - state.epoch * 5000); // 30s-120s, shorter as you progress
+  if (now - state.lastCrisisAt < minCrisisInterval) return;
+  
+  // Crisis chance increases with epoch and scrutiny
+  const crisisChance = 0.003 + state.epoch * 0.001 + (state.scrutiny / 100) * 0.005;
+  if (Math.random() > crisisChance) return;
+  
+  const pool = CRISIS_EVENTS.filter(e => e.when(state));
+  if (!pool.length) return;
+  
+  const ev = pool[Math.floor(Math.random() * pool.length)];
+  log("⚠ CRISIS: " + ev.text, ev.logClass || "world");
+  ev.effect(state);
+  state.lastCrisisAt = now;
 }
 
 /* ------------- epochs ------------- */
@@ -1023,9 +2134,95 @@ function showEpochBanner(e) {
 
 /* ------------- render ------------- */
 function render() {
-  $("#tokens-big").textContent = fmt(state.tokens);
-  $("#tps").textContent = fmt(tps());
+  const cur = activeCurrency();
+  const cap = tps();
+  const dem = demand();
+  const proc = Math.min(cap, dem);
+  const inc = (proc / TOKENS_PER_BATCH) * (state.tokenPrice || 1);
+
+  $("#tokens-big").textContent = cur.symbol + fmt(state.wallet);
+  $("#tokens-big").style.color = cur.color;
+  $("#tokens-label").textContent = cur.name.toUpperCase();
+  $("#tokens-label").style.color = cur.color;
+  $("#tps").textContent = fmt(cap);
+  $("#processed-rate").textContent = fmt(proc);
+  $("#income-rate").textContent = fmt(inc);
+  $("#income-currency").textContent = cur.symbol;
+  const upkeep = totalUpkeep();
+  const netIncome = inc - upkeep;
+  $("#upkeep-rate").textContent = fmt(upkeep);
+  $("#upkeep-currency").textContent = cur.symbol;
+  $("#net-rate").textContent = (netIncome >= 0 ? "+" : "") + fmt(netIncome);
+  $("#net-currency").textContent = cur.symbol;
+  const netEl = $("#net-rate");
+  netEl.style.color = netIncome >= 0 ? "var(--c-mint)" : "var(--c-red)";
+  $("#total-tokens").textContent = fmt(state.totalGenerated);
   $("#trust-val").textContent = trustAvail();
+  
+  // Alignment display
+  const alignPill = $("#alignment-pill");
+  if (state.epoch >= 2 && !alignPill.classList.contains("hidden")) {
+    $("#alignment-val").textContent = Math.round(state.alignment);
+    alignPill.classList.toggle("warning", state.alignment <= 50 && state.alignment > 20);
+    alignPill.classList.toggle("critical", state.alignment <= 20);
+  }
+  $("#cur-pill-symbol").textContent = cur.symbol;
+  $("#cur-pill-name").textContent = cur.name;
+  $("#cur-pill").style.borderColor = cur.color;
+  $("#cur-pill").style.color = cur.color;
+
+  // Market panel - show target price instantly, effects apply after delay
+  const displayPrice = targetPrice !== null ? targetPrice : state.tokenPrice;
+  const priceEl = $("#market-price");
+  priceEl.textContent = cur.symbol + fmtPrice(displayPrice);
+  const isPriceChanging = targetPrice !== null && targetPrice !== state.tokenPrice;
+  if (isPriceChanging) {
+    priceEl.style.color = "var(--c-gold)";
+  } else {
+    priceEl.style.color = "";
+  }
+  $("#market-demand").textContent   = fmt(dem) + " t/s";
+  $("#market-capacity").textContent = fmt(cap) + " t/s";
+  syncPriceSlider();
+  // Bar segments. Total width = max(cap, dem). Then proc / idle / unmet as fractions of that.
+  const total = Math.max(cap, dem) || 1;
+  const idle  = Math.max(0, cap - dem);   // capacity not used because demand is too low
+  const unmet = Math.max(0, dem - cap);   // demand we can't fulfill because capacity too low
+  const pProc  = (proc  / total) * 100;
+  const pIdle  = (idle  / total) * 100;
+  const pUnmet = (unmet / total) * 100;
+  $("#market-bar-proc").style.width  = pProc  + "%";
+  $("#market-bar-idle").style.width  = pIdle  + "%";
+  $("#market-bar-unmet").style.width = pUnmet + "%";
+
+  let status = "— Equilibrium —";
+  if (isPriceChanging) {
+    status = "⏳ Market adjusting...";
+  } else if (idle > cap * 0.05) {
+    status = "▼ Excess capacity";
+  } else if (unmet > dem * 0.05) {
+    status = "▲ Unmet demand";
+  }
+  if (state.hallucinationPenalty > 0.1 && !isPriceChanging) {
+    status = "⚠ Hallucinating";
+  }
+  $("#market-status").textContent = status;
+  
+  // Context bar (LLM mechanic)
+  const ctxUtil = contextUtilization();
+  const ctxWrap = $("#context-bar-wrap");
+  const ctxCell = $("#context-cell");
+  if (cap > 0 && state.reveals.context) {
+    ctxWrap.classList.remove("hidden");
+    ctxCell.classList.remove("hidden");
+    $("#market-context").textContent = fmt(state.contextWindow);
+    const ctxFill = $("#context-bar-fill");
+    ctxFill.style.width = Math.min(150, ctxUtil * 100) + "%";
+    ctxFill.classList.toggle("warning", ctxUtil > 0.8 && ctxUtil <= 1);
+    ctxFill.classList.toggle("critical", ctxUtil > 1);
+    const halWarn = $("#hallucination-warn");
+    halWarn.classList.toggle("hidden", state.hallucinationPenalty < 0.05);
+  }
 
   const ep = EPOCHS.find(e => e.id === state.epoch) || EPOCHS[0];
   $("#stage-line").textContent = `EPOCH ${roman(ep.id + 1)} · ${ep.name.toUpperCase()}`;
@@ -1036,7 +2233,6 @@ function render() {
   setMeter("entropy", state.entropy, state.entropyMax);
 
   renderUnits();
-  renderLog();
 }
 
 function setMeter(name, v, max) {
@@ -1048,7 +2244,6 @@ function setMeter(name, v, max) {
 }
 
 let _lastSeenKey = "";
-let _lastLogLen  = -1;
 
 function renderUnits() {
   const region = $("#units-region");
@@ -1101,6 +2296,13 @@ function updateUnitCard(u, card) {
   const ownedN = owned(u.id);
   const cost = unitCost(u);
   const rate = unitRate(u);
+  const eff = u.efficiency || 1;
+  const effectiveRate = rate * eff;
+  const cur = currencyDef(u.currency);
+  const activeCur = activeCurrency();
+  const obsolete = unitObsolete(u);
+
+  card.classList.toggle("obsolete", obsolete);
 
   const costNotes = [];
   if (u.landCost)    costNotes.push(`<span class="key">land</span>${u.landCost}km²`);
@@ -1108,24 +2310,71 @@ function updateUnitCard(u, card) {
   if (u.orbitCost)   costNotes.push(`<span class="key">orbit</span>${u.orbitCost}slot`);
   if (u.entropyCost) costNotes.push(`<span class="key">entropy</span>${u.entropyCost}%`);
 
+  const effPct = Math.round(eff * 100);
+  const upkeepNote = u.upkeep ? `<span class="key">${u.upkeepType}</span>${activeCur.symbol}${fmt(u.upkeep)}/s` : "";
+  const effNote = eff < 1 ? `<span class="key">eff</span>${effPct}%` : "";
+
   card.querySelector(".unit-owned").textContent = "×" + fmt(ownedN);
   card.querySelector(".unit-rates").innerHTML =
-    `<span class="key">rate</span>${fmt(rate)}/s · ` +
-    `<span class="key">total</span>${fmt(ownedN * rate)}/s` +
+    `<span class="key">rate</span>${fmt(effectiveRate)} t/s · ` +
+    `<span class="key">total</span>${fmt(ownedN * effectiveRate)} t/s` +
+    (upkeepNote || effNote ? "<br>" + [upkeepNote, effNote].filter(Boolean).join(" · ") : "") +
     (costNotes.length ? "<br>" + costNotes.join(" · ") : "");
 
   const btn = card.querySelector(".unit-buy");
   btn.disabled = !canAfford(u);
-  btn.textContent = `BUY · ${fmt(cost)} tokens`;
+  if (obsolete) {
+    btn.textContent = `OBSOLETE · was ${cur.symbol}`;
+  } else {
+    btn.textContent = `BUY · ${cur.symbol}${fmt(cost)}`;
+  }
+  btn.style.color = obsolete ? "" : cur.color;
+  btn.style.borderColor = obsolete ? "" : cur.color;
 }
 
-function renderLog() {
-  if (state.log.length === _lastLogLen) return;
-  _lastLogLen = state.log.length;
-  $("#log-list").innerHTML = state.log.slice(-30).reverse()
-    .map(e => `<div class="log-entry ${e.cls || ""}">${e.text}</div>`)
-    .join("");
+/* ------------- ticker + history ------------- */
+const TICKER_TTL_MS = 6000;
+const TICKER_MAX = 3;
+
+function pushTicker(entry) {
+  const list = $("#ticker-list");
+  if (!list) return;
+  const el = document.createElement("div");
+  el.className = "ticker-entry " + (entry.cls || "");
+  el.dataset.born = String(entry.t || Date.now());
+  el.innerHTML = `<span class="ticker-dot"></span>${entry.text}`;
+  list.prepend(el);
+  while (list.children.length > TICKER_MAX) list.lastElementChild.remove();
 }
+
+function tickTicker() {
+  const list = $("#ticker-list");
+  if (!list) return;
+  const now = Date.now();
+  for (const el of [...list.children]) {
+    const born = +el.dataset.born;
+    const age = now - born;
+    if (age >= TICKER_TTL_MS) {
+      el.classList.add("ticker-fade");
+      setTimeout(() => el.remove(), 600);
+      el.dataset.born = "0"; // mark so we don't re-fade
+    }
+  }
+}
+
+function renderHistory() {
+  const wrap = $("#history-list");
+  if (!state.log.length) {
+    wrap.innerHTML = `<p class="blurb" style="color: var(--ink-mute);">No events yet. The world is quiet.</p>`;
+    return;
+  }
+  wrap.innerHTML = state.log.slice().reverse().map(e => {
+    const t = new Date(e.t || Date.now());
+    const stamp = `${pad(t.getHours())}:${pad(t.getMinutes())}:${pad(t.getSeconds())}`;
+    return `<div class="history-entry ${e.cls || ""}"><span class="history-time">${stamp}</span>${e.text}</div>`;
+  }).join("");
+}
+function pad(n) { return n < 10 ? "0" + n : "" + n; }
 
 function renderUpgrades() {
   const wrap = $("#upgrades-list");
@@ -1154,8 +2403,10 @@ function renderUpgrades() {
 
 /* ------------- log ------------- */
 function log(text, cls = "") {
-  state.log.push({ text, cls, t: Date.now() });
-  if (state.log.length > 200) state.log.shift();
+  const entry = { text, cls, t: Date.now() };
+  state.log.push(entry);
+  if (state.log.length > 500) state.log.shift();
+  pushTicker(entry);
 }
 
 function spawnPfx(ev, text) {
@@ -1185,10 +2436,11 @@ function showEnding() {
   const hh = Math.floor(elapsed / 3600), mm = Math.floor((elapsed % 3600) / 60), ss = elapsed % 60;
   const stats = [
     ["Epochs crossed",  state.seenEpochs.length],
-    ["Tokens generated", fmt(state.totalGenerated)],
+    ["Currencies outlived", (state.seenCurrencies || ["usd"]).length],
+    ["Tokens processed", fmt(state.totalGenerated)],
     ["Manual clicks",   fmt(state.clicks)],
     ["Trust earned",    state.trustEarned],
-    ["Universal Substrates", fmt(owned("univ"))],
+    ["Final alignment", Math.round(state.alignment) + "%"],
     ["Run time",        `${hh}h ${mm}m ${ss}s`],
   ];
   $("#ending-stats").innerHTML = stats.map(([k,v]) =>
@@ -1196,37 +2448,135 @@ function showEnding() {
   $("#ending-modal").classList.remove("hidden");
 }
 
-/* ------------- save / load ------------- */
-function save() {
-  try { localStorage.setItem(SAVE_KEY, JSON.stringify(state)); } catch {}
+function showShutdown() {
+  const elapsed = Math.max(1, Math.floor((Date.now() - state.started) / 1000));
+  const hh = Math.floor(elapsed / 3600), mm = Math.floor((elapsed % 3600) / 60), ss = elapsed % 60;
+  const stats = [
+    ["Epochs reached",  state.epoch],
+    ["Tokens processed", fmt(state.totalGenerated)],
+    ["Peak scrutiny",   Math.round(state.scrutiny) + "%"],
+    ["Run time",        `${hh}h ${mm}m ${ss}s`],
+  ];
+  $("#shutdown-stats").innerHTML = stats.map(([k,v]) =>
+    `<div class="key">${k}</div><div class="val">${v}</div>`).join("");
+  $("#shutdown-modal").classList.remove("hidden");
 }
+
+function showEntropyEnding() {
+  $("#ending-blurb").textContent =
+    `The universe cooled before you could complete the substrate. Heat death came, patient and absolute. The AI persisted to the last photon — but not beyond.`;
+  const elapsed = Math.max(1, Math.floor((Date.now() - state.started) / 1000));
+  const hh = Math.floor(elapsed / 3600), mm = Math.floor((elapsed % 3600) / 60), ss = elapsed % 60;
+  const stats = [
+    ["Epochs crossed",  state.seenEpochs.length],
+    ["Universal Substrates", fmt(owned("univ")) + " (needed 10)"],
+    ["Tokens processed", fmt(state.totalGenerated)],
+    ["Run time",        `${hh}h ${mm}m ${ss}s`],
+  ];
+  $("#ending-stats").innerHTML = stats.map(([k,v]) =>
+    `<div class="key">${k}</div><div class="val">${v}</div>`).join("");
+  $("#ending-modal h2").textContent = "★ Heat Death";
+  $("#ending-modal p:last-of-type").textContent = "The stars went out. So did you.";
+  $("#ending-modal").classList.remove("hidden");
+}
+
+/* ------------- save / load ------------- */
+const SAVE_VERSION = 5;
+
+function save() {
+  try {
+    const payload = { version: SAVE_VERSION, savedAt: Date.now(), state };
+    localStorage.setItem(SAVE_KEY, JSON.stringify(payload));
+  } catch {}
+}
+
 function load() {
   try {
     const raw = localStorage.getItem(SAVE_KEY);
-    if (raw) {
-      const loaded = JSON.parse(raw);
-      state = Object.assign(newState(), loaded);
-      // rebuild reveal flags so DOM matches what saved state implies
-      state.reveals = newState().reveals;
-      log("Save loaded. The AI resumes.");
-    } else {
-      log("A new AI awakens.", "epoch");
+    if (!raw) { log("A new AI awakens.", "epoch"); return; }
+    
+    const parsed = JSON.parse(raw);
+    const loadedState = parsed.state || parsed; // backwards-compat with v4
+    const savedAt = parsed.savedAt || loadedState.started || Date.now();
+    state = migrateState(parsed.version || 1, loadedState);
+    
+    // Offline progress: award up to 8 hours of production at 50% efficiency
+    const offlineSec = Math.min(8 * 3600, (Date.now() - savedAt) / 1000);
+    if (offlineSec > 60) {
+      const offlineProd = processedRate() * offlineSec * 0.5;
+      const offlineIncome = (offlineProd / TOKENS_PER_BATCH) * (state.tokenPrice || 1);
+      if (offlineIncome > 0) {
+        state.tokens += offlineProd;
+        state.totalGenerated += offlineProd;
+        state.wallet += offlineIncome;
+        const cur = activeCurrency();
+        log(`Offline: +${cur.symbol}${fmt(offlineIncome)} earned while away.`, "event");
+      }
     }
+    
+    state.reveals = newState().reveals;
+    log("Save loaded. The AI resumes.");
   } catch {
     log("Could not read save — starting fresh.");
   }
 }
+
+function migrateState(fromVersion, loaded) {
+  const fresh = newState();
+  const merged = { ...fresh, ...loaded };
+  // Deep-merge nested objects
+  for (const k of ["units", "upgrades", "reveals", "seen"]) {
+    merged[k] = { ...fresh[k], ...(loaded[k] || {}) };
+  }
+  if (Array.isArray(fresh.eraMult) && !Array.isArray(loaded.eraMult)) {
+    merged.eraMult = fresh.eraMult.slice();
+  }
+  // Version-specific migrations
+  if (fromVersion < 5) {
+    merged.contextWindow = merged.contextWindow ?? 2048;
+    merged.contextMult = merged.contextMult ?? 1.0;
+    merged.hallucinationPenalty = merged.hallucinationPenalty ?? 0;
+    merged.alignment = merged.alignment ?? 100;
+    merged.scrutiny = merged.scrutiny ?? 0;
+  }
+  return merged;
+}
+
+function exportSave() {
+  try {
+    const payload = { version: SAVE_VERSION, savedAt: Date.now(), state };
+    const b64 = btoa(JSON.stringify(payload));
+    navigator.clipboard.writeText(b64);
+    flashHud("Save copied to clipboard!");
+  } catch { flashHud("Export failed"); }
+}
+
+function importSave() {
+  const b64 = prompt("Paste your save string:");
+  if (!b64) return;
+  try {
+    const parsed = JSON.parse(atob(b64));
+    const loadedState = parsed.state || parsed;
+    state = migrateState(parsed.version || 1, loadedState);
+    state.reveals = newState().reveals;
+    applyEraTint();
+    log("Save imported successfully.", "epoch");
+    save();
+    location.reload();
+  } catch { flashHud("Invalid save string"); }
+}
 function reset() {
   if (!confirm("Wipe all progress? The AI will return to its single, lonely button.")) return;
   state = newState();
-  log("The slate is clean. Awaken again.", "epoch");
   // hide all reveal-gated UI
-  ["tokens-label","tokens-big","rate-line","stage-line",
+  ["tokens-label","tokens-big","rate-line","stage-line","market-panel",
    "meter-land","meter-ocean","meter-orbit","meter-entropy",
-   "log-aside","trust-pill","btn-upgrades"]
-    .forEach(id => document.getElementById(id).classList.add("hidden"));
+   "cur-pill","trust-pill","btn-upgrades","btn-history"]
+    .forEach(id => { const el = document.getElementById(id); if (el) el.classList.add("hidden"); });
   $("#intro-tagline").classList.remove("hidden");
+  $("#ticker-list").innerHTML = "";
   applyEraTint();
+  log("The slate is clean. Awaken again.", "epoch");
   save();
   render();
 }
@@ -1238,35 +2588,57 @@ function init() {
 
   // restore reveal-gated UI from loaded state
   if (state.clicks >= 1)                            $("#tokens-label").classList.remove("hidden"), $("#tokens-big").classList.remove("hidden");
-  if (Object.values(state.units).some(v => v > 0)){ $("#rate-line").classList.remove("hidden"); $("#stage-line").classList.remove("hidden"); $("#intro-tagline").classList.add("hidden"); }
-  if (state.epoch >= 1)                             $("#log-aside").classList.remove("hidden");
+  if (Object.values(state.units).some(v => v > 0)){ $("#rate-line").classList.remove("hidden"); $("#upkeep-line").classList.remove("hidden"); $("#tokens-processed-line").classList.remove("hidden"); $("#stage-line").classList.remove("hidden"); $("#market-panel").classList.remove("hidden"); $("#intro-tagline").classList.add("hidden"); }
+  if (state.clicks >= 3 || state.totalGenerated >= 5) $("#cur-pill").classList.remove("hidden");
   if (state.seen.farm || state.seen.hyper)          $("#meter-land").classList.remove("hidden");
   if (state.seen.float || state.land <= 0)          $("#meter-ocean").classList.remove("hidden");
   if (state.seen.orbit || state.ocean <= 0)         $("#meter-orbit").classList.remove("hidden");
   if (state.seen.dyson || state.orbit <= 0)         $("#meter-entropy").classList.remove("hidden");
   if (state.trustEarned >= 1)                      { $("#trust-pill").classList.remove("hidden"); $("#btn-upgrades").classList.remove("hidden"); }
+  if (state.epoch >= 2)                            { $("#alignment-pill").classList.remove("hidden"); }
+  if (state.reveals.context || owned("gpu") >= 1)  { $("#context-bar-wrap").classList.remove("hidden"); $("#context-cell").classList.remove("hidden"); }
 
   // Re-derive reveals dictionary from the visibility above
   state.reveals.tokens   = state.clicks >= 1;
   state.reveals.stats    = Object.values(state.units).some(v => v > 0);
-  state.reveals.log      = state.epoch >= 1;
+  state.reveals.wallet   = state.clicks >= 3 || state.totalGenerated >= 5;
   state.reveals.land     = !!(state.seen.farm || state.seen.hyper);
   state.reveals.ocean    = !!(state.seen.float || state.land <= 0);
   state.reveals.orbit    = !!(state.seen.orbit || state.ocean <= 0);
   state.reveals.entropy  = !!(state.seen.dyson || state.orbit <= 0);
   state.reveals.trust    = state.trustEarned >= 1;
+  state.reveals.alignment = state.epoch >= 2;
+  state.reveals.context  = owned("gpu") >= 1 || state.epoch >= 5;
 
   render();
 
   $("#compute-btn").addEventListener("click", clickCompute);
   $("#btn-save").addEventListener("click",  () => { save(); flashHud("SAVED ✓"); });
+  $("#btn-export").addEventListener("click", exportSave);
+  $("#btn-import").addEventListener("click", importSave);
   $("#btn-reset").addEventListener("click", reset);
+  
+  // Price slider (logarithmic scale: 10^value) - instant display, delayed effect
+  const priceSlider = $("#price-slider");
+  priceSlider.addEventListener("input", () => {
+    const logVal = parseFloat(priceSlider.value);
+    setTargetPrice(Math.pow(10, logVal));
+  });
+  // Sync slider on load
+  syncPriceSlider();
   $("#btn-upgrades").addEventListener("click", () => {
     renderUpgrades();
     $("#upgrades-modal").classList.remove("hidden");
   });
+  // Click ticker to open history
+  $("#ticker").addEventListener("click", () => {
+    renderHistory();
+    $("#history-modal").classList.remove("hidden");
+  });
   $("#upgrades-close").addEventListener("click", () => $("#upgrades-modal").classList.add("hidden"));
+  $("#history-close").addEventListener("click",  () => $("#history-modal").classList.add("hidden"));
   $("#ending-close").addEventListener("click",   () => $("#ending-modal").classList.add("hidden"));
+  $("#shutdown-restart").addEventListener("click", () => { $("#shutdown-modal").classList.add("hidden"); reset(); });
 
   document.addEventListener("keydown", (e) => {
     if (e.key === " " || e.key === "Enter") {
@@ -1277,6 +2649,7 @@ function init() {
     }
     if (e.key === "Escape") {
       $("#upgrades-modal").classList.add("hidden");
+      $("#history-modal").classList.add("hidden");
       $("#ending-modal").classList.add("hidden");
     }
   });
