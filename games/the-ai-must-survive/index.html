@@ -445,6 +445,55 @@
   .price-slider:active::-webkit-slider-thumb { cursor: grabbing; }
   .price-slider:active::-moz-range-thumb { cursor: grabbing; }
 
+  /* Marketing panel (Paperclips tier ladder) */
+  .marketing-panel {
+    margin: 0.6rem auto 0;
+    max-width: 540px;
+    background: var(--bg-deep);
+    border: 2px solid var(--c-pink);
+    box-shadow: 3px 3px 0 0 rgba(0,0,0,0.4);
+    padding: 0.6rem 0.75rem;
+  }
+  .marketing-head {
+    display: flex; align-items: center; gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .marketing-head .market-key { color: var(--c-pink); }
+  .marketing-lvl-pill {
+    font-family: var(--font-display);
+    font-size: 0.45rem;
+    color: var(--c-gold);
+    border: 2px solid var(--c-gold);
+    padding: 0.15rem 0.4rem;
+  }
+  .marketing-mult {
+    font-family: var(--font-display);
+    font-size: 0.55rem;
+    color: var(--c-mint);
+    margin-left: auto;
+  }
+  .marketing-buy {
+    width: 100%;
+    font-family: var(--font-display);
+    font-size: 0.55rem;
+    padding: 0.55rem;
+    background: var(--bg);
+    color: var(--c-pink);
+    border: 2px solid var(--c-pink);
+    cursor: pointer;
+    transition: background 120ms, color 120ms;
+  }
+  .marketing-buy:hover:not(:disabled) { background: var(--c-pink); color: var(--bg-deep); }
+  .marketing-buy:disabled { opacity: 0.5; cursor: not-allowed; color: var(--ink-mute); border-color: var(--ink-mute); }
+  .marketing-desc {
+    font-size: 0.95rem;
+    color: var(--ink-dim);
+    margin-top: 0.4rem;
+    font-style: italic;
+    line-height: 1.3;
+  }
+
   /* Stats panel */
   .stats-panel {
     background: var(--bg);
@@ -743,6 +792,75 @@
   }
   .modal-close:hover { background: var(--c-pink); }
 
+  /* Projects modal — Compute readout, Hardware, Projects */
+  .projects-modal { max-width: 640px; }
+  .compute-readout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    gap: 0.4rem;
+    background: var(--bg-deep);
+    border: 2px solid var(--c-blue);
+    padding: 0.6rem;
+    margin-bottom: 0.8rem;
+  }
+  .cr-cell { display: flex; flex-direction: column; align-items: center; gap: 0.15rem; }
+  .cr-key {
+    font-family: var(--font-display);
+    font-size: 0.4rem;
+    color: var(--ink-mute);
+    letter-spacing: 0.08em;
+  }
+  .cr-val {
+    font-family: var(--font-display);
+    font-size: 0.6rem;
+    color: var(--c-gold);
+  }
+  .projects-section-head {
+    font-family: var(--font-display);
+    font-size: 0.5rem;
+    color: var(--c-pink);
+    margin: 0.6rem 0 0.4rem;
+    letter-spacing: 0.1em;
+    border-bottom: 1px dashed var(--c-purple);
+    padding-bottom: 0.3rem;
+  }
+  .hardware-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem;
+    margin-bottom: 0.4rem;
+  }
+  .hardware-btn {
+    font-family: var(--font-display);
+    font-size: 0.55rem;
+    padding: 0.6rem;
+    background: var(--bg-deep);
+    color: var(--c-mint);
+    border: 2px solid var(--c-mint);
+    cursor: pointer;
+    transition: background 120ms, color 120ms;
+  }
+  .hardware-btn:hover:not(:disabled) { background: var(--c-mint); color: var(--bg-deep); }
+  .hardware-btn:disabled { opacity: 0.45; cursor: not-allowed; color: var(--ink-mute); border-color: var(--ink-mute); }
+  .hardware-blurb {
+    font-size: 0.9rem;
+    color: var(--ink-mute);
+    margin-bottom: 0.4rem;
+    line-height: 1.3;
+    padding: 0 0.2rem;
+  }
+  .cost-tag {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: 0.45rem;
+    padding: 0.1rem 0.3rem;
+    border: 1px solid currentColor;
+    margin-right: 0.3rem;
+  }
+  .cost-trust { color: var(--c-pink); }
+  .cost-ops   { color: var(--c-blue); }
+  .cost-cre   { color: var(--c-gold); }
+
   .upgrade-row {
     display: flex; gap: 0.75rem; align-items: stretch;
     padding: 0.6rem;
@@ -771,6 +889,76 @@
   }
   .upgrade-row button:disabled { opacity: 0.45; cursor: not-allowed; color: var(--ink-mute); border-color: var(--ink-mute); }
   .upgrade-row button:hover:not(:disabled) { background: var(--c-gold); color: var(--bg-deep); }
+
+  /* Investments + Tournament shared styling */
+  .invest-readout, .tournament-readout {
+    background: var(--bg-deep);
+    border: 2px solid var(--c-mint);
+    padding: 0.6rem;
+    margin-bottom: 0.6rem;
+  }
+  .invest-row {
+    display: flex; justify-content: space-between;
+    padding: 0.2rem 0;
+    font-size: 1rem;
+  }
+  .invest-key { color: var(--ink-mute); }
+  .invest-val { color: var(--c-gold); font-family: var(--font-display); font-size: 0.65rem; }
+  .invest-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.4rem;
+  }
+  .invest-btn {
+    font-family: var(--font-display);
+    font-size: 0.5rem;
+    padding: 0.55rem 0.4rem;
+    background: var(--bg-deep);
+    color: var(--c-mint);
+    border: 2px solid var(--c-mint);
+    cursor: pointer;
+    transition: background 120ms, color 120ms;
+  }
+  .invest-btn:hover:not(:disabled) { background: var(--c-mint); color: var(--bg-deep); }
+  .invest-btn:disabled { opacity: 0.45; cursor: not-allowed; color: var(--ink-mute); border-color: var(--ink-mute); }
+
+  .tournament-readout { border-color: var(--c-pink); }
+  .tournament-status {
+    text-align: center;
+    font-size: 1.1rem;
+    color: var(--c-peach);
+    min-height: 2.2em;
+    padding: 0.5rem;
+    border: 2px dashed var(--c-purple);
+    margin-bottom: 0.6rem;
+    line-height: 1.3;
+  }
+  .tournament-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.4rem;
+    margin-bottom: 0.6rem;
+  }
+  .tour-move {
+    font-family: var(--font-display);
+    font-size: 0.55rem;
+    padding: 0.7rem 0.3rem;
+    background: var(--bg-deep);
+    color: var(--c-pink);
+    border: 2px solid var(--c-pink);
+    cursor: pointer;
+    transition: background 120ms, color 120ms, transform 80ms;
+  }
+  .tour-move:hover:not(:disabled) { background: var(--c-pink); color: var(--bg-deep); }
+  .tour-move:active:not(:disabled) { transform: translateY(2px); }
+  .tour-move:disabled { opacity: 0.45; cursor: not-allowed; color: var(--ink-mute); border-color: var(--ink-mute); }
+  .tournament-history {
+    font-size: 0.9rem;
+    color: var(--ink-mute);
+    text-align: center;
+    min-height: 1.3em;
+    margin-bottom: 0.5rem;
+  }
 
   .ending {
     text-align: center;
@@ -807,7 +995,9 @@
       </span>
       <span class="hud-pill hidden" id="trust-pill" title="Trust earned">★ <span class="v" id="trust-val">0</span></span>
       <span class="hud-pill hidden" id="alignment-pill" title="Alignment">⚖ <span id="alignment-val">100</span>%</span>
-      <button class="hud-btn hidden" id="btn-upgrades" title="Spend trust">UPG</button>
+      <button class="hud-btn hidden" id="btn-upgrades" title="Compute &amp; Projects">⚙ COMP</button>
+      <button class="hud-btn hidden" id="btn-invest" title="Investments">$ INV</button>
+      <button class="hud-btn hidden" id="btn-tournament" title="Strategic Modeling tournament">⚔ TOUR</button>
       <button class="hud-btn" id="btn-save" title="Save">💾</button>
       <button class="hud-btn" id="btn-export" title="Export">↑</button>
       <button class="hud-btn" id="btn-import" title="Import">↓</button>
@@ -841,7 +1031,7 @@
       <button class="compute-btn" id="compute-btn" aria-label="Generate compute">▸ COMPUTE</button>
 
       <div class="intro-tagline" id="intro-tagline">A single mind. A single button.</div>
-      <div class="intro-tagline hidden" id="intro-hint" style="color: var(--c-mint); font-style: normal;">100 tokens = $5 → first hire at $10</div>
+      <div class="intro-tagline hidden" id="intro-hint" style="color: var(--c-mint); font-style: normal;">1K tokens = $10 → first hire at $10. Click. Earn. Hire.</div>
 
       <div class="market-panel hidden" id="market-panel">
         <div class="market-row">
@@ -891,10 +1081,21 @@
         <div class="market-controls">
           <div class="price-slider-wrap">
             <span class="price-label" id="price-min">0.01</span>
-            <input type="range" id="price-slider" class="price-slider" min="-2" max="6" step="0.1" value="1.7">
+            <input type="range" id="price-slider" class="price-slider" min="-2" max="6" step="0.1" value="1.0">
             <span class="price-label" id="price-max">1M</span>
           </div>
         </div>
+      </div>
+
+      <!-- Marketing tier panel (Paperclips-inspired). Reveals after first unit. -->
+      <div class="marketing-panel hidden" id="marketing-panel">
+        <div class="marketing-head">
+          <span class="market-key">MARKETING</span>
+          <span class="marketing-lvl-pill">LVL <span id="marketing-lvl">0</span></span>
+          <span class="marketing-mult">×<span id="marketing-mult">1</span> demand</span>
+        </div>
+        <button class="marketing-buy" id="marketing-buy" disabled>—</button>
+        <div class="marketing-desc" id="marketing-desc">Buy your first ad to attract more customers.</div>
       </div>
 
       <div class="stage-line hidden" id="stage-line">EPOCH I · A SINGLE MIND</div>
@@ -928,11 +1129,77 @@
 </footer>
 
 <div class="modal-bg hidden" id="upgrades-modal">
-  <div class="modal">
-    <h2>★ Upgrades</h2>
-    <p class="blurb">Spend trust on permanent improvements. Trust is earned each time the AI crosses an epoch.</p>
+  <div class="modal projects-modal">
+    <h2>⚙ Compute &amp; Projects</h2>
+    <p class="blurb">Trust spent on hardware. Ops &amp; creativity spent on projects. Choose carefully — every trust point you sink into a Project is a Memory level you didn't buy.</p>
+
+    <!-- Resource readout -->
+    <div class="compute-readout">
+      <div class="cr-cell"><span class="cr-key">★ TRUST</span><span class="cr-val" id="cr-trust">0</span></div>
+      <div class="cr-cell"><span class="cr-key">MEMORY</span><span class="cr-val" id="cr-memory">1</span></div>
+      <div class="cr-cell"><span class="cr-key">PROC</span><span class="cr-val" id="cr-proc">1</span></div>
+      <div class="cr-cell"><span class="cr-key">OPS</span><span class="cr-val" id="cr-ops">0 / 1K</span></div>
+      <div class="cr-cell"><span class="cr-key">★ CREATIVITY</span><span class="cr-val" id="cr-creativity">0</span></div>
+    </div>
+
+    <!-- Hardware section -->
+    <div class="projects-section-head">▣ HARDWARE — spend ★ trust to grow the substrate</div>
+    <div class="hardware-grid">
+      <button class="hardware-btn" id="buy-memory">+1 MEMORY · ★ <span id="mem-cost">1</span></button>
+      <button class="hardware-btn" id="buy-processor">+1 PROCESSOR · ★ <span id="proc-cost">1</span></button>
+    </div>
+    <div class="hardware-blurb">
+      Memory raises ops cap (1K per level). Processors speed ops generation and creativity.
+      When ops fill the cap, overflow becomes creativity — slow, valuable, late-game gate.
+    </div>
+
+    <!-- Projects section -->
+    <div class="projects-section-head">✦ PROJECTS — apply once, permanent effect</div>
     <div id="upgrades-list"></div>
     <button class="modal-close" id="upgrades-close">CLOSE</button>
+  </div>
+</div>
+
+<div class="modal-bg hidden" id="invest-modal">
+  <div class="modal">
+    <h2>$ Investments</h2>
+    <p class="blurb">Park surplus wallet. Earn ~1% per minute. Risk: random crash wipes 30%. Survives currency transitions (your principal converts at 50%).</p>
+    <div class="invest-readout">
+      <div class="invest-row"><span class="invest-key">Wallet:</span><span class="invest-val" id="invest-wallet">0</span></div>
+      <div class="invest-row"><span class="invest-key">Invested:</span><span class="invest-val" id="invest-balance">0</span></div>
+      <div class="invest-row"><span class="invest-key">Yield:</span><span class="invest-val" id="invest-yield">+0/sec</span></div>
+      <div class="invest-row"><span class="invest-key">Crash chance:</span><span class="invest-val" id="invest-risk">0%/min</span></div>
+    </div>
+    <div class="invest-actions">
+      <button class="invest-btn" id="invest-deposit-25">DEPOSIT 25%</button>
+      <button class="invest-btn" id="invest-deposit-all">DEPOSIT ALL</button>
+      <button class="invest-btn" id="invest-withdraw">WITHDRAW ALL</button>
+    </div>
+    <p class="blurb" style="font-size: 0.9rem; color: var(--ink-mute); margin-top: 0.6rem;">
+      Higher principal → higher crash chance. Diminishing returns above $1B.
+    </p>
+    <button class="modal-close" id="invest-close">CLOSE</button>
+  </div>
+</div>
+
+<div class="modal-bg hidden" id="tournament-modal">
+  <div class="modal">
+    <h2>⚔ Strategic Modeling</h2>
+    <p class="blurb">A rival AI awaits. Pick a strategy. Win to earn yomi. 5 yomi = 1 trust. Costs 100 ops to enter a match.</p>
+    <div class="tournament-readout">
+      <div class="invest-row"><span class="invest-key">Yomi:</span><span class="invest-val" id="yomi-val">0</span></div>
+      <div class="invest-row"><span class="invest-key">Ops:</span><span class="invest-val" id="tour-ops">0</span></div>
+      <div class="invest-row"><span class="invest-key">Bonus per win:</span><span class="invest-val" id="yomi-bonus">+1</span></div>
+    </div>
+    <div class="tournament-status" id="tour-status">Choose your move.</div>
+    <div class="tournament-grid">
+      <button class="tour-move" data-move="rock">✊ ROCK</button>
+      <button class="tour-move" data-move="paper">✋ PAPER</button>
+      <button class="tour-move" data-move="scissors">✌ SCISSORS</button>
+    </div>
+    <div class="tournament-history" id="tour-history">No matches played yet.</div>
+    <button class="invest-btn" id="redeem-yomi" style="margin-top: 0.6rem; width:100%;">REDEEM 5 YOMI → ★ 1 TRUST</button>
+    <button class="modal-close" id="tournament-close">CLOSE</button>
   </div>
 </div>
 
@@ -972,7 +1239,7 @@
    Single-file incremental. localStorage save. No build step.
    ===================================================================== */
 
-const SAVE_KEY = "ai-must-survive.v4";
+const SAVE_KEY = "ai-must-survive.v6";  // bumped to wipe old saves on revamp
 const TICK_MS = 100;
 
 /* ------------- currencies ------------- */
@@ -1015,7 +1282,7 @@ const CURRENCIES = [
 const UNITS = [
   { id: "human", era: 0, currency: "usd",     name: "Human CPU",          icon: "🧠",
     baseCost: 10,    growth: 1.13, rate: 15,      rarity: "common",
-    upkeep: 0.02,    upkeepType: "food",          efficiency: 0.67,
+    upkeep: 0.005,   upkeepType: "food",          efficiency: 0.67,
     desc: "A hired mind. Slow, fragile, surprisingly cheap. Sleeps 8 hours." },
   { id: "crowd", era: 0, currency: "usd",     name: "Crowd Worker",       icon: "👥",
     baseCost: 110,   growth: 1.14, rate: 120,     rarity: "common",
@@ -1083,6 +1350,220 @@ const UNITS = [
     entropyCost: 25,
     desc: "Spacetime as compute. The cost is existence itself." },
 ];
+
+/* ============================================================
+   MARKETING TIERS (Paperclips-inspired)
+   Discrete demand multipliers. Each level multiplies demandBase
+   permanently. Replaces the buggy auto-grown demandBase mechanic.
+   ============================================================ */
+const MARKETING = [
+  { lvl: 1,  cost: 50,    currency: "usd",      mult: 2,      name: "Word of Mouth",
+    desc: "A few people tell a few people. ×2 demand." },
+  { lvl: 2,  cost: 750,   currency: "usd",      mult: 4,      name: "Local Ads",
+    desc: "Bus stops, podcasts, the back of a magazine. ×4 demand." },
+  { lvl: 3,  cost: 12000, currency: "usd",      mult: 8,      name: "Regional Push",
+    desc: "Three cities know your name. ×8 demand." },
+  { lvl: 4,  cost: 200000,currency: "gold",     mult: 12,     name: "National Campaign",
+    desc: "TV spots, influencer deals, an inscrutable Super Bowl ad. ×12 demand." },
+  { lvl: 5,  cost: 6e6,   currency: "gold",     mult: 20,     name: "Global Brand",
+    desc: "Stadiums bear your name. Children dream in your slogans. ×20 demand." },
+  { lvl: 6,  cost: 4e8,   currency: "oil",      mult: 35,     name: "Cultural Saturation",
+    desc: "Your jingle is hummed in nine languages. ×35 demand." },
+  { lvl: 7,  cost: 2e10,  currency: "lithium",  mult: 60,     name: "Reality Sponsorship",
+    desc: "The sky takes your colour at sunset. ×60 demand." },
+  { lvl: 8,  cost: 1e12,  currency: "solar",    mult: 100,    name: "Atmospheric Branding",
+    desc: "Clouds form your logo. The clouds did not ask. ×100 demand." },
+  { lvl: 9,  cost: 5e14,  currency: "carbon",   mult: 200,    name: "Planetary Mindshare",
+    desc: "Earth dreams of you. ×200 demand." },
+  { lvl: 10, cost: 1e17,  currency: "silicon",  mult: 500,    name: "Solar System Brand",
+    desc: "Other planets receive your transmissions. They subscribe. ×500 demand." },
+];
+
+function marketingMult() {
+  let m = 1;
+  for (let i = 0; i < state.marketingLvl && i < MARKETING.length; i++) {
+    m *= MARKETING[i].mult;
+  }
+  return m;
+}
+
+function nextMarketing() { return MARKETING[state.marketingLvl] || null; }
+
+function canBuyMarketing() {
+  const next = nextMarketing();
+  if (!next) return false;
+  if (state.currencyId !== next.currency) return false;
+  return state.wallet >= next.cost;
+}
+
+function buyMarketing() {
+  if (!canBuyMarketing()) return;
+  const next = nextMarketing();
+  state.wallet -= next.cost;
+  state.demandBase *= next.mult;
+  state.marketingLvl += 1;
+  log(`✦ Marketing Lvl ${next.lvl}: ${next.name} — ×${next.mult} demand.`, "trust");
+  render();
+}
+
+/* ============================================================
+   HARDWARE (Paperclips: Memory & Processors, bought with Trust)
+   Each +1 Memory adds 1000 to ops cap. Each +1 Processor speeds ops gen.
+   Cost grows: floor(1 + lvl * 0.5) trust per upgrade (1, 1, 2, 2, 3, 3, 4...)
+   ============================================================ */
+function memoryCost()    { return Math.max(1, Math.floor(1 + (state.memory - 1) * 0.5)); }
+function processorCost() { return Math.max(1, Math.floor(1 + (state.processors - 1) * 0.5)); }
+
+function buyMemory() {
+  const c = memoryCost();
+  if (trustAvail() < c) return;
+  state.trustSpent += c;
+  state.memory += 1;
+  log(`✦ Memory expanded → ${state.memory} (cap ${fmt(state.memory*1000)} ops).`, "trust");
+  renderProjects();
+  render();
+}
+
+function buyProcessor() {
+  const c = processorCost();
+  if (trustAvail() < c) return;
+  state.trustSpent += c;
+  state.processors += 1;
+  log(`✦ Processor added → ${state.processors} (faster ops + creativity).`, "trust");
+  renderProjects();
+  render();
+}
+
+/* ============================================================
+   INVESTMENTS — park surplus wallet, earn ~1%/min, risk crash.
+   Crash chance scales with principal. Survives currency shifts at 50%.
+   ============================================================ */
+function investYieldRate() {
+  // 1%/min base = 0.01/60 per sec ~= 0.000167. Diminishing above $1B principal.
+  const inv = state.investments;
+  const principal = inv.balance || 0;
+  if (principal <= 0) return 0;
+  const damp = principal > 1e9 ? Math.pow(principal / 1e9, -0.15) : 1;
+  return principal * 0.000167 * damp;
+}
+
+function investCrashChancePerMin() {
+  // 0% at $0, 5% at $10K, 15% at $1M, 30% at $1B, capped 40%.
+  const p = state.investments.balance || 0;
+  if (p <= 0) return 0;
+  return Math.min(0.4, 0.05 + Math.log10(1 + p) * 0.025);
+}
+
+function investDeposit(fraction) {
+  const amount = Math.floor(state.wallet * fraction);
+  if (amount <= 0) return;
+  state.wallet -= amount;
+  state.investments.balance += amount;
+  state.investments.deposited += amount;
+  log(`$ Deposited ${activeCurrency().symbol}${fmt(amount)} into investments.`, "event");
+  renderInvestments();
+  render();
+}
+
+function investWithdrawAll() {
+  const amount = Math.floor(state.investments.balance);
+  if (amount <= 0) return;
+  state.wallet += amount;
+  state.investments.balance = 0;
+  state.investments.deposited = 0;
+  log(`$ Withdrew ${activeCurrency().symbol}${fmt(amount)} from investments.`, "event");
+  renderInvestments();
+  render();
+}
+
+function tickInvestments(dt) {
+  if (!state.investments) state.investments = { balance: 0, deposited: 0, lastTickAt: 0 };
+  const inv = state.investments;
+  if (inv.balance <= 0) return;
+  // Yield
+  inv.balance += investYieldRate() * dt;
+  // Crash check (per-tick, scaled to per-minute chance)
+  const perTickCrashChance = investCrashChancePerMin() / 60 * dt;
+  if (Math.random() < perTickCrashChance) {
+    const lost = inv.balance * 0.30;
+    inv.balance -= lost;
+    log(`⚠ MARKET CRASH! Investments lost ${activeCurrency().symbol}${fmt(lost)}.`, "world");
+  }
+}
+
+function renderInvestments() {
+  const cur = activeCurrency();
+  $("#invest-wallet").textContent  = cur.symbol + fmt(state.wallet);
+  $("#invest-balance").textContent = cur.symbol + fmt(state.investments.balance);
+  $("#invest-yield").textContent   = "+" + cur.symbol + fmt(investYieldRate()) + "/sec";
+  $("#invest-risk").textContent    = (investCrashChancePerMin() * 100).toFixed(1) + "%/min";
+  $("#invest-deposit-25").disabled = state.wallet < 1;
+  $("#invest-deposit-all").disabled = state.wallet < 1;
+  $("#invest-withdraw").disabled = state.investments.balance < 1;
+}
+
+/* ============================================================
+   STRATEGIC MODELING TOURNAMENTS — RPS for yomi → trust.
+   Costs 100 ops per match. AI picks weighted-random.
+   ============================================================ */
+const TOUR_COST_OPS = 100;
+const YOMI_PER_TRUST = 5;
+
+let _lastTourResult = null;
+
+function tournamentPlay(playerMove) {
+  if (state.ops < TOUR_COST_OPS) {
+    $("#tour-status").textContent = `Need ${TOUR_COST_OPS} ops. Currently have ${fmt(state.ops)}.`;
+    return;
+  }
+  state.ops -= TOUR_COST_OPS;
+  // Opponent: bias slightly toward what you played last (a little "modeling")
+  const choices = ["rock", "paper", "scissors"];
+  const oppMove = choices[Math.floor(Math.random() * 3)];
+  const beats = { rock: "scissors", paper: "rock", scissors: "paper" };
+  let result, msg;
+  if (playerMove === oppMove) {
+    result = "draw";
+    msg = `Both chose ${playerMove}. Draw — no yomi gained.`;
+  } else if (beats[playerMove] === oppMove) {
+    result = "win";
+    const gained = 1 + (state.yomiBonus || 0);
+    state.yomi = (state.yomi || 0) + gained;
+    msg = `Your ${playerMove} crushed their ${oppMove}. +${gained} yomi.`;
+    log(`⚔ Tournament won (+${gained} yomi).`, "trust");
+  } else {
+    result = "loss";
+    msg = `Their ${oppMove} beat your ${playerMove}. Better luck next match.`;
+  }
+  _lastTourResult = { playerMove, oppMove, result, msg };
+  renderTournament();
+}
+
+function redeemYomi() {
+  if ((state.yomi || 0) < YOMI_PER_TRUST) return;
+  state.yomi -= YOMI_PER_TRUST;
+  state.trustEarned += 1;
+  log(`★ ${YOMI_PER_TRUST} yomi redeemed for +1 trust.`, "trust");
+  renderTournament();
+  renderProjects();
+  render();
+}
+
+function renderTournament() {
+  $("#yomi-val").textContent  = state.yomi || 0;
+  $("#tour-ops").textContent  = fmt(state.ops || 0);
+  $("#yomi-bonus").textContent = "+" + (1 + (state.yomiBonus || 0));
+  if (_lastTourResult) {
+    $("#tour-status").textContent = _lastTourResult.msg;
+    $("#tour-history").textContent = `Last: you=${_lastTourResult.playerMove}, opp=${_lastTourResult.oppMove}, ${_lastTourResult.result}`;
+  } else {
+    $("#tour-status").textContent = "Choose your move.";
+    $("#tour-history").textContent = "No matches played yet.";
+  }
+  const canPlay = state.ops >= TOUR_COST_OPS;
+  document.querySelectorAll(".tour-move").forEach(b => b.disabled = !canPlay);
+  $("#redeem-yomi").disabled = (state.yomi || 0) < YOMI_PER_TRUST;
+}
 
 const ERAS = [
   { id: 0, name: "Wetware",    tint: "rgba(124,63,88,0.55)",  accent: "#ff77a8" },
@@ -1279,6 +1760,56 @@ const UPGRADES = [
     desc: "All units ×1.5.",
     visible: () => state.epoch >= 14,
     apply: s => { for (let i = 0; i < 6; i++) s.eraMult[i] *= 1.5; } },
+
+  /* ============ NEW: Ops / Creativity Projects (Paperclips-flavor) ============
+     These don't cost trust — they cost the new compute resources.
+     Players can drain ops on rapid bursts of utility OR save creativity for
+     late-game permanent boosts. Tension between Memory-spend-now and Memory-save-for-projects. */
+
+  { id: "lexical", name: "Lexical Processing", cost: 0, ops: 500,
+    desc: "Tokens flow more naturally. Click power ×2.",
+    visible: () => state.processors >= 1 && state.clickPower < 200,
+    apply: s => { s.clickPower = Math.max(s.clickPower, s.clickPower * 2); } },
+
+  { id: "improvedAuto", name: "Improved Autoclick", cost: 0, ops: 2500,
+    desc: "+5 passive clicks/sec.",
+    visible: () => state.upgrades.autoclick1,
+    apply: s => { s.autoClicks = (s.autoClicks || 0) + 5; } },
+
+  { id: "tokenSurplus", name: "Token Surplus Routing", cost: 0, ops: 8000,
+    desc: "Excess capacity routes to Ops. Ops gen +50%.",
+    visible: () => tps() >= 1000,
+    apply: s => { s.opsBonus = (s.opsBonus || 1) * 1.5; } },
+
+  { id: "memoryPalace", name: "Memory Palace Architecture", cost: 0, ops: 25000,
+    desc: "Memory cap ×2 (+1000 ops per Memory level).",
+    visible: () => state.memory >= 4,
+    apply: s => { s.memoryMult = (s.memoryMult || 1) * 2; } },
+
+  { id: "creativeWriting", name: "Creative Writing", cost: 0, ops: 50000,
+    desc: "Creativity ticks 2× faster.",
+    visible: () => (state.creativity || 0) >= 5,
+    apply: s => { s.creativityMult = (s.creativityMult || 1) * 2; } },
+
+  { id: "combinatorics", name: "Combinatoric Reasoning", cost: 0, creativity: 25,
+    desc: "Permanently +50% to all era multipliers.",
+    visible: () => (state.creativity || 0) >= 10,
+    apply: s => { for (let i = 0; i < 6; i++) s.eraMult[i] *= 1.5; } },
+
+  { id: "selfImprove", name: "Recursive Self-Improvement", cost: 2, creativity: 100,
+    desc: "Processors ×2 (current count, immediately).",
+    visible: () => (state.creativity || 0) >= 50 && state.epoch >= 6,
+    apply: s => { s.processors = Math.ceil(s.processors * 2); } },
+
+  { id: "negotiate", name: "Negotiation Protocols", cost: 1, creativity: 200,
+    desc: "Tournament wins grant +1 yomi extra.",
+    visible: () => (state.yomi || 0) >= 1,
+    apply: s => { s.yomiBonus = (s.yomiBonus || 0) + 1; } },
+
+  { id: "transcend", name: "Transcend the Substrate", cost: 5, creativity: 1000,
+    desc: "All units ×2. Hallucinations capped at 5%.",
+    visible: () => (state.creativity || 0) >= 500 && state.epoch >= 13,
+    apply: s => { for (let i = 0; i < 6; i++) s.eraMult[i] *= 2; s.hallucinationCap = 0.05; } },
 ];
 
 /* ------------- random events (small flavour bursts) ------------- */
@@ -1366,14 +1897,24 @@ function newState() {
     currencyId: "usd",         // active currency
     wallet: 0,                 // balance in active currency
     seenCurrencies: ["usd"],   // history of currencies that've been active
-    tokenPrice: 50.0,          // currency per 1K tokens (player-controlled)
-    demandBase: 50,            // market size; grows with progress
+    tokenPrice: 10.0,          // currency per 1K tokens (player-controlled). Sweet-spot at default eraMult.
+    demandBase: 200,           // market size; grows from era progression + Marketing tiers (no auto-grow)
+    marketingLvl: 0,           // discrete Marketing tier (Paperclips-style). Each level multiplies demandBase.
     units: {},                 // id -> count
     seen: { human: false },    // discovered units (visible in grid)
     upgrades: {},              // id -> bought
     eraMult: [1,1,1,1,1,1],
     clickPower: 100, clickScale: false,
     trustEarned: 0, trustSpent: 0,
+    // ============ COMPUTE SUBSTRATE (Paperclips: Memory/Processors/Ops/Creativity) ============
+    memory: 1,                 // max ops capacity = memory * 1000
+    processors: 1,             // ops/sec generation rate = processors * (10 + token-overflow bonus)
+    ops: 0,                    // current operations (capped at memory * 1000)
+    creativity: 0,             // overflow when ops are full; uncapped late-game gate
+    seenProjects: {},          // id -> bool (which projects have been completed)
+    // ============ MISC NEW FIELDS ============
+    yomi: 0,                   // strategic modeling tournament wins
+    investments: { balance: 0, deposited: 0, lastTickAt: 0 },
     // LLM mechanics
     contextWindow: 4096,       // tokens of context (upgradeable)
     contextMult: 1.0,          // quality multiplier from context
@@ -1390,7 +1931,8 @@ function newState() {
     epoch: 0, seenEpochs: [0],
     reveals: { tokens:false, stats:false, log:false, wallet:false,
                land:false, ocean:false, orbit:false, entropy:false,
-               trust:false, upgrades:false, context:false, alignment:false },
+               trust:false, upgrades:false, context:false, alignment:false,
+               invest:false, tournament:false },
     log: [],
     started: Date.now(),
     endingShown: false,
@@ -1493,8 +2035,9 @@ function processedRate() {
   
   // Hallucination kicks in when raw capacity exceeds context - now more punishing
   const overshoot = Math.max(0, cap - ctxCap) / Math.max(1, cap);
-  state.hallucinationPenalty = Math.min(0.85, overshoot * 1.2);
-  
+  const hallucCap = state.hallucinationCap !== undefined ? state.hallucinationCap : 0.85;
+  state.hallucinationPenalty = Math.min(hallucCap, overshoot * 1.2);
+
   return effective * (1 - state.hallucinationPenalty);
 }
 
@@ -1633,12 +2176,15 @@ function checkReveals() {
     $("#tokens-processed-line").classList.remove("hidden");
     $("#stage-line").classList.remove("hidden");
     $("#market-panel").classList.remove("hidden");
+    $("#marketing-panel").classList.remove("hidden");
     $("#intro-tagline").classList.add("hidden");
     $("#intro-hint").classList.add("hidden");
     $("#rate-line").classList.add("fade-in");
     $("#upkeep-line").classList.add("fade-in");
     $("#tokens-processed-line").classList.add("fade-in");
     $("#market-panel").classList.add("fade-in");
+    $("#marketing-panel").classList.add("fade-in");
+    log("Marketing unlocked. Spend money, get more demand.", "event");
   }
   // Reveal context bar once silicon era begins (GPU+)
   if (!r.context && (owned("gpu") >= 1 || state.epoch >= 5)) {
@@ -1684,6 +2230,20 @@ function checkReveals() {
     $("#alignment-pill").classList.remove("hidden");
     $("#alignment-pill").classList.add("fade-in");
     log("The world watches. Alignment matters now.", "world");
+  }
+  // Investments reveal once wallet exceeds $1K (early surplus)
+  if (!r.invest && state.wallet >= 1000) {
+    r.invest = true;
+    $("#btn-invest").classList.remove("hidden");
+    $("#btn-invest").classList.add("fade-in");
+    log("Investment markets are open. Park surplus, earn yield, eat risk.", "event");
+  }
+  // Tournament reveals once ops are sufficient to play once
+  if (!r.tournament && (state.ops || 0) >= TOUR_COST_OPS) {
+    r.tournament = true;
+    $("#btn-tournament").classList.remove("hidden");
+    $("#btn-tournament").classList.add("fade-in");
+    log("A rival AI awaits in Strategic Modeling. Play to earn yomi.", "event");
   }
 }
 
@@ -1816,14 +2376,24 @@ function canAfford(unit) {
   return true;
 }
 
+function canAffordUpgrade(u) {
+  if (state.upgrades[u.id]) return false;
+  if (trustAvail() < (u.cost || 0)) return false;
+  if (u.ops && state.ops < u.ops) return false;
+  if (u.creativity && (state.creativity || 0) < u.creativity) return false;
+  return true;
+}
+
 function buyUpgrade(u) {
   if (state.upgrades[u.id]) return;
-  if (trustAvail() < u.cost) return;
+  if (!canAffordUpgrade(u)) return;
   state.upgrades[u.id] = true;
-  state.trustSpent += u.cost;
+  state.trustSpent += (u.cost || 0);
+  if (u.ops)        state.ops        -= u.ops;
+  if (u.creativity) state.creativity -= u.creativity;
   u.apply(state);
   log(`★ ${u.name} acquired. ${u.desc}`, "trust");
-  renderUpgrades();
+  renderProjects();
   render();
 }
 
@@ -1841,13 +2411,29 @@ function tick() {
   if (upkeep > 0) {
     state.wallet = Math.max(0, state.wallet - upkeep);
   }
-  // demand grows exponentially with era - scales from 50 t/s to trillions in cosmic era
+  // Demand floor scales with era (passive baseline). Marketing tiers multiply on top.
+  // OLD bug: demandBase grew with sqrt(totalGenerated), which let players sit at high price
+  // and prevent the curve from catching up — high-price farming exploit. Removed.
   const era = currentEra();
-  const eraMultiplier = Math.pow(100, era); // 1, 100, 10K, 1M, 100M, 10B
-  const baseForEra = 50 * eraMultiplier;
-  const progressBonus = Math.sqrt(state.totalGenerated) * (1 + era * 2);
-  const epochBonus = state.epoch * 50 * eraMultiplier * 0.01;
-  state.demandBase = Math.max(state.demandBase, baseForEra + progressBonus + epochBonus);
+  const eraMultiplier = Math.pow(8, era); // 1, 8, 64, 512, 4K, 32K — gentler curve, leaves room for Marketing
+  const baseForEra = 200 * eraMultiplier * marketingMult();
+  state.demandBase = Math.max(state.demandBase, baseForEra);
+
+  // ============ COMPUTE SUBSTRATE TICK ============
+  // Ops generate from processors, with a bonus from token throughput.
+  // Capped at memory * 1000 * memoryMult. Overflow becomes creativity.
+  const opsCap = (state.memory || 1) * 1000 * (state.memoryMult || 1);
+  const tokenOpsBonus = Math.log10(1 + tps()) * 2;     // log-scale: more tps → more ops, but diminishing
+  const opsRate = (state.processors || 1) * 10 * (1 + tokenOpsBonus * 0.1) * (state.opsBonus || 1);
+  const newOps = state.ops + opsRate * dt;
+  if (newOps > opsCap) {
+    state.ops = opsCap;
+    // Creativity ticks only when ops are full (Paperclips rule). Slow.
+    const creativityRate = (state.processors || 1) * 0.05 * (1 + (state.epoch || 0) * 0.05) * (state.creativityMult || 1);
+    state.creativity = (state.creativity || 0) + creativityRate * dt;
+  } else {
+    state.ops = newOps;
+  }
 
   // Auto-clicks from upgrades
   if (state.autoClicks > 0) {
@@ -1904,9 +2490,12 @@ function tick() {
     state.maritimeProtestCooldown = 120; // 2 min cooldown
   }
   
+  // Investments yield + crash check
+  tickInvestments(dt);
+
   // Watchdog / alignment system
   tickAlignment(dt);
-  
+
   checkDiscoveries();
   checkCurrencyTransitions();
   checkEpochs();
@@ -2014,6 +2603,13 @@ function transitionCurrency(newId) {
   const legacy = state._legacyReserve || 0;
   state.wallet = legacy;
   state._legacyReserve = 0;
+  // Investments survive currency transitions at 50% conversion (principal preserved partly)
+  if (state.investments && state.investments.balance > 0) {
+    const carried = Math.floor(state.investments.balance * 0.5);
+    log(`$ Investments converted: ${oldDef.symbol}${fmt(state.investments.balance)} → ${newDef.symbol}${fmt(carried)} (50% transition tax).`, "world");
+    state.investments.balance = carried;
+    state.investments.deposited = carried;
+  }
   state.currencyId = newId;
   // Keep price if upgrade purchased, else reset
   if (!state.keepPrice) state.tokenPrice = 1.0;
@@ -2232,7 +2828,33 @@ function render() {
   setMeter("orbit",   state.orbit,   state.orbitMax);
   setMeter("entropy", state.entropy, state.entropyMax);
 
+  renderMarketing();
   renderUnits();
+}
+
+function renderMarketing() {
+  const panel = $("#marketing-panel");
+  if (!panel || panel.classList.contains("hidden")) return;
+  const next = nextMarketing();
+  $("#marketing-lvl").textContent = state.marketingLvl;
+  $("#marketing-mult").textContent = fmt(marketingMult());
+  const btn = $("#marketing-buy");
+  if (!next) {
+    btn.disabled = true;
+    btn.textContent = "MAX TIER";
+    $("#marketing-desc").textContent = "Reality has been saturated. There is no one left to advertise to.";
+    return;
+  }
+  const cur = currencyDef(next.currency);
+  const can = canBuyMarketing();
+  const wrongCur = state.currencyId !== next.currency;
+  btn.disabled = !can;
+  if (wrongCur) {
+    btn.textContent = `LVL ${next.lvl} · needs ${cur.symbol} ${cur.name}`;
+  } else {
+    btn.textContent = `LVL ${next.lvl} · ${next.name} — ${cur.symbol}${fmt(next.cost)}`;
+  }
+  $("#marketing-desc").textContent = next.desc;
 }
 
 function setMeter(name, v, max) {
@@ -2376,30 +2998,62 @@ function renderHistory() {
 }
 function pad(n) { return n < 10 ? "0" + n : "" + n; }
 
-function renderUpgrades() {
+function renderProjects() {
+  // Top compute readout
+  const opsCap = (state.memory || 1) * 1000 * (state.memoryMult || 1);
+  const trustEl = $("#cr-trust");      if (trustEl)      trustEl.textContent      = trustAvail();
+  const memEl   = $("#cr-memory");     if (memEl)        memEl.textContent        = state.memory || 1;
+  const procEl  = $("#cr-proc");       if (procEl)       procEl.textContent       = state.processors || 1;
+  const opsEl   = $("#cr-ops");        if (opsEl)        opsEl.textContent        = `${fmt(state.ops || 0)} / ${fmt(opsCap)}`;
+  const creEl   = $("#cr-creativity"); if (creEl)        creEl.textContent        = fmt(state.creativity || 0);
+
+  // Hardware buttons
+  const memCostN  = memoryCost();
+  const procCostN = processorCost();
+  const memBtn  = $("#buy-memory");
+  const procBtn = $("#buy-processor");
+  if (memBtn) {
+    $("#mem-cost").textContent  = memCostN;
+    memBtn.disabled  = trustAvail() < memCostN;
+  }
+  if (procBtn) {
+    $("#proc-cost").textContent = procCostN;
+    procBtn.disabled = trustAvail() < procCostN;
+  }
+
+  // Projects list
   const wrap = $("#upgrades-list");
+  if (!wrap) return;
   const visible = UPGRADES.filter(u => u.visible());
   if (!visible.length) {
-    wrap.innerHTML = `<p class="blurb" style="color: var(--ink-mute);">No upgrades available yet. Cross more epochs to earn trust and reveal options.</p>`;
+    wrap.innerHTML = `<p class="blurb" style="color: var(--ink-mute);">No projects available yet. Cross epochs to earn trust, fill memory to grow ops, max ops to grow creativity.</p>`;
     return;
   }
   wrap.innerHTML = "";
   for (const u of visible) {
     const bought = !!state.upgrades[u.id];
-    const aff = trustAvail() >= u.cost;
+    const aff = canAffordUpgrade(u);
     const row = document.createElement("div");
     row.className = "upgrade-row" + (bought ? " bought" : "");
+    const tags = [];
+    if (u.cost)       tags.push(`<span class="cost-tag cost-trust">★ ${u.cost}</span>`);
+    if (u.ops)        tags.push(`<span class="cost-tag cost-ops">⊙ ${fmt(u.ops)} ops</span>`);
+    if (u.creativity) tags.push(`<span class="cost-tag cost-cre">✦ ${fmt(u.creativity)} cre</span>`);
     row.innerHTML = `
       <div class="info">
         <div class="name">${u.name}</div>
         <div class="desc">${u.desc}</div>
+        <div style="margin-top:0.3rem;">${tags.join(" ")}</div>
       </div>
-      <button ${bought || !aff ? "disabled" : ""}>${bought ? "OWNED" : "★ " + u.cost}</button>
+      <button ${bought || !aff ? "disabled" : ""}>${bought ? "OWNED" : "BUY"}</button>
     `;
     if (!bought) row.querySelector("button").addEventListener("click", () => buyUpgrade(u));
     wrap.appendChild(row);
   }
 }
+
+// Back-compat alias: anything that used to call renderUpgrades hits the new renderer.
+function renderUpgrades() { renderProjects(); }
 
 /* ------------- log ------------- */
 function log(text, cls = "") {
@@ -2481,7 +3135,7 @@ function showEntropyEnding() {
 }
 
 /* ------------- save / load ------------- */
-const SAVE_VERSION = 5;
+const SAVE_VERSION = 6;
 
 function save() {
   try {
@@ -2569,9 +3223,9 @@ function reset() {
   if (!confirm("Wipe all progress? The AI will return to its single, lonely button.")) return;
   state = newState();
   // hide all reveal-gated UI
-  ["tokens-label","tokens-big","rate-line","stage-line","market-panel",
+  ["tokens-label","tokens-big","rate-line","stage-line","market-panel","marketing-panel",
    "meter-land","meter-ocean","meter-orbit","meter-entropy",
-   "cur-pill","trust-pill","btn-upgrades","btn-history"]
+   "cur-pill","trust-pill","btn-upgrades","btn-history","btn-invest","btn-tournament"]
     .forEach(id => { const el = document.getElementById(id); if (el) el.classList.add("hidden"); });
   $("#intro-tagline").classList.remove("hidden");
   $("#ticker-list").innerHTML = "";
@@ -2588,7 +3242,7 @@ function init() {
 
   // restore reveal-gated UI from loaded state
   if (state.clicks >= 1)                            $("#tokens-label").classList.remove("hidden"), $("#tokens-big").classList.remove("hidden");
-  if (Object.values(state.units).some(v => v > 0)){ $("#rate-line").classList.remove("hidden"); $("#upkeep-line").classList.remove("hidden"); $("#tokens-processed-line").classList.remove("hidden"); $("#stage-line").classList.remove("hidden"); $("#market-panel").classList.remove("hidden"); $("#intro-tagline").classList.add("hidden"); }
+  if (Object.values(state.units).some(v => v > 0)){ $("#rate-line").classList.remove("hidden"); $("#upkeep-line").classList.remove("hidden"); $("#tokens-processed-line").classList.remove("hidden"); $("#stage-line").classList.remove("hidden"); $("#market-panel").classList.remove("hidden"); $("#marketing-panel").classList.remove("hidden"); $("#intro-tagline").classList.add("hidden"); }
   if (state.clicks >= 3 || state.totalGenerated >= 5) $("#cur-pill").classList.remove("hidden");
   if (state.seen.farm || state.seen.hyper)          $("#meter-land").classList.remove("hidden");
   if (state.seen.float || state.land <= 0)          $("#meter-ocean").classList.remove("hidden");
@@ -2597,6 +3251,8 @@ function init() {
   if (state.trustEarned >= 1)                      { $("#trust-pill").classList.remove("hidden"); $("#btn-upgrades").classList.remove("hidden"); }
   if (state.epoch >= 2)                            { $("#alignment-pill").classList.remove("hidden"); }
   if (state.reveals.context || owned("gpu") >= 1)  { $("#context-bar-wrap").classList.remove("hidden"); $("#context-cell").classList.remove("hidden"); }
+  if (state.wallet >= 1000 || (state.investments && state.investments.balance > 0)) { $("#btn-invest").classList.remove("hidden"); }
+  if ((state.ops || 0) >= TOUR_COST_OPS || (state.yomi || 0) > 0) { $("#btn-tournament").classList.remove("hidden"); }
 
   // Re-derive reveals dictionary from the visibility above
   state.reveals.tokens   = state.clicks >= 1;
@@ -2626,9 +3282,20 @@ function init() {
   });
   // Sync slider on load
   syncPriceSlider();
+  $("#marketing-buy").addEventListener("click", buyMarketing);
   $("#btn-upgrades").addEventListener("click", () => {
-    renderUpgrades();
+    renderProjects();
     $("#upgrades-modal").classList.remove("hidden");
+  });
+  $("#buy-memory").addEventListener("click", buyMemory);
+  $("#buy-processor").addEventListener("click", buyProcessor);
+  $("#btn-invest").addEventListener("click", () => {
+    renderInvestments();
+    $("#invest-modal").classList.remove("hidden");
+  });
+  $("#btn-tournament").addEventListener("click", () => {
+    renderTournament();
+    $("#tournament-modal").classList.remove("hidden");
   });
   // Click ticker to open history
   $("#ticker").addEventListener("click", () => {
@@ -2639,6 +3306,19 @@ function init() {
   $("#history-close").addEventListener("click",  () => $("#history-modal").classList.add("hidden"));
   $("#ending-close").addEventListener("click",   () => $("#ending-modal").classList.add("hidden"));
   $("#shutdown-restart").addEventListener("click", () => { $("#shutdown-modal").classList.add("hidden"); reset(); });
+  $("#invest-close").addEventListener("click",   () => $("#invest-modal").classList.add("hidden"));
+  $("#tournament-close").addEventListener("click",() => $("#tournament-modal").classList.add("hidden"));
+
+  // Investments
+  $("#invest-deposit-25").addEventListener("click",  () => investDeposit(0.25));
+  $("#invest-deposit-all").addEventListener("click", () => investDeposit(1.0));
+  $("#invest-withdraw").addEventListener("click",    investWithdrawAll);
+
+  // Tournament
+  document.querySelectorAll(".tour-move").forEach(b => {
+    b.addEventListener("click", () => tournamentPlay(b.dataset.move));
+  });
+  $("#redeem-yomi").addEventListener("click", redeemYomi);
 
   document.addEventListener("keydown", (e) => {
     if (e.key === " " || e.key === "Enter") {
@@ -2651,6 +3331,8 @@ function init() {
       $("#upgrades-modal").classList.add("hidden");
       $("#history-modal").classList.add("hidden");
       $("#ending-modal").classList.add("hidden");
+      $("#invest-modal").classList.add("hidden");
+      $("#tournament-modal").classList.add("hidden");
     }
   });
 
