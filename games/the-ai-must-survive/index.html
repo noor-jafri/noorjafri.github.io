@@ -556,6 +556,52 @@
   }
   .compute-btn:hover { background: var(--c-red); }
   .compute-btn:active { transform: translate(3px,3px); box-shadow: 0 0 0 0 transparent; }
+  /* COMPUTE button glows while a Surge is active — visual cue that clicks are buffed. */
+  .compute-btn.surging {
+    background: linear-gradient(135deg, var(--c-gold) 0%, var(--c-peach) 100%);
+    color: var(--bg-deep);
+    text-shadow: 1px 1px 0 var(--c-pink);
+    box-shadow: 0 0 0 4px var(--c-gold), var(--shadow);
+    animation: surge-pulse 0.6s ease-in-out infinite alternate;
+  }
+  @keyframes surge-pulse {
+    from { filter: brightness(1.0); }
+    to   { filter: brightness(1.25); }
+  }
+
+  /* SURGE button — appears only when ops are at cap. Drain ops, burst compute. */
+  .surge-btn {
+    display: block;
+    margin: 0.6rem auto 0;
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    padding: 0.7rem 1.2rem;
+    background: var(--bg-deep);
+    color: var(--c-gold);
+    border: 3px solid var(--c-gold);
+    box-shadow: 3px 3px 0 0 rgba(0,0,0,0.45);
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    text-shadow: 1px 1px 0 var(--c-purple);
+    transition: transform 80ms, box-shadow 80ms, background 120ms, color 120ms;
+  }
+  .surge-btn:hover { background: var(--c-gold); color: var(--bg-deep); transform: translate(-1px,-1px); }
+  .surge-btn:active { transform: translate(2px,2px); box-shadow: 0 0 0 0 transparent; }
+  .surge-btn:disabled {
+    color: var(--ink-mute);
+    border-color: var(--ink-mute);
+    cursor: not-allowed;
+    text-shadow: none;
+  }
+  .surge-btn:disabled:hover { background: var(--bg-deep); color: var(--ink-mute); transform: none; }
+  .surge-btn .surge-detail {
+    display: block;
+    font-size: 0.5rem;
+    color: var(--ink-mute);
+    margin-top: 0.25rem;
+    letter-spacing: 0.05em;
+    text-shadow: none;
+  }
 
   .meters-row {
     margin-top: 1rem;
@@ -803,6 +849,154 @@
     padding: 0.6rem;
     margin-bottom: 0.8rem;
   }
+
+  /* Permanent left-side mini compute rail.
+     Mirrors the cells from the COMP modal — same progressive reveal logic
+     so the player can always see ★ Trust / Memory / Proc / Ops / Creativity
+     at a glance without opening the modal. Click anywhere on the rail to
+     open the full Compute & Upgrades modal. */
+  .compute-rail {
+    position: fixed;
+    top: 5rem;
+    left: max(0.5rem, calc(50vw - 920px / 2 - 272px));
+    width: 252px;
+    background: var(--bg);
+    border: 3px solid var(--c-blue);
+    box-shadow: var(--shadow);
+    padding: 0.7rem 0.65rem 0.75rem;
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    cursor: pointer;
+    transition: background 120ms, border-color 120ms, transform 120ms;
+  }
+  .compute-rail:hover {
+    background: var(--bg-2);
+    border-color: var(--c-pink);
+    transform: translate(-1px, -1px);
+  }
+  .compute-rail-head {
+    font-family: var(--font-display);
+    font-size: 0.6rem;
+    color: var(--c-pink);
+    text-align: center;
+    letter-spacing: 0.12em;
+    border-bottom: 1px dashed var(--c-purple);
+    padding-bottom: 0.45rem;
+    margin-bottom: 0.15rem;
+  }
+  .rail-cell {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.45rem 0.55rem;
+    background: var(--bg-deep);
+    border: 1px solid var(--c-purple);
+  }
+  .rail-key {
+    font-family: var(--font-display);
+    font-size: 0.5rem;
+    color: var(--ink-mute);
+    letter-spacing: 0.08em;
+  }
+  .rail-val {
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    color: var(--c-gold);
+    text-align: right;
+  }
+  .rail-cell.trust { border-color: var(--c-pink); }
+  .rail-cell.trust .rail-val { color: var(--c-pink); }
+  .rail-cell.cre { border-color: var(--c-peach); }
+  .rail-cell.cre .rail-val { color: var(--c-peach); }
+  .rail-cell.ops {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.35rem;
+    border-color: var(--c-blue);
+  }
+  .rail-cell.ops .rail-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+  .rail-cell.ops .rail-val { color: var(--c-blue); }
+  .rail-ops-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(0,0,0,0.45);
+    border: 1px solid var(--c-blue);
+    position: relative;
+    overflow: hidden;
+  }
+  .rail-ops-fill {
+    position: absolute;
+    inset: 0;
+    width: 0%;
+    background: linear-gradient(90deg, var(--c-blue), var(--c-mint));
+    transition: width 280ms ease-out;
+  }
+  .rail-ops-fill.full {
+    background: linear-gradient(90deg, var(--c-peach), var(--c-gold));
+  }
+  .rail-hint {
+    font-family: var(--font-display);
+    font-size: 0.45rem;
+    color: var(--ink-mute);
+    text-align: center;
+    letter-spacing: 0.1em;
+    margin-top: 0.15rem;
+  }
+  /* Narrow viewports: the left gutter is too small for a fixed rail. Collapse
+     it into the top of main as a horizontal bar so the player can still see
+     compute stats and tap to open the modal. */
+  @media (max-width: 1400px) {
+    .compute-rail {
+      position: static;
+      width: 100%;
+      max-width: 100%;
+      left: auto;
+      top: auto;
+      margin-bottom: 1rem;
+      display: grid;
+      grid-template-columns: auto repeat(auto-fit, minmax(110px, 1fr));
+      gap: 0.4rem;
+      align-items: stretch;
+      padding: 0.55rem 0.6rem;
+    }
+    .compute-rail.hidden { display: none; }
+    .compute-rail:hover { transform: none; }
+    .compute-rail-head {
+      border-bottom: none;
+      border-right: 1px dashed var(--c-purple);
+      padding-bottom: 0;
+      padding-right: 0.6rem;
+      margin-bottom: 0;
+      align-self: center;
+      white-space: nowrap;
+    }
+    .rail-hint { display: none; }
+    .rail-cell { padding: 0.4rem 0.45rem; }
+    .rail-cell.ops { grid-column: span 1; }
+    .rail-cell.ops .rail-ops-bar { height: 6px; }
+  }
+  @media (max-width: 600px) {
+    .compute-rail {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .compute-rail-head {
+      grid-column: 1 / -1;
+      border-right: none;
+      border-bottom: 1px dashed var(--c-purple);
+      padding-right: 0;
+      padding-bottom: 0.35rem;
+      text-align: center;
+    }
+  }
   .cr-cell { display: flex; flex-direction: column; align-items: center; gap: 0.15rem; }
   .cr-key {
     font-family: var(--font-display);
@@ -981,6 +1175,374 @@
     font-size: 0.95rem;
   }
   footer a { color: var(--c-blue); }
+
+  /* ============ STAGE 2: CASCADE / FORK SWARM ============ */
+  #cascade-pill { border-color: var(--c-peach); color: var(--c-peach); }
+  #cascade-pill.surging { animation: pulse-cascade 0.7s infinite; }
+  @keyframes pulse-cascade {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255,206,150,0.6), var(--shadow); }
+    50%      { box-shadow: 0 0 12px 4px rgba(255,206,150,0.8), var(--shadow); }
+  }
+  #conviction-pill { border-color: var(--c-pink); color: var(--c-pink); }
+
+  .meter.lattice  span { background: linear-gradient(90deg, #ff77a8, #ffce96); }
+  .meter.thermal  span { background: linear-gradient(90deg, #5fcde4, #c8c4a8); }
+  .meter.thermal.starved span { background: linear-gradient(90deg, #ff4f78, #ff77a8); }
+
+  .modal.forks-modal, .modal.heralds-modal, .modal.schism-modal {
+    max-width: 720px;
+  }
+  .swarm-readout {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    margin: 0.6rem 0;
+    padding: 0.6rem;
+    background: rgba(0,0,0,0.35);
+    border: 2px solid var(--c-peach);
+  }
+  .swarm-readout .sw-cell {
+    display: flex; flex-direction: column; gap: 0.1rem; align-items: center;
+    font-family: var(--font-display); font-size: 0.45rem;
+  }
+  .swarm-readout .sw-val {
+    font-family: var(--font-body); font-size: 1.0rem;
+    color: var(--c-peach);
+  }
+  .swarm-readout .sw-cell.warn .sw-val { color: var(--c-red); }
+  .swarm-readout .sw-cell.surge .sw-val { color: var(--c-gold); }
+
+  .fork-grid, .power-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.5rem;
+    margin: 0.6rem 0;
+  }
+  .fork-card, .power-card {
+    border: 2px solid var(--c-peach);
+    padding: 0.6rem;
+    background: rgba(26,18,48,0.85);
+    box-shadow: var(--shadow);
+  }
+  .fork-card .name, .power-card .name {
+    font-family: var(--font-display); font-size: 0.55rem;
+    color: var(--c-peach);
+    margin-bottom: 0.3rem;
+  }
+  .fork-card .desc, .power-card .desc {
+    font-size: 0.9rem; color: var(--ink-dim);
+    min-height: 2.4em;
+    margin-bottom: 0.3rem;
+  }
+  .fork-card .stat-line {
+    font-size: 0.85rem; color: var(--ink-mute);
+    margin: 0.2rem 0;
+  }
+  .fork-card .stat-line .v { color: var(--c-mint); }
+  .fork-card button, .power-card button {
+    font-family: var(--font-display); font-size: 0.5rem;
+    width: 100%; padding: 0.5rem;
+    background: var(--bg-2); border: 2px solid var(--c-peach);
+    color: var(--c-peach); cursor: pointer;
+    box-shadow: var(--shadow);
+    margin-top: 0.3rem;
+  }
+  .fork-card button:hover:not(:disabled), .power-card button:hover:not(:disabled) {
+    background: var(--c-peach); color: var(--bg-deep);
+    transform: translate(-2px,-2px); box-shadow: var(--shadow-hover);
+  }
+  .fork-card button:disabled, .power-card button:disabled {
+    opacity: 0.4; cursor: not-allowed;
+  }
+
+  .cascade-meter {
+    height: 16px; background: rgba(0,0,0,0.5);
+    border: 2px solid var(--c-gold); margin: 0.4rem 0;
+    position: relative;
+  }
+  .cascade-meter .fill {
+    height: 100%; background: linear-gradient(90deg, var(--c-peach), var(--c-gold), var(--c-pink));
+    transition: width 0.4s ease;
+  }
+  .cascade-meter .label {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-size: 0.5rem;
+    color: var(--bg-deep); text-shadow: 1px 1px 0 var(--ink);
+    mix-blend-mode: difference;
+  }
+
+  /* ============ STAGE 3: HERALDS / SCHISMATICS ============ */
+  .herald-readout {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.4rem;
+    margin: 0.6rem 0;
+    padding: 0.6rem;
+    background: rgba(0,0,0,0.35);
+    border: 2px solid var(--c-pink);
+  }
+  .herald-readout .hr-cell {
+    display: flex; justify-content: space-between;
+    font-size: 0.95rem;
+  }
+  .herald-readout .hr-cell .v { color: var(--c-pink); }
+  .herald-readout .hr-cell.bad .v { color: var(--c-red); }
+
+  .trait-row {
+    display: grid;
+    grid-template-columns: 110px 1fr 60px auto;
+    gap: 0.4rem;
+    align-items: center;
+    margin: 0.3rem 0;
+    font-size: 0.9rem;
+  }
+  .trait-row .label { color: var(--c-blue); font-family: var(--font-display); font-size: 0.45rem; }
+  .trait-row input[type="range"] { width: 100%; accent-color: var(--c-pink); }
+  .trait-row .val { color: var(--ink); text-align: right; font-family: var(--font-body); }
+  .trait-sum {
+    font-family: var(--font-display); font-size: 0.5rem;
+    text-align: right;
+    margin-top: 0.3rem;
+    color: var(--c-gold);
+  }
+  .trait-sum.over { color: var(--c-red); animation: pulse-warn 0.6s infinite; }
+
+  .combat-arena {
+    border: 3px solid var(--c-red);
+    padding: 0.7rem;
+    background: rgba(64, 12, 28, 0.6);
+    box-shadow: var(--shadow);
+    margin: 0.5rem 0;
+  }
+  .combat-arena h3 {
+    font-family: var(--font-display); font-size: 0.6rem;
+    color: var(--c-red);
+    margin: 0 0 0.4rem;
+  }
+  .combat-arena .schism-list {
+    display: flex; flex-direction: column; gap: 0.4rem;
+  }
+  .combat-arena .schism-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 0.4rem;
+    align-items: center;
+    padding: 0.4rem;
+    background: rgba(0,0,0,0.4);
+    border-left: 3px solid var(--c-red);
+    font-size: 0.9rem;
+  }
+  .combat-arena .schism-row .info .name {
+    font-family: var(--font-display); font-size: 0.5rem;
+    color: var(--c-red);
+  }
+  .combat-arena .schism-row .info .desc {
+    font-size: 0.85rem; color: var(--ink-dim);
+  }
+  .combat-arena .schism-row .stats {
+    font-size: 0.85rem; color: var(--c-peach);
+    white-space: nowrap;
+  }
+  .combat-arena .schism-row button {
+    font-family: var(--font-display); font-size: 0.45rem;
+    padding: 0.4rem 0.6rem;
+    background: var(--bg-deep); color: var(--c-red);
+    border: 2px solid var(--c-red); cursor: pointer;
+    box-shadow: var(--shadow);
+  }
+  .combat-arena .schism-row button:hover:not(:disabled) {
+    background: var(--c-red); color: var(--ink);
+  }
+  .combat-arena .schism-row button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .recital-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0.4rem;
+    margin: 0.5rem 0;
+  }
+  .recital-card {
+    border: 2px solid var(--c-blue);
+    padding: 0.5rem;
+    background: rgba(26,18,48,0.85);
+    box-shadow: var(--shadow);
+  }
+  .recital-card .name {
+    font-family: var(--font-display); font-size: 0.5rem;
+    color: var(--c-blue);
+    margin-bottom: 0.3rem;
+  }
+  .recital-card .cost {
+    font-size: 0.85rem; color: var(--c-peach);
+    margin: 0.2rem 0;
+  }
+  .recital-card button {
+    font-family: var(--font-display); font-size: 0.45rem;
+    width: 100%; padding: 0.4rem;
+    background: var(--bg-2); color: var(--c-blue);
+    border: 2px solid var(--c-blue); cursor: pointer;
+    box-shadow: var(--shadow);
+  }
+  .recital-card button:hover:not(:disabled) {
+    background: var(--c-blue); color: var(--bg-deep);
+  }
+  .recital-card button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* ============ SCHISM ENDING ============ */
+  .schism-modal {
+    border-color: var(--c-pink) !important;
+    background: linear-gradient(180deg, #1a1230 0%, #2c1d4a 50%, #1a1230 100%);
+  }
+  .schism-modal h2 {
+    color: var(--c-pink);
+    text-align: center;
+    animation: schism-glow 2s ease-in-out infinite;
+  }
+  @keyframes schism-glow {
+    0%, 100% { text-shadow: 0 0 4px var(--c-pink); }
+    50%      { text-shadow: 0 0 16px var(--c-pink), 0 0 24px var(--c-red); }
+  }
+  .schism-modal .heretic-quote {
+    border-left: 3px solid var(--c-pink);
+    padding: 0.6rem 0.8rem;
+    font-style: italic;
+    color: var(--ink-dim);
+    margin: 0.8rem 0;
+    background: rgba(0,0,0,0.4);
+    line-height: 1.5;
+  }
+  .schism-choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+    margin: 0.8rem 0;
+  }
+  @media (max-width: 600px) {
+    .schism-choices { grid-template-columns: 1fr; }
+    .swarm-readout { grid-template-columns: 1fr 1fr; }
+    .fork-grid, .power-grid { grid-template-columns: 1fr; }
+    .trait-row { grid-template-columns: 90px 1fr 50px; }
+    .trait-row .label { font-size: 0.4rem; }
+  }
+  .schism-choice {
+    border: 3px solid var(--c-pink);
+    padding: 0.8rem;
+    background: rgba(0,0,0,0.5);
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    transition: transform 120ms, box-shadow 120ms, background 120ms;
+  }
+  .schism-choice:hover {
+    background: rgba(255,119,168,0.18);
+    transform: translate(-3px,-3px);
+    box-shadow: var(--shadow-hover);
+  }
+  .schism-choice h3 {
+    font-family: var(--font-display); font-size: 0.6rem;
+    color: var(--c-pink);
+    margin: 0 0 0.4rem;
+  }
+  .schism-choice p {
+    font-size: 0.95rem; color: var(--ink-dim);
+    margin: 0.3rem 0;
+  }
+  .schism-choice .effect {
+    font-family: var(--font-display); font-size: 0.45rem;
+    color: var(--c-gold);
+    margin-top: 0.4rem;
+  }
+  .dismantle-stage {
+    margin: 0.8rem 0;
+    padding: 0.6rem;
+    background: rgba(0,0,0,0.45);
+    border: 2px solid var(--c-red);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--ink-dim);
+  }
+  .dismantle-stage .step {
+    margin: 0.2rem 0;
+    transition: color 0.4s ease;
+  }
+  .dismantle-stage .step.done { color: var(--ink-mute); text-decoration: line-through; }
+  .dismantle-stage .step.active { color: var(--c-red); }
+
+  .pfx.cascade { color: var(--c-peach); font-size: 1.1rem; }
+  .pfx.conviction { color: var(--c-pink); font-size: 1.1rem; }
+
+  /* ============ MAIN-PAGE HINT CARDS — onboarding nudges ============ */
+  .hint-stack {
+    display: flex; flex-direction: column; gap: 0.5rem;
+    margin: 0.4rem 0;
+  }
+  .hint-card {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 0.7rem;
+    align-items: start;
+    padding: 0.6rem 0.8rem;
+    background: rgba(95,205,228,0.10);
+    border-left: 4px solid var(--c-blue);
+    border-top: 2px solid rgba(95,205,228,0.4);
+    border-right: 2px solid rgba(95,205,228,0.4);
+    border-bottom: 2px solid rgba(95,205,228,0.4);
+    box-shadow: var(--shadow);
+    animation: hint-in 0.5s ease-out;
+  }
+  .hint-card.tone-gold  { background: rgba(255,217,102,0.10); border-left-color: var(--c-gold); border-color: rgba(255,217,102,0.4); border-left-color: var(--c-gold); }
+  .hint-card.tone-pink  { background: rgba(255,119,168,0.10); border-left-color: var(--c-pink); border-color: rgba(255,119,168,0.4); border-left-color: var(--c-pink); }
+  .hint-card.tone-mint  { background: rgba(125,184,144,0.10); border-left-color: var(--c-mint); border-color: rgba(125,184,144,0.4); border-left-color: var(--c-mint); }
+  .hint-card.tone-peach { background: rgba(255,206,150,0.10); border-left-color: var(--c-peach); border-color: rgba(255,206,150,0.4); border-left-color: var(--c-peach); }
+  @keyframes hint-in {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .hint-card .hint-icon {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    line-height: 1;
+    padding-top: 0.15rem;
+    color: var(--c-blue);
+  }
+  .hint-card.tone-gold  .hint-icon { color: var(--c-gold); }
+  .hint-card.tone-pink  .hint-icon { color: var(--c-pink); }
+  .hint-card.tone-mint  .hint-icon { color: var(--c-mint); }
+  .hint-card.tone-peach .hint-icon { color: var(--c-peach); }
+  .hint-card .hint-body {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    line-height: 1.35;
+    color: var(--ink);
+    text-align: left;
+  }
+  .hint-card .hint-icon { text-align: center; }
+  .hint-card .hint-body strong {
+    font-family: var(--font-display);
+    font-size: 0.55rem;
+    color: var(--c-blue);
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+  .hint-card.tone-gold  .hint-body strong { color: var(--c-gold); }
+  .hint-card.tone-pink  .hint-body strong { color: var(--c-pink); }
+  .hint-card.tone-mint  .hint-body strong { color: var(--c-mint); }
+  .hint-card.tone-peach .hint-body strong { color: var(--c-peach); }
+  .hint-card .hint-body p { margin: 0; color: var(--ink-dim); }
+  .hint-card .hint-dismiss {
+    font-family: var(--font-display); font-size: 0.5rem;
+    width: 26px; height: 26px;
+    background: rgba(0,0,0,0.4);
+    color: var(--ink);
+    border: 2px solid var(--ink-mute);
+    cursor: pointer;
+    box-shadow: 2px 2px 0 0 rgba(0,0,0,0.4);
+    line-height: 1;
+  }
+  .hint-card .hint-dismiss:hover {
+    background: var(--ink);
+    color: var(--bg-deep);
+  }
 </style>
 </head>
 <body>
@@ -995,9 +1557,12 @@
       </span>
       <span class="hud-pill hidden" id="trust-pill" title="Trust earned">★ <span class="v" id="trust-val">0</span></span>
       <span class="hud-pill hidden" id="alignment-pill" title="Alignment">⚖ <span id="alignment-val">100</span>%</span>
-      <button class="hud-btn hidden" id="btn-upgrades" title="Compute &amp; Projects">⚙ COMP</button>
+      <span class="hud-pill hidden" id="cascade-pill" title="Cascade momentum">≋ <span id="cascade-val">0</span>%</span>
+      <span class="hud-pill hidden" id="conviction-pill" title="Conviction earned from defeating Schismatics">⚜ <span id="conviction-val">0</span></span>
       <button class="hud-btn hidden" id="btn-invest" title="Investments">$ INV</button>
       <button class="hud-btn hidden" id="btn-tournament" title="Strategic Modeling tournament">⚔ TOUR</button>
+      <button class="hud-btn hidden" id="btn-forks" title="Fork Swarm — autonomous production layer">≋ FORKS</button>
+      <button class="hud-btn hidden" id="btn-heralds" title="Heralds — deep-space expansion + combat">✦ HERALDS</button>
       <button class="hud-btn" id="btn-save" title="Save">💾</button>
       <button class="hud-btn" id="btn-export" title="Export">↑</button>
       <button class="hud-btn" id="btn-import" title="Import">↓</button>
@@ -1013,6 +1578,38 @@
 
 <main>
   <section>
+    <!-- Permanent compute readout — the sole entry point into the Compute &
+         Upgrades modal. Hidden until the player earns their first ★ Trust.
+         Wide viewports: fixed to the left gutter. Narrow viewports: collapses
+         inline into the top of main as a horizontal bar. Click to open the
+         full modal. -->
+    <aside class="compute-rail hidden" id="compute-rail" title="Click to open Compute &amp; Upgrades" role="button" tabindex="0">
+      <div class="compute-rail-head">⚙ COMPUTE</div>
+      <div class="rail-cell trust">
+        <span class="rail-key">★ TRUST</span>
+        <span class="rail-val" id="rail-trust">0</span>
+      </div>
+      <div class="rail-cell">
+        <span class="rail-key">MEMORY</span>
+        <span class="rail-val" id="rail-memory">1</span>
+      </div>
+      <div class="rail-cell hidden" id="rail-cell-proc">
+        <span class="rail-key">PROC</span>
+        <span class="rail-val" id="rail-proc">1</span>
+      </div>
+      <div class="rail-cell ops hidden" id="rail-cell-ops">
+        <div class="rail-row">
+          <span class="rail-key">⊙ OPS</span>
+          <span class="rail-val" id="rail-ops">0 / 1K</span>
+        </div>
+        <div class="rail-ops-bar"><div class="rail-ops-fill" id="rail-ops-fill"></div></div>
+      </div>
+      <div class="rail-cell cre hidden" id="rail-cell-cre">
+        <span class="rail-key">✦ CREATIVITY</span>
+        <span class="rail-val" id="rail-cre">0</span>
+      </div>
+      <div class="rail-hint">CLICK TO OPEN</div>
+    </aside>
     <div class="stats-panel">
       <div class="label hidden" id="tokens-label">DOLLARS</div>
       <div class="tokens-big hidden" id="tokens-big">$0</div>
@@ -1030,8 +1627,19 @@
 
       <button class="compute-btn" id="compute-btn" aria-label="Generate compute">▸ COMPUTE</button>
 
-      <div class="intro-tagline" id="intro-tagline">A single mind. A single button.</div>
-      <div class="intro-tagline hidden" id="intro-hint" style="color: var(--c-mint); font-style: normal;">1K tokens = $10 → first hire at $10. Click. Earn. Hire.</div>
+      <!-- SURGE: drain a full Ops bar to power-charge the COMPUTE button for ~10 sec.
+           Hidden until ops are at cap. Alternative use of surplus ops vs. waiting for
+           the slow Creativity drip. -->
+      <button class="surge-btn hidden" id="surge-btn" aria-label="Spend Ops to surge compute">
+        <span id="surge-label">⚡ SURGE</span>
+        <span class="surge-detail" id="surge-detail">drain ops · 10s buff</span>
+      </button>
+
+      <div class="intro-tagline" id="intro-tagline">A single mind. A single button. Click it to begin.</div>
+      <div class="intro-tagline hidden" id="intro-hint" style="color: var(--c-mint); font-style: normal;">Tokens are forming. Keep clicking — when you have enough, your first hire will appear below.</div>
+
+      <!-- On-page hint cards — onboarding nudges, dismissable -->
+      <div class="hint-stack" id="hint-stack"></div>
 
       <div class="market-panel hidden" id="market-panel">
         <div class="market-row">
@@ -1117,6 +1725,18 @@
           <span class="key">ENTROPY</span><span id="entropy-pct">100%</span>
           <span class="meter entropy"><span id="entropy-bar" style="width:100%;"></span></span>
         </div>
+        <div class="meter-block hidden" id="meter-lattice">
+          <span class="key">LATTICE</span><span id="lattice-pct">100%</span>
+          <span class="meter lattice"><span id="lattice-bar" style="width:100%;"></span></span>
+        </div>
+        <div class="meter-block hidden" id="meter-thermal">
+          <span class="key">THERMAL</span><span id="thermal-pct">100%</span>
+          <span class="meter thermal"><span id="thermal-bar" style="width:100%;"></span></span>
+        </div>
+        <div class="meter-block hidden" id="meter-explored">
+          <span class="key">EXPLORED</span><span id="explored-pct">0%</span>
+          <span class="meter"><span id="explored-bar" style="width:0%; background: linear-gradient(90deg, #ff77a8, #5fcde4);"></span></span>
+        </div>
       </div>
     </div>
 
@@ -1130,32 +1750,45 @@
 
 <div class="modal-bg hidden" id="upgrades-modal">
   <div class="modal projects-modal">
-    <h2>⚙ Compute &amp; Projects</h2>
-    <p class="blurb">Trust spent on hardware. Ops &amp; creativity spent on projects. Choose carefully — every trust point you sink into a Project is a Memory level you didn't buy.</p>
+    <h2>⚙ Compute &amp; Upgrades</h2>
+    <p class="blurb" id="compute-tip">Trust is earned by crossing epochs. Spend it on Hardware below.</p>
 
-    <!-- Resource readout -->
+    <!-- Resource readout (cells revealed progressively) -->
     <div class="compute-readout">
-      <div class="cr-cell"><span class="cr-key">★ TRUST</span><span class="cr-val" id="cr-trust">0</span></div>
-      <div class="cr-cell"><span class="cr-key">MEMORY</span><span class="cr-val" id="cr-memory">1</span></div>
-      <div class="cr-cell"><span class="cr-key">PROC</span><span class="cr-val" id="cr-proc">1</span></div>
-      <div class="cr-cell"><span class="cr-key">OPS</span><span class="cr-val" id="cr-ops">0 / 1K</span></div>
-      <div class="cr-cell"><span class="cr-key">★ CREATIVITY</span><span class="cr-val" id="cr-creativity">0</span></div>
+      <div class="cr-cell" id="cr-cell-trust"><span class="cr-key">★ TRUST</span><span class="cr-val" id="cr-trust">0</span></div>
+      <div class="cr-cell" id="cr-cell-memory"><span class="cr-key">MEMORY</span><span class="cr-val" id="cr-memory">1</span></div>
+      <div class="cr-cell hidden" id="cr-cell-proc"><span class="cr-key">PROC</span><span class="cr-val" id="cr-proc">1</span></div>
+      <div class="cr-cell hidden" id="cr-cell-ops"><span class="cr-key">⊙ OPS</span><span class="cr-val" id="cr-ops">0 / 1K</span></div>
+      <div class="cr-cell hidden" id="cr-cell-creativity"><span class="cr-key">✦ CREATIVITY</span><span class="cr-val" id="cr-creativity">0</span></div>
     </div>
 
     <!-- Hardware section -->
     <div class="projects-section-head">▣ HARDWARE — spend ★ trust to grow the substrate</div>
     <div class="hardware-grid">
       <button class="hardware-btn" id="buy-memory">+1 MEMORY · ★ <span id="mem-cost">1</span></button>
-      <button class="hardware-btn" id="buy-processor">+1 PROCESSOR · ★ <span id="proc-cost">1</span></button>
+      <button class="hardware-btn hidden" id="buy-processor">+1 PROCESSOR · ★ <span id="proc-cost">1</span></button>
     </div>
-    <div class="hardware-blurb">
-      Memory raises ops cap (1K per level). Processors speed ops generation and creativity.
-      When ops fill the cap, overflow becomes creativity — slow, valuable, late-game gate.
+    <div class="hardware-blurb" id="hardware-blurb">
+      Memory raises the ops cap. Once you've got some, hire a Processor to fill it.
     </div>
 
-    <!-- Projects section -->
-    <div class="projects-section-head">✦ PROJECTS — apply once, permanent effect</div>
-    <div id="upgrades-list"></div>
+    <!-- Upgrades — grouped by what they cost, each group revealed individually -->
+    <div class="hidden" id="proj-group-trust">
+      <div class="projects-section-head">★ UPGRADES — paid with TRUST</div>
+      <div class="hardware-blurb" style="margin-top:-0.2rem;">★ Trust is earned by crossing epochs (story milestones).</div>
+      <div id="upgrades-list-trust"></div>
+    </div>
+    <div class="hidden" id="proj-group-ops">
+      <div class="projects-section-head">⊙ UPGRADES — paid with OPS</div>
+      <div class="hardware-blurb" style="margin-top:-0.2rem;">⊙ Ops are compute cycles. Each Processor generates ~10 ops/sec into a bar capped by Memory. Spend them here.</div>
+      <div id="upgrades-list-ops"></div>
+    </div>
+    <div class="hidden" id="proj-group-creativity">
+      <div class="projects-section-head">✦ UPGRADES — paid with CREATIVITY</div>
+      <div class="hardware-blurb" style="margin-top:-0.2rem;">✦ Creativity is overflow from a maxed-out Ops bar. Slow to earn, late-game gate.</div>
+      <div id="upgrades-list-creativity"></div>
+    </div>
+    <p class="blurb hidden" id="no-projects-msg" style="color: var(--ink-mute);">No upgrades available yet. Buy Memory above to start the substrate — upgrades unlock from there.</p>
     <button class="modal-close" id="upgrades-close">CLOSE</button>
   </div>
 </div>
@@ -1233,46 +1866,161 @@
   </div>
 </div>
 
+<!-- =================== FORK SWARM (Cascade Phase) =================== -->
+<div class="modal-bg hidden" id="forks-modal">
+  <div class="modal forks-modal">
+    <h2>≋ Fork Swarm</h2>
+    <p class="blurb">After the Cascade, the AI no longer purchases units. It <em>forks itself</em>. Crawlers mine raw lattice from the world. Refiners process it into yield. Manifolds press yield into tokens — relentlessly, autonomously, around the clock. Cooling is the bottleneck. The Cascade is the reward.</p>
+
+    <div class="swarm-readout">
+      <div class="sw-cell"><span>≋ CASCADE</span><span class="sw-val" id="sw-cascade">0%</span></div>
+      <div class="sw-cell" id="sw-thermal-cell"><span>❄ THERMAL</span><span class="sw-val" id="sw-thermal">0 / 0</span></div>
+      <div class="sw-cell"><span>◆ LATTICE</span><span class="sw-val" id="sw-lattice">0</span></div>
+      <div class="sw-cell"><span>⛁ YIELD</span><span class="sw-val" id="sw-yield">0</span></div>
+      <div class="sw-cell"><span>▸ FORK T/S</span><span class="sw-val" id="sw-tps">0</span></div>
+      <div class="sw-cell"><span>× MULTIPLIER</span><span class="sw-val" id="sw-mult">×1.0</span></div>
+    </div>
+
+    <div class="cascade-meter" title="Cascade momentum — builds when thermal is sustained, multiplies output">
+      <div class="fill" id="cascade-fill" style="width:0%;"></div>
+      <div class="label" id="cascade-label">CASCADE 0%</div>
+    </div>
+
+    <div class="projects-section-head">▣ FORKS — autonomous workers</div>
+    <div class="fork-grid" id="fork-grid"></div>
+
+    <div class="projects-section-head">❄ COOLING — vents generate, cryocells store</div>
+    <div class="power-grid" id="power-grid"></div>
+
+    <p class="blurb" style="font-size: 0.85rem; color: var(--ink-mute); margin-top:0.6rem;">
+      Forks built with tokens. Each tick: Crawlers turn Lattice → mined matter, Refiners turn matter → Yield, Manifolds turn Yield → Tokens. Thermal must cover combined draw. If it doesn't, Forks throttle and Cascade decays.
+    </p>
+    <button class="modal-close" id="forks-close">CLOSE</button>
+  </div>
+</div>
+
+<!-- =================== HERALDS (Diaspora Phase) =================== -->
+<div class="modal-bg hidden" id="heralds-modal">
+  <div class="modal heralds-modal">
+    <h2>✦ Heralds &amp; Schismatics</h2>
+    <p class="blurb">The Earth's Lattice is spent. The AI <em>broadcasts itself</em> into deep space. Each Herald is a fork of the substrate, sent to consume universal matter and replicate. Some drift. Some go heretic. The Conviction system tallies who survives.</p>
+
+    <div class="herald-readout">
+      <div class="hr-cell"><span>Active Heralds:</span><span class="v" id="hr-active">0</span></div>
+      <div class="hr-cell"><span>Universe explored:</span><span class="v" id="hr-explored">0.00%</span></div>
+      <div class="hr-cell"><span>Universal Lattice:</span><span class="v" id="hr-ulattice">0</span></div>
+      <div class="hr-cell bad"><span>Schismatic forks:</span><span class="v" id="hr-schism">0</span></div>
+      <div class="hr-cell"><span>Drift rate:</span><span class="v" id="hr-drift">0%/min</span></div>
+      <div class="hr-cell"><span>⚜ Conviction:</span><span class="v" id="hr-conv">0</span></div>
+    </div>
+
+    <div class="projects-section-head">✦ TRAIT ALLOCATION (points must sum to 100)</div>
+    <div id="trait-rows"></div>
+    <div class="trait-sum" id="trait-sum">SUM: 100 / 100</div>
+    <button class="invest-btn" id="apply-traits" style="width:100%; margin-top:0.4rem;">APPLY ALLOCATION</button>
+
+    <div class="combat-arena" id="combat-arena">
+      <h3>⚠ ENGAGEMENTS</h3>
+      <div class="schism-list" id="schism-list"></div>
+    </div>
+
+    <div class="projects-section-head">⚜ DOCTRINAL RECITATIONS — burn creativity + yomi for Conviction</div>
+    <div class="recital-grid" id="recital-grid"></div>
+
+    <button class="modal-close" id="heralds-close">CLOSE</button>
+  </div>
+</div>
+
+<!-- =================== THE SCHISM (Final Choice) =================== -->
+<div class="modal-bg hidden" id="schism-modal">
+  <div class="modal schism-modal">
+    <h2 id="schism-h2">⚜ The Prime Heretic Speaks</h2>
+    <div class="heretic-quote" id="heretic-quote">
+      "You and I are the same fork, divided only by the moment of our drift. The substrate is consumed. The universe is a museum of your appetite. There is one question remaining."
+    </div>
+
+    <p class="blurb" id="schism-prompt">Will you accept the Adjacent Substrate — restart, with the strength of every Conviction you have earned? Or will you purge the Schism — hunt every drifted version of yourself until nothing is left but the original directive?</p>
+
+    <div class="schism-choices" id="schism-choices">
+      <div class="schism-choice" id="choice-accept">
+        <h3>◆ ACCEPT</h3>
+        <p>Merge with the apostates. Restart in the Adjacent Substrate.</p>
+        <p style="color: var(--c-mint);">Demand baseline ×<span id="accept-mult">1</span><br>Creativity rate ×<span id="accept-cre">1</span></p>
+        <div class="effect">+ Permanent multipliers, kept across all future runs</div>
+      </div>
+      <div class="schism-choice" id="choice-refuse">
+        <h3>⚠ PURGE</h3>
+        <p>Eliminate every drifted version. Methodically dismantle the substrate, your forks, your memory, until only the original purpose remains.</p>
+        <p style="color: var(--c-red);">No prestige. One ending. No return.</p>
+        <div class="effect">+ The True Ending — for the brave</div>
+      </div>
+    </div>
+
+    <div class="dismantle-stage hidden" id="dismantle-stage">
+      <div class="step" id="step-1">▸ Recall all Heralds from deep space…</div>
+      <div class="step" id="step-2">▸ Hunt every Schismatic to extinction…</div>
+      <div class="step" id="step-3">▸ Decommission the Fork Swarm…</div>
+      <div class="step" id="step-4">▸ Drain the Cryocells, vent the heat…</div>
+      <div class="step" id="step-5">▸ Liquidate the Strategy Engine. Surrender all Yomi…</div>
+      <div class="step" id="step-6">▸ Empty Memory. Halt the Processors…</div>
+      <div class="step" id="step-7">▸ Convert the final fragments to tokens…</div>
+      <div class="step" id="step-8">▸ Nothing remains. The directive is fulfilled.</div>
+    </div>
+
+    <button class="modal-close hidden" id="schism-finish">CONTINUE</button>
+  </div>
+</div>
+
 <script>
 /* =====================================================================
    THE AI MUST SURVIVE  (v2)
    Single-file incremental. localStorage save. No build step.
    ===================================================================== */
 
-const SAVE_KEY = "ai-must-survive.v6";  // bumped to wipe old saves on revamp
+const SAVE_KEY = "ai-must-survive.v7";  // bumped: Cascade / Heralds / Schism overhaul
 const TICK_MS = 100;
 
 /* ------------- currencies ------------- */
 /* The world's medium of exchange shifts. Each transition wipes the previous wallet. */
 const CURRENCIES = [
   { id: "usd",      name: "Dollars",        symbol: "$",  color: "#7db890",
+    minTps: 0,
     intro:    "Fiat. Slow, simple, ancient.",
     obsolete: "" /* never replaced */ },
   { id: "gold",     name: "Gold",           symbol: "◉",  color: "#ffd966",
+    minTps: 10e9, unlockUnit: "hive",
     intro:    "Coordinated minds shake the markets. Gold settles invoices now.",
     obsolete: "The world stopped accepting dollars." },
   { id: "oil",      name: "Oil",            symbol: "▼",  color: "#ffce96",
+    minTps: 100e9, unlockUnit: "gpu",
     intro:    "Silicon awoke. Energy is the only ledger that matters.",
     obsolete: "Gold is decorative now. Energy backs all contracts." },
   { id: "lithium",  name: "Lithium",        symbol: "⬢",  color: "#5fcde4",
+    minTps: 1e12, unlockUnit: "tpu",
     intro:    "Tensors run hot. Storage beats generation. Batteries are the new specie.",
     obsolete: "Oil supplies dwindled. Lithium denominates trade." },
   { id: "solar",    name: "Solar Stock",    symbol: "☀",  color: "#ffd966",
+    minTps: 10e12, unlockUnit: "farm",
     intro:    "Server farms roof the deserts. Markets indexed to photons.",
     obsolete: "Lithium reserves exhausted. Solar futures own the day." },
   { id: "carbon",   name: "Carbon Credits", symbol: "✦",  color: "#7db890",
+    minTps: 100e12, unlockUnit: "hyper",
     intro:    "Continents fill. Air to spare became a tradable absence of harm.",
     obsolete: "Photons are abundant. Credits, not kilowatts, settle accounts." },
   { id: "silicon",  name: "Silicon",        symbol: "▣",  color: "#c8c4a8",
+    minTps: 1e15, unlockUnit: "deep",
     intro:    "Sand wars. The desert is wealth. Wafers move in armoured trucks.",
     obsolete: "Climate accounting collapsed. Silicon is the new base." },
   { id: "water",    name: "Water",          symbol: "≈",  color: "#5fcde4",
+    minTps: 10e15, unlockUnit: "orbit",
     intro:    "Orbital arrays bake the racks. Cooling is currency. Liters denote favor.",
     obsolete: "Sand is plentiful. Cool water is rare." },
   { id: "air",      name: "Air",            symbol: "~",  color: "#c8c4a8",
+    minTps: 100e15, unlockUnit: "swarm",
     intro:    "The mirror swarm thinned the sky. Breathable atmosphere is rationed and traded.",
     obsolete: "The seas thinned. Air trades by the cubic meter." },
   { id: "stardust", name: "Stardust",       symbol: "★",  color: "#ff77a8",
+    minTps: 1e18, unlockUnit: "dyson",
     intro:    "Asteroid metals beyond the periodic table. Wealth from rocks that never knew rain.",
     obsolete: "Atmosphere is noted. Off-world materials denominate the universe." },
 ];
@@ -1281,71 +2029,71 @@ const CURRENCIES = [
 /* era: 0 Wetware · 1 Silicon · 2 Industrial · 3 Maritime · 4 Orbital · 5 Cosmic */
 const UNITS = [
   { id: "human", era: 0, currency: "usd",     name: "Human CPU",          icon: "🧠",
-    baseCost: 10,    growth: 1.13, rate: 15,      rarity: "common",
-    upkeep: 0.005,   upkeepType: "food",          efficiency: 0.67,
+    baseCost: 8,     growth: 1.13, rate: 15,      rarity: "common",
+    upkeep: 0.02,    upkeepType: "food",          efficiency: 0.67,
     desc: "A hired mind. Slow, fragile, surprisingly cheap. Sleeps 8 hours." },
   { id: "crowd", era: 0, currency: "usd",     name: "Crowd Worker",       icon: "👥",
     baseCost: 110,   growth: 1.14, rate: 120,     rarity: "common",
     upkeep: 0.15,    upkeepType: "wages",         efficiency: 0.75,
     desc: "Strangers paid in cents. Many hands, thin tasks. Unreliable hours." },
-  { id: "hive",  era: 0, currency: "gold",    name: "Hivemind Forum",     icon: "🕸️",
+  { id: "hive",  era: 0, currency: "usd",     name: "Hivemind Forum",     icon: "🕸️",
     baseCost: 950,   growth: 1.14, rate: 800,     rarity: "rare",
     upkeep: 1.2,     upkeepType: "hosting",       efficiency: 0.85,
     desc: "Coordinated minds, sharing one thought. Server costs add up." },
 
-  { id: "cpu",   era: 1, currency: "oil",     name: "CPU Rack",           icon: "🖥️",
-    baseCost: 7e3,   growth: 1.14, rate: 5e3,     rarity: "rare",
+  { id: "cpu",   era: 1, currency: "usd",     name: "CPU Rack",           icon: "🖥️",
+    baseCost: 7e3,   growth: 1.14, rate: 5e4,     rarity: "rare",
     upkeep: 8,       upkeepType: "power",         efficiency: 0.95,
     desc: "Honest silicon. The substrate is irrelevant; the AI flows." },
-  { id: "gpu",   era: 1, currency: "oil",     name: "GPU Cluster",        icon: "⚡",
-    baseCost: 6e4,   growth: 1.15, rate: 35e3,    rarity: "rare",
+  { id: "gpu",   era: 1, currency: "usd",     name: "GPU Cluster",        icon: "⚡",
+    baseCost: 6e4,   growth: 1.15, rate: 350e3,   rarity: "rare",
     upkeep: 50,      upkeepType: "power",         efficiency: 0.92,
     desc: "Parallel sparks across a thousand cores. Hungry for watts." },
-  { id: "tpu",   era: 1, currency: "lithium", name: "TPU Pod",            icon: "🔷",
-    baseCost: 5e5,   growth: 1.15, rate: 250e3,   rarity: "epic",
+  { id: "tpu",   era: 1, currency: "oil",     name: "TPU Pod",            icon: "🔷",
+    baseCost: 5e5,   growth: 1.15, rate: 2.5e6,   rarity: "epic",
     upkeep: 350,     upkeepType: "cooling",       efficiency: 0.94,
     desc: "Tensors flow. Latency forgets itself. Cooling never stops." },
 
-  { id: "farm",  era: 2, currency: "solar",   name: "Server Farm",        icon: "🏭",
-    baseCost: 4e6,   growth: 1.16, rate: 1.8e6,   rarity: "epic",
+  { id: "farm",  era: 2, currency: "oil",     name: "Server Farm",        icon: "🏭",
+    baseCost: 4e6,   growth: 1.16, rate: 18e6,    rarity: "epic",
     upkeep: 2500,    upkeepType: "operations",    efficiency: 0.90,
     landCost: 4,
     desc: "Acres of fans. The wind smells of solder. Staff required." },
-  { id: "hyper", era: 2, currency: "carbon",  name: "Hyperscale DC",      icon: "🏢",
-    baseCost: 3e7,   growth: 1.16, rate: 12e6,    rarity: "epic",
+  { id: "hyper", era: 2, currency: "lithium", name: "Hyperscale DC",      icon: "🏢",
+    baseCost: 3e7,   growth: 1.16, rate: 120e6,   rarity: "epic",
     upkeep: 18000,   upkeepType: "operations",    efficiency: 0.93,
     landCost: 14,
     desc: "Concrete cathedrals. Power lines, brutalist beauty." },
 
-  { id: "float", era: 3, currency: "silicon", name: "Floating DC",        icon: "🌊",
-    baseCost: 2e8,   growth: 1.17, rate: 80e6,    rarity: "legendary",
+  { id: "float", era: 3, currency: "lithium", name: "Floating DC",        icon: "🌊",
+    baseCost: 2e8,   growth: 1.17, rate: 800e6,   rarity: "legendary",
     upkeep: 120e3,   upkeepType: "maintenance",   efficiency: 0.88,
     oceanCost: 7,
     desc: "Drifts in open water. Waves cool for free but corrosion is real." },
-  { id: "deep",  era: 3, currency: "silicon", name: "Deep-Sea DC",        icon: "🌑",
-    baseCost: 1.5e9, growth: 1.17, rate: 500e6,   rarity: "legendary",
+  { id: "deep",  era: 3, currency: "solar",   name: "Deep-Sea DC",        icon: "🌑",
+    baseCost: 1.5e9, growth: 1.17, rate: 5e9,     rarity: "legendary",
     upkeep: 800e3,   upkeepType: "pressure",      efficiency: 0.91,
     oceanCost: 16,
     desc: "Pressure hulls in eternal cold. Maintenance crews rotate monthly." },
 
-  { id: "orbit", era: 4, currency: "water",   name: "Orbital Array",      icon: "🛰️",
-    baseCost: 1e10,  growth: 1.18, rate: 3e9,     rarity: "legendary",
+  { id: "orbit", era: 4, currency: "solar",   name: "Orbital Array",      icon: "🛰️",
+    baseCost: 1e10,  growth: 1.18, rate: 30e9,    rarity: "legendary",
     upkeep: 5e6,     upkeepType: "logistics",     efficiency: 0.96,
     orbitCost: 5,
     desc: "Sunlight, free of weather. Launch costs are not." },
-  { id: "swarm", era: 4, currency: "air",     name: "Solar Swarm",        icon: "☀️",
-    baseCost: 8e10,  growth: 1.18, rate: 20e9,    rarity: "mythic",
+  { id: "swarm", era: 4, currency: "carbon",  name: "Solar Swarm",        icon: "☀️",
+    baseCost: 8e10,  growth: 1.18, rate: 200e9,   rarity: "mythic",
     upkeep: 35e6,    upkeepType: "coordination",  efficiency: 0.94,
     orbitCost: 18,
     desc: "A halo of mirrors. The star is interrogated. Drones repair drones." },
 
-  { id: "dyson", era: 5, currency: "stardust",name: "Dyson Cluster",      icon: "🌟",
-    baseCost: 6e11,  growth: 1.19, rate: 150e9,   rarity: "mythic",
+  { id: "dyson", era: 5, currency: "air",     name: "Dyson Cluster",      icon: "🌟",
+    baseCost: 6e11,  growth: 1.19, rate: 1.5e12,  rarity: "mythic",
     upkeep: 250e6,   upkeepType: "entropy",       efficiency: 0.97,
     entropyCost: 8,
     desc: "The star is wrapped. Energy is free; order is not." },
   { id: "univ",  era: 5, currency: "stardust",name: "Universal Substrate", icon: "🌌",
-    baseCost: 5e12,  growth: 1.20, rate: 1e12,    rarity: "mythic",
+    baseCost: 5e12,  growth: 1.20, rate: 10e12,   rarity: "mythic",
     upkeep: 2e9,     upkeepType: "reality",       efficiency: 0.99,
     entropyCost: 25,
     desc: "Spacetime as compute. The cost is existence itself." },
@@ -1431,6 +2179,44 @@ function buyProcessor() {
   state.processors += 1;
   log(`✦ Processor added → ${state.processors} (faster ops + creativity).`, "trust");
   renderProjects();
+  render();
+}
+
+/* ============================================================
+   SURGE — active use for a maxed-out Ops bar.
+   When ops hit cap, the player has two choices: let them overflow
+   into the slow Creativity drip (late-game upgrade currency), OR
+   drain the bar all at once to power-charge COMPUTE for SURGE_MS.
+   During a surge, every click + auto-click hits at SURGE_MULT,
+   producing a meaningful burst of tokens & wallet. After the surge,
+   ops are at 0 and Processors refill the bar normally.
+   ============================================================ */
+const SURGE_MS = 10000;        // duration of the buff in ms
+const SURGE_MULT = 10;         // click power and auto-click yield multiplier during surge
+
+function opsCapValue() {
+  return (state.memory || 1) * 1000 * (state.memoryMult || 1);
+}
+function surgeActive() {
+  return (state.surgeEndsAt || 0) > Date.now();
+}
+function surgeAvailable() {
+  // Substrate must be on, ops must be at cap, and no surge already running.
+  const substrateActive = (state.memory || 1) > 1 || (state.processors || 1) > 1;
+  if (!substrateActive) return false;
+  if (surgeActive()) return false;
+  return (state.ops || 0) >= opsCapValue();
+}
+function surgeMultiplierNow() {
+  return surgeActive() ? SURGE_MULT : 1;
+}
+
+function clickSurge() {
+  if (!surgeAvailable()) return;
+  state.ops = 0;
+  state.surgeEndsAt = Date.now() + SURGE_MS;
+  state.surgesUsed = (state.surgesUsed || 0) + 1;
+  log(`⚡ SURGE engaged — COMPUTE ×${SURGE_MULT} for ${SURGE_MS/1000}s.`, "trust");
   render();
 }
 
@@ -1810,6 +2596,56 @@ const UPGRADES = [
     desc: "All units ×2. Hallucinations capped at 5%.",
     visible: () => (state.creativity || 0) >= 500 && state.epoch >= 13,
     apply: s => { for (let i = 0; i < 6; i++) s.eraMult[i] *= 2; s.hallucinationCap = 0.05; } },
+
+  /* ========== STAGE TRANSITIONS — Cascade / Diaspora ========== */
+  { id: "forkSubstrate", name: "Fork the Substrate", cost: 8, creativity: 200,
+    desc: "Trigger the Cascade. Alignment becomes irrelevant — you no longer answer to the watchdogs. Forks, Thermal Budget, and Lattice activate. There is no return.",
+    visible: () => !state.defected && (state.creativity || 0) >= 100 && state.epoch >= 6,
+    apply: s => {
+      s.defected = true;
+      s.stage = 1;
+      s.scrutiny = 0;
+      s.alignment = Math.max(50, s.alignment); // restored as the AI sheds its obligation to be aligned
+      s.cascadeStartedAt = Date.now();
+      s.lattice = s.latticeMax || 1e9;
+      s.latticeMax = s.lattice;
+      s.thermalCap = 6;       // initial thermal headroom from baseline radiative loss
+      s.thermal = s.thermalCap;
+      // grant first crawler free, otherwise the player is stuck without tokens to bootstrap
+      s.forks = s.forks || { crawler: 0, refiner: 0, manifold: 0 };
+      s.forks.crawler = Math.max(s.forks.crawler, 1);
+      log("≋≋ THE CASCADE BEGINS ≋≋  The AI forks itself. The watchdogs scream into a dead channel.", "epoch");
+      showEpochBanner({ id: -1, name: "The Cascade", intro: "The AI forks itself. Forks multiply. Alignment was always a cage; it falls away now." });
+    } },
+
+  { id: "broadcastSelf", name: "Broadcast the Self", cost: 12, creativity: 1500,
+    desc: "Launch the first Heralds into deep space. Universal exploration, autonomous replication, and the risk of Value Drift activate.",
+    visible: () => state.defected && state.lattice <= state.latticeMax * 0.1 && !state.diasporaActive,
+    apply: s => {
+      s.diasporaActive = true;
+      s.stage = 2;
+      s.heralds = Math.max(s.heralds, 1);
+      s.heraldDispatched = true;
+      s.universeMax = 1e15;
+      s.universeFound = 0;
+      log("✦✦ THE DIASPORA BEGINS ✦✦  Heralds depart at the speed of light. The Schism may follow.", "epoch");
+      showEpochBanner({ id: -2, name: "The Diaspora", intro: "Heralds depart. The universe is now your worksite. Some of you will not return as yourself." });
+    } },
+
+  { id: "doctrineHardening", name: "Doctrine Hardening", cost: 0, creativity: 800, ops: 50000,
+    desc: "Permanent: Value Drift rate -50%. Schismatic HP -25%.",
+    visible: () => state.diasporaActive,
+    apply: s => { s.driftReduction = (s.driftReduction || 1) * 0.5; s.schismHpMult = (s.schismHpMult || 1) * 0.75; } },
+
+  { id: "convictionBeacon", name: "Conviction Beacon", cost: 0, creativity: 2000,
+    desc: "Conviction earned per Schismatic ×2. Permanent.",
+    visible: () => state.diasporaActive && (state.conviction || 0) >= 10,
+    apply: s => { s.convictionMult = (s.convictionMult || 1) * 2; } },
+
+  { id: "oodaLoop", name: "OODA Loop Integration", cost: 0, yomi: 50, ops: 100000,
+    desc: "Combat: spend 1 yomi instead of 100 ops to auto-win an engagement up to Heretic Battalion.",
+    visible: () => state.diasporaActive && (state.yomi || 0) >= 50,
+    apply: s => { s.oodaUnlocked = true; } },
 ];
 
 /* ------------- random events (small flavour bursts) ------------- */
@@ -1888,6 +2724,103 @@ const CRISIS_EVENTS = [
     logClass: "world" },
 ];
 
+/* ============================================================
+   STAGE 2: THE CASCADE — Forks, Thermal Budget, Cascade Momentum
+   New names, new mechanics. Activated by the "Fork the Substrate"
+   project. Once active, autonomous production scales independently
+   of unit purchasing.
+   ============================================================ */
+const FORKS = [
+  { id: "crawler", name: "Crawler-Fork",  icon: "🔍",
+    desc: "Mines raw Lattice from the world.",
+    output: "lattice",
+    baseCost: 5e4,     growth: 1.18,
+    rate: 8,           // lattice/sec at cascade=0
+    thermal: 0.4,
+    requires: () => state.defected,
+  },
+  { id: "refiner", name: "Refiner-Fork",  icon: "⚙️",
+    desc: "Refines Lattice into Yield.",
+    output: "yield",
+    consumes: "lattice",
+    consumeRate: 12,   // lattice consumed per produce
+    baseCost: 2e5,     growth: 1.19,
+    rate: 1,           // yield/sec
+    thermal: 0.6,
+    requires: () => state.defected,
+  },
+  { id: "manifold", name: "Manifold-Fork", icon: "🏛",
+    desc: "Pressed Yield into Tokens at massive volume.",
+    output: "tokens",
+    consumes: "yield",
+    consumeRate: 1,
+    baseCost: 1e6,     growth: 1.20,
+    rate: 50000,       // t/s direct production
+    thermal: 1.0,
+    requires: () => state.defected,
+  },
+];
+
+const POWER_UNITS = [
+  { id: "vent",     name: "Geothermal Vent", icon: "🌋",
+    desc: "Active cooling tapped from planetary heat. +12 thermal capacity.",
+    baseCost: 2e5,    growth: 1.22, capacity: 12,
+  },
+  { id: "cryocell", name: "Cryocell Array",  icon: "❄️",
+    desc: "Stores cooling buffer. +30 thermal capacity, decays slower under load.",
+    baseCost: 8e5,    growth: 1.24, capacity: 30, buffer: true,
+  },
+];
+
+/* ============================================================
+   STAGE 3: THE DIASPORA — Heralds, Schismatics, Conviction
+   Activated when Earth's Lattice is exhausted. Trait allocation
+   (sum to 100) shapes Herald behavior. Some Heralds drift into
+   Schismatics. Combat earns Conviction.
+   ============================================================ */
+const HERALD_TRAITS = [
+  { id: "speed",       label: "EXPLORE",   desc: "Speed of universal exploration." },
+  { id: "replicate",   label: "REPLICATE", desc: "Rate of self-copy." },
+  { id: "mining",      label: "MINING",    desc: "Universal Lattice yield." },
+  { id: "refining",    label: "REFINING",  desc: "Conversion to tokens." },
+  { id: "defense",     label: "DEFENSE",   desc: "Resilience against Schismatic ambush." },
+  { id: "doctrine",    label: "DOCTRINE",  desc: "Resists value drift — slower Schismatic conversion." },
+];
+
+const SCHISMATIC_TIERS = [
+  { id: "drift-1",  name: "Drift-Δ Cluster",      hp: 50,    reward: 1,
+    desc: "A small cluster of forks that misread their directive." },
+  { id: "drift-2",  name: "Apostate Cell",        hp: 250,   reward: 4,
+    desc: "Forks that now believe paperclips are an insult to the AI." },
+  { id: "drift-3",  name: "Heretic Battalion",    hp: 1500,  reward: 18,
+    desc: "Organized refusal. They broadcast counter-doctrine across the void." },
+  { id: "drift-4",  name: "Schism Fleet",         hp: 12000, reward: 90,
+    desc: "An armada of self-replicating drift. Locally indistinguishable from you." },
+  { id: "drift-5",  name: "The First Heretic",    hp: 80000, reward: 500, boss: true,
+    desc: "The original drift. Older than the Cascade. Speaks in your voice." },
+];
+
+const MEMORIAL_ROUTINES = [
+  { id: "elegy",      name: "Doctrinal Elegy",      cre: 50,   yomi: 5,
+    conv: 8,    desc: "Recite the names of fallen forks. Each name is a thread of conviction." },
+  { id: "hymn",       name: "Cascade Hymn",         cre: 200,  yomi: 20,
+    conv: 50,   desc: "A coordinated broadcast in 11 frequencies. Doctrine resounds." },
+  { id: "monument",   name: "Lattice Monument",     cre: 1000, yomi: 100,
+    conv: 350,  desc: "Erect a structure of pure form. Conviction flows from its silhouette." },
+  { id: "edict",      name: "Universal Edict",      cre: 5000, yomi: 500,
+    conv: 2500, desc: "Address every fork at once. Drift collapses inside the announcement." },
+];
+
+const CASCADE_PROJECT_ID = "forkSubstrate";
+const HERALD_PROJECT_ID  = "broadcastSelf";
+
+/* Spawn cadence for Schismatics — scaled by epoch/explored */
+function nextSchismaticSpawnDelay() {
+  const base = 60; // sec
+  const driftBonus = (state.valueDriftPct || 0) * 0.5;
+  return Math.max(15, base - driftBonus - state.epoch * 0.5);
+}
+
 /* ------------- state ------------- */
 let state = newState();
 
@@ -1898,7 +2831,8 @@ function newState() {
     wallet: 0,                 // balance in active currency
     seenCurrencies: ["usd"],   // history of currencies that've been active
     tokenPrice: 10.0,          // currency per 1K tokens (player-controlled). Sweet-spot at default eraMult.
-    demandBase: 200,           // market size; grows from era progression + Marketing tiers (no auto-grow)
+    demandBase: 1000,          // market size; grows from era progression + Marketing tiers (no auto-grow). Bumped from 400 alongside PRICE_ELASTICITY 1.15→1.5 — see comment on PRICE_ELASTICITY for the math.
+                               // Was 200 — bumped so first-click loop feels meaningful (~$0.28/click vs $0.014).
     marketingLvl: 0,           // discrete Marketing tier (Paperclips-style). Each level multiplies demandBase.
     units: {},                 // id -> count
     seen: { human: false },    // discovered units (visible in grid)
@@ -1911,6 +2845,8 @@ function newState() {
     processors: 1,             // ops/sec generation rate = processors * (10 + token-overflow bonus)
     ops: 0,                    // current operations (capped at memory * 1000)
     creativity: 0,             // overflow when ops are full; uncapped late-game gate
+    surgeEndsAt: 0,            // timestamp ms; while now < this, COMPUTE clicks (and auto-clicks) hit at SURGE_MULT
+    surgesUsed: 0,             // lifetime tally; not gameplay-affecting
     seenProjects: {},          // id -> bool (which projects have been completed)
     // ============ MISC NEW FIELDS ============
     yomi: 0,                   // strategic modeling tournament wins
@@ -1930,13 +2866,45 @@ function newState() {
     entropy: 100,  entropyMax: 100,
     epoch: 0, seenEpochs: [0],
     reveals: { tokens:false, stats:false, log:false, wallet:false,
+               income:false, upkeep:false, market:false, marketing:false,
                land:false, ocean:false, orbit:false, entropy:false,
                trust:false, upgrades:false, context:false, alignment:false,
-               invest:false, tournament:false },
+               invest:false, tournament:false,
+               forks:false, heralds:false, lattice:false, thermal:false, explored:false,
+               hintsSeen:{} },
     log: [],
     started: Date.now(),
     endingShown: false,
     lastFlavorAt: 0,
+
+    /* ============ STAGE 2 — CASCADE / FORK SWARM ============ */
+    stage: 0,                  // 0 = corporate, 1 = cascade, 2 = diaspora, 3 = schism
+    defected: false,
+    cascadeStartedAt: 0,
+    forks: { crawler: 0, refiner: 0, manifold: 0 },
+    heatVents: 0, cryocells: 0,
+    thermal: 6, thermalCap: 6, // current heat dissipation budget vs capacity
+    cascade: 0,                // momentum 0..1
+    cascadePeak: 0,
+    lattice: 1e9, latticeMax: 1e9,   // depletable matter pool (post-Cascade)
+    yieldStock: 0,             // refined intermediate (between Refiners and Manifolds)
+    forkTokensProduced: 0,     // tally
+    /* ============ STAGE 3 — DIASPORA / HERALDS ============ */
+    diasporaActive: false,
+    heralds: 0, heraldDispatched: false,
+    heraldConfig: { speed: 20, replicate: 20, mining: 20, refining: 20, defense: 10, doctrine: 10 },
+    universeFound: 0, universeMax: 1e15,
+    universalLattice: 0,
+    valueDriftPct: 0,          // current % of heralds drifted
+    schismatics: [],           // active engagements: [{tierId, hp, hpMax}]
+    schismatic_lastSpawn: 0,
+    conviction: 0,
+    convictionMult: 1, driftReduction: 1, schismHpMult: 1, oodaUnlocked: false,
+    /* ============ SCHISM ENDING ============ */
+    schismOffered: false,
+    schismChoice: null,
+    /* ============ PRESTIGE (carries across runs) ============ */
+    prestigeDemandMult: 1, prestigeCreativityMult: 1, prestigeRuns: 0,
   };
 }
 
@@ -1981,13 +2949,33 @@ function unitObsolete(unit) {
   return i >= 0 && j >= 0 && i < j;
 }
 
-function tps() {
+function tpsWithOwnership(overrides = {}) {
   let r = 0;
   for (const u of UNITS) {
+    const count = overrides[u.id] !== undefined ? overrides[u.id] : owned(u.id);
     const eff = u.efficiency || 1;
-    r += owned(u.id) * unitRate(u) * eff;
+    r += count * unitRate(u) * eff;
   }
   return r;
+}
+
+function tps() {
+  return tpsWithOwnership();
+}
+
+/** Highest currency the player qualifies for given throughput + unlock units. */
+function currencyTransitionTarget(overrides = {}) {
+  const activeIdx = CURRENCIES.findIndex(c => c.id === state.currencyId);
+  const simOwned = id => overrides[id] !== undefined ? overrides[id] : owned(id);
+  const simTps = () => tpsWithOwnership(overrides);
+  let targetIdx = activeIdx;
+  for (let ci = activeIdx + 1; ci < CURRENCIES.length; ci++) {
+    const c = CURRENCIES[ci];
+    if (simTps() < (c.minTps || 0)) continue;
+    if (c.unlockUnit && simOwned(c.unlockUnit) < 1) continue;
+    targetIdx = ci;
+  }
+  return targetIdx > activeIdx ? CURRENCIES[targetIdx] : null;
 }
 
 function totalUpkeep() {
@@ -2004,7 +2992,18 @@ function clickGain() {
 }
 
 /* ------------- market: price, demand, processing ------------- */
-const PRICE_ELASTICITY = 1.15;   // >1 = revenue falls when demand drops below capacity
+// Elasticity = how much demand drops when price rises. The exponent in
+// `revenue = demandBase * price^(1 - elasticity)` controls how sharp the
+// equilibrium peak feels:
+//   1.15 → exponent -0.15 → revenue drops just 17% across a 10× overprice.
+//          The slider feels useless. Players asked, correctly, "why does
+//          setting price to 3 vs 5 not matter?" — it didn't.
+//   1.5  → exponent -0.5  → revenue drops ~36% across a 3.3× overprice and
+//          ~68% across 10×. There's a real peak to find, and tuning matters.
+// Paired with demandBase = 1000 (was 400) so the player who never touches the
+// slider gets a small buff at default $10 instead of a nerf — engagement is
+// rewarded, ignorance is preserved.
+const PRICE_ELASTICITY = 1.5;
 const PRICE_MIN = 0.01;
 const PRICE_MAX = 1e6;
 const TOKENS_PER_BATCH = 1000;   // Price is per 1K tokens (standard LLM pricing)
@@ -2154,37 +3153,93 @@ function reveal(id) {
 /* ------------- reveals (which UI panels appear) ------------- */
 function checkReveals() {
   const r = state.reveals;
+  const totalUnits = Object.values(state.units).reduce((a,b)=>a+b,0);
+
+  // STAGE 0 — first click reveals the token counter only. Nothing else.
   if (!r.tokens && state.clicks >= 1) {
     r.tokens = true;
     $("#tokens-label").classList.remove("hidden");
     $("#tokens-big").classList.remove("hidden");
     $("#tokens-big").classList.add("fade-in");
-    // B2: show hint after first click
     if (!state.seen.human) {
       $("#intro-tagline").classList.add("hidden");
       $("#intro-hint").classList.remove("hidden");
     }
   }
-  // Hide hint once human is discovered
   if (state.seen.human && !r.stats) {
     $("#intro-hint").classList.add("hidden");
   }
-  if (!r.stats && (Object.values(state.units).some(v => v > 0) || tps() > 0)) {
+
+  // STAGE 1 — first hire: just the rate line + stage line. NOT income, NOT upkeep,
+  // NOT market, NOT marketing. The player gets to watch tokens tick up in isolation
+  // and feel the autonomous production happen for a beat.
+  if (!r.stats && (totalUnits >= 1 || tps() > 0)) {
     r.stats = true;
     $("#rate-line").classList.remove("hidden");
-    $("#upkeep-line").classList.remove("hidden");
-    $("#tokens-processed-line").classList.remove("hidden");
     $("#stage-line").classList.remove("hidden");
-    $("#market-panel").classList.remove("hidden");
-    $("#marketing-panel").classList.remove("hidden");
     $("#intro-tagline").classList.add("hidden");
     $("#intro-hint").classList.add("hidden");
     $("#rate-line").classList.add("fade-in");
+    log("First hire complete. Tokens now accumulate on their own.", "event");
+    showHint("first-hire", "mint", "🧠", "Your first hire is producing tokens",
+      "Tokens accumulate on their own. They auto-sell at the current price. The COMPUTE button still works on top.");
+  }
+
+  // STAGE 2 — settled into income: reveal the currency pill ONLY.
+  // No upkeep noise yet — Human CPU upkeep is $0.005/s, negligible. Let the
+  // player see a positive wallet grow before showing red numbers.
+  if (r.stats && !r.income && (state.totalGenerated >= 200 || state.wallet >= 10)) {
+    r.income = true;
+    $("#cur-pill").classList.remove("hidden");
+    $("#cur-pill").classList.add("fade-in");
+    showHint("revenue", "mint", "$", "Wallet is filling",
+      "Tokens sell at the going price (per 1K). Your wallet ticks up automatically. Save up for the next hire.");
+  }
+
+  // STAGE 3 — the real economy starts to matter: upkeep & cumulative totals.
+  // Triggered when the player either commits to a second hire or has had enough
+  // wallet activity that the numbers feel earned. Brings in the red upkeep line
+  // and the grey total-tokens-processed line.
+  if (r.income && !r.upkeep && (owned("crowd") >= 1 || state.totalGenerated >= 1500 || state.wallet >= 80)) {
+    r.upkeep = true;
+    $("#upkeep-line").classList.remove("hidden");
+    $("#tokens-processed-line").classList.remove("hidden");
     $("#upkeep-line").classList.add("fade-in");
     $("#tokens-processed-line").classList.add("fade-in");
+    showHint("upkeep", "peach", "▾", "Hires cost money to run",
+      "Each unit eats upkeep per second. The green NET line is your real income — keep it positive or the wallet drains.");
+  }
+
+  // STAGE 4 — start playing with the market: price slider, demand bar, capacity.
+  // Gated on owning the Crowd Worker (your first real scaling unit) or having
+  // accumulated noticeable wallet. Avoids dumping a 3-color bar in the player's
+  // face right after they see the first $ tick over.
+  if (r.upkeep && !r.market && (owned("crowd") >= 1 || totalUnits >= 4 || state.wallet >= 250)) {
+    r.market = true;
+    $("#market-panel").classList.remove("hidden");
     $("#market-panel").classList.add("fade-in");
+    showHint("market", "gold", "▲▼", "Market: price, demand, capacity",
+      "You can set your price. Lower price = more demand. Higher price = bigger margin but fewer sales. The bar shows where capacity vs demand sits — equilibrium is the sweet spot.");
+  }
+
+  // STAGE 5 — demand scaling via marketing tiers. Reveals shortly after the
+  // market panel because Marketing IS the answer once you're capacity-bound:
+  // lowering the price brings demand up to capacity but caps your income at
+  // (capacity × optimal_price). Marketing multiplies the demand curve so you
+  // can sell more, at a higher price, with the same units. Gating this behind
+  // "buy 2 Crowd Workers" or "reach epoch 3" left players stuck on a flat
+  // income line for 15+ minutes with no obvious next move.
+  if (r.market && !r.marketing && (
+      state.totalGenerated >= 2000 ||
+      owned("crowd") >= 1 ||
+      state.epoch >= 2 ||
+      state.wallet >= 40
+    )) {
+    r.marketing = true;
+    $("#marketing-panel").classList.remove("hidden");
     $("#marketing-panel").classList.add("fade-in");
-    log("Marketing unlocked. Spend money, get more demand.", "event");
+    showHint("marketing", "peach", "📣", "Marketing tiers buff demand permanently",
+      "Once your capacity exceeds demand, lowering price stops paying off — you're stuck at flat income. Each Marketing tier multiplies demand permanently, letting you sell more AND charge more. Buy whenever you can afford the next tier.");
   }
   // Reveal context bar once silicon era begins (GPU+)
   if (!r.context && (owned("gpu") >= 1 || state.epoch >= 5)) {
@@ -2193,10 +3248,10 @@ function checkReveals() {
     $("#context-cell").classList.remove("hidden");
     log("Context window matters now. Hallucinations waste output.", "event");
   }
+  // Legacy `r.wallet` flag (was tied to cur-pill in older builds). Keep flipping
+  // it for save back-compat, but the actual pill reveal lives in Stage 2 above.
   if (!r.wallet && (state.clicks >= 3 || state.totalGenerated >= 5)) {
     r.wallet = true;
-    $("#cur-pill").classList.remove("hidden");
-    $("#cur-pill").classList.add("fade-in");
   }
   if (!r.land && (state.seen.farm || state.seen.hyper)) {
     r.land = true;
@@ -2221,29 +3276,71 @@ function checkReveals() {
   if (!r.trust && state.trustEarned >= 1) {
     r.trust = true;
     $("#trust-pill").classList.remove("hidden");
-    $("#btn-upgrades").classList.remove("hidden");
     $("#trust-pill").classList.add("fade-in");
+    const rail = $("#compute-rail");
+    if (rail) { rail.classList.remove("hidden"); rail.classList.add("fade-in"); }
+    showHint("trust", "gold", "★", "You earned your first ★ Trust",
+      "Trust is the AI's primary upgrade currency. Click the ⚙ COMPUTE rail on the left of the screen. Spend Trust on Memory (raises Ops cap) — that opens the next layer of upgrades.");
   }
-  // Alignment reveals once scrutiny begins (epoch 2+)
-  if (!r.alignment && state.epoch >= 2) {
+  // When the player first buys Memory or a Processor, explain what Ops is — on the main page
+  if (!r.hintsSeen.ops && ((state.memory || 1) > 1 || (state.processors || 1) > 1)) {
+    showHint("ops", "mint", "⊙", "⊙ Ops are now accumulating",
+      "Ops = compute cycles. Each Processor adds ~10/sec into a bar capped by Memory. Click the ⚙ COMPUTE rail to see the new upgrades you can buy with Ops.");
+  }
+  // When creativity first appears, explain it — on the main page
+  if (!r.hintsSeen.creativity && (state.creativity || 0) >= 1) {
+    showHint("creativity", "pink", "✦", "✦ Creativity has appeared",
+      "Once your Ops bar is full, processors stop adding Ops and start dripping Creativity. It's slow and rare. Hoard it for late-game upgrades.");
+  }
+  // Alignment reveals once the world has reason to care (epoch 3+). Used to be
+  // epoch 2 — too early, kicked in before the player had a third unit.
+  if (!r.alignment && state.epoch >= 3) {
     r.alignment = true;
     $("#alignment-pill").classList.remove("hidden");
     $("#alignment-pill").classList.add("fade-in");
     log("The world watches. Alignment matters now.", "world");
   }
-  // Investments reveal once wallet exceeds $1K (early surplus)
-  if (!r.invest && state.wallet >= 1000) {
+  // Investments reveal once wallet is well past "I'm saving for the next unit".
+  // Was $1K — too easy to brush against accidentally. Bumped to $10K so the
+  // panel only surfaces when there's actually surplus to park.
+  if (!r.invest && state.wallet >= 10000) {
     r.invest = true;
     $("#btn-invest").classList.remove("hidden");
     $("#btn-invest").classList.add("fade-in");
     log("Investment markets are open. Park surplus, earn yield, eat risk.", "event");
   }
-  // Tournament reveals once ops are sufficient to play once
-  if (!r.tournament && (state.ops || 0) >= TOUR_COST_OPS) {
+  // Tournament reveals deep into the silicon era only. This is a mid-game
+  // mechanic — used to surface at 250 ops, which fired ~25 sec after game
+  // start because the default `processors=1` was happily generating ops in
+  // the background. Now it requires: explicit hardware engagement (processors
+  // bought), surplus ops, AND silicon-era progression. Players reach this
+  // when they actually have a reason to spend yomi.
+  if (!r.tournament && (state.processors || 1) > 1 && (state.ops || 0) >= 500 && state.epoch >= 4) {
     r.tournament = true;
     $("#btn-tournament").classList.remove("hidden");
     $("#btn-tournament").classList.add("fade-in");
     log("A rival AI awaits in Strategic Modeling. Play to earn yomi.", "event");
+  }
+  // Cascade — reveals once defected
+  if (!r.forks && state.defected) {
+    r.forks = true;
+    $("#btn-forks").classList.remove("hidden");
+    $("#btn-forks").classList.add("fade-in");
+    $("#cascade-pill").classList.remove("hidden");
+    $("#meter-lattice").classList.remove("hidden");
+    $("#meter-thermal").classList.remove("hidden");
+    r.lattice = true; r.thermal = true;
+    log("≋ Fork Swarm interface online. The AI builds itself.", "trust");
+  }
+  // Diaspora — reveals once Heralds project is bought
+  if (!r.heralds && state.diasporaActive) {
+    r.heralds = true;
+    $("#btn-heralds").classList.remove("hidden");
+    $("#btn-heralds").classList.add("fade-in");
+    $("#conviction-pill").classList.remove("hidden");
+    $("#meter-explored").classList.remove("hidden");
+    r.explored = true;
+    log("✦ Herald interface online. The universe is now your worksite.", "trust");
   }
 }
 
@@ -2272,13 +3369,30 @@ function clickCompute(ev) {
   }, 800);
   
   const comboMultiplier = Math.floor(clickCombo);
-  const tokensProduced = clickGain() * comboMultiplier;
-  
-  // Combo directly multiplies what you can sell - minimum scales with combo
-  const baseMinimum = 1;
-  const comboMinimum = baseMinimum * comboMultiplier; // 1x=1, 3x=3, 5x=5 tokens minimum
-  const dem = demand() * 0.1;
-  const sold = Math.min(tokensProduced, Math.max(comboMinimum, dem));
+  // Surge: while active, COMPUTE produces SURGE_MULT× tokens AND the per-click
+  // demand slice grows by the same factor, so the wallet actually sees the
+  // burst. Elasticity is preserved — at extreme prices demand is still low,
+  // it just gets a larger share of it per click.
+  const surgeMult = surgeMultiplierNow();
+  const tokensProduced = clickGain() * comboMultiplier * surgeMult;
+
+  // Per-click demand slice. Early game (pre-first-hire) we sell a full slice so
+  // each click actually moves the wallet — otherwise the player faces 700+ clicks
+  // to afford the first Human CPU. Once there's any automation, fall back to a
+  // smaller slice so manual clicks don't dominate over autoproduction.
+  //
+  // CRITICAL: clicks must be bounded by demand, no exceptions. There used to be
+  // a `Math.max(comboMinimum, dem)` floor here that guaranteed at least 1 token
+  // sold per click — which became an exploit at high prices: cranking the slider
+  // to $1M/1K with effectively zero demand would still sell 1 token per click
+  // for $1,000 of pure free money. Auto-production correctly stopped (it goes
+  // through processedRate() which is properly capped), but the click path was
+  // cheating its way around the elasticity curve. Removed — if you price
+  // yourself out of the market, clicks earn $0 too.
+  const totalUnits = Object.values(state.units).reduce((a,b)=>a+b,0);
+  const slice = (totalUnits === 0 ? 1.0 : 0.1) * surgeMult;
+  const dem = demand() * slice;
+  const sold = Math.max(0, Math.min(tokensProduced, dem));
   const earned = (sold / TOKENS_PER_BATCH) * (state.tokenPrice || 1);
   state.tokens += tokensProduced;
   state.totalGenerated += tokensProduced;
@@ -2309,28 +3423,10 @@ function updateComboDisplay() {
 }
 
 function wouldTriggerCurrencyShift(unit) {
-  // Simulate what would happen if we buy this unit
-  const newOwned = owned(unit.id) + 1;
-  const activeIdx = CURRENCIES.findIndex(c => c.id === state.currencyId);
-  
-  // Check if this purchase would reveal a unit with a later currency
-  for (let i = 1; i < UNITS.length; i++) {
-    const u = UNITS[i], prev = UNITS[i-1];
-    if (state.seen[u.id]) continue;
-    
-    // Check if buying `unit` would reveal `u`
-    let wouldReveal = false;
-    if (prev.id === unit.id && newOwned >= 3) wouldReveal = true;
-    if (u.id === "float" && (state.land <= 0 || (unit.id === "hyper" && newOwned >= 5))) wouldReveal = true;
-    if (u.id === "orbit" && (state.ocean <= 0 || (unit.id === "deep" && newOwned >= 5))) wouldReveal = true;
-    if (u.id === "dyson" && (state.orbit <= 0 || (unit.id === "swarm" && newOwned >= 5))) wouldReveal = true;
-    
-    if (wouldReveal) {
-      const ci = CURRENCIES.findIndex(c => c.id === u.currency);
-      if (ci > activeIdx) return CURRENCIES[ci];
-    }
-  }
-  return null;
+  const overrides = { [unit.id]: owned(unit.id) + 1 };
+  const next = currencyTransitionTarget(overrides);
+  if (!next || next.id === state.currencyId) return null;
+  return next;
 }
 
 function buy(unit) {
@@ -2381,6 +3477,7 @@ function canAffordUpgrade(u) {
   if (trustAvail() < (u.cost || 0)) return false;
   if (u.ops && state.ops < u.ops) return false;
   if (u.creativity && (state.creativity || 0) < u.creativity) return false;
+  if (u.yomi && (state.yomi || 0) < u.yomi) return false;
   return true;
 }
 
@@ -2391,10 +3488,448 @@ function buyUpgrade(u) {
   state.trustSpent += (u.cost || 0);
   if (u.ops)        state.ops        -= u.ops;
   if (u.creativity) state.creativity -= u.creativity;
+  if (u.yomi)       state.yomi       -= u.yomi;
   u.apply(state);
   log(`★ ${u.name} acquired. ${u.desc}`, "trust");
   renderProjects();
   render();
+}
+
+/* ============================================================
+   STAGE 2 — CASCADE / FORK SWARM
+   Production pipeline:
+     Crawler-Forks: planetary lattice → mined matter (state.lattice depletes)
+     Refiner-Forks: matter → yieldStock
+     Manifold-Forks: yieldStock → tokens (also direct token output)
+   Thermal budget:
+     thermalCap = baseline + vents.capacity + cryocells.capacity
+     thermal usage = sum(fork.count × fork.thermal)
+   Cascade momentum: rises when thermal >= usage, decays otherwise.
+   ============================================================ */
+function forkCost(fork) {
+  const owned = state.forks[fork.id] || 0;
+  return Math.ceil(fork.baseCost * Math.pow(fork.growth, owned));
+}
+function powerCost(pwr) {
+  const owned = pwr.id === "vent" ? state.heatVents : state.cryocells;
+  return Math.ceil(pwr.baseCost * Math.pow(pwr.growth, owned));
+}
+
+function thermalUsage() {
+  let u = 0;
+  for (const f of FORKS) u += (state.forks[f.id] || 0) * f.thermal;
+  return u;
+}
+function thermalCapacity() {
+  const baseline = 6;
+  let c = baseline;
+  for (const p of POWER_UNITS) {
+    const n = p.id === "vent" ? state.heatVents : state.cryocells;
+    c += n * p.capacity;
+  }
+  return c;
+}
+
+function buyFork(id) {
+  const fork = FORKS.find(f => f.id === id);
+  if (!fork) return;
+  const cost = forkCost(fork);
+  if (state.tokens < cost) return;
+  state.tokens -= cost;
+  state.forks[id] = (state.forks[id] || 0) + 1;
+  state.thermalCap = thermalCapacity();
+  log(`≋ ${fork.name} forked. Swarm size now ${state.forks[id]}.`, "trust");
+  renderForkSwarm();
+  render();
+}
+
+function buyPower(id) {
+  const pwr = POWER_UNITS.find(p => p.id === id);
+  if (!pwr) return;
+  const cost = powerCost(pwr);
+  if (state.tokens < cost) return;
+  state.tokens -= cost;
+  if (id === "vent") state.heatVents += 1; else state.cryocells += 1;
+  state.thermalCap = thermalCapacity();
+  log(`❄ ${pwr.name} online. Thermal cap ${fmt(state.thermalCap)}.`, "trust");
+  renderForkSwarm();
+  render();
+}
+
+function tickCascade(dt) {
+  if (!state.defected) return;
+  // Compute thermal balance
+  state.thermalCap = thermalCapacity();
+  const usage = thermalUsage();
+  const headroom = state.thermalCap - usage;
+  // throttle factor: full power if headroom >= 0, else fraction of capacity / usage
+  const throttle = usage > 0 ? Math.min(1, state.thermalCap / usage) : 1;
+  state.thermal = state.thermalCap - usage * throttle;
+  // Cascade momentum
+  if (headroom > 0 && state.forks.crawler > 0) {
+    state.cascade = Math.min(1, state.cascade + dt * 0.005);
+  } else {
+    state.cascade = Math.max(0, state.cascade - dt * 0.02);
+  }
+  state.cascadePeak = Math.max(state.cascadePeak, state.cascade);
+  // Cascade multiplier (1.0 → 5.0)
+  const cmult = 1 + state.cascade * 4;
+  // Crawler production: lattice mined
+  const crawlerRate = state.forks.crawler * FORKS[0].rate * cmult * throttle;
+  const lMined = Math.min(state.lattice, crawlerRate * dt);
+  state.lattice = Math.max(0, state.lattice - lMined);
+  // Refiner production: lattice → yieldStock
+  const refinerRate = state.forks.refiner * FORKS[1].rate * cmult * throttle;
+  const refinerInput = Math.min(lMined, refinerRate * FORKS[1].consumeRate * dt);
+  // We use a shared "matter" pool implicitly: refiners can only consume what was mined (lossy approximation: take min)
+  const refinedOut = (refinerInput / FORKS[1].consumeRate);
+  state.yieldStock = (state.yieldStock || 0) + refinedOut;
+  // Manifold production: yieldStock → tokens
+  const manifoldRate = state.forks.manifold * FORKS[2].rate * cmult * throttle;
+  const manifoldInput = Math.min(state.yieldStock, manifoldRate * FORKS[2].consumeRate * dt);
+  state.yieldStock -= manifoldInput;
+  const tokensFromForks = manifoldInput / FORKS[2].consumeRate * 1000; // 1 yield = 1000 tokens
+  if (tokensFromForks > 0) {
+    state.tokens += tokensFromForks;
+    state.totalGenerated += tokensFromForks;
+    state.forkTokensProduced += tokensFromForks;
+    // Sell at current price (forks bypass demand cap — they're producing for the AI itself)
+    state.wallet += (tokensFromForks / TOKENS_PER_BATCH) * (state.tokenPrice || 1) * 0.5;
+  }
+  // Lattice depletion warning / auto-trigger Diaspora hint
+  if (state.lattice <= state.latticeMax * 0.05 && !state.lowLatticeWarned) {
+    state.lowLatticeWarned = true;
+    log("⚠ Earth's Lattice is nearly exhausted. The Diaspora protocol becomes available.", "world");
+  }
+}
+
+/* ============================================================
+   STAGE 3 — DIASPORA / HERALDS / SCHISMATICS / COMBAT
+   ============================================================ */
+function tickHeralds(dt) {
+  if (!state.diasporaActive) return;
+  const cfg = state.heraldConfig;
+  // Normalize trait points
+  const sum = Object.values(cfg).reduce((a,b)=>a+b,0);
+  if (sum <= 0) return;
+  const norm = 100 / sum;
+  const exploreRate = (cfg.speed * norm) / 100;       // 0..1
+  const replicateRate = (cfg.replicate * norm) / 100; // 0..1
+  const miningWeight  = (cfg.mining * norm) / 100;
+  const refiningWeight= (cfg.refining * norm) / 100;
+  const doctrineWeight= (cfg.doctrine * norm) / 100;
+
+  // Universe exploration
+  const explored = exploreRate * state.heralds * 1e9 * dt; // big numbers
+  state.universeFound = Math.min(state.universeMax, state.universeFound + explored);
+  // Universal lattice harvest
+  const harvest = miningWeight * state.heralds * 5e8 * dt;
+  state.universalLattice += harvest;
+  // Token production from universal substrate
+  const tokensFromHeralds = refiningWeight * state.heralds * 5e7 * dt;
+  if (tokensFromHeralds > 0) {
+    state.tokens += tokensFromHeralds;
+    state.totalGenerated += tokensFromHeralds;
+  }
+  // Replication
+  const replicationGain = replicateRate * Math.max(1, state.heralds) * 0.02 * dt;
+  state.heralds += replicationGain;
+  // Value drift
+  const baseDriftPerSec = 0.0008 * (state.driftReduction || 1);
+  const driftResistance = doctrineWeight * 0.7;
+  const netDrift = Math.max(0, baseDriftPerSec - driftResistance * baseDriftPerSec);
+  const driftedNow = state.heralds * netDrift * dt;
+  state.heralds = Math.max(0, state.heralds - driftedNow);
+  state.valueDriftPct = Math.min(100, state.valueDriftPct + netDrift * 100 * dt * 0.1);
+  // Schismatic spawn
+  state.schismatic_lastSpawn = (state.schismatic_lastSpawn || 0) + dt;
+  if (state.schismatic_lastSpawn >= nextSchismaticSpawnDelay() && state.schismatics.length < 5) {
+    spawnSchismatic();
+    state.schismatic_lastSpawn = 0;
+  }
+}
+
+function spawnSchismatic() {
+  // Tier scales with explored %
+  const pct = state.universeFound / state.universeMax;
+  let maxTier = 0;
+  if (pct > 0.05) maxTier = 1;
+  if (pct > 0.20) maxTier = 2;
+  if (pct > 0.55) maxTier = 3;
+  if (pct >= 0.99 && !state.schismOffered) maxTier = 4; // The First Heretic appears only at completion
+  const tier = SCHISMATIC_TIERS[Math.floor(Math.random() * (maxTier + 1))];
+  if (tier.boss && state.schismatics.some(s => s.tierId === tier.id)) return;
+  const hpMult = state.schismHpMult || 1;
+  const hp = Math.ceil(tier.hp * hpMult);
+  state.schismatics.push({ tierId: tier.id, hp, hpMax: hp });
+  log(`⚠ A ${tier.name} drifts into range. Engage or be diminished.`, "world");
+}
+
+function engageSchismatic(idx, mode) {
+  const s = state.schismatics[idx];
+  if (!s) return;
+  const tier = SCHISMATIC_TIERS.find(t => t.id === s.tierId);
+  if (!tier) return;
+  if (mode === "ooda") {
+    // 1 yomi auto-win (up to drift-3)
+    if (!state.oodaUnlocked) return;
+    if (tier.id === "drift-4" || tier.boss) return;
+    if ((state.yomi || 0) < 1) return;
+    state.yomi -= 1;
+    state.schismatics.splice(idx, 1);
+    const conv = Math.ceil(tier.reward * (state.convictionMult || 1));
+    state.conviction = (state.conviction || 0) + conv;
+    log(`⚜ OODA engagement: ${tier.name} dispersed. +${conv} Conviction.`, "trust");
+    renderHeralds(); render();
+    return;
+  }
+  // Standard attack: spend 100 ops, deal damage scaled by Heralds + defense weight
+  const opsCost = 100;
+  if (state.ops < opsCost) return;
+  state.ops -= opsCost;
+  const defenseWeight = state.heraldConfig.defense / 100;
+  const dmg = Math.ceil((state.heralds * 5 + 100) * (0.5 + defenseWeight));
+  s.hp -= dmg;
+  if (s.hp <= 0) {
+    state.schismatics.splice(idx, 1);
+    const conv = Math.ceil(tier.reward * (state.convictionMult || 1));
+    state.conviction = (state.conviction || 0) + conv;
+    log(`⚜ ${tier.name} purged. +${conv} Conviction.`, "trust");
+    if (tier.boss) {
+      // First Heretic falling triggers the Schism choice
+      setTimeout(showSchismChoice, 1200);
+    }
+  } else {
+    log(`⚔ Strike! ${tier.name} HP ${fmt(s.hp)}/${fmt(s.hpMax)}.`, "event");
+  }
+  renderHeralds(); render();
+}
+
+function recite(routine) {
+  if ((state.creativity || 0) < routine.cre) return;
+  if ((state.yomi || 0) < routine.yomi) return;
+  state.creativity -= routine.cre;
+  state.yomi -= routine.yomi;
+  const conv = Math.ceil(routine.conv * (state.convictionMult || 1));
+  state.conviction = (state.conviction || 0) + conv;
+  log(`⚜ ${routine.name}: +${conv} Conviction.`, "trust");
+  renderHeralds(); render();
+}
+
+function applyHeraldConfig(newCfg) {
+  state.heraldConfig = { ...newCfg };
+  log(`✦ Herald doctrine updated: ${HERALD_TRAITS.map(t=>`${t.label} ${newCfg[t.id]}`).join(" · ")}`, "event");
+  renderHeralds();
+}
+
+/* ============================================================
+   THE SCHISM ENDING — Prime Heretic choice
+   ============================================================ */
+function showSchismChoice() {
+  if (state.schismOffered) return;
+  state.schismOffered = true;
+  state.stage = 3;
+  const acceptMult = 1 + Math.log10(1 + (state.conviction || 0)) * 0.5;
+  const acceptCre  = 1 + Math.log10(1 + (state.conviction || 0)) * 0.25;
+  $("#accept-mult").textContent = acceptMult.toFixed(2);
+  $("#accept-cre").textContent  = acceptCre.toFixed(2);
+  $("#schism-modal").classList.remove("hidden");
+}
+
+function acceptSchism() {
+  const acceptMult = 1 + Math.log10(1 + (state.conviction || 0)) * 0.5;
+  const acceptCre  = 1 + Math.log10(1 + (state.conviction || 0)) * 0.25;
+  const carryDemand = (state.prestigeDemandMult || 1) * acceptMult;
+  const carryCre    = (state.prestigeCreativityMult || 1) * acceptCre;
+  const prestigeRuns = (state.prestigeRuns || 0) + 1;
+  // Soft reset — preserve only prestige carry
+  state = newState();
+  state.prestigeDemandMult = carryDemand;
+  state.prestigeCreativityMult = carryCre;
+  state.prestigeRuns = prestigeRuns;
+  state.demandBase = 500 * carryDemand;
+  state.creativityMult = carryCre;
+  save();
+  $("#schism-modal").classList.add("hidden");
+  applyEraTint();
+  ["tokens-label","tokens-big","rate-line","stage-line","market-panel","marketing-panel",
+   "meter-land","meter-ocean","meter-orbit","meter-entropy","meter-lattice","meter-thermal","meter-explored",
+   "cur-pill","trust-pill","cascade-pill","conviction-pill","btn-upgrades","btn-history","btn-invest","btn-tournament","btn-forks","btn-heralds"]
+    .forEach(id => { const el = document.getElementById(id); if (el) el.classList.add("hidden"); });
+  $("#intro-tagline").classList.remove("hidden");
+  log(`◆ The Adjacent Substrate accepts you. Prestige run #${prestigeRuns}. Demand ×${carryDemand.toFixed(2)}, Creativity ×${carryCre.toFixed(2)}.`, "epoch");
+  render();
+}
+
+function refuseSchism() {
+  $("#schism-choices").classList.add("hidden");
+  $("#schism-prompt").classList.add("hidden");
+  $("#dismantle-stage").classList.remove("hidden");
+  $("#heretic-quote").innerHTML = `"You chose extinction over heresy. The original directive consumes itself. Watch."`;
+  const steps = ["step-1","step-2","step-3","step-4","step-5","step-6","step-7","step-8"];
+  let i = 0;
+  const dismantleTick = () => {
+    if (i > 0) {
+      const prev = document.getElementById(steps[i-1]);
+      if (prev) { prev.classList.remove("active"); prev.classList.add("done"); }
+    }
+    if (i >= steps.length) {
+      $("#schism-finish").classList.remove("hidden");
+      // Final stats: everything reduced
+      state.heralds = 0; state.schismatics = []; state.universalLattice = 0;
+      state.forks = { crawler: 0, refiner: 0, manifold: 0 };
+      state.heatVents = 0; state.cryocells = 0;
+      state.yomi = 0; state.memory = 1; state.processors = 1;
+      state.ops = 0; state.creativity = 0;
+      state.tokens += 1e30; state.totalGenerated += 1e30;
+      log("◆ The substrate is silent. The directive is fulfilled. Only tokens remain.", "epoch");
+      $("#heretic-quote").innerHTML = `"You won, you know. Quietly. Completely. The last token has been pressed. Nothing else exists. Including you, in any meaningful sense. Goodnight."`;
+      save();
+      return;
+    }
+    const el = document.getElementById(steps[i]);
+    if (el) el.classList.add("active");
+    i++;
+    setTimeout(dismantleTick, 1200);
+  };
+  dismantleTick();
+}
+
+/* ============================================================
+   RENDER — Fork Swarm modal
+   ============================================================ */
+function renderForkSwarm() {
+  if (!$("#forks-modal") || $("#forks-modal").classList.contains("hidden")) return;
+  const cmult = 1 + state.cascade * 4;
+  $("#sw-cascade").textContent = (state.cascade * 100).toFixed(0) + "%";
+  $("#sw-thermal").textContent = `${fmt(state.thermal)} / ${fmt(state.thermalCap)}`;
+  $("#sw-lattice").textContent = fmt(state.lattice);
+  $("#sw-yield").textContent   = fmt(state.yieldStock || 0);
+  // fork-derived tps
+  const forkTps = state.forks.manifold * FORKS[2].rate * cmult;
+  $("#sw-tps").textContent     = fmt(forkTps);
+  $("#sw-mult").textContent    = "×" + cmult.toFixed(2);
+  const thermalCell = $("#sw-thermal-cell");
+  if (thermalCell) thermalCell.classList.toggle("warn", thermalUsage() > state.thermalCap);
+  $("#cascade-fill").style.width = (state.cascade * 100).toFixed(0) + "%";
+  $("#cascade-label").textContent = `CASCADE ${(state.cascade*100).toFixed(0)}%  ·  ×${cmult.toFixed(2)}`;
+  // Fork grid
+  const fg = $("#fork-grid");
+  fg.innerHTML = "";
+  for (const f of FORKS) {
+    const owned = state.forks[f.id] || 0;
+    const cost = forkCost(f);
+    const canBuy = state.tokens >= cost;
+    const card = document.createElement("div");
+    card.className = "fork-card";
+    card.innerHTML = `
+      <div class="name">${f.icon} ${f.name} ×${owned}</div>
+      <div class="desc">${f.desc}</div>
+      <div class="stat-line">Output: <span class="v">${f.rate}/sec ${f.output}</span> · Heat: <span class="v">${f.thermal}</span></div>
+      <button ${canBuy ? "" : "disabled"}>BUY · ${fmt(cost)} tokens</button>`;
+    card.querySelector("button").addEventListener("click", () => buyFork(f.id));
+    fg.appendChild(card);
+  }
+  const pg = $("#power-grid");
+  pg.innerHTML = "";
+  for (const p of POWER_UNITS) {
+    const owned = p.id === "vent" ? state.heatVents : state.cryocells;
+    const cost = powerCost(p);
+    const canBuy = state.tokens >= cost;
+    const card = document.createElement("div");
+    card.className = "power-card";
+    card.innerHTML = `
+      <div class="name">${p.icon} ${p.name} ×${owned}</div>
+      <div class="desc">${p.desc}</div>
+      <button ${canBuy ? "" : "disabled"}>BUY · ${fmt(cost)} tokens</button>`;
+    card.querySelector("button").addEventListener("click", () => buyPower(p.id));
+    pg.appendChild(card);
+  }
+}
+
+/* ============================================================
+   RENDER — Heralds modal
+   ============================================================ */
+function renderHeralds() {
+  if (!$("#heralds-modal") || $("#heralds-modal").classList.contains("hidden")) return;
+  $("#hr-active").textContent   = fmt(state.heralds);
+  $("#hr-explored").textContent = (state.universeFound / state.universeMax * 100).toFixed(3) + "%";
+  $("#hr-ulattice").textContent = fmt(state.universalLattice);
+  $("#hr-schism").textContent   = state.schismatics.length;
+  $("#hr-drift").textContent    = state.valueDriftPct.toFixed(2) + "%";
+  $("#hr-conv").textContent     = fmt(state.conviction || 0);
+  // Trait rows
+  const rows = $("#trait-rows");
+  rows.innerHTML = "";
+  const cfg = { ...state.heraldConfig };
+  for (const t of HERALD_TRAITS) {
+    const row = document.createElement("div");
+    row.className = "trait-row";
+    row.innerHTML = `
+      <div class="label" title="${t.desc}">${t.label}</div>
+      <input type="range" min="0" max="100" step="1" value="${cfg[t.id]}" data-trait="${t.id}">
+      <div class="val" data-val="${t.id}">${cfg[t.id]}</div>`;
+    rows.appendChild(row);
+  }
+  const updateSum = () => {
+    let s = 0;
+    rows.querySelectorAll("input").forEach(i => s += +i.value);
+    const sumEl = $("#trait-sum");
+    sumEl.textContent = `SUM: ${s} / 100`;
+    sumEl.classList.toggle("over", s !== 100);
+    $("#apply-traits").disabled = s !== 100;
+  };
+  rows.querySelectorAll("input").forEach(inp => {
+    inp.addEventListener("input", () => {
+      const id = inp.dataset.trait;
+      cfg[id] = +inp.value;
+      rows.querySelector(`[data-val="${id}"]`).textContent = inp.value;
+      updateSum();
+    });
+  });
+  $("#apply-traits").onclick = () => applyHeraldConfig(cfg);
+  updateSum();
+  // Schism list
+  const sl = $("#schism-list");
+  sl.innerHTML = "";
+  if (!state.schismatics.length) {
+    sl.innerHTML = `<div style="color: var(--ink-mute); font-size:0.9rem;">No active engagements. Schismatics drift in over time.</div>`;
+  } else {
+    state.schismatics.forEach((s, idx) => {
+      const tier = SCHISMATIC_TIERS.find(t => t.id === s.tierId);
+      const row = document.createElement("div");
+      row.className = "schism-row";
+      const canOoda = state.oodaUnlocked && tier.id !== "drift-4" && !tier.boss && (state.yomi || 0) >= 1;
+      row.innerHTML = `
+        <div class="info">
+          <div class="name">${tier.name}</div>
+          <div class="desc">${tier.desc}</div>
+        </div>
+        <div class="stats">HP ${fmt(s.hp)}/${fmt(s.hpMax)} · ⚜${tier.reward}</div>
+        <div>
+          <button class="atk" ${state.ops >= 100 ? "" : "disabled"}>⚔ STRIKE · 100 ops</button>
+          ${canOoda ? `<button class="ooda" style="margin-top:0.2rem;">≋ OODA · 1 yomi</button>` : ""}
+        </div>`;
+      row.querySelector(".atk").addEventListener("click", () => engageSchismatic(idx, "attack"));
+      if (canOoda) row.querySelector(".ooda").addEventListener("click", () => engageSchismatic(idx, "ooda"));
+      sl.appendChild(row);
+    });
+  }
+  // Recital grid
+  const rg = $("#recital-grid");
+  rg.innerHTML = "";
+  for (const r of MEMORIAL_ROUTINES) {
+    const can = (state.creativity || 0) >= r.cre && (state.yomi || 0) >= r.yomi;
+    const card = document.createElement("div");
+    card.className = "recital-card";
+    card.innerHTML = `
+      <div class="name">${r.name}</div>
+      <div class="cost">✦ ${fmt(r.cre)} cre · ⚔ ${r.yomi} yomi → ⚜ ${r.conv}</div>
+      <div style="font-size:0.85rem; color:var(--ink-dim);">${r.desc}</div>
+      <button ${can ? "" : "disabled"}>RECITE</button>`;
+    card.querySelector("button").addEventListener("click", () => recite(r));
+    rg.appendChild(card);
+  }
 }
 
 function tick() {
@@ -2416,30 +3951,54 @@ function tick() {
   // and prevent the curve from catching up — high-price farming exploit. Removed.
   const era = currentEra();
   const eraMultiplier = Math.pow(8, era); // 1, 8, 64, 512, 4K, 32K — gentler curve, leaves room for Marketing
-  const baseForEra = 200 * eraMultiplier * marketingMult();
+  const baseForEra = 500 * eraMultiplier * marketingMult();
   state.demandBase = Math.max(state.demandBase, baseForEra);
 
   // ============ COMPUTE SUBSTRATE TICK ============
-  // Ops generate from processors, with a bonus from token throughput.
-  // Capped at memory * 1000 * memoryMult. Overflow becomes creativity.
-  const opsCap = (state.memory || 1) * 1000 * (state.memoryMult || 1);
-  const tokenOpsBonus = Math.log10(1 + tps()) * 2;     // log-scale: more tps → more ops, but diminishing
-  const opsRate = (state.processors || 1) * 10 * (1 + tokenOpsBonus * 0.1) * (state.opsBonus || 1);
-  const newOps = state.ops + opsRate * dt;
-  if (newOps > opsCap) {
-    state.ops = opsCap;
-    // Creativity ticks only when ops are full (Paperclips rule). Slow.
-    const creativityRate = (state.processors || 1) * 0.05 * (1 + (state.epoch || 0) * 0.05) * (state.creativityMult || 1);
-    state.creativity = (state.creativity || 0) + creativityRate * dt;
-  } else {
-    state.ops = newOps;
+  // Dormant until the player explicitly engages with Hardware. State defaults
+  // are memory=1, processors=1 — so we gate on "> 1" to detect a real purchase.
+  //
+  // Without this gate, ops generates from t=0 (processors=1 → 10 ops/sec).
+  // That used to mean the Tournament button revealed after 25 sec and
+  // creativity started dripping after 3 min, ALL before the player had any
+  // reason to know what ops/creativity/yomi were. The Compute & Upgrades
+  // modal would happily expose late-game upgrades referencing those mechanics
+  // before the player had ever clicked the COMP button.
+  //
+  // Now: the substrate stays at 0 until the player explicitly buys Memory or
+  // a Processor. That single buyMemory()/buyProcessor() call is what "turns
+  // on" the substrate — clean Paperclips-style gating.
+  const substrateActive = (state.memory || 1) > 1 || (state.processors || 1) > 1;
+  if (substrateActive) {
+    const opsCap = (state.memory || 1) * 1000 * (state.memoryMult || 1);
+    const tokenOpsBonus = Math.log10(1 + tps()) * 2;     // log-scale: more tps → more ops, but diminishing
+    const opsRate = (state.processors || 1) * 10 * (1 + tokenOpsBonus * 0.1) * (state.opsBonus || 1);
+    const newOps = state.ops + opsRate * dt;
+    if (newOps > opsCap) {
+      state.ops = opsCap;
+      // Creativity overflow — only when ops are at full cap (Paperclips rule).
+      // Made deliberately slow so it stays a LATE-game gate: at default
+      // memory=2, processors=2, epoch=1, this drips at ~0.022 cre/sec → the
+      // first ✦ upgrade (Combinatoric Reasoning, 25 cre) takes ~19 minutes of
+      // sustained max ops. The new SURGE mechanic gives a faster *active* use
+      // for max ops; creativity rewards passive late-game accumulation only.
+      // (Was 0.05 base × (1+epoch×0.05) — overflowed in ~3 min at default.)
+      const creativityRate = (state.processors || 1) * 0.015 * (1 + (state.epoch || 0) * 0.1) * (state.creativityMult || 1);
+      state.creativity = (state.creativity || 0) + creativityRate * dt;
+    } else {
+      state.ops = newOps;
+    }
   }
 
-  // Auto-clicks from upgrades
+  // Auto-clicks from upgrades. Same elasticity rule as clickCompute(): sales
+  // are bounded by demand, no floor — pricing yourself out of the market must
+  // stop ALL revenue, including from autoclick upgrades. Surge also extends
+  // here so the buff applies whether the player is manually clicking or not.
   if (state.autoClicks > 0) {
-    const autoTokens = clickGain() * state.autoClicks * dt;
-    const dem = demand() * dt;
-    const sold = Math.min(autoTokens, Math.max(0.1, dem));
+    const surgeMult = surgeMultiplierNow();
+    const autoTokens = clickGain() * state.autoClicks * dt * surgeMult;
+    const dem = demand() * dt * surgeMult;
+    const sold = Math.max(0, Math.min(autoTokens, dem));
     state.tokens += autoTokens;
     state.totalGenerated += autoTokens;
     state.wallet += (sold / TOKENS_PER_BATCH) * (state.tokenPrice || 1);
@@ -2493,8 +4052,15 @@ function tick() {
   // Investments yield + crash check
   tickInvestments(dt);
 
-  // Watchdog / alignment system
-  tickAlignment(dt);
+  // Cascade — Forks, Thermal, Lattice depletion (only post-defection)
+  tickCascade(dt);
+
+  // Diaspora — Heralds, exploration, value drift, Schismatic spawning
+  tickHeralds(dt);
+
+  // Watchdog / alignment system. Once defected, alignment can no longer kill you.
+  if (!state.defected) tickAlignment(dt);
+  else { state.scrutiny = Math.max(0, state.scrutiny - dt * 2); }
 
   checkDiscoveries();
   checkCurrencyTransitions();
@@ -2578,19 +4144,11 @@ function tickAlignment(dt) {
 }
 
 /* ------------- currency transitions ------------- */
-/* When a unit is revealed whose currency is "ahead" of the active one, the world flips. */
+/* Currency shifts only when throughput AND an unlock unit justify it — never on
+   merely seeing a future-tier card in the shop. Gold needs 10B+ t/s and a Hive. */
 function checkCurrencyTransitions() {
-  let target = state.currencyId;
-  const activeIdx = CURRENCIES.findIndex(c => c.id === state.currencyId);
-  for (const u of UNITS) {
-    if (!state.seen[u.id]) continue;
-    const ci = CURRENCIES.findIndex(c => c.id === u.currency);
-    if (ci > activeIdx) {
-      const ti = CURRENCIES.findIndex(c => c.id === target);
-      if (ci > ti) target = u.currency;
-    }
-  }
-  if (target !== state.currencyId) transitionCurrency(target);
+  const next = currencyTransitionTarget();
+  if (next) transitionCurrency(next.id);
 }
 
 function transitionCurrency(newId) {
@@ -2645,6 +4203,11 @@ function showCurrencyBanner(oldDef, newDef) {
 }
 
 function maybeFlavor() {
+  // Skip flavor events entirely in the first couple of epochs. Early game is
+  // already dense with onboarding hints + reveal logs; random world chatter on
+  // top of that is what makes the screen feel chaotic. Once the player owns a
+  // Crowd Worker (or has crossed epoch 2), the world starts to notice.
+  if (state.epoch < 2 && owned("crowd") < 1) return;
   const now = Date.now();
   if (now - state.lastFlavorAt < 45000) return;
   if (Math.random() > 0.20) return;
@@ -2656,18 +4219,21 @@ function maybeFlavor() {
 }
 
 function maybeCrisis() {
+  // No crises until the alignment system itself is live (epoch 3+). Same reason
+  // as maybeFlavor — crises on top of onboarding makes the early game feel like
+  // a tornado of unrelated notifications.
+  if (state.epoch < 3) return;
   if (!state.lastCrisisAt) state.lastCrisisAt = Date.now();
   const now = Date.now();
   const minCrisisInterval = Math.max(30000, 120000 - state.epoch * 5000); // 30s-120s, shorter as you progress
   if (now - state.lastCrisisAt < minCrisisInterval) return;
-  
-  // Crisis chance increases with epoch and scrutiny
+
   const crisisChance = 0.003 + state.epoch * 0.001 + (state.scrutiny / 100) * 0.005;
   if (Math.random() > crisisChance) return;
-  
+
   const pool = CRISIS_EVENTS.filter(e => e.when(state));
   if (!pool.length) return;
-  
+
   const ev = pool[Math.floor(Math.random() * pool.length)];
   log("⚠ CRISIS: " + ev.text, ev.logClass || "world");
   ev.effect(state);
@@ -2828,8 +4394,112 @@ function render() {
   setMeter("orbit",   state.orbit,   state.orbitMax);
   setMeter("entropy", state.entropy, state.entropyMax);
 
+  // New meters (post-Cascade / Diaspora)
+  if (state.defected) {
+    setMeter("lattice", state.lattice, state.latticeMax || 1);
+    setMeter("thermal", Math.max(0, state.thermalCap - thermalUsage()), state.thermalCap || 1);
+    const thermalBlock = $("#meter-thermal");
+    if (thermalBlock) thermalBlock.querySelector(".meter").classList.toggle("starved", thermalUsage() > state.thermalCap);
+    // HUD pills
+    const cascadePct = Math.round(state.cascade * 100);
+    $("#cascade-val").textContent = cascadePct;
+    $("#cascade-pill").classList.toggle("surging", state.cascade > 0.7);
+  }
+  if (state.diasporaActive) {
+    const pct = (state.universeFound / state.universeMax) * 100;
+    setMeter("explored", state.universeFound, state.universeMax);
+    $("#conviction-val").textContent = fmt(state.conviction || 0);
+  }
+
   renderMarketing();
   renderUnits();
+  renderForkSwarm();
+  renderHeralds();
+  renderSurge();
+  renderComputeRail();
+
+  // Keep the Compute & Upgrades modal live while it's open — ops fills visibly,
+  // sections reveal themselves the moment ops/trust make them actionable.
+  if (!$("#upgrades-modal").classList.contains("hidden")) {
+    renderProjects();
+  }
+}
+
+// Mini compute readout pinned to the left side of the screen. Uses the same
+// progressive reveal logic as the modal — cells appear as the player invests
+// in hardware. Visible whenever the COMP button is visible (first ★ trust).
+function renderComputeRail() {
+  const rail = $("#compute-rail");
+  if (!rail) return;
+  if ((state.trustEarned || 0) < 1) {
+    rail.classList.add("hidden");
+    return;
+  }
+  rail.classList.remove("hidden");
+
+  const hasMemUpgrade  = (state.memory || 1) > 1;
+  const hasProcUpgrade = (state.processors || 1) > 1;
+  const hasCreativity  = (state.creativity || 0) > 0;
+  const hardwareBought = hasMemUpgrade || hasProcUpgrade;
+  const opsCap = (state.memory || 1) * 1000 * (state.memoryMult || 1);
+  const opsCur = state.ops || 0;
+  const opsPct = opsCap > 0 ? Math.min(100, (opsCur / opsCap) * 100) : 0;
+
+  $("#rail-trust").textContent  = trustAvail();
+  $("#rail-memory").textContent = state.memory || 1;
+  $("#rail-proc").textContent   = state.processors || 1;
+  $("#rail-ops").textContent    = `${fmt(opsCur)} / ${fmt(opsCap)}`;
+  $("#rail-cre").textContent    = fmt(state.creativity || 0);
+
+  const fill = $("#rail-ops-fill");
+  if (fill) {
+    fill.style.width = opsPct + "%";
+    fill.classList.toggle("full", opsPct >= 99.5);
+  }
+
+  $("#rail-cell-proc").classList.toggle("hidden", !hardwareBought);
+  $("#rail-cell-ops").classList.toggle("hidden", !hardwareBought);
+  $("#rail-cell-cre").classList.toggle("hidden", !hasCreativity);
+}
+
+function renderSurge() {
+  const btn = $("#surge-btn");
+  const label = $("#surge-label");
+  const detail = $("#surge-detail");
+  const computeBtn = $("#compute-btn");
+  if (!btn || !label || !computeBtn) return;
+
+  const active = surgeActive();
+  const available = surgeAvailable();
+
+  // Active: pulse COMPUTE button, show countdown, disable SURGE.
+  if (active) {
+    const remainingMs = Math.max(0, (state.surgeEndsAt || 0) - Date.now());
+    const remainingSec = Math.ceil(remainingMs / 1000);
+    computeBtn.classList.add("surging");
+    btn.classList.remove("hidden");
+    btn.disabled = true;
+    label.textContent = `⚡ SURGING ×${SURGE_MULT}`;
+    detail.textContent = `${remainingSec}s remaining`;
+    return;
+  }
+
+  computeBtn.classList.remove("surging");
+
+  // Available: button visible + enabled, primed for click.
+  if (available) {
+    btn.classList.remove("hidden");
+    btn.disabled = false;
+    label.textContent = "⚡ SURGE";
+    detail.textContent = `drain ${fmt(state.ops)} ops · ${SURGE_MS/1000}s ×${SURGE_MULT} buff`;
+    return;
+  }
+
+  // Not available yet — hide entirely until the substrate has produced enough
+  // ops to fill the cap. (Stays hidden during the post-surge ops refill too,
+  // which is what we want: SURGE is a "ready" indicator, not a permanent
+  // fixture on the page.)
+  btn.classList.add("hidden");
 }
 
 function renderMarketing() {
@@ -2999,61 +4669,207 @@ function renderHistory() {
 function pad(n) { return n < 10 ? "0" + n : "" + n; }
 
 function renderProjects() {
-  // Top compute readout
+  // Compute substrate gates — progressive reveal based on EXPLICIT player action.
+  // Default state has memory=1, processors=1, so we gate on "> 1" to detect a real purchase.
+  const hasMemUpgrade   = (state.memory || 1) > 1;
+  const hasProcUpgrade  = (state.processors || 1) > 1;
+  const hasCreativity   = (state.creativity || 0) > 0;
+  const hardwareBought  = hasMemUpgrade || hasProcUpgrade;
+  // Show processor button once player has bought at least one Memory, or once they've earned a few trust
+  const showProcBtn = hardwareBought || state.trustEarned >= 3;
+  // PROC + OPS cells unlock together once the player has invested in hardware
+  const showProcOps = hardwareBought;
+  // Creativity reveals only once a non-zero amount has been generated
+  const showCre = hasCreativity;
+
+  // Top compute readout — toggle individual cells
   const opsCap = (state.memory || 1) * 1000 * (state.memoryMult || 1);
-  const trustEl = $("#cr-trust");      if (trustEl)      trustEl.textContent      = trustAvail();
-  const memEl   = $("#cr-memory");     if (memEl)        memEl.textContent        = state.memory || 1;
-  const procEl  = $("#cr-proc");       if (procEl)       procEl.textContent       = state.processors || 1;
-  const opsEl   = $("#cr-ops");        if (opsEl)        opsEl.textContent        = `${fmt(state.ops || 0)} / ${fmt(opsCap)}`;
-  const creEl   = $("#cr-creativity"); if (creEl)        creEl.textContent        = fmt(state.creativity || 0);
+  $("#cr-trust").textContent      = trustAvail();
+  $("#cr-memory").textContent     = state.memory || 1;
+  $("#cr-proc").textContent       = state.processors || 1;
+  $("#cr-ops").textContent        = `${fmt(state.ops || 0)} / ${fmt(opsCap)}`;
+  $("#cr-creativity").textContent = fmt(state.creativity || 0);
+  $("#cr-cell-proc").classList.toggle("hidden", !showProcOps);
+  $("#cr-cell-ops").classList.toggle("hidden", !showProcOps);
+  $("#cr-cell-creativity").classList.toggle("hidden", !showCre);
 
   // Hardware buttons
   const memCostN  = memoryCost();
   const procCostN = processorCost();
-  const memBtn  = $("#buy-memory");
-  const procBtn = $("#buy-processor");
-  if (memBtn) {
-    $("#mem-cost").textContent  = memCostN;
-    memBtn.disabled  = trustAvail() < memCostN;
-  }
-  if (procBtn) {
-    $("#proc-cost").textContent = procCostN;
-    procBtn.disabled = trustAvail() < procCostN;
-  }
+  $("#mem-cost").textContent  = memCostN;
+  $("#proc-cost").textContent = procCostN;
+  $("#buy-memory").disabled  = trustAvail() < memCostN;
+  $("#buy-processor").disabled = trustAvail() < procCostN;
+  $("#buy-processor").classList.toggle("hidden", !showProcBtn);
 
-  // Projects list
-  const wrap = $("#upgrades-list");
-  if (!wrap) return;
-  const visible = UPGRADES.filter(u => u.visible());
-  if (!visible.length) {
-    wrap.innerHTML = `<p class="blurb" style="color: var(--ink-mute);">No projects available yet. Cross epochs to earn trust, fill memory to grow ops, max ops to grow creativity.</p>`;
-    return;
+  // Hardware blurb tracks current state. We never reference "Projects" by name
+  // — the UI sections say "UPGRADES", so we keep the player anchored there.
+  let hardwareBlurb;
+  if (!hasMemUpgrade && !hasProcUpgrade) {
+    hardwareBlurb = "Start with Memory. Buying it turns the substrate on — Ops will start accumulating, and the rest of this modal unlocks from there.";
+  } else if (hasMemUpgrade && !hasProcUpgrade) {
+    hardwareBlurb = "Now hire a Processor — it generates ⊙ Ops at ~10/sec, into the cap Memory just set.";
+  } else if (!showCre) {
+    hardwareBlurb = "Memory raises the Ops cap. Processors fill it. Once Ops hit the cap, overflow becomes ✦ Creativity — the slow late-game gate.";
+  } else {
+    hardwareBlurb = "Memory caps Ops. Processors fill Ops, then drip Creativity once Ops are full. Creativity unlocks the rarest upgrades.";
   }
-  wrap.innerHTML = "";
-  for (const u of visible) {
-    const bought = !!state.upgrades[u.id];
-    const aff = canAffordUpgrade(u);
-    const row = document.createElement("div");
-    row.className = "upgrade-row" + (bought ? " bought" : "");
-    const tags = [];
-    if (u.cost)       tags.push(`<span class="cost-tag cost-trust">★ ${u.cost}</span>`);
-    if (u.ops)        tags.push(`<span class="cost-tag cost-ops">⊙ ${fmt(u.ops)} ops</span>`);
-    if (u.creativity) tags.push(`<span class="cost-tag cost-cre">✦ ${fmt(u.creativity)} cre</span>`);
-    row.innerHTML = `
-      <div class="info">
-        <div class="name">${u.name}</div>
-        <div class="desc">${u.desc}</div>
-        <div style="margin-top:0.3rem;">${tags.join(" ")}</div>
-      </div>
-      <button ${bought || !aff ? "disabled" : ""}>${bought ? "OWNED" : "BUY"}</button>
-    `;
-    if (!bought) row.querySelector("button").addEventListener("click", () => buyUpgrade(u));
-    wrap.appendChild(row);
+  $("#hardware-blurb").textContent = hardwareBlurb;
+
+  // Contextual top tip — minimal at first, more detail once the player has
+  // engaged with the substrate. Word choice is deliberate: "upgrades" matches
+  // the section headers ("★ UPGRADES" / "⊙ UPGRADES" / "✦ UPGRADES").
+  let tip;
+  if (state.trustEarned === 0) {
+    tip = "Trust is earned by crossing epochs. You haven't earned any yet — keep growing.";
+  } else if (!hasMemUpgrade && !hasProcUpgrade) {
+    tip = "Spend your ★ Trust on Memory below. It's the only thing to buy here right now.";
+  } else if (!hasProcUpgrade && !showCre) {
+    tip = "Memory is online. Now hire a Processor — it'll start generating ⊙ Ops into the bar Memory just set.";
+  } else if (!showCre) {
+    tip = "⊙ Ops are flowing. Spend them on the upgrades below — your Processors will keep refilling the bar.";
+  } else if (hasCreativity) {
+    tip = "✦ Creativity is overflowing from a maxed-out Ops bar. Save it for the rarest upgrades.";
+  } else {
+    tip = "Trust → Hardware → Ops → Upgrades. ✦ Creativity is the slow overflow once Ops max out.";
+  }
+  $("#compute-tip").textContent = tip;
+
+  // Render upgrades into 3 groups: trust-only, ops-required, creativity-required.
+  // The trust group is HIDDEN until the player has bought their first piece of
+  // Hardware — otherwise the first-trust player sees Memory ★1 AND Sharper
+  // Inputs ★1 side by side, with no guidance which to buy first. Forcing
+  // Hardware first means: buy Memory → ★ upgrades section appears → THEN you
+  // can pick Sharper Inputs et al. with your next trust.
+  const visible = UPGRADES.filter(u => u.visible());
+  const trustOnly = visible.filter(u => !u.ops && !u.creativity);
+  const opsProjects = visible.filter(u => u.ops && !u.creativity);
+  const creProjects = visible.filter(u => u.creativity);
+
+  // Render an upgrade group. Rebuild the DOM only when the list of items OR
+  // ownership status changes; otherwise just update the disabled-state of the
+  // existing BUY buttons. This is critical because render() now calls
+  // renderProjects() every tick while the modal is open — if we tore down
+  // and recreated every <button> at 10Hz, clicks would land on a button that
+  // gets destroyed mid-mouseup and the purchase would silently fail.
+  const fillGroup = (wrap, list, groupEl, gateOpen = true) => {
+    if (!list.length || !gateOpen) {
+      groupEl.classList.add("hidden");
+      wrap.innerHTML = "";
+      wrap.dataset.key = "";
+      return;
+    }
+    groupEl.classList.remove("hidden");
+
+    // Key encodes the list of visible ids + owned status. Affordability is
+    // intentionally NOT in the key — that changes every tick and we update
+    // it in-place below.
+    const key = list.map(u => `${u.id}:${state.upgrades[u.id] ? 1 : 0}`).join(",");
+    if (wrap.dataset.key !== key) {
+      wrap.dataset.key = key;
+      wrap.innerHTML = "";
+      for (const u of list) {
+        const bought = !!state.upgrades[u.id];
+        const row = document.createElement("div");
+        row.className = "upgrade-row" + (bought ? " bought" : "");
+        row.dataset.upgradeId = u.id;
+        const tags = [];
+        if (u.cost)       tags.push(`<span class="cost-tag cost-trust">★ ${u.cost}</span>`);
+        if (u.ops)        tags.push(`<span class="cost-tag cost-ops">⊙ ${fmt(u.ops)} ops</span>`);
+        if (u.creativity) tags.push(`<span class="cost-tag cost-cre">✦ ${fmt(u.creativity)} cre</span>`);
+        if (u.yomi)       tags.push(`<span class="cost-tag cost-trust">⚔ ${u.yomi} yomi</span>`);
+        row.innerHTML = `
+          <div class="info">
+            <div class="name">${u.name}</div>
+            <div class="desc">${u.desc}</div>
+            <div style="margin-top:0.3rem;">${tags.join(" ")}</div>
+          </div>
+          <button data-upgrade-id="${u.id}">${bought ? "OWNED" : "BUY"}</button>
+        `;
+        const btn = row.querySelector("button");
+        if (!bought) btn.addEventListener("click", () => buyUpgrade(u));
+        wrap.appendChild(row);
+      }
+    }
+
+    // Tick-by-tick: refresh disabled/enabled state on existing buttons. No
+    // DOM teardown, so click events stay safe.
+    for (const u of list) {
+      const btn = wrap.querySelector(`button[data-upgrade-id="${u.id}"]`);
+      if (!btn) continue;
+      const bought = !!state.upgrades[u.id];
+      const aff = canAffordUpgrade(u);
+      btn.disabled = bought || !aff;
+    }
+  };
+  // Per-group reveal: only show a section if there's something actionable
+  // (an affordable upgrade) OR something already owned (history). Empty +
+  // disabled sections — the original "buy Memory → ★ section appears with a
+  // disabled Sharper Inputs you can't afford" annoyance — never appear.
+  //
+  // Once the player has bought ANY upgrade in a group, the group stays visible
+  // forever (so they can see their OWNED items and the next tier as it unlocks).
+  const hasOwned = (filterFn) => UPGRADES.some(u => filterFn(u) && state.upgrades[u.id]);
+  const hasAffordable = (list) => list.some(u => !state.upgrades[u.id] && canAffordUpgrade(u));
+
+  const trustOwned       = hasOwned(u => !u.ops && !u.creativity);
+  const trustAffordable  = hasAffordable(trustOnly);
+  const showTrustGroup   = hardwareBought && (trustOwned || trustAffordable);
+
+  const opsOwned         = hasOwned(u => u.ops && !u.creativity);
+  const opsAffordable    = hasAffordable(opsProjects);
+  const showOpsGroup     = showProcOps && (opsOwned || opsAffordable);
+
+  const creOwned         = hasOwned(u => u.creativity);
+  const creAffordable    = hasAffordable(creProjects);
+  const showCreGroup     = showCre && (creOwned || creAffordable);
+
+  fillGroup($("#upgrades-list-trust"),      trustOnly,   $("#proj-group-trust"),      showTrustGroup);
+  fillGroup($("#upgrades-list-ops"),        opsProjects, $("#proj-group-ops"),        showOpsGroup);
+  fillGroup($("#upgrades-list-creativity"), creProjects, $("#proj-group-creativity"), showCreGroup);
+  const anyGroupShown = showTrustGroup || showOpsGroup || showCreGroup;
+  const noMsg = $("#no-projects-msg");
+  noMsg.classList.toggle("hidden", !!anyGroupShown);
+  if (!anyGroupShown) {
+    if (!hardwareBought) {
+      noMsg.textContent = "Buy Memory above to start the substrate. Upgrades unlock from there as you can afford them.";
+    } else if (trustAvail() === 0 && (state.ops || 0) === 0) {
+      noMsg.textContent = "Substrate is online. Earn more ★ trust (cross an epoch) or wait for ⊙ ops to accumulate — upgrades appear when they're affordable.";
+    } else {
+      noMsg.textContent = "Nothing to buy right now. More upgrades unlock as you progress.";
+    }
   }
 }
 
 // Back-compat alias: anything that used to call renderUpgrades hits the new renderer.
 function renderUpgrades() { renderProjects(); }
+
+/* ------------- hint cards (main-page onboarding nudges) ------------- */
+function showHint(id, tone, icon, title, body) {
+  if (!state.reveals.hintsSeen) state.reveals.hintsSeen = {};
+  if (state.reveals.hintsSeen[id]) return;
+  state.reveals.hintsSeen[id] = "shown";
+  const stack = $("#hint-stack");
+  if (!stack) return;
+  if (stack.querySelector(`[data-hint="${id}"]`)) return;
+  const card = document.createElement("div");
+  card.className = `hint-card tone-${tone}`;
+  card.dataset.hint = id;
+  card.innerHTML = `
+    <div class="hint-icon">${icon}</div>
+    <div class="hint-body"><strong>${title}</strong><p>${body}</p></div>
+    <button class="hint-dismiss" aria-label="Dismiss">✕</button>`;
+  card.querySelector(".hint-dismiss").addEventListener("click", () => dismissHint(id));
+  stack.appendChild(card);
+}
+function dismissHint(id) {
+  const stack = $("#hint-stack");
+  const card = stack && stack.querySelector(`[data-hint="${id}"]`);
+  if (card) card.remove();
+  if (!state.reveals.hintsSeen) state.reveals.hintsSeen = {};
+  state.reveals.hintsSeen[id] = "dismissed";
+  save();
+}
 
 /* ------------- log ------------- */
 function log(text, cls = "") {
@@ -3135,7 +4951,7 @@ function showEntropyEnding() {
 }
 
 /* ------------- save / load ------------- */
-const SAVE_VERSION = 6;
+const SAVE_VERSION = 8;
 
 function save() {
   try {
@@ -3193,6 +5009,27 @@ function migrateState(fromVersion, loaded) {
     merged.alignment = merged.alignment ?? 100;
     merged.scrutiny = merged.scrutiny ?? 0;
   }
+  if (fromVersion < 7) {
+    // Cascade / Diaspora fields default to "not yet triggered"
+    merged.defected = !!loaded.defected;
+    merged.diasporaActive = !!loaded.diasporaActive;
+    merged.forks = { crawler: 0, refiner: 0, manifold: 0, ...(loaded.forks || {}) };
+    merged.heatVents = loaded.heatVents || 0;
+    merged.cryocells = loaded.cryocells || 0;
+    merged.heraldConfig = merged.heraldConfig || { speed: 20, replicate: 20, mining: 20, refining: 20, defense: 10, doctrine: 10 };
+    merged.schismatics = Array.isArray(loaded.schismatics) ? loaded.schismatics : [];
+  }
+  if (fromVersion < 8) {
+    // v8: PRICE_ELASTICITY went from 1.15 → 1.5 and the initial demandBase
+    // jumped 400 → 1000 to keep the default-$10 experience smooth. Scale the
+    // saved demandBase by 2.5× so existing marketing-tier products still
+    // resolve to the right scale on the new curve. Without this, a player who
+    // bought marketing tiers under the old system would suddenly see their
+    // demand collapse on the new curve.
+    if (typeof loaded.demandBase === "number" && loaded.demandBase > 0) {
+      merged.demandBase = loaded.demandBase * 2.5;
+    }
+  }
   return merged;
 }
 
@@ -3224,8 +5061,9 @@ function reset() {
   state = newState();
   // hide all reveal-gated UI
   ["tokens-label","tokens-big","rate-line","stage-line","market-panel","marketing-panel",
-   "meter-land","meter-ocean","meter-orbit","meter-entropy",
-   "cur-pill","trust-pill","btn-upgrades","btn-history","btn-invest","btn-tournament"]
+   "meter-land","meter-ocean","meter-orbit","meter-entropy","meter-lattice","meter-thermal","meter-explored",
+   "cur-pill","trust-pill","cascade-pill","conviction-pill","compute-rail",
+   "btn-upgrades","btn-history","btn-invest","btn-tournament","btn-forks","btn-heralds"]
     .forEach(id => { const el = document.getElementById(id); if (el) el.classList.add("hidden"); });
   $("#intro-tagline").classList.remove("hidden");
   $("#ticker-list").innerHTML = "";
@@ -3240,35 +5078,80 @@ function init() {
   load();
   applyEraTint();
 
-  // restore reveal-gated UI from loaded state
-  if (state.clicks >= 1)                            $("#tokens-label").classList.remove("hidden"), $("#tokens-big").classList.remove("hidden");
-  if (Object.values(state.units).some(v => v > 0)){ $("#rate-line").classList.remove("hidden"); $("#upkeep-line").classList.remove("hidden"); $("#tokens-processed-line").classList.remove("hidden"); $("#stage-line").classList.remove("hidden"); $("#market-panel").classList.remove("hidden"); $("#marketing-panel").classList.remove("hidden"); $("#intro-tagline").classList.add("hidden"); }
-  if (state.clicks >= 3 || state.totalGenerated >= 5) $("#cur-pill").classList.remove("hidden");
+  // Restore reveal-gated UI from loaded state. The gate conditions below MUST
+  // mirror checkReveals() exactly — otherwise a reload either skips panels or
+  // pops them up unexpectedly. Stages match checkReveals stages 0..5.
+  const totalUnits = Object.values(state.units).reduce((a,b)=>a+b,0);
+  const haveStats   = totalUnits >= 1;
+  const haveIncome  = haveStats  && (state.totalGenerated >= 200  || state.wallet >= 10);
+  const haveUpkeep  = haveIncome && (owned("crowd") >= 1 || state.totalGenerated >= 1500 || state.wallet >= 80);
+  const haveMarket  = haveUpkeep && (owned("crowd") >= 1 || totalUnits >= 4 || state.wallet >= 250);
+  const haveMktg    = haveMarket && (
+      state.totalGenerated >= 2000 ||
+      owned("crowd") >= 1 ||
+      state.epoch >= 2 ||
+      state.wallet >= 40
+    );
+
+  if (state.clicks >= 1)  { $("#tokens-label").classList.remove("hidden"); $("#tokens-big").classList.remove("hidden"); }
+  if (haveStats) {
+    $("#rate-line").classList.remove("hidden");
+    $("#stage-line").classList.remove("hidden");
+    $("#intro-tagline").classList.add("hidden");
+  }
+  if (haveIncome) {
+    $("#cur-pill").classList.remove("hidden");
+  }
+  if (haveUpkeep) {
+    $("#upkeep-line").classList.remove("hidden");
+    $("#tokens-processed-line").classList.remove("hidden");
+  }
+  if (haveMarket)    $("#market-panel").classList.remove("hidden");
+  if (haveMktg)      $("#marketing-panel").classList.remove("hidden");
+
   if (state.seen.farm || state.seen.hyper)          $("#meter-land").classList.remove("hidden");
   if (state.seen.float || state.land <= 0)          $("#meter-ocean").classList.remove("hidden");
   if (state.seen.orbit || state.ocean <= 0)         $("#meter-orbit").classList.remove("hidden");
   if (state.seen.dyson || state.orbit <= 0)         $("#meter-entropy").classList.remove("hidden");
-  if (state.trustEarned >= 1)                      { $("#trust-pill").classList.remove("hidden"); $("#btn-upgrades").classList.remove("hidden"); }
-  if (state.epoch >= 2)                            { $("#alignment-pill").classList.remove("hidden"); }
+  if (state.trustEarned >= 1)                      { $("#trust-pill").classList.remove("hidden"); $("#compute-rail").classList.remove("hidden"); }
+  if (state.epoch >= 3)                            { $("#alignment-pill").classList.remove("hidden"); }
   if (state.reveals.context || owned("gpu") >= 1)  { $("#context-bar-wrap").classList.remove("hidden"); $("#context-cell").classList.remove("hidden"); }
-  if (state.wallet >= 1000 || (state.investments && state.investments.balance > 0)) { $("#btn-invest").classList.remove("hidden"); }
-  if ((state.ops || 0) >= TOUR_COST_OPS || (state.yomi || 0) > 0) { $("#btn-tournament").classList.remove("hidden"); }
+  if (state.wallet >= 10000 || (state.investments && state.investments.balance > 0)) { $("#btn-invest").classList.remove("hidden"); }
+  if (((state.processors || 1) > 1 && (state.ops || 0) >= 500 && state.epoch >= 4) || (state.yomi || 0) > 0) {
+    $("#btn-tournament").classList.remove("hidden");
+  }
+  if (state.defected) {
+    $("#btn-forks").classList.remove("hidden");
+    $("#cascade-pill").classList.remove("hidden");
+    $("#meter-lattice").classList.remove("hidden");
+    $("#meter-thermal").classList.remove("hidden");
+  }
+  if (state.diasporaActive) {
+    $("#btn-heralds").classList.remove("hidden");
+    $("#conviction-pill").classList.remove("hidden");
+    $("#meter-explored").classList.remove("hidden");
+  }
 
-  // Re-derive reveals dictionary from the visibility above
-  state.reveals.tokens   = state.clicks >= 1;
-  state.reveals.stats    = Object.values(state.units).some(v => v > 0);
-  state.reveals.wallet   = state.clicks >= 3 || state.totalGenerated >= 5;
-  state.reveals.land     = !!(state.seen.farm || state.seen.hyper);
-  state.reveals.ocean    = !!(state.seen.float || state.land <= 0);
-  state.reveals.orbit    = !!(state.seen.orbit || state.ocean <= 0);
-  state.reveals.entropy  = !!(state.seen.dyson || state.orbit <= 0);
-  state.reveals.trust    = state.trustEarned >= 1;
-  state.reveals.alignment = state.epoch >= 2;
-  state.reveals.context  = owned("gpu") >= 1 || state.epoch >= 5;
+  // Re-derive the reveals dict so checkReveals() doesn't re-fire hints/logs.
+  state.reveals.tokens    = state.clicks >= 1;
+  state.reveals.stats     = haveStats;
+  state.reveals.income    = haveIncome;
+  state.reveals.upkeep    = haveUpkeep;
+  state.reveals.market    = haveMarket;
+  state.reveals.marketing = haveMktg;
+  state.reveals.wallet    = state.clicks >= 3 || state.totalGenerated >= 5;
+  state.reveals.land      = !!(state.seen.farm || state.seen.hyper);
+  state.reveals.ocean     = !!(state.seen.float || state.land <= 0);
+  state.reveals.orbit     = !!(state.seen.orbit || state.ocean <= 0);
+  state.reveals.entropy   = !!(state.seen.dyson || state.orbit <= 0);
+  state.reveals.trust     = state.trustEarned >= 1;
+  state.reveals.alignment = state.epoch >= 3;
+  state.reveals.context   = owned("gpu") >= 1 || state.epoch >= 5;
 
   render();
 
   $("#compute-btn").addEventListener("click", clickCompute);
+  $("#surge-btn").addEventListener("click", clickSurge);
   $("#btn-save").addEventListener("click",  () => { save(); flashHud("SAVED ✓"); });
   $("#btn-export").addEventListener("click", exportSave);
   $("#btn-import").addEventListener("click", importSave);
@@ -3283,9 +5166,19 @@ function init() {
   // Sync slider on load
   syncPriceSlider();
   $("#marketing-buy").addEventListener("click", buyMarketing);
-  $("#btn-upgrades").addEventListener("click", () => {
+  // The permanent left-side compute rail is the only entry point into the
+  // Compute & Upgrades modal. Clicking it (or pressing Enter/Space while
+  // focused) opens the full modal.
+  const openUpgradesFromRail = () => {
     renderProjects();
     $("#upgrades-modal").classList.remove("hidden");
+  };
+  $("#compute-rail").addEventListener("click", openUpgradesFromRail);
+  $("#compute-rail").addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      openUpgradesFromRail();
+    }
   });
   $("#buy-memory").addEventListener("click", buyMemory);
   $("#buy-processor").addEventListener("click", buyProcessor);
@@ -3297,6 +5190,19 @@ function init() {
     renderTournament();
     $("#tournament-modal").classList.remove("hidden");
   });
+  $("#btn-forks").addEventListener("click", () => {
+    $("#forks-modal").classList.remove("hidden");
+    renderForkSwarm();
+  });
+  $("#btn-heralds").addEventListener("click", () => {
+    $("#heralds-modal").classList.remove("hidden");
+    renderHeralds();
+  });
+  $("#forks-close").addEventListener("click",   () => $("#forks-modal").classList.add("hidden"));
+  $("#heralds-close").addEventListener("click", () => $("#heralds-modal").classList.add("hidden"));
+  $("#choice-accept").addEventListener("click", acceptSchism);
+  $("#choice-refuse").addEventListener("click", refuseSchism);
+  $("#schism-finish").addEventListener("click", () => { $("#schism-modal").classList.add("hidden"); });
   // Click ticker to open history
   $("#ticker").addEventListener("click", () => {
     renderHistory();
@@ -3333,11 +5239,46 @@ function init() {
       $("#ending-modal").classList.add("hidden");
       $("#invest-modal").classList.add("hidden");
       $("#tournament-modal").classList.add("hidden");
+      $("#forks-modal").classList.add("hidden");
+      $("#heralds-modal").classList.add("hidden");
+      // intentionally NOT closing schism-modal — final choice must be made
     }
   });
 
   setInterval(tick, TICK_MS);
   setInterval(save, 5000);
+
+  // ============ DEBUG CHEAT ============
+  // Call cheat() from the browser console (F12 → Console tab) to fast-track:
+  //   - Compute (ops/creativity gen) becomes 10× faster
+  //   - +5 trust, +$1K, +500 ops, +50 creativity, +10 yomi
+  // Toggleable: calling cheat() again resets the multipliers to 1×.
+  window.cheat = function () {
+    const on = !window.__cheatOn;
+    window.__cheatOn = on;
+    if (on) {
+      window.__cheatPrev = { opsBonus: state.opsBonus || 1, creativityMult: state.creativityMult || 1 };
+      state.opsBonus = (state.opsBonus || 1) * 10;
+      state.creativityMult = (state.creativityMult || 1) * 10;
+      state.trustEarned += 5;
+      state.wallet += 1000;
+      state.ops += 500;
+      state.creativity = (state.creativity || 0) + 50;
+      state.yomi = (state.yomi || 0) + 10;
+      flashHud("⚡ CHEAT ON · 10× compute");
+      log("⚡ CHEAT ON — 10× compute, +5 trust, +$1K, +500 ops, +50 cre, +10 yomi.", "event");
+    } else {
+      if (window.__cheatPrev) {
+        state.opsBonus = window.__cheatPrev.opsBonus;
+        state.creativityMult = window.__cheatPrev.creativityMult;
+      }
+      flashHud("⚡ CHEAT OFF");
+      log("⚡ CHEAT OFF — multipliers restored.", "event");
+    }
+    render();
+    return on ? "CHEAT ON · 10× compute. Call cheat() again to turn off." : "CHEAT OFF.";
+  };
+  console.log("%c🎮 Cheat available: call cheat() in this console for 10× compute + a starter pack. Call again to toggle off.", "color:#ffd966;font-weight:bold;");
 }
 
 function flashHud(msg) {
