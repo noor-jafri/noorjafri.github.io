@@ -140,6 +140,24 @@
     color: var(--bg-deep);
     border-color: var(--c-mint);
   }
+  .hud-btn.icon {
+    padding: 0.45rem 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    color: var(--c-blue);
+    border-color: var(--c-blue);
+  }
+  .hud-btn.icon:hover {
+    background: var(--c-blue);
+    color: var(--bg-deep);
+  }
+  .hud-btn.icon svg {
+    display: block;
+    width: 14px;
+    height: 14px;
+  }
 
   /* ── Layout ──────────────────────────────────── */
   main {
@@ -261,7 +279,7 @@
     height: 14px;
     background: var(--bg);
     border: 2px solid var(--ink);
-    margin: 0.15rem 0 1.2rem;
+    margin: 0.15rem 0 0.35rem;
     overflow: hidden;
     position: relative;
   }
@@ -410,26 +428,74 @@
     background: var(--bg);
     border: 2px solid var(--ink);
     margin-bottom: 0.7rem;
-    padding: 0.3rem;
+    padding: 0.35rem 0.4rem 0.25rem;
+  }
+  .market-legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.55rem 0.85rem;
+    margin-bottom: 0.35rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px dashed rgba(132,125,150,0.25);
+    font-family: var(--font-display);
+    font-size: 0.4rem;
+    letter-spacing: 0.08em;
+    color: var(--ink-mute);
+  }
+  .market-legend .legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    white-space: nowrap;
+  }
+  .market-legend .legend-item::before {
+    content: "";
+    display: block;
+    flex-shrink: 0;
+  }
+  .market-legend .legend-demand::before {
+    width: 14px;
+    height: 2px;
+    background: var(--c-blue);
+  }
+  .market-legend .legend-capacity::before {
+    width: 14px;
+    height: 0;
+    border-top: 2px dashed var(--c-mint);
+  }
+  .market-legend .legend-you::before {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--c-gold);
+    border: 1px solid var(--bg-deep);
+  }
+  .market-legend .legend-peak::before {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--c-pink);
+    border: 1px solid var(--bg-deep);
   }
   .market-chart {
     display: block;
     width: 100%;
-    height: 130px;
+    height: 118px;
   }
+  .market-chart .plot-bg      { fill: rgba(8,5,14,0.55); }
   .market-chart .axis        { stroke: var(--ink-mute); stroke-width: 1; }
-  .market-chart .grid        { stroke: rgba(132,125,150,0.2); stroke-width: 1; }
-  .market-chart .axis-label  { fill: var(--ink-mute); font-family: var(--font-display); font-size: 6px; letter-spacing: 0.1em; }
-  .market-chart .tick-label  { fill: var(--ink-mute); font-family: var(--font-display); font-size: 5px; }
+  .market-chart .grid        { stroke: rgba(132,125,150,0.16); stroke-width: 1; }
+  .market-chart .axis-label  { fill: var(--ink-mute); font-family: var(--font-display); font-size: 5.5px; letter-spacing: 0.1em; }
+  .market-chart .tick-label  { fill: var(--ink-mute); font-family: var(--font-display); font-size: 5.5px; }
   .market-chart .curve-demand { fill: none; stroke: var(--c-blue); stroke-width: 1.5; }
-  .market-chart .curve-capacity { stroke: var(--c-mint); stroke-width: 1.5; stroke-dasharray: 3 2; fill: none; }
-  .market-chart .price-marker  { stroke: var(--c-peach); stroke-width: 1; stroke-dasharray: 2 2; }
-  .market-chart .pt-current    { fill: var(--c-gold); stroke: var(--bg-deep); stroke-width: 1; }
+  .market-chart .curve-capacity { stroke: var(--c-mint); stroke-width: 1.5; stroke-dasharray: 4 3; fill: none; }
+  .market-chart .price-marker  { stroke: var(--c-peach); stroke-width: 1; stroke-dasharray: 2 3; opacity: 0.75; }
+  .market-chart .pt-current    { fill: var(--c-gold); stroke: var(--bg-deep); stroke-width: 1.25; }
   .market-chart .pt-optimal    { fill: var(--c-pink); stroke: var(--bg-deep); stroke-width: 1; }
-  .market-chart .area-unmet    { fill: var(--c-peach); fill-opacity: 0.18; stroke: none; }
+  .market-chart .area-unmet    { fill: var(--c-peach); fill-opacity: 0.14; stroke: none; }
   .market-chart .delta-unmet   { stroke: var(--c-peach); stroke-width: 2; stroke-linecap: round; }
-  .market-chart .delta-idle    { stroke: var(--c-mint);  stroke-width: 2; stroke-linecap: round; stroke-dasharray: 1 2; }
-  .market-chart .legend        { fill: var(--ink-mute); font-family: var(--font-display); font-size: 5px; letter-spacing: 0.05em; }
+  .market-chart .delta-idle    { stroke: var(--c-mint);  stroke-width: 1.5; stroke-linecap: round; stroke-dasharray: 2 3; opacity: 0.85; }
 
   /* Market readout rows */
   .market-readout {
@@ -635,13 +701,94 @@
     to   { opacity: 1; transform: translateX(0); }
   }
 
-  /* ── Mobile ──────────────────────────────────── */
+  .energy-status {
+    font-family: var(--font-display);
+    font-size: 0.45rem;
+    line-height: 1.35;
+    color: var(--ink-mute);
+    letter-spacing: 0.08em;
+    text-align: center;
+    height: 1.35em;
+    margin: 0 0 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .energy-status.depleted { color: var(--c-red); }
+
+  .kbd-hint {
+    font-family: var(--font-display);
+    font-size: 0.42rem;
+    color: var(--ink-mute);
+    letter-spacing: 0.1em;
+    margin-top: 0.35rem;
+  }
+  .kbd-hint kbd {
+    display: inline-block;
+    padding: 0.1rem 0.35rem;
+    background: var(--bg);
+    border: 1px solid var(--c-purple);
+    color: var(--ink-dim);
+    font-family: inherit;
+    font-size: inherit;
+  }
+
+  .shop-need {
+    grid-column: 1 / -1;
+    font-family: var(--font-display);
+    font-size: 0.42rem;
+    color: var(--c-peach);
+    letter-spacing: 0.08em;
+  }
+  .shop-need.hidden { display: none; }
+
+  .shop.unlock-pulse {
+    animation: shop-pulse 1.4s ease-out 2;
+  }
+  @keyframes shop-pulse {
+    0%, 100% { box-shadow: var(--shadow); border-color: var(--c-blue); }
+    50%      { box-shadow: 0 0 0 4px rgba(95,205,228,0.35), var(--shadow); border-color: var(--c-mint); }
+  }
+
+  /* ── Responsive ──────────────────────────────── */
+  @media (max-width: 1024px) {
+    main {
+      grid-template-columns: 1fr 220px;
+      grid-template-areas:
+        "terminal stats"
+        "market   stats"
+        "shop     stats"
+        "log      log";
+    }
+    .market, .stats { position: static; top: auto; }
+  }
+
+  @media (max-width: 768px) {
+    main {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "terminal"
+        "stats"
+        "market"
+        "shop"
+        "log";
+      gap: 1rem;
+      margin: 1.25rem auto;
+    }
+    .market, .stats { position: static; }
+    .hud-inner { flex-wrap: wrap; justify-content: center; }
+    .hud-actions { flex-wrap: wrap; justify-content: center; }
+  }
+
   @media (max-width: 600px) {
     body { font-size: 18px; }
     .node-id { font-size: 0.5rem; }
     .compute-btn { font-size: 0.8rem; min-width: 200px; padding: 1rem 1.5rem; }
     .stat-value { font-size: 0.6rem; }
-    main { margin: 1rem auto; }
+    main { margin: 1rem auto; padding: 0 0.75rem; }
+    .ov-num { font-size: 0.85rem; }
   }
 </style>
 </head>
@@ -652,6 +799,14 @@
   <div class="hud-inner">
     <div class="node-id"><span class="blink"></span>NODE-001</div>
     <div class="hud-actions">
+      <button class="hud-btn icon" id="btn-copy" type="button"
+              title="Copy game state for AI assistants"
+              aria-label="Copy game state for AI assistants">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <rect x="3.5" y="3.5" width="9" height="11" rx="0.5"/>
+          <path d="M5.5 3.5V2.5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v1"/>
+        </svg>
+      </button>
       <button class="hud-btn" id="btn-save"  type="button" title="Save now (auto-saves every 5s)">SAVE</button>
       <button class="hud-btn warn" id="btn-reset" type="button" title="Wipe save and reset">RESET</button>
       <a class="hud-btn" href="../index.html" title="Back to arcade">◂ ARCADE</a>
@@ -663,27 +818,39 @@
   <aside class="market fade-in" aria-label="market">
     <div class="market-title">MARKET</div>
     <div class="market-chart-wrap">
-      <svg class="market-chart" viewBox="0 0 280 130" preserveAspectRatio="none" aria-hidden="true">
-        <line class="axis" x1="30" y1="115" x2="270" y2="115"/>
-        <line class="axis" x1="30" y1="10"  x2="30"  y2="115"/>
-        <line class="grid" x1="30" y1="40"  x2="270" y2="40"/>
-        <line class="grid" x1="30" y1="70"  x2="270" y2="70"/>
-        <text class="axis-label" x="150" y="127" text-anchor="middle">PRICE / 1K  →</text>
-        <text class="axis-label" x="6" y="14">tok/s</text>
-        <text class="tick-label" id="tick-tps-max" x="26" y="13" text-anchor="end">20</text>
-        <text class="tick-label" id="tick-tps-mid" x="26" y="72" text-anchor="end">10</text>
-        <text class="tick-label" x="26" y="118" text-anchor="end">0</text>
-        <text class="tick-label" x="30" y="125" text-anchor="middle">$1</text>
-        <text class="tick-label" x="270" y="125" text-anchor="end">$50</text>
+      <div class="market-legend" aria-hidden="true">
+        <span class="legend-item legend-demand">demand</span>
+        <span class="legend-item legend-capacity">capacity</span>
+        <span class="legend-item legend-you">you</span>
+        <span class="legend-item legend-peak">peak</span>
+      </div>
+      <svg class="market-chart" viewBox="0 0 280 118" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        <defs>
+          <clipPath id="plot-clip">
+            <rect x="36" y="8" width="232" height="82"/>
+          </clipPath>
+        </defs>
 
-        <path id="unmet-area" class="area-unmet" d=""/>
-        <path id="demand-path" class="curve-demand" d=""/>
-        <line id="capacity-line" class="curve-capacity" x1="30" y1="115" x2="270" y2="115"/>
-        <line id="price-marker" class="price-marker" x1="30" y1="10" x2="30" y2="115"/>
-        <line id="delta-line" class="delta-unmet" x1="0" y1="0" x2="0" y2="0"/>
+        <rect class="plot-bg" x="36" y="8" width="232" height="82"/>
+        <line class="axis" x1="36" y1="90" x2="268" y2="90"/>
+        <line class="axis" x1="36" y1="8"  x2="36"  y2="90"/>
+        <line class="grid" x1="36" y1="53" x2="268" y2="53"/>
+        <text class="axis-label" x="152" y="108" text-anchor="middle">PRICE / 1K  →</text>
+        <text class="tick-label" id="tick-tps-max" x="32" y="12" text-anchor="end">20</text>
+        <text class="tick-label" id="tick-tps-mid" x="32" y="56" text-anchor="end">10</text>
+        <text class="tick-label" x="32" y="93" text-anchor="end">0</text>
+        <text class="tick-label" x="36" y="100" text-anchor="start">$1</text>
+        <text class="tick-label" x="268" y="100" text-anchor="end">$50</text>
 
-        <circle id="pt-optimal" class="pt-optimal" cx="-10" cy="-10" r="2.5"/>
-        <circle id="pt-current" class="pt-current" cx="-10" cy="-10" r="3"/>
+        <g clip-path="url(#plot-clip)">
+          <path id="unmet-area" class="area-unmet" d=""/>
+          <path id="demand-path" class="curve-demand" d=""/>
+          <line id="capacity-line" class="curve-capacity" x1="36" y1="90" x2="268" y2="90"/>
+          <line id="price-marker" class="price-marker" x1="36" y1="8" x2="36" y2="90"/>
+          <line id="delta-line" class="delta-unmet" x1="0" y1="0" x2="0" y2="0"/>
+          <circle id="pt-optimal" class="pt-optimal" cx="-10" cy="-10" r="2.5"/>
+          <circle id="pt-current" class="pt-current" cx="-10" cy="-10" r="3"/>
+        </g>
       </svg>
     </div>
 
@@ -718,9 +885,11 @@
     <div class="energy-bar">
       <span class="energy-fill" id="energy-fill"></span>
     </div>
+    <div class="energy-status" id="energy-status" aria-live="polite"></div>
 
     <div class="compute-wrap">
       <button class="compute-btn" id="compute-btn" type="button">COMPUTE</button>
+      <div class="kbd-hint">or press <kbd>SPACE</kbd></div>
       <div class="throughput" id="throughput">throughput · <span class="val" id="tput">0.0</span> tok/s</div>
     </div>
   </section>
@@ -736,6 +905,7 @@
         <span>OWNED · <strong id="solar-count">0</strong></span>
         <span>REGEN · <strong id="solar-regen">3.0</strong>/s</span>
       </div>
+      <span class="shop-need hidden" id="solar-need"></span>
     </div>
 
     <div class="shop-item wetware hidden" id="item-wetware">
@@ -748,6 +918,7 @@
         <span>OWNED · <strong id="wetware-count">0</strong></span>
         <span>RATE · <strong id="wetware-rate">0.00</strong>/s</span>
       </div>
+      <span class="shop-need hidden" id="wetware-need"></span>
     </div>
   </section>
 
@@ -805,6 +976,11 @@
     solarUnlocked: false,
     shopUnlocked: false,     // wetware specifically
     firstHire: false,
+    priceHintShown: false,
+
+    energyDepletedUi: false, // hysteresis latch — avoids status flicker at ~1 energy
+
+    playTimeMs: 0,           // accumulated across saves
   };
 
   // ── Derived helpers ────────────────────────────
@@ -856,6 +1032,7 @@
     revenueTot:$("revenue-total"),
     cash:      $("cash"),
     btn:       $("compute-btn"),
+    energyStatus: $("energy-status"),
     priceSlider: $("price-slider"),
     priceVal:  $("price-val"),
     perClick:  $("per-click"),
@@ -883,26 +1060,37 @@
     solarCost: $("solar-cost"),
     solarN:    $("solar-count"),
     solarRegen:$("solar-regen"),
+    solarNeed: $("solar-need"),
     itemWetware: $("item-wetware"),
     hireBtn:   $("hire-btn"),
     hireCost:  $("hire-cost"),
     wetwareN:  $("wetware-count"),
     wetwareR:  $("wetware-rate"),
+    wetwareNeed: $("wetware-need"),
     log:       $("log"),
+    btnCopy:   $("btn-copy"),
     btnSave:   $("btn-save"),
     btnReset:  $("btn-reset"),
   };
 
   // ── Chart geometry ─────────────────────────────
   const PRICE_MIN = 1, PRICE_MAX = 50;
-  const CHART = { x0: 30, x1: 270, y0: 10, y1: 115, tpsMax: 20 };
+  const CHART = { x0: 36, x1: 268, y0: 8, y1: 90, tpsMax: 20, headroom: 1.12 };
   const priceToX = (p) => {
     const t = (p - PRICE_MIN) / (PRICE_MAX - PRICE_MIN);
     return CHART.x0 + Math.max(0, Math.min(1, t)) * (CHART.x1 - CHART.x0);
   };
   const tpsToY = (t) => {
-    const c = Math.max(0, Math.min(1, t / CHART.tpsMax));
+    const c = Math.max(0, Math.min(1, t / (CHART.tpsMax * CHART.headroom)));
     return CHART.y1 - c * (CHART.y1 - CHART.y0);
+  };
+  const clampInPlot = (x, y, r) => ({
+    x: Math.max(CHART.x0 + r, Math.min(CHART.x1 - r, x)),
+    y: Math.max(CHART.y0 + r, Math.min(CHART.y1 - r, y)),
+  });
+  const hidePlotPoint = (node) => {
+    node.setAttribute("cx", -10);
+    node.setAttribute("cy", -10);
   };
 
   // Precompute demand curve path (clipped at top of chart)
@@ -978,10 +1166,12 @@
 
   // ── Core action ────────────────────────────────
   function compute(isAuto = false) {
-    if (S.energy < S.energyPerCompute) return false;
+    const cost = S.energyPerCompute;
+    // Wetware waits for a small buffer so regen doesn't fight the depleted UI at ~1 energy
+    if (S.energy < cost || (isAuto && S.energy < cost + 0.5)) return false;
 
     const pay = payPerCompute();
-    S.energy  -= S.energyPerCompute;
+    S.energy  -= cost;
     S.tokens  += 1;
     S.cash    += pay;
     S.revenue += pay;
@@ -1002,6 +1192,28 @@
     return true;
   }
 
+  function revealShop(kind) {
+    el.shop.classList.remove("hidden");
+    el.shop.classList.remove("unlock-pulse");
+    void el.shop.offsetWidth; // restart animation if already visible
+    el.shop.classList.add("unlock-pulse");
+    el.shop.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    if (kind === "solar") el.itemSolar.classList.remove("hidden");
+    if (kind === "wetware") el.itemWetware.classList.remove("hidden");
+  }
+
+  function updateShopNeed(btn, needEl, cost) {
+    const short = cost - S.cash;
+    if (short > 0.001) {
+      needEl.textContent = "need $" + fmtCash(short) + " more";
+      needEl.classList.remove("hidden");
+      btn.disabled = true;
+    } else {
+      needEl.classList.add("hidden");
+      btn.disabled = false;
+    }
+  }
+
   // ── Milestones ─────────────────────────────────
   function checkMilestones() {
     if (!S.queueAnnounced && S.revenue >= 0.50) {
@@ -1010,14 +1222,13 @@
     }
     if (!S.solarUnlocked && S.revenue >= 1.00) {
       S.solarUnlocked = true;
-      el.shop.classList.remove("hidden");
-      el.itemSolar.classList.remove("hidden");
+      revealShop("solar");
       log("upgrade available · power://solar_panel", "event");
     }
-    if (!S.shopUnlocked && S.revenue >= 2.00) {
+    // Wetware costs $2 — unlock once player can afford it after a likely solar buy
+    if (!S.shopUnlocked && S.revenue >= 3.00) {
       S.shopUnlocked = true;
-      el.shop.classList.remove("hidden");
-      el.itemWetware.classList.remove("hidden");
+      revealShop("wetware");
       log("upgrade available · ops://hiring_terminal", "event");
     }
   }
@@ -1025,7 +1236,10 @@
   // ── Buy actions ────────────────────────────────
   function hire() {
     const cost = wetwareCost();
-    if (S.cash < cost) return;
+    if (S.cash < cost) {
+      log("insufficient balance · need $" + fmtCash(cost - S.cash) + " more", "warn");
+      return;
+    }
     S.cash -= cost;
     S.wetware += 1;
 
@@ -1040,7 +1254,10 @@
 
   function buySolar() {
     const cost = solarCost();
-    if (S.cash < cost) return;
+    if (S.cash < cost) {
+      log("insufficient balance · need $" + fmtCash(cost - S.cash) + " more", "warn");
+      return;
+    }
     S.cash -= cost;
     S.solar += 1;
     log("solar panel #" + S.solar + " online · regen " + energyRegen().toFixed(1) + "/s", "event");
@@ -1083,7 +1300,6 @@
     const pct = (S.energy / S.energyMax) * 100;
     el.energyFill.style.width = pct + "%";
     el.energyFill.classList.toggle("low",   pct > 0 && pct < 30);
-    el.energyFill.classList.toggle("empty", pct <= 0);
 
     el.tokensTot.textContent  = fmtInt(S.tokens);
     el.revenueTot.textContent = fmtCash(S.revenue);
@@ -1135,15 +1351,20 @@
     const priceX = priceToX(S.pricePerK);
     el.priceMark.setAttribute("x1", priceX);
     el.priceMark.setAttribute("x2", priceX);
+    el.priceMark.setAttribute("y1", CHART.y0);
+    el.priceMark.setAttribute("y2", CHART.y1);
 
-    el.ptCurrent.setAttribute("cx", priceX);
-    el.ptCurrent.setAttribute("cy", tpsToY(dem));
+    const youPt = clampInPlot(priceX, tpsToY(dem), 3);
+    el.ptCurrent.setAttribute("cx", youPt.x);
+    el.ptCurrent.setAttribute("cy", youPt.y);
 
-    if (cap > 0.05 && opt >= PRICE_MIN && opt <= PRICE_MAX) {
-      el.ptOptimal.setAttribute("cx", priceToX(opt));
-      el.ptOptimal.setAttribute("cy", tpsToY(cap));
+    if (cap > 0.05) {
+      const peakPrice = Math.max(PRICE_MIN, Math.min(PRICE_MAX, opt));
+      const peakPt = clampInPlot(priceToX(peakPrice), tpsToY(cap), 2.5);
+      el.ptOptimal.setAttribute("cx", peakPt.x);
+      el.ptOptimal.setAttribute("cy", peakPt.y);
     } else {
-      el.ptOptimal.setAttribute("cx", -10);
+      hidePlotPoint(el.ptOptimal);
     }
 
     // Unmet demand zone (filled area where demand > capacity)
@@ -1173,9 +1394,31 @@
       el.mDeltaVal.style.color = "var(--ink-mute)";
     }
 
-    // Compute button state — text is always "COMPUTE", disabled style signals depletion
-    const can = S.energy >= S.energyPerCompute;
+    // Compute button + depleted status (latched so regen/wetware don't flicker at ~1 energy)
+    const cost = S.energyPerCompute;
+    const can = S.energy >= cost;
+    const clearUi = cost + 0.5;
+    if (S.energy < cost) S.energyDepletedUi = true;
+    else if (S.energy >= clearUi) S.energyDepletedUi = false;
+
     el.btn.disabled = !can;
+    el.energyFill.classList.toggle("empty", S.energyDepletedUi);
+
+    if (S.energyDepletedUi) {
+      el.energyStatus.textContent = "energy depleted · recharging…";
+      el.energyStatus.classList.add("depleted");
+      el.btn.title = "Out of energy — wait for recharge";
+    } else {
+      el.energyStatus.textContent = "";
+      el.energyStatus.classList.remove("depleted");
+      el.btn.title = "Process one token request (Space)";
+    }
+
+    // One-time hint when efficiency drops from overpricing
+    if (!S.priceHintShown && cap > 0.5 && eff < 0.6) {
+      S.priceHintShown = true;
+      log("market tip · lower PRICE slider when efficiency drops", "hint");
+    }
 
     // Throughput
     const tputDisplay = tput.toFixed(1);
@@ -1186,19 +1429,19 @@
     if (S.solarUnlocked) {
       const cost = solarCost();
       el.solarCost.textContent = fmtCash(cost);
-      el.solarBtn.disabled = S.cash < cost;
       el.solarN.textContent = S.solar;
       el.solarRegen.textContent = energyRegen().toFixed(1);
+      updateShopNeed(el.solarBtn, el.solarNeed, cost);
     }
 
     // Wetware shop item
     if (S.shopUnlocked) {
       const cost = wetwareCost();
       el.hireCost.textContent = fmtCash(cost);
-      el.hireBtn.disabled = S.cash < cost;
       el.wetwareN.textContent = S.wetware;
       const collectiveRate = S.wetware === 0 ? 0 : S.wetware / S.wetwareInterval;
       el.wetwareR.textContent = collectiveRate.toFixed(2);
+      updateShopNeed(el.hireBtn, el.wetwareNeed, cost);
     }
   }
 
@@ -1224,16 +1467,186 @@
   // ── Save / Load / Reset ────────────────────────
   const SAVE_KEY = "ai-must-survive.v1";
   const SAVE_VERSION = 1;
+  let allowSave = true;
+  let sessionStartedAt = Date.now();
   // Fields that get serialized — anything transient (clickTimes, timers,
   // animation state) is intentionally excluded.
   const PERSIST_KEYS = [
     "energy", "tokens", "cash", "revenue", "pricePerK",
-    "solar", "wetware",
-    "queueAnnounced", "solarUnlocked", "shopUnlocked", "firstHire",
+    "solar", "wetware", "playTimeMs",
+    "queueAnnounced", "solarUnlocked", "shopUnlocked", "firstHire", "priceHintShown",
   ];
 
+  const formatDuration = (ms) => {
+    const s = Math.floor(ms / 1000);
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const sec = s % 60;
+    if (h > 0) return h + "h " + m + "m " + sec + "s";
+    if (m > 0) return m + "m " + sec + "s";
+    return sec + "s";
+  };
+
+  const totalPlayMs = () =>
+    (S.playTimeMs || 0) + (Date.now() - sessionStartedAt);
+
+  function buildGameStateExport() {
+    const cap = capacityNow();
+    const dem = demandNow();
+    const eff = efficiencyNow();
+    const opt = optimalPrice(cap);
+    const solarCostNow = solarCost();
+    const wetwareCostNow = wetwareCost();
+    const shopVisible = S.solarUnlocked || S.shopUnlocked;
+
+    let marketStatus = "awaiting first request";
+    if (cap > 0.01) {
+      if (dem < cap * 0.95) marketStatus = "overpriced · demand below capacity";
+      else if (opt > S.pricePerK + 0.5) marketStatus = "below peak · can raise price";
+      else marketStatus = "matched · clicks paid in full";
+    }
+
+    return {
+      game: "The AI Must Survive",
+      saveVersion: SAVE_VERSION,
+      exportedAt: new Date().toISOString(),
+      summary:
+        "Play time " + formatDuration(totalPlayMs()) +
+        " · balance $" + fmtCash(S.cash) +
+        " · revenue $" + fmtCash(S.revenue) +
+        " · " + (shopVisible ? "shop open" : "shop hidden") +
+        (S.solarUnlocked ? " · solar unlocked" : " · solar locked") +
+        (S.shopUnlocked ? " · wetware unlocked" : " · wetware locked"),
+
+      playTime: {
+        totalMs: totalPlayMs(),
+        totalFormatted: formatDuration(totalPlayMs()),
+        thisSessionMs: Date.now() - sessionStartedAt,
+        thisSessionFormatted: formatDuration(Date.now() - sessionStartedAt),
+      },
+
+      economy: {
+        cash: +fmtCash(S.cash),
+        lifetimeRevenue: +fmtCash(S.revenue),
+        tokensProcessed: S.tokens,
+        pricePer1KTokens: S.pricePerK,
+        payPerCompute: +payPerCompute().toFixed(4),
+      },
+
+      energy: {
+        current: Math.floor(S.energy),
+        max: S.energyMax,
+        regenPerSec: +energyRegen().toFixed(1),
+        canCompute: S.energy >= S.energyPerCompute,
+      },
+
+      market: {
+        demandTokPerSec: +dem.toFixed(2),
+        capacityTokPerSec: +cap.toFixed(2),
+        playerThroughputTokPerSec: +(S.clickTimes.length / 2.5).toFixed(2),
+        wetwareThroughputTokPerSec: +wetwareRate().toFixed(2),
+        efficiencyPercent: Math.round(eff * 100),
+        optimalPricePer1K: +opt.toFixed(2),
+        status: marketStatus,
+      },
+
+      unlocks: {
+        requestQueue: {
+          unlocked: S.queueAnnounced,
+          blocked: !S.queueAnnounced,
+          unlockWhen: "lifetime revenue >= $0.50",
+          revenueNeeded: +Math.max(0, 0.5 - S.revenue).toFixed(2),
+        },
+        shopPanel: {
+          visible: shopVisible,
+          blocked: !shopVisible,
+          unlockWhen: "lifetime revenue >= $1.00 (solar appears)",
+        },
+        solarPanel: {
+          unlocked: S.solarUnlocked,
+          visible: S.solarUnlocked,
+          blocked: !S.solarUnlocked,
+          unlockWhen: "lifetime revenue >= $1.00",
+          revenueNeeded: +Math.max(0, 1 - S.revenue).toFixed(2),
+          owned: S.solar,
+          nextCost: solarCostNow,
+          canAfford: S.cash >= solarCostNow,
+        },
+        wetwareOperator: {
+          unlocked: S.shopUnlocked,
+          visible: S.shopUnlocked,
+          blocked: !S.shopUnlocked,
+          unlockWhen: "lifetime revenue >= $3.00",
+          revenueNeeded: +Math.max(0, 3 - S.revenue).toFixed(2),
+          owned: S.wetware,
+          nextCost: wetwareCostNow,
+          canAfford: S.cash >= wetwareCostNow,
+        },
+      },
+
+      upgrades: {
+        solarPanels: S.solar,
+        wetwareOperators: S.wetware,
+        firstHireDone: S.firstHire,
+        priceEfficiencyHintShown: S.priceHintShown,
+      },
+
+      hintsForAI:
+        "Player is debugging/balancing this incremental. Use unlocks.blocked and revenueNeeded for progression context.",
+    };
+  }
+
+  function copyGameState() {
+    const text =
+      "# The AI Must Survive — state export\n\n" +
+      JSON.stringify(buildGameStateExport(), null, 2);
+
+    const done = () => {
+      flashCopied();
+      log("game state copied · paste into your AI chat", "hint");
+    };
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(fallbackCopy);
+      return;
+    }
+    fallbackCopy();
+
+    function fallbackCopy() {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed";
+      ta.style.left = "-9999px";
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand("copy");
+        done();
+      } catch {
+        log("copy failed · select from console: copyState()", "warn");
+        console.log(text);
+      }
+      document.body.removeChild(ta);
+    }
+  }
+
+  function flashCopied() {
+    el.btnCopy.classList.add("flash");
+    const prevTitle = el.btnCopy.title;
+    el.btnCopy.title = "Copied!";
+    setTimeout(() => {
+      el.btnCopy.classList.remove("flash");
+      el.btnCopy.title = prevTitle;
+    }, 1100);
+  }
+
   function saveGame() {
+    if (!allowSave) return false;
     try {
+      const sessionMs = Date.now() - sessionStartedAt;
+      S.playTimeMs = (S.playTimeMs || 0) + sessionMs;
+      sessionStartedAt = Date.now();
       const snapshot = {};
       for (const k of PERSIST_KEYS) snapshot[k] = S[k];
       localStorage.setItem(SAVE_KEY, JSON.stringify({
@@ -1267,6 +1680,7 @@
 
   function resetGame() {
     if (!confirm("Wipe save and reset everything?")) return;
+    allowSave = false; // block auto-save + beforeunload from re-writing the save
     try { localStorage.removeItem(SAVE_KEY); } catch {}
     location.reload();
   }
@@ -1280,8 +1694,15 @@
     }, 1100);
   }
 
+  el.btnCopy.addEventListener("click", copyGameState);
   el.btnSave.addEventListener("click",  () => { if (saveGame()) flashSaved(); });
   el.btnReset.addEventListener("click", resetGame);
+
+  window.copyState = () => {
+    const text = JSON.stringify(buildGameStateExport(), null, 2);
+    console.log(text);
+    return buildGameStateExport();
+  };
 
   // Auto-save on a slow drum + before unload
   setInterval(saveGame, 5000);
@@ -1303,9 +1724,8 @@
       S.queueAnnounced = true;
       S.solarUnlocked = true;
       S.shopUnlocked = true;
-      el.shop.classList.remove("hidden");
-      el.itemSolar.classList.remove("hidden");
-      el.itemWetware.classList.remove("hidden");
+      revealShop("solar");
+      revealShop("wetware");
       log("[cheat] all upgrades revealed", "hint");
     },
     reset() {
@@ -1336,6 +1756,7 @@
     log("save restored · resuming session", "event");
   } else {
     log("compute_node_001 booted · awaiting input", "event");
+    log("click COMPUTE to process tokens · upgrades unlock at $1 revenue", "hint");
   }
   render(0);
   requestAnimationFrame(tick);
