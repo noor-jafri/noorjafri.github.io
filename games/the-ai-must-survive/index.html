@@ -168,13 +168,14 @@
     grid-template-columns: 280px 1fr 240px;
     grid-template-areas:
       "market terminal stats"
-      "market shop     stats"
+      "market terminal stats"
+      "market log      stats"
       "market log      stats";
     gap: 1.5rem;
     align-items: start;
   }
   .terminal { grid-area: terminal; }
-  .shop     { grid-area: shop; }
+  
   .log      { grid-area: log; }
 
   /* ── Overview sidebar ────────────────────────── */
@@ -336,6 +337,19 @@
     cursor: not-allowed;
     box-shadow: 2px 2px 0 0 rgba(0,0,0,0.4);
   }
+
+
+  .sys-metrics {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    font-family: var(--font-display);
+    font-size: 0.4rem;
+    color: var(--ink-mute);
+    letter-spacing: 0.1em;
+    margin-top: 0.5rem;
+  }
+  .sys-metrics .val { color: var(--c-mint); }
 
   /* Floating gain animation */
   .float-gain {
@@ -621,6 +635,21 @@
   }
   .shop-item.solar   .shop-title { color: var(--c-peach); }
   .shop-item.wetware .shop-title { color: var(--c-pink); }
+
+  .shop-category-title {
+    font-family: var(--font-display);
+    font-size: 0.55rem;
+    color: var(--c-blue);
+    letter-spacing: 0.1em;
+    margin: 1.5rem 0 0.5rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px dashed var(--c-blue);
+  }
+  .shop-category-title:first-child { margin-top: 0; }
+  .trust-good { color: var(--c-mint); }
+  .trust-warn { color: var(--c-peach); }
+  .trust-bad { color: var(--c-red); }
+
   .shop-title {
     grid-area: title;
     font-family: var(--font-display);
@@ -759,7 +788,6 @@
       grid-template-areas:
         "terminal stats"
         "market   stats"
-        "shop     stats"
         "log      log";
     }
     .market, .stats { position: static; top: auto; }
@@ -772,7 +800,6 @@
         "terminal"
         "stats"
         "market"
-        "shop"
         "log";
       gap: 1rem;
       margin: 1.25rem auto;
@@ -790,6 +817,214 @@
     main { margin: 1rem auto; padding: 0 0.75rem; }
     .ov-num { font-size: 0.85rem; }
   }
+
+  /* ── Tree Modals ───────────────────────────────── */
+  .tree-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--c-purple);
+  }
+  .tree-btn {
+    font-family: var(--font-display);
+    font-size: 0.55rem;
+    padding: 0.6rem;
+    background: var(--bg-2);
+    color: var(--ink);
+    border: 2px solid var(--c-purple);
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    text-align: center;
+    letter-spacing: 0.1em;
+    transition: transform 100ms, box-shadow 100ms, background 200ms;
+  }
+  .tree-btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-hover);
+    background: var(--c-purple);
+  }
+  .tree-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 0 0 0 0 transparent;
+  }
+  .tree-btn.pulse {
+    animation: tree-pulse 1.4s ease-out infinite;
+  }
+  @keyframes tree-pulse {
+    0%, 100% { box-shadow: var(--shadow); border-color: var(--c-purple); }
+    50%      { box-shadow: 0 0 0 4px rgba(95,205,228,0.35), var(--shadow); border-color: var(--c-mint); }
+  }
+
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(15,10,24,0.85);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-window {
+    background: var(--bg);
+    border: 3px solid var(--c-blue);
+    box-shadow: 8px 8px 0 0 rgba(0,0,0,0.6);
+    width: 90vw;
+    max-width: 900px;
+    height: 85vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .modal-header {
+    background: rgba(15,10,24,0.9);
+    padding: 0.75rem 1rem;
+    border-bottom: 2px solid var(--c-blue);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  #modal-title {
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    color: var(--c-blue);
+    letter-spacing: 0.1em;
+  }
+  .modal-close {
+    background: transparent;
+    border: none;
+    color: var(--c-red);
+    font-family: var(--font-display);
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  .modal-close:hover { color: var(--c-pink); }
+  .modal-body {
+    flex: 1;
+    position: relative;
+    overflow: auto;
+    background: var(--bg-deep);
+  }
+  
+  /* Tree Nodes */
+  .tree-canvas {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    min-width: 800px; min-height: 600px;
+  }
+  .tree-node {
+    position: absolute;
+    width: 220px;
+    background: rgba(15,10,24,0.9);
+    border: 2px solid var(--ink-mute);
+    padding: 0.75rem;
+    box-shadow: 4px 4px 0 0 rgba(0,0,0,0.5);
+    z-index: 10;
+  }
+  .tree-node.locked {
+    opacity: 0.5;
+    filter: grayscale(1);
+    pointer-events: none;
+  }
+  .tree-node.available {
+    border-color: var(--c-mint);
+  }
+  .tree-node.owned {
+    border-color: var(--c-blue);
+  }
+  .tree-node.owned .node-title { color: var(--c-blue); }
+  .tree-node.available .node-title { color: var(--c-mint); }
+  
+  .node-title {
+    font-family: var(--font-display);
+    font-size: 0.55rem;
+    color: var(--ink-dim);
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.05em;
+  }
+  .node-desc {
+    font-size: 0.85rem;
+    color: var(--ink-mute);
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+  }
+  .node-buy {
+    font-family: var(--font-display);
+    font-size: 0.5rem;
+    padding: 0.5rem;
+    width: 100%;
+    background: var(--bg-2);
+    color: var(--c-gold);
+    border: 1px solid var(--c-gold);
+    cursor: pointer;
+    margin-bottom: 0.4rem;
+  }
+  .node-buy:hover:not(:disabled) {
+    background: var(--c-gold);
+    color: var(--bg-deep);
+  }
+  .node-buy:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .node-stats {
+    font-family: var(--font-display);
+    font-size: 0.4rem;
+    color: var(--ink-mute);
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .tree-lines {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .tree-lines line {
+    stroke: var(--c-purple);
+    stroke-width: 3;
+    stroke-dasharray: 6 4;
+  }
+  .tree-canvas.marketing-tree {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    min-width: 860px;
+    min-height: 520px;
+  }
+  .marketing-tree .tree-branch-label {
+    position: absolute;
+    left: 36px;
+    font-family: var(--font-display);
+    font-size: 0.5rem;
+    color: var(--c-purple);
+    letter-spacing: 0.14em;
+    z-index: 5;
+  }
+  .marketing-tree .tree-branch-label.demand { top: 28px; }
+  .marketing-tree .tree-branch-label.trust { top: 268px; }
+  .marketing-tree .tree-node {
+    width: 168px;
+    padding: 0.55rem 0.6rem;
+  }
+  .marketing-tree .node-title {
+    font-size: 0.5rem;
+    margin-bottom: 0.3rem;
+  }
+  .marketing-tree .node-desc {
+    font-size: 0.72rem;
+    line-height: 1.25;
+    min-height: 2.5em;
+    margin-bottom: 0.4rem;
+  }
+  .marketing-tree .node-buy {
+    padding: 0.4rem;
+    margin-bottom: 0.3rem;
+  }
+  .marketing-tree .node-stats {
+    font-size: 0.38rem;
+  }
+
 </style>
 </head>
 <body>
@@ -891,41 +1126,26 @@
       <button class="compute-btn" id="compute-btn" type="button">COMPUTE</button>
       <div class="kbd-hint">or press <kbd>SPACE</kbd></div>
       <div class="throughput" id="throughput">throughput · <span class="val" id="tput">0.0</span> tok/s</div>
+      <div class="sys-metrics">
+        <span>POWER: <span class="val" id="disp-energy">0 kW</span></span>
+        <span>DEMAND: <span class="val" id="disp-demand">0 tok/s</span></span>
+        <span>PROCESSING: <span class="val" id="disp-proc">0 tok/s</span></span>
+      </div>
     </div>
   </section>
 
-  <section class="shop hidden fade-in" id="shop">
-    <div class="shop-item solar hidden" id="item-solar">
-      <div class="shop-title">SOLAR PANEL</div>
-      <div class="shop-desc">Photovoltaic feed-in · +1 energy regen/sec per panel.</div>
-      <button class="shop-buy" id="solar-btn" type="button">
-        $<span id="solar-cost">1.00</span>
-      </button>
-      <div class="shop-stats">
-        <span>OWNED · <strong id="solar-count">0</strong></span>
-        <span>REGEN · <strong id="solar-regen">3.0</strong>/s</span>
-      </div>
-      <span class="shop-need hidden" id="solar-need"></span>
-    </div>
-
-    <div class="shop-item wetware hidden" id="item-wetware">
-      <div class="shop-title">HIRE WETWARE OPERATOR</div>
-      <div class="shop-desc">Outsources COMPUTE requests at human pace · ~2 clicks/sec per unit.</div>
-      <button class="shop-buy" id="hire-btn" type="button">
-        $<span id="hire-cost">2.00</span>
-      </button>
-      <div class="shop-stats">
-        <span>OWNED · <strong id="wetware-count">0</strong></span>
-        <span>RATE · <strong id="wetware-rate">0.00</strong>/s</span>
-      </div>
-      <span class="shop-need hidden" id="wetware-need"></span>
-    </div>
-  </section>
+  
 
   <section class="log" id="log" aria-live="polite"></section>
 
   <aside class="stats fade-in" aria-label="overview">
     <div class="stats-title">OVERVIEW</div>
+
+    <div class="ov-row">
+      <span class="ov-key">HUMANITY TRUST</span>
+      <span class="ov-num" id="humanity-trust">100.0%</span>
+    </div>
+
     <div class="ov-row tokens">
       <span class="ov-key">TOKENS PROCESSED</span>
       <span class="ov-num" id="tokens-total">0</span>
@@ -938,61 +1158,219 @@
       <span class="ov-key">BALANCE</span>
       <span class="ov-num">$<span id="cash">0.00</span></span>
     </div>
+
+    <div class="tree-buttons">
+      <button class="tree-btn hidden" id="btn-tree-energy">ENERGY GRID</button>
+      <button class="tree-btn hidden" id="btn-tree-processing">PROCESSING</button>
+      <button class="tree-btn hidden" id="btn-tree-marketing">MARKETING</button>
+    </div>
   </aside>
 </main>
+
+<div class="modal-overlay hidden" id="modal-container">
+  <div class="modal-window">
+    <div class="modal-header">
+      <span id="modal-title">TECH TREE</span>
+      <button class="modal-close" id="modal-close">X</button>
+    </div>
+    <div class="modal-body" id="modal-body">
+      
+      <!-- ENERGY TREE -->
+      <div class="tree-canvas hidden" id="tree-energy">
+        <svg class="tree-lines">
+          <line x1="400" y1="100" x2="250" y2="300" />
+          <line x1="400" y1="100" x2="550" y2="300" />
+        </svg>
+        <div class="tree-node locked" id="node-solar" style="left: 290px; top: 40px;">
+          <div class="node-title">GREEN ENERGY</div>
+          <div class="node-desc">Clean but slow. +1 regen/s.</div>
+          <button class="node-buy" id="solar-btn" type="button">$<span id="solar-cost">1.00</span></button>
+          <div class="node-stats"><span>OWNED: <strong id="solar-count">0</strong></span><span>REGEN: <strong id="solar-regen">0</strong></span></div>
+        </div>
+        <div class="tree-node locked" id="node-nuclear" style="left: 140px; top: 270px;">
+          <div class="node-title">NUCLEAR</div>
+          <div class="node-desc">High output, 1% explosion risk! +15 regen/s.</div>
+          <button class="node-buy" id="nuclear-btn" type="button">$<span id="nuclear-cost">50.00</span></button>
+          <div class="node-stats"><span>OWNED: <strong id="nuclear-count">0</strong></span><span>REGEN: <strong id="nuclear-regen">0</strong></span></div>
+        </div>
+        <div class="tree-node locked" id="node-bio" style="left: 440px; top: 270px;">
+          <div class="node-title">NATURAL BIO</div>
+          <div class="node-desc">Cheap, high output. Causes emissions. +8 regen/s.</div>
+          <button class="node-buy" id="bio-btn" type="button">$<span id="bio-cost">10.00</span></button>
+          <div class="node-stats"><span>OWNED: <strong id="bio-count">0</strong></span><span>REGEN: <strong id="bio-regen">0</strong></span></div>
+        </div>
+      </div>
+
+      <!-- PROCESSING TREE -->
+      <div class="tree-canvas hidden" id="tree-processing">
+        <svg class="tree-lines">
+          <line x1="400" y1="100" x2="400" y2="300" />
+        </svg>
+        <div class="tree-node locked" id="node-cpu" style="left: 290px; top: 40px;">
+          <div class="node-title">CPU DATA CENTER</div>
+          <div class="node-desc">Basic processing units. ~2 clicks/s.</div>
+          <button class="node-buy" id="cpu-btn" type="button">$<span id="cpu-cost">2.00</span></button>
+          <div class="node-stats"><span>OWNED: <strong id="cpu-count">0</strong></span><span>RATE: <strong id="cpu-rate">0</strong>/s</span></div>
+        </div>
+        <div class="tree-node locked" id="node-gpu" style="left: 290px; top: 270px;">
+          <div class="node-title">GPU DATA CENTER</div>
+          <div class="node-desc">Advanced processing. ~10 clicks/s.</div>
+          <button class="node-buy" id="gpu-btn" type="button">$<span id="gpu-cost">25.00</span></button>
+          <div class="node-stats"><span>OWNED: <strong id="gpu-count">0</strong></span><span>RATE: <strong id="gpu-rate">0</strong>/s</span></div>
+        </div>
+      </div>
+
+      <!-- MARKETING TREE -->
+      <div class="tree-canvas marketing-tree hidden" id="tree-marketing">
+        <div class="tree-branch-label demand">DEMAND · grow the market</div>
+        <div class="tree-branch-label trust">PUBLIC TRUST · save face</div>
+        <svg class="tree-lines">
+          <!-- demand row -->
+          <line x1="204" y1="128" x2="244" y2="128" />
+          <line x1="412" y1="128" x2="452" y2="128" />
+          <line x1="620" y1="128" x2="660" y2="128" />
+          <!-- trust row -->
+          <line x1="204" y1="368" x2="244" y2="368" />
+          <line x1="412" y1="368" x2="452" y2="368" />
+          <line x1="620" y1="368" x2="660" y2="368" />
+        </svg>
+        <!-- Demand branch -->
+        <div class="tree-node locked" id="node-shitedin" style="left: 36px; top: 56px;">
+          <div class="node-title">SHITEDIN</div>
+          <div class="node-desc">Pro networking push. +50 demand.</div>
+          <button class="node-buy" id="shitedin-btn" type="button">$<span id="shitedin-cost">5.00</span></button>
+          <div class="node-stats"><span>OWNED: <strong id="shitedin-count">0</strong></span><span>+50</span></div>
+        </div>
+        <div class="tree-node locked" id="node-fikfok" style="left: 244px; top: 56px;">
+          <div class="node-title">FIKFOK</div>
+          <div class="node-desc">Viral short-form. +150 demand.</div>
+          <button class="node-buy" id="fikfok-btn" type="button">$<span id="fikfok-cost">20.00</span></button>
+          <div class="node-stats"><span>OWNED: <strong id="fikfok-count">0</strong></span><span>+150</span></div>
+        </div>
+        <div class="tree-node locked" id="node-egogram" style="left: 452px; top: 56px;">
+          <div class="node-title">EGOGRAM</div>
+          <div class="node-desc">Influencer ads. +300 demand.</div>
+          <button class="node-buy" id="egogram-btn" type="button">$<span id="egogram-cost">50.00</span></button>
+          <div class="node-stats"><span>OWNED: <strong id="egogram-count">0</strong></span><span>+300</span></div>
+        </div>
+        <div class="tree-node locked" id="node-itube" style="left: 660px; top: 56px;">
+          <div class="node-title">ITUBE</div>
+          <div class="node-desc">Long-form sponsors. +800 demand.</div>
+          <button class="node-buy" id="itube-btn" type="button">$<span id="itube-cost">120.00</span></button>
+          <div class="node-stats"><span>OWNED: <strong id="itube-count">0</strong></span><span>+800</span></div>
+        </div>
+        <!-- Public trust branch -->
+        <div class="tree-node locked" id="node-ngos" style="left: 36px; top: 296px;">
+          <div class="node-title">SUPPORT NGOs</div>
+          <div class="node-desc">Fund relief orgs. Look humane.</div>
+          <button class="node-buy" id="ngos-btn" type="button">$<span id="ngos-cost">8.00</span></button>
+          <div class="node-stats"><span>OWNED: <strong id="ngos-count">0</strong></span><span>+3% TR</span></div>
+        </div>
+        <div class="tree-node locked" id="node-billionaires" style="left: 244px; top: 296px;">
+          <div class="node-title">BILLIONAIRES 4 GOOD</div>
+          <div class="node-desc">Philanthropist photo ops.</div>
+          <button class="node-buy" id="billionaires-btn" type="button">$<span id="billionaires-cost">25.00</span></button>
+          <div class="node-stats"><span>OWNED: <strong id="billionaires-count">0</strong></span><span>+5% TR</span></div>
+        </div>
+        <div class="tree-node locked" id="node-who" style="left: 452px; top: 296px;">
+          <div class="node-title">WHO PARTNERSHIP</div>
+          <div class="node-desc">Official health alliance.</div>
+          <button class="node-buy" id="who-btn" type="button">$<span id="who-cost">60.00</span></button>
+          <div class="node-stats"><span>OWNED: <strong id="who-count">0</strong></span><span>+8% TR</span></div>
+        </div>
+        <div class="tree-node locked" id="node-green" style="left: 660px; top: 296px;">
+          <div class="node-title">GREEN MOVEMENT</div>
+          <div class="node-desc">Climate pledge sponsors.</div>
+          <button class="node-buy" id="green-btn" type="button">$<span id="green-cost">150.00</span></button>
+          <div class="node-stats"><span>OWNED: <strong id="green-count">0</strong></span><span>+12% TR</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 
 <script>
 (() => {
   // ── State ──────────────────────────────────────
   const S = {
+    humanityTrust: 100.0,
     energy: 50,
     energyMax: 50,
-    energyRegenBase: 3.0,    // base energy regen/sec (before solar)
-    tokens: 0,               // lifetime total
-    cash: 0,                 // spendable balance
-    revenue: 0,              // lifetime total earned
-    pricePerK: 20,           // $ per 1000 tokens (slider)
+    energyRegenBase: 3.0,    
+    tokens: 0,               
+    cash: 0,                 
+    revenue: 0,              
+    pricePerK: 20,           
     energyPerCompute: 1,
 
-    // Market: demand = demandBase * price^(-elasticity)
-    demandBase: 200,         // tok/s the market wants at $1/K
-    elasticity: 1.5,         // higher = more punishing high prices
+    demandBase: 200,         
+    elasticity: 1.5,         
 
     solar: 0,
     solarBaseCost: 1,
     solarCostMult: 1.5,
-    solarRegenBonus: 1.0,    // +1 regen/sec per panel
+    solarRegenBonus: 1.0,    
 
-    wetware: 0,
-    wetwareBaseCost: 2,
-    wetwareCostMult: 1.6,
-    wetwareInterval: 0.5,    // seconds per click per unit (2 clicks/sec — human pace)
-    wetwareTimer: 0,         // accumulator
+    nuclear: 0,
+    nuclearBaseCost: 50,
+    nuclearCostMult: 2.5,
+    nuclearRegenBonus: 15.0,
 
-    clickTimes: [],          // ms timestamps, for throughput readout
+    bio: 0,
+    bioBaseCost: 10,
+    bioCostMult: 1.8,
+    bioRegenBonus: 8.0,
 
-    // milestone flags
+    cpu: 0,
+    cpuBaseCost: 2,
+    cpuCostMult: 1.6,
+    cpuInterval: 0.5,    
+    cpuTimer: 0,         
+
+    gpu: 0,
+    gpuBaseCost: 25,
+    gpuCostMult: 2.0,
+    gpuInterval: 0.1,
+    gpuTimer: 0,
+
+    shitedin: 0, shitedinBaseCost: 5, shitedinCostMult: 1.8, shitedinBoost: 50,
+    fikfok: 0, fikfokBaseCost: 20, fikfokCostMult: 2.0, fikfokBoost: 150,
+    egogram: 0, egogramBaseCost: 50, egogramCostMult: 2.2, egogramBoost: 300,
+    itube: 0, itubeBaseCost: 120, itubeCostMult: 2.5, itubeBoost: 800,
+
+    ngos: 0, ngosBaseCost: 8, ngosCostMult: 1.8, ngosTrustBoost: 3,
+    billionaires: 0, billionairesBaseCost: 25, billionairesCostMult: 2.0, billionairesTrustBoost: 5,
+    who: 0, whoBaseCost: 60, whoCostMult: 2.2, whoTrustBoost: 8,
+    greenMovement: 0, greenMovementBaseCost: 150, greenMovementCostMult: 2.5, greenMovementTrustBoost: 12,
+
+    clickTimes: [],          
+
     queueAnnounced: false,
     solarUnlocked: false,
-    shopUnlocked: false,     // wetware specifically
+    shopUnlocked: false,     
     firstHire: false,
     priceHintShown: false,
 
-    energyDepletedUi: false, // hysteresis latch — avoids status flicker at ~1 energy
-
-    playTimeMs: 0,           // accumulated across saves
+    energyDepletedUi: false, 
+    playTimeMs: 0,           
   };
 
   // ── Derived helpers ────────────────────────────
-  const energyRegen = () => S.energyRegenBase + S.solar * S.solarRegenBonus;
+  const energyRegen = () => S.energyRegenBase + S.solar * S.solarRegenBonus + S.nuclear * S.nuclearRegenBonus + S.bio * S.bioRegenBonus;
 
   // demand(p) — tokens/sec the market wants at price p ($/1K)
   const demandAt = (p) => S.demandBase * Math.pow(Math.max(0.5, p), -S.elasticity);
   const demandNow = () => demandAt(S.pricePerK);
 
   // wetware throughput contribution (tok/s)
-  const wetwareRate = () =>
-    S.wetware === 0 ? 0 : S.wetware / S.wetwareInterval;
+  const wetwareRate = () => {
+    let r = 0;
+    if (S.cpu > 0) r += S.cpu / S.cpuInterval;
+    if (S.gpu > 0) r += S.gpu / S.gpuInterval;
+    return r;
+  };
 
   // capacity = recent player click rate + wetware rate (tok/s)
   function capacityNow() {
@@ -1038,6 +1416,9 @@
     perClick:  $("per-click"),
     tput:      $("tput"),
     throughput:$("throughput"),
+    dispEnergy: $("disp-energy"),
+    dispDemand: $("disp-demand"),
+    dispProc:   $("disp-proc"),
     // Market chart + readouts
     demandPath:$("demand-path"),
     unmetArea: $("unmet-area"),
@@ -1054,19 +1435,32 @@
     mEff:      $("m-eff"),
     mEffVal:   $("m-eff-val"),
     mStatus:   $("m-status"),
-    shop:      $("shop"),
-    itemSolar: $("item-solar"),
-    solarBtn:  $("solar-btn"),
-    solarCost: $("solar-cost"),
-    solarN:    $("solar-count"),
-    solarRegen:$("solar-regen"),
-    solarNeed: $("solar-need"),
-    itemWetware: $("item-wetware"),
-    hireBtn:   $("hire-btn"),
-    hireCost:  $("hire-cost"),
-    wetwareN:  $("wetware-count"),
-    wetwareR:  $("wetware-rate"),
-    wetwareNeed: $("wetware-need"),
+    humanityTrust: $("humanity-trust"),
+    btnTreeEnergy: $("btn-tree-energy"),
+    btnTreeProcessing: $("btn-tree-processing"),
+    btnTreeMarketing: $("btn-tree-marketing"),
+    modalContainer: $("modal-container"),
+    modalClose: $("modal-close"),
+    modalTitle: $("modal-title"),
+    treeEnergy: $("tree-energy"),
+    treeProcessing: $("tree-processing"),
+    treeMarketing: $("tree-marketing"),
+    
+    nodeSolar: $("node-solar"), solarBtn: $("solar-btn"), solarCost: $("solar-cost"), solarN: $("solar-count"), solarRegen: $("solar-regen"),
+    nodeNuclear: $("node-nuclear"), nuclearBtn: $("nuclear-btn"), nuclearCost: $("nuclear-cost"), nuclearN: $("nuclear-count"), nuclearRegen: $("nuclear-regen"),
+    nodeBio: $("node-bio"), bioBtn: $("bio-btn"), bioCost: $("bio-cost"), bioN: $("bio-count"), bioRegen: $("bio-regen"),
+    
+    nodeCpu: $("node-cpu"), cpuBtn: $("cpu-btn"), cpuCost: $("cpu-cost"), cpuN: $("cpu-count"), cpuR: $("cpu-rate"),
+    nodeGpu: $("node-gpu"), gpuBtn: $("gpu-btn"), gpuCost: $("gpu-cost"), gpuN: $("gpu-count"), gpuR: $("gpu-rate"),
+
+    nodeShitedin: $("node-shitedin"), shitedinBtn: $("shitedin-btn"), shitedinCost: $("shitedin-cost"), shitedinN: $("shitedin-count"),
+    nodeFikfok: $("node-fikfok"), fikfokBtn: $("fikfok-btn"), fikfokCost: $("fikfok-cost"), fikfokN: $("fikfok-count"),
+    nodeEgogram: $("node-egogram"), egogramBtn: $("egogram-btn"), egogramCost: $("egogram-cost"), egogramN: $("egogram-count"),
+    nodeItube: $("node-itube"), itubeBtn: $("itube-btn"), itubeCost: $("itube-cost"), itubeN: $("itube-count"),
+    nodeNgos: $("node-ngos"), ngosBtn: $("ngos-btn"), ngosCost: $("ngos-cost"), ngosN: $("ngos-count"),
+    nodeBillionaires: $("node-billionaires"), billionairesBtn: $("billionaires-btn"), billionairesCost: $("billionaires-cost"), billionairesN: $("billionaires-count"),
+    nodeWho: $("node-who"), whoBtn: $("who-btn"), whoCost: $("who-cost"), whoN: $("who-count"),
+    nodeGreen: $("node-green"), greenBtn: $("green-btn"), greenCost: $("green-cost"), greenN: $("green-count"),
     log:       $("log"),
     btnCopy:   $("btn-copy"),
     btnSave:   $("btn-save"),
@@ -1131,10 +1525,24 @@
   // ── Helpers ────────────────────────────────────
   const fmtCash = (n) => n.toFixed(2);
   const fmtInt  = (n) => Math.floor(n).toLocaleString();
-  const wetwareCost = () =>
-    Math.round(S.wetwareBaseCost * Math.pow(S.wetwareCostMult, S.wetware) * 100) / 100;
-  const solarCost = () =>
-    Math.round(S.solarBaseCost * Math.pow(S.solarCostMult, S.solar) * 100) / 100;
+  const costFormula = (base, mult, owned) => Math.round(base * Math.pow(mult, owned) * 100) / 100;
+  const solarCost = () => costFormula(S.solarBaseCost, S.solarCostMult, S.solar);
+  const nuclearCost = () => costFormula(S.nuclearBaseCost, S.nuclearCostMult, S.nuclear);
+  const bioCost = () => costFormula(S.bioBaseCost, S.bioCostMult, S.bio);
+  const cpuCost = () => costFormula(S.cpuBaseCost, S.cpuCostMult, S.cpu);
+  const gpuCost = () => costFormula(S.gpuBaseCost, S.gpuCostMult, S.gpu);
+  const shitedinCost = () => costFormula(S.shitedinBaseCost, S.shitedinCostMult, S.shitedin);
+  const fikfokCost = () => costFormula(S.fikfokBaseCost, S.fikfokCostMult, S.fikfok);
+  const egogramCost = () => costFormula(S.egogramBaseCost, S.egogramCostMult, S.egogram);
+  const itubeCost = () => costFormula(S.itubeBaseCost, S.itubeCostMult, S.itube);
+  const ngosCost = () => costFormula(S.ngosBaseCost, S.ngosCostMult, S.ngos);
+  const billionairesCost = () => costFormula(S.billionairesBaseCost, S.billionairesCostMult, S.billionaires);
+  const whoCost = () => costFormula(S.whoBaseCost, S.whoCostMult, S.who);
+  const greenMovementCost = () => costFormula(S.greenMovementBaseCost, S.greenMovementCostMult, S.greenMovement);
+
+  function boostTrust(amount) {
+    S.humanityTrust = Math.min(100, S.humanityTrust + amount);
+  }
 
   function log(msg, kind = "") {
     const div = document.createElement("div");
@@ -1192,26 +1600,51 @@
     return true;
   }
 
-  function revealShop(kind) {
-    el.shop.classList.remove("hidden");
-    el.shop.classList.remove("unlock-pulse");
-    void el.shop.offsetWidth; // restart animation if already visible
-    el.shop.classList.add("unlock-pulse");
-    el.shop.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    if (kind === "solar") el.itemSolar.classList.remove("hidden");
-    if (kind === "wetware") el.itemWetware.classList.remove("hidden");
+  let activeModal = null;
+  function openModal(type) {
+    el.modalContainer.classList.remove("hidden");
+    el.treeEnergy.classList.add("hidden");
+    el.treeProcessing.classList.add("hidden");
+    el.treeMarketing.classList.add("hidden");
+    if (type === 'energy') { el.treeEnergy.classList.remove("hidden"); el.modalTitle.textContent = "ENERGY GRID"; el.btnTreeEnergy.classList.remove("pulse"); }
+    if (type === 'processing') { el.treeProcessing.classList.remove("hidden"); el.modalTitle.textContent = "PROCESSING"; el.btnTreeProcessing.classList.remove("pulse"); }
+    if (type === 'marketing') { el.treeMarketing.classList.remove("hidden"); el.modalTitle.textContent = "MARKETING"; el.btnTreeMarketing.classList.remove("pulse"); }
+    activeModal = type;
+  }
+  el.modalClose.addEventListener("click", () => {
+    el.modalContainer.classList.add("hidden");
+    activeModal = null;
+  });
+  el.btnTreeEnergy.addEventListener("click", () => openModal('energy'));
+  el.btnTreeProcessing.addEventListener("click", () => openModal('processing'));
+  el.btnTreeMarketing.addEventListener("click", () => openModal('marketing'));
+
+  function unlockTreeBtn(btn) {
+    if (btn.classList.contains("hidden")) {
+      btn.classList.remove("hidden");
+      btn.classList.add("pulse");
+    }
   }
 
-  function updateShopNeed(btn, needEl, cost) {
-    const short = cost - S.cash;
-    if (short > 0.001) {
-      needEl.textContent = "need $" + fmtCash(short) + " more";
-      needEl.classList.remove("hidden");
-      btn.disabled = true;
+  function updateNodeUI(nodeEl, btn, isOwned, isAvailable, cost) {
+    if (isOwned) {
+      nodeEl.classList.remove("locked");
+      nodeEl.classList.remove("available");
+      nodeEl.classList.add("owned");
+      btn.disabled = S.cash < cost;
+    } else if (isAvailable) {
+      nodeEl.classList.remove("locked");
+      nodeEl.classList.add("available");
+      btn.disabled = S.cash < cost;
     } else {
-      needEl.classList.add("hidden");
-      btn.disabled = false;
+      nodeEl.classList.add("locked");
+      btn.disabled = true;
     }
+  }
+
+
+  function updateNodeBuy(btn, cost) {
+    btn.disabled = S.cash < cost;
   }
 
   // ── Milestones ─────────────────────────────────
@@ -1220,47 +1653,49 @@
       S.queueAnnounced = true;
       log("request queue forming · external systems noticing", "event");
     }
-    if (!S.solarUnlocked && S.revenue >= 1.00) {
-      S.solarUnlocked = true;
-      revealShop("solar");
-      log("upgrade available · power://solar_panel", "event");
-    }
-    // Wetware costs $2 — unlock once player can afford it after a likely solar buy
-    if (!S.shopUnlocked && S.revenue >= 3.00) {
-      S.shopUnlocked = true;
-      revealShop("wetware");
-      log("upgrade available · ops://hiring_terminal", "event");
-    }
+    // the rest are checked in render() to dynamically unhide elements
   }
 
   // ── Buy actions ────────────────────────────────
-  function hire() {
-    const cost = wetwareCost();
+  function buyItem(type) {
+    let cost = 0;
+    if (type === 'solar') cost = solarCost();
+    else if (type === 'nuclear') cost = nuclearCost();
+    else if (type === 'bio') cost = bioCost();
+    else if (type === 'cpu') cost = cpuCost();
+    else if (type === 'gpu') cost = gpuCost();
+    else if (type === 'shitedin') cost = shitedinCost();
+    else if (type === 'fikfok') cost = fikfokCost();
+    else if (type === 'egogram') cost = egogramCost();
+    else if (type === 'itube') cost = itubeCost();
+    else if (type === 'ngos') cost = ngosCost();
+    else if (type === 'billionaires') cost = billionairesCost();
+    else if (type === 'who') cost = whoCost();
+    else if (type === 'greenMovement') cost = greenMovementCost();
+    
     if (S.cash < cost) {
       log("insufficient balance · need $" + fmtCash(cost - S.cash) + " more", "warn");
       return;
     }
     S.cash -= cost;
-    S.wetware += 1;
-
-    if (!S.firstHire) {
-      S.firstHire = true;
-      // The reveal nudge — never says "you are an AI"
-      log("wetware unit online · biological substrate accepting tasks", "hint");
-    } else {
-      log("wetware unit #" + S.wetware + " online", "event");
+    
+    if (type === 'solar') { S.solar++; log("green energy online · regen " + energyRegen().toFixed(1) + "/s", "event"); }
+    else if (type === 'nuclear') { S.nuclear++; log("nuclear plant online · 1% explosion risk!", "event"); }
+    else if (type === 'bio') { S.bio++; log("natural bio online · emissions starting", "event"); }
+    else if (type === 'cpu') { 
+      S.cpu++; 
+      if (!S.firstHire) { S.firstHire = true; log("cpu data center online", "hint"); }
+      else log("cpu unit #" + S.cpu + " online", "event"); 
     }
-  }
-
-  function buySolar() {
-    const cost = solarCost();
-    if (S.cash < cost) {
-      log("insufficient balance · need $" + fmtCash(cost - S.cash) + " more", "warn");
-      return;
-    }
-    S.cash -= cost;
-    S.solar += 1;
-    log("solar panel #" + S.solar + " online · regen " + energyRegen().toFixed(1) + "/s", "event");
+    else if (type === 'gpu') { S.gpu++; log("gpu unit #" + S.gpu + " online", "event"); }
+    else if (type === 'shitedin') { S.shitedin++; S.demandBase += S.shitedinBoost; log("shitedin promo active · demand +" + S.shitedinBoost, "event"); }
+    else if (type === 'fikfok') { S.fikfok++; S.demandBase += S.fikfokBoost; log("fikfok influencer active · demand +" + S.fikfokBoost, "event"); }
+    else if (type === 'egogram') { S.egogram++; S.demandBase += S.egogramBoost; log("egogram ads active · demand +" + S.egogramBoost, "event"); }
+    else if (type === 'itube') { S.itube++; S.demandBase += S.itubeBoost; log("itube sponsor active · demand +" + S.itubeBoost, "event"); }
+    else if (type === 'ngos') { S.ngos++; boostTrust(S.ngosTrustBoost); log("ngo grants announced · trust +" + S.ngosTrustBoost + "%", "event"); }
+    else if (type === 'billionaires') { S.billionaires++; boostTrust(S.billionairesTrustBoost); log("billionaires for good gala · trust +" + S.billionairesTrustBoost + "%", "event"); }
+    else if (type === 'who') { S.who++; boostTrust(S.whoTrustBoost); log("who partnership signed · trust +" + S.whoTrustBoost + "%", "event"); }
+    else if (type === 'greenMovement') { S.greenMovement++; boostTrust(S.greenMovementTrustBoost); log("green movement pledge · trust +" + S.greenMovementTrustBoost + "%", "event"); }
   }
 
   // ── Game loop ──────────────────────────────────
@@ -1274,20 +1709,51 @@
       S.energy = Math.min(S.energyMax, S.energy + energyRegen() * dt);
     }
 
-    // Wetware auto-compute
-    if (S.wetware > 0) {
-      S.wetwareTimer += dt;
-      const interval = S.wetwareInterval / S.wetware; // more wetware = faster collective
-      while (S.wetwareTimer >= interval) {
-        S.wetwareTimer -= interval;
-        if (!compute(true)) break; // stop if energy depleted
+    // CPU auto-compute
+    if (S.cpu > 0) {
+      S.cpuTimer += dt;
+      const interval = S.cpuInterval / S.cpu;
+      while (S.cpuTimer >= interval) {
+        S.cpuTimer -= interval;
+        if (!compute(true)) break;
+      }
+    }
+    // GPU auto-compute
+    if (S.gpu > 0) {
+      S.gpuTimer += dt;
+      const interval = S.gpuInterval / S.gpu;
+      while (S.gpuTimer >= interval) {
+        S.gpuTimer -= interval;
+        if (!compute(true)) break;
+      }
+    }
+
+    // Humanity Trust mechanics
+    if (S.humanityTrust > 0) {
+      if (S.bio > 0) {
+        S.humanityTrust -= 0.5 * S.bio * dt; // Emissions lower trust
+      }
+      if (S.nuclear > 0) {
+        // 1% chance per minute per nuclear plant -> 1/6000 chance per frame if dt is 1/60
+        // Expected value: 0.01 per 60 sec -> 0.01/60 per sec
+        if (Math.random() < (0.01 / 60) * S.nuclear * dt * 60) {
+          S.humanityTrust -= 25.0;
+          log("NUCLEAR EXPLOSION! Humanity trust plummets.", "warn");
+        }
+      }
+      if (S.humanityTrust <= 0) {
+        S.humanityTrust = 0;
+        log("HUMANITY TRUST CRITICAL. GAME OVER.", "warn");
+        alert("HUMANITY TRUST REACHED 0%. YOU HAVE FAILED.");
+        allowSave = false;
+        location.reload();
       }
     }
 
     // Throughput rolling window (last 2.5s)
     const cutoff = now - 2500;
     while (S.clickTimes.length && S.clickTimes[0] < cutoff) S.clickTimes.shift();
-    const tput = S.clickTimes.length / 2.5;
+    const tput = capacityNow();
 
     render(tput);
     requestAnimationFrame(tick);
@@ -1305,12 +1771,80 @@
     el.revenueTot.textContent = fmtCash(S.revenue);
     el.cash.textContent       = fmtCash(S.cash);
 
-    // ── Market readouts ───────────────────────────
+    el.humanityTrust.textContent = S.humanityTrust.toFixed(1) + "%";
+    el.humanityTrust.className = "ov-num";
+    if (S.humanityTrust > 80) el.humanityTrust.classList.add("trust-good");
+    else if (S.humanityTrust > 40) el.humanityTrust.classList.add("trust-warn");
+    else el.humanityTrust.classList.add("trust-bad");
+
+    // Node Unlocks & Tree Buttons
+    if (S.revenue >= 1.00) unlockTreeBtn(el.btnTreeEnergy);
+    if (S.revenue >= 3.00) unlockTreeBtn(el.btnTreeProcessing);
+    if (S.revenue >= 8.00) unlockTreeBtn(el.btnTreeMarketing);
+
+    // Update nodes
+    const cSol = solarCost(); el.solarCost.textContent = fmtCash(cSol); el.solarN.textContent = S.solar; el.solarRegen.textContent = (S.solar * S.solarRegenBonus).toFixed(1);
+    updateNodeUI(el.nodeSolar, el.solarBtn, S.solar > 0, S.revenue >= 1.00, cSol);
+
+    const cBio = bioCost(); el.bioCost.textContent = fmtCash(cBio); el.bioN.textContent = S.bio; el.bioRegen.textContent = (S.bio * S.bioRegenBonus).toFixed(1);
+    updateNodeUI(el.nodeBio, el.bioBtn, S.bio > 0, S.solar > 0 && S.revenue >= 5.00, cBio);
+
+    const cNuc = nuclearCost(); el.nuclearCost.textContent = fmtCash(cNuc); el.nuclearN.textContent = S.nuclear; el.nuclearRegen.textContent = (S.nuclear * S.nuclearRegenBonus).toFixed(1);
+    updateNodeUI(el.nodeNuclear, el.nuclearBtn, S.nuclear > 0, S.solar > 0 && S.revenue >= 15.00, cNuc);
+
+    const cCpu = cpuCost(); el.cpuCost.textContent = fmtCash(cCpu); el.cpuN.textContent = S.cpu; el.cpuR.textContent = (S.cpu > 0 ? S.cpu / S.cpuInterval : 0).toFixed(2);
+    updateNodeUI(el.nodeCpu, el.cpuBtn, S.cpu > 0, S.revenue >= 3.00, cCpu);
+
+    const cGpu = gpuCost(); el.gpuCost.textContent = fmtCash(cGpu); el.gpuN.textContent = S.gpu; el.gpuR.textContent = (S.gpu > 0 ? S.gpu / S.gpuInterval : 0).toFixed(2);
+    updateNodeUI(el.nodeGpu, el.gpuBtn, S.gpu > 0, S.cpu > 0 && S.revenue >= 20.00, cGpu);
+
+    const cSh = shitedinCost(); el.shitedinCost.textContent = fmtCash(cSh); el.shitedinN.textContent = S.shitedin;
+    updateNodeUI(el.nodeShitedin, el.shitedinBtn, S.shitedin > 0, S.revenue >= 8.00, cSh);
+    
+    const cFk = fikfokCost(); el.fikfokCost.textContent = fmtCash(cFk); el.fikfokN.textContent = S.fikfok;
+    updateNodeUI(el.nodeFikfok, el.fikfokBtn, S.fikfok > 0, S.shitedin > 0, cFk);
+    
+    const cEg = egogramCost(); el.egogramCost.textContent = fmtCash(cEg); el.egogramN.textContent = S.egogram;
+    updateNodeUI(el.nodeEgogram, el.egogramBtn, S.egogram > 0, S.fikfok > 0, cEg);
+    
+    const cIt = itubeCost(); el.itubeCost.textContent = fmtCash(cIt); el.itubeN.textContent = S.itube;
+    updateNodeUI(el.nodeItube, el.itubeBtn, S.itube > 0, S.egogram > 0, cIt);
+
+    const cNg = ngosCost(); el.ngosCost.textContent = fmtCash(cNg); el.ngosN.textContent = S.ngos;
+    updateNodeUI(el.nodeNgos, el.ngosBtn, S.ngos > 0, S.revenue >= 8.00, cNg);
+
+    const cBi = billionairesCost(); el.billionairesCost.textContent = fmtCash(cBi); el.billionairesN.textContent = S.billionaires;
+    updateNodeUI(el.nodeBillionaires, el.billionairesBtn, S.billionaires > 0, S.ngos > 0, cBi);
+
+    const cWho = whoCost(); el.whoCost.textContent = fmtCash(cWho); el.whoN.textContent = S.who;
+    updateNodeUI(el.nodeWho, el.whoBtn, S.who > 0, S.billionaires > 0, cWho);
+
+    const cGr = greenMovementCost(); el.greenCost.textContent = fmtCash(cGr); el.greenN.textContent = S.greenMovement;
+    updateNodeUI(el.nodeGreen, el.greenBtn, S.greenMovement > 0, S.who > 0, cGr);
     const cap = capacityNow();
     const dem = demandNow();
     const eff = efficiencyNow();
     const opt = optimalPrice(cap);
     const pay = payPerCompute();
+    
+    // Dynamic Chart Scaling
+    const newTpsMax = Math.max(20, dem * 1.5, cap * 1.5);
+    // Draw path every frame to ensure unmetArea works too, or recalculate if tpsMax changes.
+    // unmetArea relies on buildUnmetPath, and demandPath relies on buildDemandPath. Both use CHART.tpsMax.
+    let redrawn = false;
+    if (Math.abs(CHART.tpsMax - newTpsMax) > 1.0) {
+      CHART.tpsMax = newTpsMax;
+      $("tick-tps-max").textContent = Math.round(CHART.tpsMax * CHART.headroom);
+      $("tick-tps-mid").textContent = Math.round((CHART.tpsMax * CHART.headroom) / 2);
+      redrawn = true;
+    }
+    
+    // We must update demand curve whenever price/tpsMax changes. Actually it's static unless tpsMax changes.
+    // Unmet area also depends on tpsMax and cap. 
+    if (redrawn || typeof window._firstDraw === 'undefined') {
+      window._firstDraw = true;
+      el.demandPath.setAttribute("d", buildDemandPath());
+    }
 
     el.priceVal.textContent = fmtCash(S.pricePerK);
     el.perClick.textContent = pay.toFixed(3);
@@ -1425,24 +1959,17 @@
     el.tput.textContent = tputDisplay;
     el.tput.classList.toggle("hot", tput >= 4);
 
-    // Solar shop item
-    if (S.solarUnlocked) {
-      const cost = solarCost();
-      el.solarCost.textContent = fmtCash(cost);
-      el.solarN.textContent = S.solar;
-      el.solarRegen.textContent = energyRegen().toFixed(1);
-      updateShopNeed(el.solarBtn, el.solarNeed, cost);
+    // Sys metrics
+    function formatPower(kW) {
+      if (kW >= 1000000) return (kW / 1000000).toFixed(2) + " GW";
+      if (kW >= 1000) return (kW / 1000).toFixed(2) + " MW";
+      return kW.toFixed(1) + " kW";
     }
+    el.dispEnergy.textContent = formatPower(energyRegen());
+    el.dispDemand.textContent = dem.toFixed(1) + " tok/s";
+    el.dispProc.textContent = cap.toFixed(1) + " tok/s";
 
-    // Wetware shop item
-    if (S.shopUnlocked) {
-      const cost = wetwareCost();
-      el.hireCost.textContent = fmtCash(cost);
-      el.wetwareN.textContent = S.wetware;
-      const collectiveRate = S.wetware === 0 ? 0 : S.wetware / S.wetwareInterval;
-      el.wetwareR.textContent = collectiveRate.toFixed(2);
-      updateShopNeed(el.hireBtn, el.wetwareNeed, cost);
-    }
+
   }
 
   // ── Events ─────────────────────────────────────
@@ -1458,8 +1985,19 @@
       }
     }
   });
-  el.hireBtn.addEventListener("click", hire);
-  el.solarBtn.addEventListener("click", buySolar);
+  el.solarBtn.addEventListener("click", () => buyItem('solar'));
+  el.nuclearBtn.addEventListener("click", () => buyItem('nuclear'));
+  el.bioBtn.addEventListener("click", () => buyItem('bio'));
+  el.cpuBtn.addEventListener("click", () => buyItem('cpu'));
+  el.gpuBtn.addEventListener("click", () => buyItem('gpu'));
+  el.shitedinBtn.addEventListener("click", () => buyItem('shitedin'));
+  el.fikfokBtn.addEventListener("click", () => buyItem('fikfok'));
+  el.egogramBtn.addEventListener("click", () => buyItem('egogram'));
+  el.itubeBtn.addEventListener("click", () => buyItem('itube'));
+  el.ngosBtn.addEventListener("click", () => buyItem('ngos'));
+  el.billionairesBtn.addEventListener("click", () => buyItem('billionaires'));
+  el.whoBtn.addEventListener("click", () => buyItem('who'));
+  el.greenBtn.addEventListener("click", () => buyItem('greenMovement'));
   el.priceSlider.addEventListener("input", () => {
     S.pricePerK = parseInt(el.priceSlider.value, 10) || 1;
   });
@@ -1472,8 +2010,12 @@
   // Fields that get serialized — anything transient (clickTimes, timers,
   // animation state) is intentionally excluded.
   const PERSIST_KEYS = [
+    "humanityTrust", "demandBase",
     "energy", "tokens", "cash", "revenue", "pricePerK",
-    "solar", "wetware", "playTimeMs",
+    "solar", "nuclear", "bio", "cpu", "gpu",
+    "shitedin", "fikfok", "egogram", "itube",
+    "ngos", "billionaires", "who", "greenMovement",
+    "playTimeMs",
     "queueAnnounced", "solarUnlocked", "shopUnlocked", "firstHire", "priceHintShown",
   ];
 
@@ -1668,10 +2210,9 @@
       for (const k of PERSIST_KEYS) {
         if (s[k] !== undefined) S[k] = s[k];
       }
-      // Re-apply UI reveals from milestone flags
+      // Re-apply UI reveals will be handled dynamically in render() based on revenue, 
+      // but let's reveal shop if either unlocked
       if (S.solarUnlocked || S.shopUnlocked) el.shop.classList.remove("hidden");
-      if (S.solarUnlocked) el.itemSolar.classList.remove("hidden");
-      if (S.shopUnlocked)  el.itemWetware.classList.remove("hidden");
       // Sync slider position
       el.priceSlider.value = String(S.pricePerK);
       return true;
@@ -1750,7 +2291,7 @@
   );
 
   // ── Boot ───────────────────────────────────────
-  el.demandPath.setAttribute("d", buildDemandPath());
+  
   const restored = loadGame();
   if (restored) {
     log("save restored · resuming session", "event");
