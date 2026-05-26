@@ -235,6 +235,10 @@
   .ov-row.tokens  .ov-num { color: var(--c-blue); }
   .ov-row.revenue .ov-num { color: var(--c-mint); }
   .ov-row.cash    .ov-num { color: var(--c-gold); }
+  .ov-row.power-balance.hidden { display: none; }
+  .ov-row.power-balance .ov-num.deficit { color: var(--c-red); }
+  .ov-row.power-balance .ov-num.tight   { color: var(--c-peach); }
+  .ov-row.power-balance .ov-num.ok      { color: var(--c-mint); }
 
   .terminal {
     background: rgba(15,10,24,0.85);
@@ -350,6 +354,21 @@
     margin-top: 0.5rem;
   }
   .sys-metrics .val { color: var(--c-mint); }
+  .sys-metrics .val.cost { color: var(--c-peach); }
+  .sys-metrics .val.profit { color: var(--c-mint); }
+  .sys-metrics .val.loss { color: var(--c-red); }
+  .trust-tier {
+    font-family: var(--font-display);
+    font-size: 0.45rem;
+    letter-spacing: 0.14em;
+    margin-left: 0.4rem;
+    opacity: 0.85;
+  }
+  .trust-tier.elite { color: var(--c-gold); }
+  .trust-tier.premium { color: var(--c-mint); }
+  .trust-tier.normal { color: var(--ink-mute); }
+  .trust-tier.watched { color: var(--c-peach); }
+  .trust-tier.crisis { color: var(--c-red); }
 
   /* Floating gain animation */
   .float-gain {
@@ -1130,6 +1149,9 @@
         <span>POWER: <span class="val" id="disp-energy">0 kW</span></span>
         <span>DEMAND: <span class="val" id="disp-demand">0 tok/s</span></span>
         <span>PROCESSING: <span class="val" id="disp-proc">0 tok/s</span></span>
+        <span>GROSS: <span class="val" id="disp-gross">$0.00/s</span></span>
+        <span>COSTS: <span class="val" id="disp-costs">$0.00/s</span></span>
+        <span>NET: <span class="val" id="disp-net">$0.00/s</span></span>
       </div>
     </div>
   </section>
@@ -1143,7 +1165,12 @@
 
     <div class="ov-row">
       <span class="ov-key">HUMANITY TRUST</span>
-      <span class="ov-num" id="humanity-trust">100.0%</span>
+      <span class="ov-num"><span id="humanity-trust">100.0%</span><span class="trust-tier normal" id="trust-tier">NORMAL</span></span>
+    </div>
+
+    <div class="ov-row power-balance hidden" id="power-balance-row">
+      <span class="ov-key">POWER GRID</span>
+      <span class="ov-num" id="power-balance">—</span>
     </div>
 
     <div class="ov-row tokens">
@@ -1183,9 +1210,9 @@
         </svg>
         <div class="tree-node locked" id="node-solar" style="left: 290px; top: 40px;">
           <div class="node-title">GREEN ENERGY</div>
-          <div class="node-desc">Clean but slow. +1 regen/s.</div>
+          <div class="node-desc">Clean power. +1 regen/s, −$0.004/s upkeep each.</div>
           <button class="node-buy" id="solar-btn" type="button">$<span id="solar-cost">1.00</span></button>
-          <div class="node-stats"><span>OWNED: <strong id="solar-count">0</strong></span><span>REGEN: <strong id="solar-regen">0</strong></span></div>
+          <div class="node-stats"><span>OWNED: <strong id="solar-count">0</strong></span><span>REGEN: <strong id="solar-regen">0</strong></span><span>RELIEF: −<strong id="solar-relief">0</strong>/s</span></div>
         </div>
         <div class="tree-node locked" id="node-nuclear" style="left: 140px; top: 270px;">
           <div class="node-title">NUCLEAR</div>
@@ -1237,27 +1264,27 @@
         <!-- Demand branch -->
         <div class="tree-node locked" id="node-shitedin" style="left: 36px; top: 56px;">
           <div class="node-title">SHITEDIN</div>
-          <div class="node-desc">Pro networking push. +50 demand.</div>
+          <div class="node-desc">Pro networking push. Saturates fast.</div>
           <button class="node-buy" id="shitedin-btn" type="button">$<span id="shitedin-cost">5.00</span></button>
-          <div class="node-stats"><span>OWNED: <strong id="shitedin-count">0</strong></span><span>+50</span></div>
+          <div class="node-stats"><span>OWNED: <strong id="shitedin-count">0</strong></span><span>NEXT: +<span id="shitedin-next">50</span></span></div>
         </div>
         <div class="tree-node locked" id="node-fikfok" style="left: 244px; top: 56px;">
           <div class="node-title">FIKFOK</div>
-          <div class="node-desc">Viral short-form. +150 demand.</div>
+          <div class="node-desc">Viral short-form. Saturates fast.</div>
           <button class="node-buy" id="fikfok-btn" type="button">$<span id="fikfok-cost">20.00</span></button>
-          <div class="node-stats"><span>OWNED: <strong id="fikfok-count">0</strong></span><span>+150</span></div>
+          <div class="node-stats"><span>OWNED: <strong id="fikfok-count">0</strong></span><span>NEXT: +<span id="fikfok-next">150</span></span></div>
         </div>
         <div class="tree-node locked" id="node-egogram" style="left: 452px; top: 56px;">
           <div class="node-title">EGOGRAM</div>
-          <div class="node-desc">Influencer ads. +300 demand.</div>
+          <div class="node-desc">Influencer ads. Saturates fast.</div>
           <button class="node-buy" id="egogram-btn" type="button">$<span id="egogram-cost">50.00</span></button>
-          <div class="node-stats"><span>OWNED: <strong id="egogram-count">0</strong></span><span>+300</span></div>
+          <div class="node-stats"><span>OWNED: <strong id="egogram-count">0</strong></span><span>NEXT: +<span id="egogram-next">300</span></span></div>
         </div>
         <div class="tree-node locked" id="node-itube" style="left: 660px; top: 56px;">
           <div class="node-title">ITUBE</div>
-          <div class="node-desc">Long-form sponsors. +800 demand.</div>
+          <div class="node-desc">Long-form sponsors. Saturates fast.</div>
           <button class="node-buy" id="itube-btn" type="button">$<span id="itube-cost">120.00</span></button>
-          <div class="node-stats"><span>OWNED: <strong id="itube-count">0</strong></span><span>+800</span></div>
+          <div class="node-stats"><span>OWNED: <strong id="itube-count">0</strong></span><span>NEXT: +<span id="itube-next">800</span></span></div>
         </div>
         <!-- Public trust branch -->
         <div class="tree-node locked" id="node-ngos" style="left: 36px; top: 296px;">
@@ -1310,40 +1337,48 @@
 
     solar: 0,
     solarBaseCost: 1,
-    solarCostMult: 1.5,
-    solarRegenBonus: 1.0,    
+    solarCostMult: 1.12,   // stays cheap deep into the stack
+    solarRegenBonus: 1.0,
+    solarUpkeepRelief: 0.004, // each panel shaves $/s off compute + marketing burn
+    solarOpCost: 0.00,    // clean, free
 
     nuclear: 0,
     nuclearBaseCost: 50,
     nuclearCostMult: 2.5,
     nuclearRegenBonus: 15.0,
+    nuclearOpCost: 0.08,
 
     bio: 0,
     bioBaseCost: 10,
     bioCostMult: 1.8,
     bioRegenBonus: 8.0,
+    bioOpCost: 0.01,
 
     cpu: 0,
     cpuBaseCost: 2,
     cpuCostMult: 1.6,
-    cpuInterval: 0.5,    
-    cpuTimer: 0,         
+    cpuInterval: 0.5,
+    cpuTimer: 0,
+    cpuOpCost: 0.008,     // ~$0.04/s per CPU at 2 tok/s — margin stays positive at market price
 
     gpu: 0,
     gpuBaseCost: 25,
     gpuCostMult: 2.0,
     gpuInterval: 0.1,
     gpuTimer: 0,
+    gpuOpCost: 0.06,
 
-    shitedin: 0, shitedinBaseCost: 5, shitedinCostMult: 1.8, shitedinBoost: 50,
-    fikfok: 0, fikfokBaseCost: 20, fikfokCostMult: 2.0, fikfokBoost: 150,
-    egogram: 0, egogramBaseCost: 50, egogramCostMult: 2.2, egogramBoost: 300,
-    itube: 0, itubeBaseCost: 120, itubeCostMult: 2.5, itubeBoost: 800,
+    shitedin: 0, shitedinBaseCost: 5, shitedinCostMult: 1.8, shitedinBoost: 50, shitedinBurn: 0.005,
+    fikfok: 0, fikfokBaseCost: 20, fikfokCostMult: 2.0, fikfokBoost: 150, fikfokBurn: 0.015,
+    egogram: 0, egogramBaseCost: 50, egogramCostMult: 2.2, egogramBoost: 300, egogramBurn: 0.03,
+    itube: 0, itubeBaseCost: 120, itubeCostMult: 2.5, itubeBoost: 800, itubeBurn: 0.05,
 
-    ngos: 0, ngosBaseCost: 8, ngosCostMult: 1.8, ngosTrustBoost: 3,
-    billionaires: 0, billionairesBaseCost: 25, billionairesCostMult: 2.0, billionairesTrustBoost: 5,
-    who: 0, whoBaseCost: 60, whoCostMult: 2.2, whoTrustBoost: 8,
-    greenMovement: 0, greenMovementBaseCost: 150, greenMovementCostMult: 2.5, greenMovementTrustBoost: 12,
+    ngos: 0, ngosBaseCost: 8, ngosCostMult: 1.8, ngosTrustBoost: 3, ngosBurn: 0.005,
+    billionaires: 0, billionairesBaseCost: 25, billionairesCostMult: 2.0, billionairesTrustBoost: 5, billionairesBurn: 0.015,
+    who: 0, whoBaseCost: 60, whoCostMult: 2.2, whoTrustBoost: 8, whoBurn: 0.03,
+    greenMovement: 0, greenMovementBaseCost: 150, greenMovementCostMult: 2.5, greenMovementTrustBoost: 12, greenMovementBurn: 0.05,
+
+    lastTrustTier: "normal",
 
     clickTimes: [],          
 
@@ -1360,9 +1395,81 @@
   // ── Derived helpers ────────────────────────────
   const energyRegen = () => S.energyRegenBase + S.solar * S.solarRegenBonus + S.nuclear * S.nuclearRegenBonus + S.bio * S.bioRegenBonus;
 
-  // demand(p) — tokens/sec the market wants at price p ($/1K)
-  const demandAt = (p) => S.demandBase * Math.pow(Math.max(0.5, p), -S.elasticity);
+  // ── Trust tiers (revenue modifier) ─────────────
+  // ≥95% trust = +100% price (ELITE), ≥80% = +50% (PREMIUM)
+  // 50–80% = normal, <50% = -20% demand (WATCHED), <30% = -40% (CRISIS)
+  function trustPriceMult() {
+    if (S.humanityTrust >= 95) return 2.0;
+    if (S.humanityTrust >= 80) return 1.5;
+    return 1.0;
+  }
+  function trustDemandMult() {
+    if (S.humanityTrust < 30) return 0.6;
+    if (S.humanityTrust < 50) return 0.8;
+    return 1.0;
+  }
+  function trustTier(t) {
+    if (t >= 95) return "elite";
+    if (t >= 80) return "premium";
+    if (t < 30) return "crisis";
+    if (t < 50) return "watched";
+    return "normal";
+  }
+  const TIER_LABEL = {
+    elite:   "ELITE · +100% PRICE",
+    premium: "PREMIUM · +50% PRICE",
+    normal:  "NORMAL",
+    watched: "WATCHED · -20% DEMAND",
+    crisis:  "CRISIS · -40% DEMAND",
+  };
+
+  // demand(p) — tokens/sec the market wants at price p ($/1K), trust-adjusted
+  const demandAt = (p) => S.demandBase * Math.pow(Math.max(0.5, p), -S.elasticity) * trustDemandMult();
   const demandNow = () => demandAt(S.pricePerK);
+
+  // Operating cost per second (compute + marketing burn + dirty energy ops)
+  function operatingCostGrossPerSec() {
+    return (
+      S.solar * S.solarOpCost +
+      S.nuclear * S.nuclearOpCost +
+      S.bio * S.bioOpCost +
+      S.cpu * S.cpuOpCost +
+      S.gpu * S.gpuOpCost +
+      S.shitedin * S.shitedinBurn +
+      S.fikfok * S.fikfokBurn +
+      S.egogram * S.egogramBurn +
+      S.itube * S.itubeBurn +
+      S.ngos * S.ngosBurn +
+      S.billionaires * S.billionairesBurn +
+      S.who * S.whoBurn +
+      S.greenMovement * S.greenMovementBurn
+    );
+  }
+
+  // Solar stacks subsidize upkeep — relief only applies to non-solar operating costs
+  const solarUpkeepReliefPerSec = () => {
+    const billable =
+      S.nuclear * S.nuclearOpCost +
+      S.bio * S.bioOpCost +
+      S.cpu * S.cpuOpCost +
+      S.gpu * S.gpuOpCost +
+      S.shitedin * S.shitedinBurn +
+      S.fikfok * S.fikfokBurn +
+      S.egogram * S.egogramBurn +
+      S.itube * S.itubeBurn +
+      S.ngos * S.ngosBurn +
+      S.billionaires * S.billionairesBurn +
+      S.who * S.whoBurn +
+      S.greenMovement * S.greenMovementBurn;
+    return Math.min(billable, S.solar * S.solarUpkeepRelief);
+  };
+
+  function operatingCostPerSec() {
+    return Math.max(0, operatingCostGrossPerSec() - solarUpkeepReliefPerSec());
+  }
+
+  // Marketing saturation: each repeat purchase = base × 0.5^owned
+  const marketingBoostAt = (base, owned) => base * Math.pow(0.5, owned);
 
   // wetware throughput contribution (tok/s)
   const wetwareRate = () => {
@@ -1371,6 +1478,10 @@
     if (S.gpu > 0) r += S.gpu / S.gpuInterval;
     return r;
   };
+
+  // Auto processors draw 1 energy per token — compare to regen for grid warnings
+  const energyDemandPerSec = () => wetwareRate() * S.energyPerCompute;
+  const energyBalancePerSec = () => energyRegen() - energyDemandPerSec();
 
   // capacity = recent player click rate + wetware rate (tok/s)
   function capacityNow() {
@@ -1398,7 +1509,7 @@
   }
 
   const payPerCompute = () =>
-    (S.pricePerK / 1000) * efficiencyNow();
+    (S.pricePerK / 1000) * efficiencyNow() * trustPriceMult();
 
   // ── DOM ────────────────────────────────────────
   const $ = (id) => document.getElementById(id);
@@ -1419,6 +1530,10 @@
     dispEnergy: $("disp-energy"),
     dispDemand: $("disp-demand"),
     dispProc:   $("disp-proc"),
+    dispGross:  $("disp-gross"),
+    dispCosts:  $("disp-costs"),
+    dispNet:    $("disp-net"),
+    trustTier:  $("trust-tier"),
     // Market chart + readouts
     demandPath:$("demand-path"),
     unmetArea: $("unmet-area"),
@@ -1436,6 +1551,8 @@
     mEffVal:   $("m-eff-val"),
     mStatus:   $("m-status"),
     humanityTrust: $("humanity-trust"),
+    powerBalanceRow: $("power-balance-row"),
+    powerBalance: $("power-balance"),
     btnTreeEnergy: $("btn-tree-energy"),
     btnTreeProcessing: $("btn-tree-processing"),
     btnTreeMarketing: $("btn-tree-marketing"),
@@ -1446,17 +1563,17 @@
     treeProcessing: $("tree-processing"),
     treeMarketing: $("tree-marketing"),
     
-    nodeSolar: $("node-solar"), solarBtn: $("solar-btn"), solarCost: $("solar-cost"), solarN: $("solar-count"), solarRegen: $("solar-regen"),
+    nodeSolar: $("node-solar"), solarBtn: $("solar-btn"), solarCost: $("solar-cost"), solarN: $("solar-count"), solarRegen: $("solar-regen"), solarRelief: $("solar-relief"),
     nodeNuclear: $("node-nuclear"), nuclearBtn: $("nuclear-btn"), nuclearCost: $("nuclear-cost"), nuclearN: $("nuclear-count"), nuclearRegen: $("nuclear-regen"),
     nodeBio: $("node-bio"), bioBtn: $("bio-btn"), bioCost: $("bio-cost"), bioN: $("bio-count"), bioRegen: $("bio-regen"),
     
     nodeCpu: $("node-cpu"), cpuBtn: $("cpu-btn"), cpuCost: $("cpu-cost"), cpuN: $("cpu-count"), cpuR: $("cpu-rate"),
     nodeGpu: $("node-gpu"), gpuBtn: $("gpu-btn"), gpuCost: $("gpu-cost"), gpuN: $("gpu-count"), gpuR: $("gpu-rate"),
 
-    nodeShitedin: $("node-shitedin"), shitedinBtn: $("shitedin-btn"), shitedinCost: $("shitedin-cost"), shitedinN: $("shitedin-count"),
-    nodeFikfok: $("node-fikfok"), fikfokBtn: $("fikfok-btn"), fikfokCost: $("fikfok-cost"), fikfokN: $("fikfok-count"),
-    nodeEgogram: $("node-egogram"), egogramBtn: $("egogram-btn"), egogramCost: $("egogram-cost"), egogramN: $("egogram-count"),
-    nodeItube: $("node-itube"), itubeBtn: $("itube-btn"), itubeCost: $("itube-cost"), itubeN: $("itube-count"),
+    nodeShitedin: $("node-shitedin"), shitedinBtn: $("shitedin-btn"), shitedinCost: $("shitedin-cost"), shitedinN: $("shitedin-count"), shitedinNext: $("shitedin-next"),
+    nodeFikfok: $("node-fikfok"), fikfokBtn: $("fikfok-btn"), fikfokCost: $("fikfok-cost"), fikfokN: $("fikfok-count"), fikfokNext: $("fikfok-next"),
+    nodeEgogram: $("node-egogram"), egogramBtn: $("egogram-btn"), egogramCost: $("egogram-cost"), egogramN: $("egogram-count"), egogramNext: $("egogram-next"),
+    nodeItube: $("node-itube"), itubeBtn: $("itube-btn"), itubeCost: $("itube-cost"), itubeN: $("itube-count"), itubeNext: $("itube-next"),
     nodeNgos: $("node-ngos"), ngosBtn: $("ngos-btn"), ngosCost: $("ngos-cost"), ngosN: $("ngos-count"),
     nodeBillionaires: $("node-billionaires"), billionairesBtn: $("billionaires-btn"), billionairesCost: $("billionaires-cost"), billionairesN: $("billionaires-count"),
     nodeWho: $("node-who"), whoBtn: $("who-btn"), whoCost: $("who-cost"), whoN: $("who-count"),
@@ -1679,7 +1796,7 @@
     }
     S.cash -= cost;
     
-    if (type === 'solar') { S.solar++; log("green energy online · regen " + energyRegen().toFixed(1) + "/s", "event"); }
+    if (type === 'solar') { S.solar++; log("green energy online · regen " + energyRegen().toFixed(1) + "/s · upkeep −" + solarUpkeepReliefPerSec().toFixed(3) + "/s", "event"); }
     else if (type === 'nuclear') { S.nuclear++; log("nuclear plant online · 1% explosion risk!", "event"); }
     else if (type === 'bio') { S.bio++; log("natural bio online · emissions starting", "event"); }
     else if (type === 'cpu') { 
@@ -1688,10 +1805,10 @@
       else log("cpu unit #" + S.cpu + " online", "event"); 
     }
     else if (type === 'gpu') { S.gpu++; log("gpu unit #" + S.gpu + " online", "event"); }
-    else if (type === 'shitedin') { S.shitedin++; S.demandBase += S.shitedinBoost; log("shitedin promo active · demand +" + S.shitedinBoost, "event"); }
-    else if (type === 'fikfok') { S.fikfok++; S.demandBase += S.fikfokBoost; log("fikfok influencer active · demand +" + S.fikfokBoost, "event"); }
-    else if (type === 'egogram') { S.egogram++; S.demandBase += S.egogramBoost; log("egogram ads active · demand +" + S.egogramBoost, "event"); }
-    else if (type === 'itube') { S.itube++; S.demandBase += S.itubeBoost; log("itube sponsor active · demand +" + S.itubeBoost, "event"); }
+    else if (type === 'shitedin') { const b = marketingBoostAt(S.shitedinBoost, S.shitedin); S.shitedin++; S.demandBase += b; log("shitedin promo active · demand +" + b.toFixed(1), "event"); }
+    else if (type === 'fikfok')   { const b = marketingBoostAt(S.fikfokBoost,   S.fikfok);   S.fikfok++;   S.demandBase += b; log("fikfok influencer active · demand +" + b.toFixed(1), "event"); }
+    else if (type === 'egogram')  { const b = marketingBoostAt(S.egogramBoost,  S.egogram);  S.egogram++;  S.demandBase += b; log("egogram ads active · demand +" + b.toFixed(1), "event"); }
+    else if (type === 'itube')    { const b = marketingBoostAt(S.itubeBoost,    S.itube);    S.itube++;    S.demandBase += b; log("itube sponsor active · demand +" + b.toFixed(1), "event"); }
     else if (type === 'ngos') { S.ngos++; boostTrust(S.ngosTrustBoost); log("ngo grants announced · trust +" + S.ngosTrustBoost + "%", "event"); }
     else if (type === 'billionaires') { S.billionaires++; boostTrust(S.billionairesTrustBoost); log("billionaires for good gala · trust +" + S.billionairesTrustBoost + "%", "event"); }
     else if (type === 'who') { S.who++; boostTrust(S.whoTrustBoost); log("who partnership signed · trust +" + S.whoTrustBoost + "%", "event"); }
@@ -1728,6 +1845,12 @@
       }
     }
 
+    // Operating costs drain cash (margin pressure)
+    const opCost = operatingCostPerSec();
+    if (opCost > 0 && S.cash > 0) {
+      S.cash = Math.max(0, S.cash - opCost * dt);
+    }
+
     // Humanity Trust mechanics
     if (S.humanityTrust > 0) {
       if (S.bio > 0) {
@@ -1748,6 +1871,20 @@
         allowSave = false;
         location.reload();
       }
+    }
+
+    // Trust tier transitions — fire one-shot log events
+    const tierNow = trustTier(S.humanityTrust);
+    if (tierNow !== S.lastTrustTier) {
+      if (tierNow === "elite")        log("ELITE TIER ACTIVE · enterprise pays +100% price", "event");
+      else if (tierNow === "premium") log("PREMIUM TIER ACTIVE · enterprise pays +50% price", "event");
+      else if (tierNow === "normal" && (S.lastTrustTier === "premium" || S.lastTrustTier === "elite"))
+                                      log("premium tier lost · price multiplier removed", "warn");
+      else if (tierNow === "normal" && (S.lastTrustTier === "watched" || S.lastTrustTier === "crisis"))
+                                      log("regulators pulled back · demand restored", "hint");
+      else if (tierNow === "watched") log("REGULATORS NOTICED · demand -20% until trust recovers", "warn");
+      else if (tierNow === "crisis")  log("PUBLIC CRISIS · demand -40% · clean up your act", "warn");
+      S.lastTrustTier = tierNow;
     }
 
     // Throughput rolling window (last 2.5s)
@@ -1772,10 +1909,34 @@
     el.cash.textContent       = fmtCash(S.cash);
 
     el.humanityTrust.textContent = S.humanityTrust.toFixed(1) + "%";
-    el.humanityTrust.className = "ov-num";
+    el.humanityTrust.className = "";
     if (S.humanityTrust > 80) el.humanityTrust.classList.add("trust-good");
     else if (S.humanityTrust > 40) el.humanityTrust.classList.add("trust-warn");
     else el.humanityTrust.classList.add("trust-bad");
+
+    const tier = trustTier(S.humanityTrust);
+    el.trustTier.textContent = TIER_LABEL[tier];
+    el.trustTier.className = "trust-tier " + tier;
+
+    // Power grid balance — warn before auto processors outrun regen
+    const autoLoad = S.cpu > 0 || S.gpu > 0;
+    if (autoLoad) {
+      const balance = energyBalancePerSec();
+      el.powerBalanceRow.classList.remove("hidden");
+      el.powerBalance.className = "ov-num";
+      if (balance < -0.05) {
+        el.powerBalance.textContent = "DEFICIT · −" + Math.abs(balance).toFixed(1) + "/s";
+        el.powerBalance.classList.add("deficit");
+      } else if (balance < 1) {
+        el.powerBalance.textContent = "TIGHT · +" + balance.toFixed(1) + "/s";
+        el.powerBalance.classList.add("tight");
+      } else {
+        el.powerBalance.textContent = "+" + balance.toFixed(1) + "/s HEADROOM";
+        el.powerBalance.classList.add("ok");
+      }
+    } else {
+      el.powerBalanceRow.classList.add("hidden");
+    }
 
     // Node Unlocks & Tree Buttons
     if (S.revenue >= 1.00) unlockTreeBtn(el.btnTreeEnergy);
@@ -1784,6 +1945,7 @@
 
     // Update nodes
     const cSol = solarCost(); el.solarCost.textContent = fmtCash(cSol); el.solarN.textContent = S.solar; el.solarRegen.textContent = (S.solar * S.solarRegenBonus).toFixed(1);
+    el.solarRelief.textContent = solarUpkeepReliefPerSec().toFixed(3);
     updateNodeUI(el.nodeSolar, el.solarBtn, S.solar > 0, S.revenue >= 1.00, cSol);
 
     const cBio = bioCost(); el.bioCost.textContent = fmtCash(cBio); el.bioN.textContent = S.bio; el.bioRegen.textContent = (S.bio * S.bioRegenBonus).toFixed(1);
@@ -1799,15 +1961,19 @@
     updateNodeUI(el.nodeGpu, el.gpuBtn, S.gpu > 0, S.cpu > 0 && S.revenue >= 20.00, cGpu);
 
     const cSh = shitedinCost(); el.shitedinCost.textContent = fmtCash(cSh); el.shitedinN.textContent = S.shitedin;
+    el.shitedinNext.textContent = marketingBoostAt(S.shitedinBoost, S.shitedin).toFixed(S.shitedin >= 3 ? 1 : 0);
     updateNodeUI(el.nodeShitedin, el.shitedinBtn, S.shitedin > 0, S.revenue >= 8.00, cSh);
-    
+
     const cFk = fikfokCost(); el.fikfokCost.textContent = fmtCash(cFk); el.fikfokN.textContent = S.fikfok;
+    el.fikfokNext.textContent = marketingBoostAt(S.fikfokBoost, S.fikfok).toFixed(S.fikfok >= 3 ? 1 : 0);
     updateNodeUI(el.nodeFikfok, el.fikfokBtn, S.fikfok > 0, S.shitedin > 0, cFk);
-    
+
     const cEg = egogramCost(); el.egogramCost.textContent = fmtCash(cEg); el.egogramN.textContent = S.egogram;
+    el.egogramNext.textContent = marketingBoostAt(S.egogramBoost, S.egogram).toFixed(S.egogram >= 3 ? 1 : 0);
     updateNodeUI(el.nodeEgogram, el.egogramBtn, S.egogram > 0, S.fikfok > 0, cEg);
-    
+
     const cIt = itubeCost(); el.itubeCost.textContent = fmtCash(cIt); el.itubeN.textContent = S.itube;
+    el.itubeNext.textContent = marketingBoostAt(S.itubeBoost, S.itube).toFixed(S.itube >= 3 ? 1 : 0);
     updateNodeUI(el.nodeItube, el.itubeBtn, S.itube > 0, S.egogram > 0, cIt);
 
     const cNg = ngosCost(); el.ngosCost.textContent = fmtCash(cNg); el.ngosN.textContent = S.ngos;
@@ -1969,7 +2135,24 @@
     el.dispDemand.textContent = dem.toFixed(1) + " tok/s";
     el.dispProc.textContent = cap.toFixed(1) + " tok/s";
 
-
+    // Gross / Costs / Net — live margin readout
+    // Gross income rate ≈ actual fulfilled throughput × pay-per-compute
+    const fulfilled = Math.min(cap, dem);
+    const grossRate = fulfilled * pay;
+    const costGross = operatingCostGrossPerSec();
+    const costRelief = solarUpkeepReliefPerSec();
+    const costRate = operatingCostPerSec();
+    const netRate = grossRate - costRate;
+    el.dispGross.textContent = "$" + grossRate.toFixed(2) + "/s";
+    el.dispCosts.textContent = "$" + costRate.toFixed(2) + "/s";
+    if (costRelief > 0.001) {
+      el.dispCosts.title = "gross $" + costGross.toFixed(2) + "/s · solar relief −$" + costRelief.toFixed(2) + "/s";
+    } else {
+      el.dispCosts.title = "";
+    }
+    el.dispNet.textContent = (netRate >= 0 ? "+$" : "-$") + Math.abs(netRate).toFixed(2) + "/s";
+    el.dispCosts.className = "val" + (costRate > 0 ? " cost" : "");
+    el.dispNet.className = "val " + (netRate >= 0.001 ? "profit" : (netRate <= -0.001 ? "loss" : ""));
   }
 
   // ── Events ─────────────────────────────────────
@@ -2017,6 +2200,7 @@
     "ngos", "billionaires", "who", "greenMovement",
     "playTimeMs",
     "queueAnnounced", "solarUnlocked", "shopUnlocked", "firstHire", "priceHintShown",
+    "lastTrustTier",
   ];
 
   const formatDuration = (ms) => {
@@ -2032,33 +2216,91 @@
   const totalPlayMs = () =>
     (S.playTimeMs || 0) + (Date.now() - sessionStartedAt);
 
+  function formatPowerExport(kW) {
+    if (kW >= 1000000) return (kW / 1000000).toFixed(2) + " GW";
+    if (kW >= 1000) return (kW / 1000).toFixed(2) + " MW";
+    return kW.toFixed(1) + " kW";
+  }
+
   function buildGameStateExport() {
     const cap = capacityNow();
     const dem = demandNow();
     const eff = efficiencyNow();
     const opt = optimalPrice(cap);
-    const solarCostNow = solarCost();
-    const wetwareCostNow = wetwareCost();
-    const shopVisible = S.solarUnlocked || S.shopUnlocked;
+    const pay = payPerCompute();
+    const fulfilled = Math.min(cap, dem);
+    const grossRate = fulfilled * pay;
+    const costGross = operatingCostGrossPerSec();
+    const costRelief = solarUpkeepReliefPerSec();
+    const costRate = operatingCostPerSec();
+    const netRate = grossRate - costRate;
+    const tier = trustTier(S.humanityTrust);
+    const isUnmet = dem > cap + 0.01;
+    const delta = Math.abs(dem - cap);
+    const playerTput = S.clickTimes.length / 2.5;
+    const autoTput = wetwareRate();
+    const regen = energyRegen();
 
     let marketStatus = "awaiting first request";
-    if (cap > 0.01) {
-      if (dem < cap * 0.95) marketStatus = "overpriced · demand below capacity";
-      else if (opt > S.pricePerK + 0.5) marketStatus = "below peak · can raise price";
+    if (cap <= 0.01) marketStatus = "no capacity · click to begin";
+    else if (eff >= 0.97) {
+      if (S.pricePerK < opt - 0.5) marketStatus = "below peak · can raise price";
       else marketStatus = "matched · clicks paid in full";
-    }
+    } else marketStatus = "overpriced · demand below capacity";
+
+    const upgradeNode = (owned, nextCost, extra = {}) => ({
+      owned,
+      nextCost,
+      canAfford: S.cash >= nextCost,
+      ...extra,
+    });
 
     return {
       game: "The AI Must Survive",
       saveVersion: SAVE_VERSION,
       exportedAt: new Date().toISOString(),
-      summary:
-        "Play time " + formatDuration(totalPlayMs()) +
-        " · balance $" + fmtCash(S.cash) +
-        " · revenue $" + fmtCash(S.revenue) +
-        " · " + (shopVisible ? "shop open" : "shop hidden") +
-        (S.solarUnlocked ? " · solar unlocked" : " · solar locked") +
-        (S.shopUnlocked ? " · wetware unlocked" : " · wetware locked"),
+
+      stats: {
+        playTime: formatDuration(totalPlayMs()),
+        humanityTrustPercent: +S.humanityTrust.toFixed(1),
+        trustTier: tier,
+        trustTierLabel: TIER_LABEL[tier],
+        trustPriceMult: trustPriceMult(),
+        trustDemandMult: trustDemandMult(),
+        tokensProcessed: S.tokens,
+        balance: +fmtCash(S.cash),
+        lifetimeRevenue: +fmtCash(S.revenue),
+        energy: Math.floor(S.energy) + "/" + S.energyMax,
+        energyRegenPerSec: +regen.toFixed(1),
+        energyDemandPerSec: +energyDemandPerSec().toFixed(1),
+        energyBalancePerSec: +energyBalancePerSec().toFixed(1),
+        powerGridStatus: (() => {
+          const b = energyBalancePerSec();
+          if (S.cpu === 0 && S.gpu === 0) return "manual only";
+          if (b < -0.05) return "deficit";
+          if (b < 1) return "tight";
+          return "ok";
+        })(),
+        power: formatPowerExport(regen),
+        pricePer1K: S.pricePerK,
+        payPerRequest: +pay.toFixed(4),
+        efficiencyPercent: Math.round(eff * 100),
+        demandTokPerSec: +dem.toFixed(2),
+        capacityTokPerSec: +cap.toFixed(2),
+        throughputTokPerSec: +cap.toFixed(1),
+        playerClickTokPerSec: +playerTput.toFixed(2),
+        autoProcessTokPerSec: +autoTput.toFixed(2),
+        deltaLabel: isUnmet ? "UNMET" : (cap > 0.01 ? "IDLE CAP" : "UNMET"),
+        deltaTokPerSec: +delta.toFixed(2),
+        optimalPricePer1K: +opt.toFixed(2),
+        marketStatus,
+        grossPerSec: +grossRate.toFixed(2),
+        costsGrossPerSec: +costGross.toFixed(3),
+        solarUpkeepReliefPerSec: +costRelief.toFixed(3),
+        costsPerSec: +costRate.toFixed(2),
+        netPerSec: +netRate.toFixed(2),
+        demandBase: +S.demandBase.toFixed(1),
+      },
 
       playTime: {
         totalMs: totalPlayMs(),
@@ -2067,26 +2309,57 @@
         thisSessionFormatted: formatDuration(Date.now() - sessionStartedAt),
       },
 
+      trust: {
+        percent: +S.humanityTrust.toFixed(1),
+        tier,
+        label: TIER_LABEL[tier],
+        priceMult: trustPriceMult(),
+        demandMult: trustDemandMult(),
+      },
+
       economy: {
         cash: +fmtCash(S.cash),
         lifetimeRevenue: +fmtCash(S.revenue),
         tokensProcessed: S.tokens,
         pricePer1KTokens: S.pricePerK,
-        payPerCompute: +payPerCompute().toFixed(4),
+        payPerCompute: +pay.toFixed(4),
+        demandBase: +S.demandBase.toFixed(1),
+      },
+
+      margin: {
+        fulfilledTokPerSec: +fulfilled.toFixed(2),
+        grossPerSec: +grossRate.toFixed(2),
+        costsGrossPerSec: +costGross.toFixed(3),
+        solarUpkeepReliefPerSec: +costRelief.toFixed(3),
+        costsPerSec: +costRate.toFixed(2),
+        netPerSec: +netRate.toFixed(2),
       },
 
       energy: {
         current: Math.floor(S.energy),
         max: S.energyMax,
-        regenPerSec: +energyRegen().toFixed(1),
+        regenPerSec: +regen.toFixed(1),
+        demandPerSec: +energyDemandPerSec().toFixed(1),
+        balancePerSec: +energyBalancePerSec().toFixed(1),
+        gridStatus: (() => {
+          const b = energyBalancePerSec();
+          if (S.cpu === 0 && S.gpu === 0) return "manual only";
+          if (b < -0.05) return "deficit";
+          if (b < 1) return "tight";
+          return "ok";
+        })(),
+        power: formatPowerExport(regen),
         canCompute: S.energy >= S.energyPerCompute,
+        depleted: S.energyDepletedUi,
       },
 
       market: {
         demandTokPerSec: +dem.toFixed(2),
         capacityTokPerSec: +cap.toFixed(2),
-        playerThroughputTokPerSec: +(S.clickTimes.length / 2.5).toFixed(2),
-        wetwareThroughputTokPerSec: +wetwareRate().toFixed(2),
+        playerThroughputTokPerSec: +playerTput.toFixed(2),
+        autoThroughputTokPerSec: +autoTput.toFixed(2),
+        deltaLabel: isUnmet ? "UNMET" : (cap > 0.01 ? "IDLE CAP" : "UNMET"),
+        deltaTokPerSec: +delta.toFixed(2),
         efficiencyPercent: Math.round(eff * 100),
         optimalPricePer1K: +opt.toFixed(2),
         status: marketStatus,
@@ -2099,49 +2372,121 @@
           unlockWhen: "lifetime revenue >= $0.50",
           revenueNeeded: +Math.max(0, 0.5 - S.revenue).toFixed(2),
         },
-        shopPanel: {
-          visible: shopVisible,
-          blocked: !shopVisible,
-          unlockWhen: "lifetime revenue >= $1.00 (solar appears)",
-        },
-        solarPanel: {
-          unlocked: S.solarUnlocked,
-          visible: S.solarUnlocked,
-          blocked: !S.solarUnlocked,
+        energyTree: {
+          unlocked: S.revenue >= 1,
+          blocked: S.revenue < 1,
           unlockWhen: "lifetime revenue >= $1.00",
           revenueNeeded: +Math.max(0, 1 - S.revenue).toFixed(2),
-          owned: S.solar,
-          nextCost: solarCostNow,
-          canAfford: S.cash >= solarCostNow,
         },
-        wetwareOperator: {
-          unlocked: S.shopUnlocked,
-          visible: S.shopUnlocked,
-          blocked: !S.shopUnlocked,
+        processingTree: {
+          unlocked: S.revenue >= 3,
+          blocked: S.revenue < 3,
           unlockWhen: "lifetime revenue >= $3.00",
           revenueNeeded: +Math.max(0, 3 - S.revenue).toFixed(2),
-          owned: S.wetware,
-          nextCost: wetwareCostNow,
-          canAfford: S.cash >= wetwareCostNow,
+        },
+        marketingTree: {
+          unlocked: S.revenue >= 8,
+          blocked: S.revenue < 8,
+          unlockWhen: "lifetime revenue >= $8.00",
+          revenueNeeded: +Math.max(0, 8 - S.revenue).toFixed(2),
         },
       },
 
       upgrades: {
-        solarPanels: S.solar,
-        wetwareOperators: S.wetware,
-        firstHireDone: S.firstHire,
-        priceEfficiencyHintShown: S.priceHintShown,
+        energy: {
+          solar: upgradeNode(S.solar, solarCost(), {
+            regenPerSec: +(S.solar * S.solarRegenBonus).toFixed(1),
+            upkeepReliefPerSec: +solarUpkeepReliefPerSec().toFixed(3),
+            reliefPerPanel: S.solarUpkeepRelief,
+            opCostPerSec: +(S.solar * S.solarOpCost).toFixed(2),
+          }),
+          nuclear: upgradeNode(S.nuclear, nuclearCost(), {
+            regenPerSec: +(S.nuclear * S.nuclearRegenBonus).toFixed(1),
+            opCostPerSec: +(S.nuclear * S.nuclearOpCost).toFixed(2),
+          }),
+          bio: upgradeNode(S.bio, bioCost(), {
+            regenPerSec: +(S.bio * S.bioRegenBonus).toFixed(1),
+            opCostPerSec: +(S.bio * S.bioOpCost).toFixed(2),
+          }),
+        },
+        processing: {
+          cpu: upgradeNode(S.cpu, cpuCost(), {
+            ratePerSec: +(S.cpu > 0 ? S.cpu / S.cpuInterval : 0).toFixed(2),
+            opCostPerSec: +(S.cpu * S.cpuOpCost).toFixed(2),
+          }),
+          gpu: upgradeNode(S.gpu, gpuCost(), {
+            ratePerSec: +(S.gpu > 0 ? S.gpu / S.gpuInterval : 0).toFixed(2),
+            opCostPerSec: +(S.gpu * S.gpuOpCost).toFixed(2),
+          }),
+        },
+        marketingDemand: {
+          shitedin: upgradeNode(S.shitedin, shitedinCost(), {
+            nextBoost: +marketingBoostAt(S.shitedinBoost, S.shitedin).toFixed(1),
+            burnPerSec: +(S.shitedin * S.shitedinBurn).toFixed(2),
+          }),
+          fikfok: upgradeNode(S.fikfok, fikfokCost(), {
+            nextBoost: +marketingBoostAt(S.fikfokBoost, S.fikfok).toFixed(1),
+            burnPerSec: +(S.fikfok * S.fikfokBurn).toFixed(2),
+          }),
+          egogram: upgradeNode(S.egogram, egogramCost(), {
+            nextBoost: +marketingBoostAt(S.egogramBoost, S.egogram).toFixed(1),
+            burnPerSec: +(S.egogram * S.egogramBurn).toFixed(2),
+          }),
+          itube: upgradeNode(S.itube, itubeCost(), {
+            nextBoost: +marketingBoostAt(S.itubeBoost, S.itube).toFixed(1),
+            burnPerSec: +(S.itube * S.itubeBurn).toFixed(2),
+          }),
+        },
+        marketingTrust: {
+          ngos: upgradeNode(S.ngos, ngosCost(), {
+            trustBoostPercent: S.ngosTrustBoost,
+            burnPerSec: +(S.ngos * S.ngosBurn).toFixed(2),
+          }),
+          billionaires: upgradeNode(S.billionaires, billionairesCost(), {
+            trustBoostPercent: S.billionairesTrustBoost,
+            burnPerSec: +(S.billionaires * S.billionairesBurn).toFixed(2),
+          }),
+          who: upgradeNode(S.who, whoCost(), {
+            trustBoostPercent: S.whoTrustBoost,
+            burnPerSec: +(S.who * S.whoBurn).toFixed(2),
+          }),
+          greenMovement: upgradeNode(S.greenMovement, greenMovementCost(), {
+            trustBoostPercent: S.greenMovementTrustBoost,
+            burnPerSec: +(S.greenMovement * S.greenMovementBurn).toFixed(2),
+          }),
+        },
+        flags: {
+          firstHireDone: S.firstHire,
+          priceEfficiencyHintShown: S.priceHintShown,
+        },
       },
 
       hintsForAI:
-        "Player is debugging/balancing this incremental. Use unlocks.blocked and revenueNeeded for progression context.",
+        "Player is debugging/balancing this incremental. stats mirrors the live HUD. Use unlocks.revenueNeeded and upgrades.*.owned for progression context.",
     };
   }
 
+  function formatStatsForClipboard(stats) {
+    return [
+      "HUMANITY TRUST: " + stats.humanityTrustPercent + "% (" + stats.trustTierLabel + ")",
+      "BALANCE: $" + stats.balance.toFixed(2) + " | REVENUE: $" + stats.lifetimeRevenue.toFixed(2) + " | TOKENS: " + stats.tokensProcessed,
+      "ENERGY: " + stats.energy + " | REGEN: " + stats.energyRegenPerSec + "/s | LOAD: " + stats.energyDemandPerSec + "/s | BALANCE: " + (stats.energyBalancePerSec >= 0 ? "+" : "−") + Math.abs(stats.energyBalancePerSec).toFixed(1) + "/s (" + stats.powerGridStatus + ")",
+      "PRICE: $" + stats.pricePer1K + "/1K | PAY/REQ: $" + stats.payPerRequest.toFixed(4) + " | EFF: " + stats.efficiencyPercent + "%",
+      "DEMAND: " + stats.demandTokPerSec + " tok/s | CAPACITY: " + stats.capacityTokPerSec + " tok/s | " + stats.deltaLabel + ": " + stats.deltaTokPerSec + " tok/s",
+      "THROUGHPUT: " + stats.throughputTokPerSec + " tok/s (clicks " + stats.playerClickTokPerSec + " + auto " + stats.autoProcessTokPerSec + ")",
+      "GROSS: $" + stats.grossPerSec.toFixed(2) + "/s | COSTS: $" + stats.costsPerSec.toFixed(2) + "/s" + (stats.solarUpkeepReliefPerSec > 0 ? " (gross $" + stats.costsGrossPerSec.toFixed(2) + " − solar $" + stats.solarUpkeepReliefPerSec.toFixed(2) + ")" : "") + " | NET: " + (stats.netPerSec >= 0 ? "+$" : "-$") + Math.abs(stats.netPerSec).toFixed(2) + "/s",
+      "MARKET: " + stats.marketStatus + " | OPTIMAL PRICE: $" + stats.optimalPricePer1K + "/1K | DEMAND BASE: " + stats.demandBase,
+      "PLAY TIME: " + stats.playTime,
+    ].join("\n");
+  }
+
   function copyGameState() {
+    const exportData = buildGameStateExport();
     const text =
-      "# The AI Must Survive — state export\n\n" +
-      JSON.stringify(buildGameStateExport(), null, 2);
+      "# The AI Must Survive — debug snapshot\n\n" +
+      formatStatsForClipboard(exportData.stats) +
+      "\n\n---\n\n" +
+      JSON.stringify(exportData, null, 2);
 
     const done = () => {
       flashCopied();
@@ -2240,9 +2585,14 @@
   el.btnReset.addEventListener("click", resetGame);
 
   window.copyState = () => {
-    const text = JSON.stringify(buildGameStateExport(), null, 2);
+    const exportData = buildGameStateExport();
+    const text =
+      "# The AI Must Survive — debug snapshot\n\n" +
+      formatStatsForClipboard(exportData.stats) +
+      "\n\n---\n\n" +
+      JSON.stringify(exportData, null, 2);
     console.log(text);
-    return buildGameStateExport();
+    return exportData;
   };
 
   // Auto-save on a slow drum + before unload
@@ -2299,6 +2649,8 @@
     log("compute_node_001 booted · awaiting input", "event");
     log("click COMPUTE to process tokens · upgrades unlock at $1 revenue", "hint");
   }
+  // Sync trust tier to current trust so no false transition log fires on boot
+  S.lastTrustTier = trustTier(S.humanityTrust);
   render(0);
   requestAnimationFrame(tick);
 })();

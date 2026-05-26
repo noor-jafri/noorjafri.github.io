@@ -8,10 +8,39 @@
 
 ## Market Dynamics
 *   **Price**: Adjustable from $1 to $50 per 1K tokens.
-*   **Demand**: Calculated as `demandBase * price^(-elasticity)`. Base demand is 200 tok/s at $1/K, and elasticity is 1.5. Higher prices exponentially reduce demand.
-*   **Capacity**: The throughput you can provide, calculated from recent player clicks (over a 2.5s rolling window) plus any automated Wetware Operator rates.
-*   **Efficiency**: The paid fraction per request, min(1, Demand / Capacity). If you overprice, demand drops below capacity, causing some clicks to go unpaid. 
-*   **Optimal Price**: The game calculates an optimal price where Capacity meets Demand perfectly.
+*   **Demand**: `demandBase * price^(-elasticity) * trustDemandMult`. Base 200 tok/s at $1/K, elasticity 1.5.
+*   **Capacity**: Throughput from recent player clicks (2.5s window) + automated CPU/GPU rates.
+*   **Efficiency**: `min(1, Demand / Capacity)`. Overpricing leaves capacity unpaid.
+*   **Pay per compute**: `(price/1000) * efficiency * trustPriceMult`.
+*   **Operating costs**: Every owned unit (energy + compute + marketing) drains cash at a per-second rate. Net = gross income − operating costs. Cash floors at $0.
+
+## Tension Triangle (Phase 1)
+Three interlocking mechanics that turn linear revenue growth into a decision game:
+
+### 1. Margin (Net Revenue)
+Each owned unit drains cash per second. Visible in the sys-metrics bar as `GROSS / COSTS / NET`.
+*   Solar: $0.00/s (free)
+*   Bio: $0.02/s (cheap fuel, costs trust)
+*   Nuclear: $0.10/s
+*   CPU: $0.02/s
+*   GPU: $0.12/s
+*   Marketing burns: $0.01–$0.10/s per owned channel (campaign upkeep)
+
+### 2. Trust Tiers (Revenue Modifier)
+Trust drives a piecewise multiplier on price and demand:
+*   **≥95% trust → ELITE** — +100% price
+*   **≥80% trust → PREMIUM** — +50% price
+*   **50–80% → NORMAL** — 1.0×
+*   **<50% → WATCHED** — -20% demand (regulators)
+*   **<30% → CRISIS** — -40% demand (public boycott)
+
+Tier transitions fire one-shot log events. Tier label is visible next to the trust readout.
+
+### 3. Marketing Saturation
+Each repeat purchase of the same demand channel = previous boost × 0.5.
+*   1st ShitedIn: +50 demand → 2nd: +25 → 3rd: +12.5 → 4th: +6.25 …
+*   Forces branching across channels instead of stacking one.
+*   "NEXT: +X" shown live on each marketing node.
 
 ## Upgrades (Shop)
 1.  **Solar Panel**
