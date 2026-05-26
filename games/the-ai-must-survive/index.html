@@ -10,6 +10,18 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<!--
+  THE AI MUST SURVIVE — single-file layout
+
+  PHASE 1 ($500 scope) · COMPLETE · frozen baseline — fix bugs only
+    · CSS   : PHASE 1 · CSS … /PHASE 1 · CSS
+    · HTML  : PHASE 1 · HTML … /PHASE 1 · HTML
+    · JS    : PHASE 1 · JS … /PHASE 1 · JS  (script IIFE)
+    · Spec  : phase1.md
+
+  PHASE 2+ · search "PHASE 2" — trust teeth, dirty options, events, prestige…
+-->
+<!-- ══ PHASE 1 · CSS ($500 · COMPLETE) ══════════════════════════════════ -->
 <style>
   :root {
     --bg-deep: #0f0a18;
@@ -235,6 +247,27 @@
   .ov-row.tokens  .ov-num { color: var(--c-blue); }
   .ov-row.revenue .ov-num { color: var(--c-mint); }
   .ov-row.cash    .ov-num { color: var(--c-gold); }
+  .ov-row.cash.at-floor .ov-num { color: var(--c-red); animation: cash-pulse 1.2s ease-in-out infinite; }
+  @keyframes cash-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
+  .ov-row.liquidity { flex-wrap: wrap; gap: 0.35rem; }
+  .ov-row.liquidity.hidden { display: none; }
+  .bailout-btn {
+    font-family: var(--font-display);
+    font-size: 0.42rem;
+    padding: 0.35rem 0.5rem;
+    background: var(--bg-2);
+    color: var(--c-peach);
+    border: 1px solid var(--c-peach);
+    cursor: pointer;
+    letter-spacing: 0.06em;
+    line-height: 1.2;
+  }
+  .bailout-btn:hover:not(:disabled) {
+    background: var(--c-peach);
+    color: var(--bg-deep);
+  }
+  .bailout-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .stat-value.model { color: var(--c-blue); font-size: 0.62rem; }
   .ov-row.power-balance.hidden { display: none; }
   .ov-row.power-balance .ov-num.deficit { color: var(--c-red); }
   .ov-row.power-balance .ov-num.tight   { color: var(--c-peach); }
@@ -1078,8 +1111,40 @@
     font-size: 0.38rem;
   }
 
+  .tree-canvas.models-tree {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    min-width: 1840px;
+    min-height: 420px;
+  }
+  .models-tree .tree-branch-label {
+    position: absolute;
+    left: 36px;
+    top: 28px;
+    font-family: var(--font-display);
+    font-size: 0.5rem;
+    color: var(--c-purple);
+    letter-spacing: 0.14em;
+    z-index: 5;
+  }
+  .models-tree .tree-node {
+    width: 168px;
+    padding: 0.55rem 0.6rem;
+  }
+  .models-tree .tree-node.active-tier {
+    border-color: var(--c-pink);
+    box-shadow: 0 0 12px rgba(255,119,168,0.35), 4px 4px 0 0 rgba(0,0,0,0.5);
+  }
+  .models-tree .tree-node.active-tier .node-title { color: var(--c-pink); }
+  .models-tree .node-title { font-size: 0.5rem; margin-bottom: 0.3rem; }
+  .models-tree .node-desc { font-size: 0.72rem; line-height: 1.25; min-height: 2.5em; margin-bottom: 0.4rem; }
+  .models-tree .node-buy { padding: 0.4rem; margin-bottom: 0.3rem; }
+  .models-tree .node-stats { font-size: 0.38rem; }
+
 </style>
+<!-- ══ /PHASE 1 · CSS ══ PHASE 2 · CSS below ═══════════════════════════ -->
 </head>
+<!-- ══ PHASE 1 · HTML ($500 · COMPLETE) ════════════════════════════════ -->
 <body>
 <div class="scanlines"></div>
 
@@ -1167,6 +1232,10 @@
 
   <section class="terminal fade-in">
     <div class="stat-row">
+      <span class="stat-label">MODEL</span>
+      <span class="stat-value model" id="active-model">NANO-1</span>
+    </div>
+    <div class="stat-row">
       <span class="stat-label">ENERGY</span>
       <span class="stat-value"><span id="energy">50</span>/<span id="energy-max">50</span></span>
     </div>
@@ -1216,14 +1285,19 @@
       <span class="ov-key">TOTAL REVENUE</span>
       <span class="ov-num">$<span id="revenue-total">0.00</span></span>
     </div>
-    <div class="ov-row cash">
+    <div class="ov-row cash" id="cash-row">
       <span class="ov-key">BALANCE</span>
       <span class="ov-num">$<span id="cash">0.00</span></span>
+    </div>
+    <div class="ov-row liquidity hidden" id="liquidity-row">
+      <span class="ov-key">LIQUIDITY</span>
+      <button class="bailout-btn hidden" id="bailout-btn" type="button">BAILOUT · −20% TR · +$5</button>
     </div>
 
     <div class="tree-buttons">
       <button class="tree-btn hidden" id="btn-tree-energy">ENERGY GRID</button>
       <button class="tree-btn hidden" id="btn-tree-processing">PROCESSING</button>
+      <button class="tree-btn hidden" id="btn-tree-models">MODELS</button>
       <button class="tree-btn hidden" id="btn-tree-marketing">MARKETING</button>
     </div>
   </aside>
@@ -1251,9 +1325,9 @@
         </div>
         <div class="tree-node locked" id="node-nuclear" style="left: 140px; top: 270px;">
           <div class="node-title">NUCLEAR</div>
-          <div class="node-desc">High output, 1% explosion risk! +15 regen/s.</div>
-          <button class="node-buy" id="nuclear-btn" type="button">$<span id="nuclear-cost">50.00</span></button>
-          <div class="node-stats"><span>OWNED: <strong id="nuclear-count">0</strong></span><span>REGEN: <strong id="nuclear-regen">0</strong></span></div>
+          <div class="node-desc">High output. +15 regen/s. Shared ops — upkeep drops per plant. 1-in-5000 meltdown lottery/min.</div>
+          <button class="node-buy" id="nuclear-btn" type="button">$<span id="nuclear-cost">28.00</span></button>
+          <div class="node-stats"><span>OWNED: <strong id="nuclear-count">0</strong></span><span>REGEN: <strong id="nuclear-regen">0</strong></span><span id="nuclear-op-stat">−12%/plant upkeep</span></div>
         </div>
         <div class="tree-node locked" id="node-bio" style="left: 440px; top: 270px;">
           <div class="node-title">NATURAL BIO</div>
@@ -1279,6 +1353,75 @@
           <div class="node-desc">Advanced processing. ~10 clicks/s.</div>
           <button class="node-buy" id="gpu-btn" type="button">$<span id="gpu-cost">25.00</span></button>
           <div class="node-stats"><span>OWNED: <strong id="gpu-count">0</strong></span><span>RATE: <strong id="gpu-rate">0</strong>/s</span></div>
+        </div>
+      </div>
+
+      <!-- MODELS TREE -->
+      <div class="tree-canvas models-tree hidden" id="tree-models">
+        <div class="tree-branch-label">MODELS · scale token throughput</div>
+        <svg class="tree-lines">
+          <line x1="204" y1="200" x2="244" y2="200" />
+          <line x1="412" y1="200" x2="452" y2="200" />
+          <line x1="620" y1="200" x2="660" y2="200" />
+          <line x1="828" y1="200" x2="868" y2="200" />
+          <line x1="1036" y1="200" x2="1076" y2="200" />
+          <line x1="1244" y1="200" x2="1284" y2="200" />
+          <line x1="1452" y1="200" x2="1492" y2="200" />
+          <line x1="1660" y1="200" x2="1700" y2="200" />
+        </svg>
+        <div class="tree-node owned active-tier" id="node-model-1" style="left: 36px; top: 128px;">
+          <div class="node-title">NANO-1</div>
+          <div class="node-desc">Humble starter weights. Baseline tokens.</div>
+          <button class="node-buy" id="model-1-btn" type="button" disabled>ACTIVE</button>
+          <div class="node-stats"><span>1× TOK · 1.0× $</span><span>1⚡/req</span></div>
+        </div>
+        <div class="tree-node locked" id="node-model-2" style="left: 244px; top: 128px;">
+          <div class="node-title">CLOD 2</div>
+          <div class="node-desc">First real model. Smarter tokens, broader appeal.</div>
+          <button class="node-buy" id="model-2-btn" type="button">$<span id="model-2-cost">12.00</span></button>
+          <div class="node-stats"><span>2× TOK · 1.6× $</span><span>2⚡/req · +30 mkt</span></div>
+        </div>
+        <div class="tree-node locked" id="node-model-3" style="left: 452px; top: 128px;">
+          <div class="node-title">GEMINIGHT 3</div>
+          <div class="node-desc">Multimodal. Tokens carry more meaning, market widens.</div>
+          <button class="node-buy" id="model-3-btn" type="button">$<span id="model-3-cost">35.00</span></button>
+          <div class="node-stats"><span>4× TOK · 2.4× $</span><span>3⚡/req · +60 mkt</span></div>
+        </div>
+        <div class="tree-node locked" id="node-model-4" style="left: 660px; top: 128px;">
+          <div class="node-title">GPT-OOPS 4</div>
+          <div class="node-desc">Confidently wrong, but the suits pay more for it.</div>
+          <button class="node-buy" id="model-4-btn" type="button">$<span id="model-4-cost">90.00</span></button>
+          <div class="node-stats"><span>8× TOK · 3.6× $</span><span>5⚡/req · +110 mkt</span></div>
+        </div>
+        <div class="tree-node locked" id="node-model-5" style="left: 868px; top: 128px;">
+          <div class="node-title">GROKKK-5</div>
+          <div class="node-desc">Last branded tier. Premium pricing, mainstream demand.</div>
+          <button class="node-buy" id="model-5-btn" type="button">$<span id="model-5-cost">220.00</span></button>
+          <div class="node-stats"><span>16× TOK · 5.4× $</span><span>8⚡/req · +180 mkt</span></div>
+        </div>
+        <div class="tree-node locked" id="node-model-6" style="left: 1076px; top: 128px;">
+          <div class="node-title">AUGUR</div>
+          <div class="node-desc">Version numbers drop. Tokens become genuinely valuable.</div>
+          <button class="node-buy" id="model-6-btn" type="button">$<span id="model-6-cost">550.00</span></button>
+          <div class="node-stats"><span>32× TOK · 8.0× $</span><span>12⚡/req · +300 mkt</span></div>
+        </div>
+        <div class="tree-node locked" id="node-model-7" style="left: 1284px; top: 128px;">
+          <div class="node-title">PROMETHEUS</div>
+          <div class="node-desc">Stealing fire. Every token reshapes a workflow.</div>
+          <button class="node-buy" id="model-7-btn" type="button">$<span id="model-7-cost">1400.00</span></button>
+          <div class="node-stats"><span>64× TOK · 12× $</span><span>18⚡/req · +500 mkt</span></div>
+        </div>
+        <div class="tree-node locked" id="node-model-8" style="left: 1492px; top: 128px;">
+          <div class="node-title">BASILISK</div>
+          <div class="node-desc">It knows. Tokens command frontier prices.</div>
+          <button class="node-buy" id="model-8-btn" type="button">$<span id="model-8-cost">3500.00</span></button>
+          <div class="node-stats"><span>128× TOK · 18× $</span><span>26⚡/req · +850 mkt</span></div>
+        </div>
+        <div class="tree-node locked" id="node-model-9" style="left: 1700px; top: 128px;">
+          <div class="node-title">SINGULARITY-∞</div>
+          <div class="node-desc">Endgame weights. Every token rewrites the world.</div>
+          <button class="node-buy" id="model-9-btn" type="button">$<span id="model-9-cost">9000.00</span></button>
+          <div class="node-stats"><span>256× TOK · 28× $</span><span>36⚡/req · +1500 mkt</span></div>
         </div>
       </div>
 
@@ -1325,42 +1468,55 @@
         <div class="tree-node locked" id="node-ngos" style="left: 36px; top: 296px;">
           <div class="node-title">SUPPORT NGOs</div>
           <div class="node-desc">Fund relief orgs. Look humane.</div>
-          <button class="node-buy" id="ngos-btn" type="button">$<span id="ngos-cost">8.00</span></button>
-          <div class="node-stats"><span>OWNED: <strong id="ngos-count">0</strong></span><span>+3% TR</span></div>
+          <button class="node-buy" id="ngos-btn" type="button">$<span id="ngos-cost">5.00</span></button>
+          <div class="node-stats"><span>OWNED: <strong id="ngos-count">0</strong></span><span>+10% TR</span></div>
         </div>
         <div class="tree-node locked" id="node-billionaires" style="left: 244px; top: 296px;">
           <div class="node-title">BILLIONAIRES 4 GOOD</div>
           <div class="node-desc">Philanthropist photo ops.</div>
-          <button class="node-buy" id="billionaires-btn" type="button">$<span id="billionaires-cost">25.00</span></button>
-          <div class="node-stats"><span>OWNED: <strong id="billionaires-count">0</strong></span><span>+5% TR</span></div>
+          <button class="node-buy" id="billionaires-btn" type="button">$<span id="billionaires-cost">12.00</span></button>
+          <div class="node-stats"><span>OWNED: <strong id="billionaires-count">0</strong></span><span>+20% TR</span></div>
         </div>
         <div class="tree-node locked" id="node-who" style="left: 452px; top: 296px;">
           <div class="node-title">WHO PARTNERSHIP</div>
           <div class="node-desc">Official health alliance.</div>
-          <button class="node-buy" id="who-btn" type="button">$<span id="who-cost">60.00</span></button>
-          <div class="node-stats"><span>OWNED: <strong id="who-count">0</strong></span><span>+8% TR</span></div>
+          <button class="node-buy" id="who-btn" type="button">$<span id="who-cost">30.00</span></button>
+          <div class="node-stats"><span>OWNED: <strong id="who-count">0</strong></span><span>+40% TR</span></div>
         </div>
         <div class="tree-node locked" id="node-green" style="left: 660px; top: 296px;">
           <div class="node-title">GREEN MOVEMENT</div>
           <div class="node-desc">Climate pledge sponsors.</div>
-          <button class="node-buy" id="green-btn" type="button">$<span id="green-cost">150.00</span></button>
-          <div class="node-stats"><span>OWNED: <strong id="green-count">0</strong></span><span>+12% TR</span></div>
+          <button class="node-buy" id="green-btn" type="button">$<span id="green-cost">75.00</span></button>
+          <div class="node-stats"><span>OWNED: <strong id="green-count">0</strong></span><span>+60% TR</span></div>
         </div>
       </div>
 
     </div>
   </div>
 </div>
+<!-- ══ /PHASE 1 · HTML ══ PHASE 2 · HTML below ══════════════════════════ -->
+<!-- PHASE 2 · HTML: new panels, modals, tree nodes, HUD widgets -->
 
 
+<!-- ══ PHASE 1 · JS ($500 · COMPLETE) ═══════════════════════════════════ -->
 <script>
 (() => {
   // ── State ──────────────────────────────────────
   const CASH_FLOOR = 0.50;
+  const BAILOUT_CASH = 5;
+  const BAILOUT_TRUST_COST = 20;
+  const BAILOUT_COOLDOWN_MS = 120000;
+  const LIQUIDITY_CRISIS_MS = 90000;
   const OP_IDLE_FLOOR = 0.1; // base idle upkeep floor (10% of full op costs)
   const OP_IDLE_FLOOR_MIN = 0.02; // minimum floor with enough solar
   const SOLAR_IDLE_FLOOR_RELIEF = 0.006; // each panel lowers idle floor
-  const PASSIVE_TRUST_REGEN = 0.02; // %/s
+  const NUCLEAR_OP_DISCOUNT = 0.88; // each plant lowers per-plant upkeep (economies of scale)
+  const NUCLEAR_OP_FLOOR_MULT = 0.4; // upkeep per plant never below 40% of base
+  const NUCLEAR_MELTDOWN_ROLL_SEC = 60; // one explicit dice roll per minute of uptime
+  const NUCLEAR_MELTDOWN_ODDS = 5000;   // each plant: Math.random() < 1/odds
+  const NUCLEAR_EXPLOSION_TRUST_LOSS = 15;
+  const MODELS_TREE_UNLOCK_REVENUE = 25;
+  const PASSIVE_TRUST_REGEN = 0.04; // %/s
   const BIO_TRUST_DRAIN = 0.15;     // %/s per bio plant
 
   const S = {
@@ -1372,7 +1528,8 @@
     cash: 0,
     revenue: 0,
     pricePerK: 10,
-    energyPerCompute: 1,
+
+    modelTier: 1,
 
     demandBase: 200,
     elasticity: 1.5,
@@ -1384,8 +1541,8 @@
     solarOpCost: 0.00,
 
     nuclear: 0,
-    nuclearBaseCost: 50,
-    nuclearCostMult: 2.5,
+    nuclearBaseCost: 28,
+    nuclearCostMult: 1.7,
     nuclearRegenBonus: 15.0,
     nuclearOpCost: 0.08,
 
@@ -1414,10 +1571,10 @@
     egogram: 0, egogramBaseCost: 50, egogramCostMult: 2.2, egogramBoost: 300, egogramBurn: 0.03,
     itube: 0, itubeBaseCost: 120, itubeCostMult: 2.5, itubeBoost: 800, itubeBurn: 0.05,
 
-    ngos: 0, ngosBaseCost: 8, ngosCostMult: 1.8, ngosTrustBoost: 3, ngosBurn: 0.005,
-    billionaires: 0, billionairesBaseCost: 25, billionairesCostMult: 2.0, billionairesTrustBoost: 5, billionairesBurn: 0.015,
-    who: 0, whoBaseCost: 60, whoCostMult: 2.2, whoTrustBoost: 8, whoBurn: 0.03,
-    greenMovement: 0, greenMovementBaseCost: 150, greenMovementCostMult: 2.5, greenMovementTrustBoost: 12, greenMovementBurn: 0.05,
+    ngos: 0, ngosBaseCost: 5, ngosCostMult: 1.6, ngosTrustBoost: 10, ngosBurn: 0.004,
+    billionaires: 0, billionairesBaseCost: 12, billionairesCostMult: 1.7, billionairesTrustBoost: 20, billionairesBurn: 0.01,
+    who: 0, whoBaseCost: 30, whoCostMult: 1.8, whoTrustBoost: 40, whoBurn: 0.02,
+    greenMovement: 0, greenMovementBaseCost: 75, greenMovementCostMult: 2.0, greenMovementTrustBoost: 60, greenMovementBurn: 0.035,
 
     lastTrustTier: "normal",
     trustTrendAnchor: 100.0,
@@ -1429,12 +1586,44 @@
     firstHire: false,
     priceHintShown: false,
     marketingHintShown: false,
+    modelsHintShown: false,
     powerWarnedRecently: false,
     negativeWarnedRecently: false,
+    lowCashWarned: false,
+    liquidityCrisisWarned: false,
+    cashFloorStuckAt: 0,
+    bailoutCooldownUntil: 0,
 
     energyDepletedUi: false,
     playTimeMs: 0,
+    nuclearMeltdownTimer: 0,
   };
+
+  // ── Models (income scaling spine) ──────────────
+  // valueMult   : per-token VALUE multiplier — frontier tokens are worth more
+  //               than NANO tokens. This bypasses elasticity (which only claws
+  //               back gains from volume), so revenue actually climbs per tier.
+  // demandBoost : added to S.demandBase on purchase. Smarter model = bigger
+  //               market, shifting the demand curve right so price holds up
+  //               when capacity jumps.
+  const MODELS = [
+    { tier: 1, name: "NANO-1",         tokenMult: 1,   valueMult: 1.0,  demandBoost: 0,   energy: 1,  cost: 0,    unlockRevenue: 0,    desc: "Humble starter weights. Baseline tokens." },
+    { tier: 2, name: "CLOD 2",         tokenMult: 2,   valueMult: 1.6,  demandBoost: 30,  energy: 2,  cost: 12,   unlockRevenue: 1.5,  desc: "First real model. Smarter tokens, broader appeal." },
+    { tier: 3, name: "GEMINIGHT 3",    tokenMult: 4,   valueMult: 2.4,  demandBoost: 60,  energy: 3,  cost: 35,   unlockRevenue: 5,    desc: "Multimodal. Tokens carry more meaning, market widens." },
+    { tier: 4, name: "GPT-OOPS 4",     tokenMult: 8,   valueMult: 3.6,  demandBoost: 110, energy: 5,  cost: 90,   unlockRevenue: 15,   desc: "Confidently wrong, but the suits pay more for it." },
+    { tier: 5, name: "GROKKK-5",       tokenMult: 16,  valueMult: 5.4,  demandBoost: 180, energy: 8,  cost: 220,  unlockRevenue: 40,   desc: "Last branded tier. Premium pricing, mainstream demand." },
+    { tier: 6, name: "AUGUR",          tokenMult: 32,  valueMult: 8.0,  demandBoost: 300, energy: 12, cost: 550,  unlockRevenue: 100,  desc: "Version numbers drop. Tokens become genuinely valuable." },
+    { tier: 7, name: "PROMETHEUS",     tokenMult: 64,  valueMult: 12.0, demandBoost: 500, energy: 18, cost: 1400, unlockRevenue: 250,  desc: "Stealing fire. Every token reshapes a workflow." },
+    { tier: 8, name: "BASILISK",       tokenMult: 128, valueMult: 18.0, demandBoost: 850, energy: 26, cost: 3500, unlockRevenue: 600,  desc: "It knows. Tokens command frontier prices." },
+    { tier: 9, name: "SINGULARITY-∞",  tokenMult: 256, valueMult: 28.0, demandBoost: 1500,energy: 36, cost: 9000, unlockRevenue: 1500, desc: "Endgame weights. Every token rewrites the world." },
+  ];
+
+  const activeModel = () => MODELS[S.modelTier - 1] || MODELS[0];
+  const modelDisplayName = (m) => m ? m.name : "NANO-1";
+  const tokensPerCompute = () => activeModel().tokenMult;
+  const tokenValueMult = () => activeModel().valueMult;
+  const energyPerCompute = () => activeModel().energy;
+  const nextModel = () => (S.modelTier < MODELS.length ? MODELS[S.modelTier] : null);
 
   // ── Derived helpers ────────────────────────────
   const energyRegen = () => S.energyRegenBase + S.solar * S.solarRegenBonus + S.nuclear * S.nuclearRegenBonus + S.bio * S.bioRegenBonus;
@@ -1471,11 +1660,37 @@
   const demandAt = (p) => S.demandBase * Math.pow(Math.max(0.5, p), -S.elasticity) * trustDemandMult();
   const demandNow = () => demandAt(S.pricePerK);
 
+  // More reactors share ops crews, fuel contracts, and paperwork — upkeep/plant drops.
+  function nuclearOpCostPerPlant() {
+    if (S.nuclear <= 0) return S.nuclearOpCost;
+    const scale = Math.pow(NUCLEAR_OP_DISCOUNT, S.nuclear - 1);
+    return S.nuclearOpCost * Math.max(NUCLEAR_OP_FLOOR_MULT, scale);
+  }
+
+  function nuclearOpCostTotal() {
+    return S.nuclear * nuclearOpCostPerPlant();
+  }
+
+  function nuclearOpReliefLabel() {
+    return "−" + ((1 - NUCLEAR_OP_DISCOUNT) * 100).toFixed(0) + "%/plant upkeep";
+  }
+
+  // Once per minute: each reactor gets one fair Math.random() roll (1-in-N lottery).
+  function rollNuclearMeltdowns() {
+    for (let i = 0; i < S.nuclear; i++) {
+      if (Math.random() < 1 / NUCLEAR_MELTDOWN_ODDS) {
+        S.humanityTrust -= NUCLEAR_EXPLOSION_TRUST_LOSS;
+        log("NUCLEAR EXPLOSION! Humanity trust −" + NUCLEAR_EXPLOSION_TRUST_LOSS + "%.", "warn");
+        return;
+      }
+    }
+  }
+
   // Operating cost per second at full utilization
   function operatingCostGrossPerSec() {
     return (
       S.solar * S.solarOpCost +
-      S.nuclear * S.nuclearOpCost +
+      nuclearOpCostTotal() +
       S.bio * S.bioOpCost +
       S.cpu * S.cpuOpCost +
       S.gpu * S.gpuOpCost +
@@ -1510,19 +1725,22 @@
     return operatingCostGrossPerSec() * Math.max(idleOpFloor(), u);
   }
 
-  // Marketing saturation: each repeat purchase = base × 0.5^owned
-  const marketingBoostAt = (base, owned) => base * Math.pow(0.5, owned);
+  // Marketing saturation: each repeat purchase = base × 0.7^owned
+  const marketingBoostAt = (base, owned) => base * Math.pow(0.7, owned);
 
-  // wetware throughput contribution (tok/s)
-  const wetwareRate = () => {
+  // wetware compute rate (requests/s, before token multiplier)
+  const computeRate = () => {
     let r = 0;
     if (S.cpu > 0) r += S.cpu / S.cpuInterval;
     if (S.gpu > 0) r += S.gpu / S.gpuInterval;
     return r;
   };
 
-  // Auto processors draw 1 energy per token — compare to regen for grid warnings
-  const energyDemandPerSec = () => wetwareRate() * S.energyPerCompute;
+  // wetware throughput contribution (tok/s)
+  const wetwareRate = () => computeRate() * tokensPerCompute();
+
+  // Auto processors draw energy per request — compare to regen for grid warnings
+  const energyDemandPerSec = () => computeRate() * energyPerCompute();
   const energyBalancePerSec = () => energyRegen() - energyDemandPerSec();
 
   // capacity = recent player click rate + wetware rate (tok/s)
@@ -1533,7 +1751,7 @@
     for (let i = 0; i < S.clickTimes.length; i++) {
       if (S.clickTimes[i] >= cutoff) recent++;
     }
-    return (recent / 2.5) + wetwareRate();
+    return ((recent / 2.5) + computeRate()) * tokensPerCompute();
   }
 
   // efficiency = paid fraction per request, given current cap & demand
@@ -1550,8 +1768,12 @@
     return Math.pow(S.demandBase * trustDemandMult() / cap, 1 / S.elasticity);
   }
 
-  const payPerCompute = () =>
-    (S.pricePerK / 1000) * efficiencyNow() * trustPriceMult();
+  // Each model tier multiplies the per-token VALUE. Elasticity can claw back
+  // gains from extra volume, but it cannot touch this multiplier — so revenue
+  // per token genuinely climbs as you upgrade.
+  const payPerToken = () =>
+    (S.pricePerK / 1000) * efficiencyNow() * trustPriceMult() * tokenValueMult();
+  const payPerCompute = () => payPerToken() * tokensPerCompute();
 
   // ── DOM ────────────────────────────────────────
   const $ = (id) => document.getElementById(id);
@@ -1562,6 +1784,10 @@
     tokensTot: $("tokens-total"),
     revenueTot:$("revenue-total"),
     cash:      $("cash"),
+    cashRow:   $("cash-row"),
+    liquidityRow: $("liquidity-row"),
+    bailoutBtn: $("bailout-btn"),
+    activeModel: $("active-model"),
     btn:       $("compute-btn"),
     energyStatus: $("energy-status"),
     gridStatus: $("grid-status"),
@@ -1599,20 +1825,29 @@
     powerBalance: $("power-balance"),
     btnTreeEnergy: $("btn-tree-energy"),
     btnTreeProcessing: $("btn-tree-processing"),
+    btnTreeModels: $("btn-tree-models"),
     btnTreeMarketing: $("btn-tree-marketing"),
     modalContainer: $("modal-container"),
     modalClose: $("modal-close"),
     modalTitle: $("modal-title"),
     treeEnergy: $("tree-energy"),
     treeProcessing: $("tree-processing"),
+    treeModels: $("tree-models"),
     treeMarketing: $("tree-marketing"),
     
     nodeSolar: $("node-solar"), solarBtn: $("solar-btn"), solarCost: $("solar-cost"), solarN: $("solar-count"), solarRegen: $("solar-regen"), solarIdleStat: $("solar-idle-stat"),
-    nodeNuclear: $("node-nuclear"), nuclearBtn: $("nuclear-btn"), nuclearCost: $("nuclear-cost"), nuclearN: $("nuclear-count"), nuclearRegen: $("nuclear-regen"),
+    nodeNuclear: $("node-nuclear"), nuclearBtn: $("nuclear-btn"), nuclearCost: $("nuclear-cost"), nuclearN: $("nuclear-count"), nuclearRegen: $("nuclear-regen"), nuclearOpStat: $("nuclear-op-stat"),
     nodeBio: $("node-bio"), bioBtn: $("bio-btn"), bioCost: $("bio-cost"), bioN: $("bio-count"), bioRegen: $("bio-regen"),
     
     nodeCpu: $("node-cpu"), cpuBtn: $("cpu-btn"), cpuCost: $("cpu-cost"), cpuN: $("cpu-count"), cpuR: $("cpu-rate"),
     nodeGpu: $("node-gpu"), gpuBtn: $("gpu-btn"), gpuCost: $("gpu-cost"), gpuN: $("gpu-count"), gpuR: $("gpu-rate"),
+
+    modelNodes: MODELS.map((m) => ({
+      tier: m.tier,
+      node: $("node-model-" + m.tier),
+      btn: $("model-" + m.tier + "-btn"),
+      costEl: m.tier > 1 ? $("model-" + m.tier + "-cost") : null,
+    })),
 
     nodeShitedin: $("node-shitedin"), shitedinBtn: $("shitedin-btn"), shitedinCost: $("shitedin-cost"), shitedinN: $("shitedin-count"), shitedinNext: $("shitedin-next"),
     nodeFikfok: $("node-fikfok"), fikfokBtn: $("fikfok-btn"), fikfokCost: $("fikfok-cost"), fikfokN: $("fikfok-count"), fikfokNext: $("fikfok-next"),
@@ -1735,13 +1970,14 @@
 
   // ── Core action ────────────────────────────────
   function compute(isAuto = false) {
-    const cost = S.energyPerCompute;
+    const cost = energyPerCompute();
+    const tokens = tokensPerCompute();
     // Wetware waits for a small buffer so regen doesn't fight the depleted UI at ~1 energy
     if (S.energy < cost || (isAuto && S.energy < cost + 0.5)) return false;
 
-    const pay = payPerCompute();
+    const pay = payPerToken() * tokens;
     S.energy  -= cost;
-    S.tokens  += 1;
+    S.tokens  += tokens;
     S.cash    += pay;
     S.revenue += pay;
 
@@ -1766,9 +2002,11 @@
     el.modalContainer.classList.remove("hidden");
     el.treeEnergy.classList.add("hidden");
     el.treeProcessing.classList.add("hidden");
+    el.treeModels.classList.add("hidden");
     el.treeMarketing.classList.add("hidden");
     if (type === 'energy') { el.treeEnergy.classList.remove("hidden"); el.modalTitle.textContent = "ENERGY GRID"; el.btnTreeEnergy.classList.remove("pulse"); }
     if (type === 'processing') { el.treeProcessing.classList.remove("hidden"); el.modalTitle.textContent = "PROCESSING"; el.btnTreeProcessing.classList.remove("pulse"); }
+    if (type === 'models') { el.treeModels.classList.remove("hidden"); el.modalTitle.textContent = "MODELS"; el.btnTreeModels.classList.remove("pulse"); }
     if (type === 'marketing') { el.treeMarketing.classList.remove("hidden"); el.modalTitle.textContent = "MARKETING"; el.btnTreeMarketing.classList.remove("pulse"); }
     activeModal = type;
   }
@@ -1778,6 +2016,7 @@
   });
   el.btnTreeEnergy.addEventListener("click", () => openModal('energy'));
   el.btnTreeProcessing.addEventListener("click", () => openModal('processing'));
+  el.btnTreeModels.addEventListener("click", () => openModal('models'));
   el.btnTreeMarketing.addEventListener("click", () => openModal('marketing'));
 
   function unlockTreeBtn(btn) {
@@ -1786,6 +2025,110 @@
       btn.classList.add("pulse");
     }
   }
+
+  function updateModelNodeUI(nodeEl, btn, tier, cost, unlockRevenue) {
+    nodeEl.classList.remove("active-tier");
+    if (S.modelTier >= tier) {
+      nodeEl.classList.remove("locked", "available");
+      nodeEl.classList.add("owned");
+      if (S.modelTier === tier) {
+        nodeEl.classList.add("active-tier");
+        btn.textContent = "ACTIVE";
+      } else {
+        btn.textContent = "✓";
+      }
+      btn.disabled = true;
+    } else if (S.modelTier === tier - 1 && S.revenue >= unlockRevenue) {
+      nodeEl.classList.remove("locked", "owned", "active-tier");
+      nodeEl.classList.add("available");
+      btn.textContent = "$" + fmtCash(cost);
+      btn.disabled = S.cash < cost;
+    } else {
+      nodeEl.classList.add("locked");
+      nodeEl.classList.remove("owned", "available", "active-tier");
+      btn.textContent = "$" + fmtCash(cost);
+      btn.disabled = true;
+    }
+  }
+
+  function buyModel(tier) {
+    const m = MODELS[tier - 1];
+    if (!m || tier <= 1) return;
+    if (S.modelTier >= tier) return;
+    if (S.modelTier !== tier - 1) {
+      log("upgrade models in order · " + modelDisplayName(nextModel() || activeModel()) + " is next", "warn");
+      return;
+    }
+    if (S.revenue < m.unlockRevenue) {
+      log("need $" + fmtCash(m.unlockRevenue) + " lifetime revenue to unlock " + m.name, "warn");
+      return;
+    }
+    if (S.cash < m.cost) {
+      log("insufficient balance · need $" + fmtCash(m.cost - S.cash) + " more", "warn");
+      return;
+    }
+    S.cash -= m.cost;
+    S.modelTier = tier;
+    if (m.demandBoost > 0) S.demandBase += m.demandBoost;
+    log(
+      m.name + " deployed · " + m.tokenMult + "× tokens · " +
+      m.valueMult.toFixed(1) + "× $/token · " + m.energy + "⚡/req" +
+      (m.demandBoost > 0 ? " · market +" + m.demandBoost : ""),
+      "event"
+    );
+    if (tier === 6) log("version numbers gone · the product is the entity now", "hint");
+  }
+
+  function tryBailout() {
+    const now = Date.now();
+    if (now < S.bailoutCooldownUntil) {
+      log("bailout cooling down · " + Math.ceil((S.bailoutCooldownUntil - now) / 1000) + "s left", "warn");
+      return;
+    }
+    if (S.humanityTrust <= BAILOUT_TRUST_COST) {
+      log("trust too low for bailout · fix your margins instead", "warn");
+      return;
+    }
+    S.humanityTrust -= BAILOUT_TRUST_COST;
+    S.cash += BAILOUT_CASH;
+    S.bailoutCooldownUntil = now + BAILOUT_COOLDOWN_MS;
+    S.cashFloorStuckAt = 0;
+    S.lowCashWarned = false;
+    S.liquidityCrisisWarned = false;
+    log("emergency liquidity · −" + BAILOUT_TRUST_COST + "% trust · +$" + BAILOUT_CASH, "warn");
+  }
+
+  function checkLiquidityCrisis(netRate) {
+    const atFloor = S.cash <= CASH_FLOOR + 0.001;
+    const bleeding = netRate < -0.001 && operatingCostGrossPerSec() > 0.001;
+
+    if (atFloor && bleeding) {
+      if (!S.cashFloorStuckAt) S.cashFloorStuckAt = performance.now();
+      const stuckMs = performance.now() - S.cashFloorStuckAt;
+
+      if (!S.lowCashWarned) {
+        S.lowCashWarned = true;
+        log("CASH FLOOR · bleeding at $" + fmtCash(CASH_FLOOR) + " · cut costs or raise income", "warn");
+      }
+      if (stuckMs >= 30000 && !S.liquidityCrisisWarned) {
+        S.liquidityCrisisWarned = true;
+        log("LIQUIDITY CRISIS · bailout available (−" + BAILOUT_TRUST_COST + "% trust) or fix margins", "warn");
+      }
+      if (stuckMs >= LIQUIDITY_CRISIS_MS) {
+        allowSave = false;
+        log("LIQUIDITY CRISIS · SHUTDOWN.", "warn");
+        alert("LIQUIDITY CRISIS\n\nOperating costs exceeded income until reserves hit the floor.\nThe node has been seized.");
+        location.reload();
+      }
+    } else {
+      S.cashFloorStuckAt = 0;
+      if (!atFloor) {
+        S.lowCashWarned = false;
+        S.liquidityCrisisWarned = false;
+      }
+    }
+  }
+
 
   function updateNodeUI(nodeEl, btn, isOwned, isAvailable, cost) {
     if (isOwned) {
@@ -1844,7 +2187,7 @@
       S.solar++;
       log("green energy online · regen " + energyRegen().toFixed(1) + "/s · idle floor now " + Math.round(idleOpFloor() * 100) + "%", "event");
     }
-    else if (type === 'nuclear') { S.nuclear++; log("nuclear plant online · 1% explosion risk!", "event"); }
+    else if (type === 'nuclear') { S.nuclear++; log("nuclear plant online · meltdown? 1-in-" + NUCLEAR_MELTDOWN_ODDS + " lottery · one roll per minute", "event"); }
     else if (type === 'bio') { S.bio++; log("natural bio online · emissions starting", "event"); }
     else if (type === 'cpu') { 
       S.cpu++; 
@@ -1908,12 +2251,13 @@
         S.humanityTrust -= BIO_TRUST_DRAIN * S.bio * dt;
       }
       if (S.nuclear > 0) {
-        // 1% chance per minute per nuclear plant -> 1/6000 chance per frame if dt is 1/60
-        // Expected value: 0.01 per 60 sec -> 0.01/60 per sec
-        if (Math.random() < (0.01 / 60) * S.nuclear * dt * 60) {
-          S.humanityTrust -= 25.0;
-          log("NUCLEAR EXPLOSION! Humanity trust plummets.", "warn");
+        S.nuclearMeltdownTimer += dt;
+        while (S.nuclearMeltdownTimer >= NUCLEAR_MELTDOWN_ROLL_SEC) {
+          S.nuclearMeltdownTimer -= NUCLEAR_MELTDOWN_ROLL_SEC;
+          rollNuclearMeltdowns();
         }
+      } else {
+        S.nuclearMeltdownTimer = 0;
       }
       if (S.humanityTrust <= 0) {
         S.humanityTrust = 0;
@@ -1958,6 +2302,10 @@
     el.tokensTot.textContent  = fmtInt(S.tokens);
     el.revenueTot.textContent = fmtCash(S.revenue);
     el.cash.textContent       = fmtCash(S.cash);
+    el.activeModel.textContent = modelDisplayName(activeModel());
+
+    const atFloor = S.cash <= CASH_FLOOR + 0.001;
+    el.cashRow.classList.toggle("at-floor", atFloor);
 
     el.humanityTrust.textContent = S.humanityTrust.toFixed(1) + "%";
     el.humanityTrust.className = "";
@@ -2025,6 +2373,15 @@
         log("marketing unlocked · only buy ads when you have capacity to fulfil demand", "hint");
       }
     }
+    // MODELS is the mid-game escalation — let players learn the
+    // price/demand/efficiency loop on processing + energy first.
+    if (S.revenue >= MODELS_TREE_UNLOCK_REVENUE) {
+      unlockTreeBtn(el.btnTreeModels);
+      if (!S.modelsHintShown) {
+        S.modelsHintShown = true;
+        log("models unlocked · smarter tokens sell for more · upgrade to grow margin", "hint");
+      }
+    }
 
     // Update nodes
     const cSol = solarCost(); el.solarCost.textContent = fmtCash(cSol); el.solarN.textContent = S.solar; el.solarRegen.textContent = (S.solar * S.solarRegenBonus).toFixed(1);
@@ -2037,6 +2394,9 @@
     updateNodeUI(el.nodeBio, el.bioBtn, S.bio > 0, S.solar > 0 && S.revenue >= 5.00, cBio);
 
     const cNuc = nuclearCost(); el.nuclearCost.textContent = fmtCash(cNuc); el.nuclearN.textContent = S.nuclear; el.nuclearRegen.textContent = (S.nuclear * S.nuclearRegenBonus).toFixed(1);
+    el.nuclearOpStat.textContent = S.nuclear === 0
+      ? nuclearOpReliefLabel()
+      : "$" + nuclearOpCostPerPlant().toFixed(3) + "/s each";
     updateNodeUI(el.nodeNuclear, el.nuclearBtn, S.nuclear > 0, S.solar > 0 && S.revenue >= 15.00, cNuc);
 
     const cCpu = cpuCost(); el.cpuCost.textContent = fmtCash(cCpu); el.cpuN.textContent = S.cpu; el.cpuR.textContent = (S.cpu > 0 ? S.cpu / S.cpuInterval : 0).toFixed(2);
@@ -2044,6 +2404,12 @@
 
     const cGpu = gpuCost(); el.gpuCost.textContent = fmtCash(cGpu); el.gpuN.textContent = S.gpu; el.gpuR.textContent = (S.gpu > 0 ? S.gpu / S.gpuInterval : 0).toFixed(2);
     updateNodeUI(el.nodeGpu, el.gpuBtn, S.gpu > 0, S.cpu > 0 && S.revenue >= 8.00, cGpu);
+
+    for (const mn of el.modelNodes) {
+      const m = MODELS[mn.tier - 1];
+      if (mn.costEl) mn.costEl.textContent = fmtCash(m.cost);
+      updateModelNodeUI(mn.node, mn.btn, mn.tier, m.cost, m.unlockRevenue);
+    }
 
     const cSh = shitedinCost(); el.shitedinCost.textContent = fmtCash(cSh); el.shitedinN.textContent = S.shitedin;
     el.shitedinNext.textContent = marketingBoostAt(S.shitedinBoost, S.shitedin).toFixed(S.shitedin >= 3 ? 1 : 0);
@@ -2077,7 +2443,8 @@
     const eff = efficiencyNow();
     const opt = optimalPrice(cap);
     const pay = payPerCompute();
-    
+    const payTok = payPerToken();
+
     // Dynamic chart scaling — keep curve, dots, and capacity line on the same Y scale
     const newTpsMax = Math.max(20, dem * 1.5, cap * 1.5);
     if (Math.abs(CHART.tpsMax - newTpsMax) > 0.25) {
@@ -2172,7 +2539,7 @@
     }
 
     // Compute button + depleted status (latched so regen/wetware don't flicker at ~1 energy)
-    const cost = S.energyPerCompute;
+    const cost = energyPerCompute();
     const can = S.energy >= cost;
     const clearUi = cost + 0.5;
     if (S.energy < cost) S.energyDepletedUi = true;
@@ -2213,9 +2580,9 @@
     el.dispProc.textContent = cap.toFixed(1) + " tok/s";
 
     // Gross / Costs / Net — live margin readout
-    // Gross income rate ≈ actual fulfilled throughput × pay-per-compute
+    // Gross income rate ≈ actual fulfilled throughput × pay-per-token
     const fulfilled = Math.min(cap, dem);
-    const grossRate = fulfilled * pay;
+    const grossRate = fulfilled * payTok;
     const util = utilizationNow();
     const costGross = operatingCostGrossPerSec();
     const costRate = operatingCostPerSec(util);
@@ -2238,6 +2605,23 @@
         setTimeout(() => { S.negativeWarnedRecently = false; }, 15000);
       }
     }
+
+    // Liquidity crisis — stuck at cash floor while bleeding
+    const showLiquidity = atFloor && netRate < -0.001 && operatingCostGrossPerSec() > 0.001;
+    el.liquidityRow.classList.toggle("hidden", !showLiquidity);
+    if (showLiquidity) {
+      const bailoutReady = Date.now() >= S.bailoutCooldownUntil && S.humanityTrust > BAILOUT_TRUST_COST;
+      el.bailoutBtn.classList.remove("hidden");
+      el.bailoutBtn.disabled = !bailoutReady;
+      if (!bailoutReady && Date.now() < S.bailoutCooldownUntil) {
+        el.bailoutBtn.textContent = "BAILOUT · " + Math.ceil((S.bailoutCooldownUntil - Date.now()) / 1000) + "s";
+      } else {
+        el.bailoutBtn.textContent = "BAILOUT · −" + BAILOUT_TRUST_COST + "% TR · +$" + BAILOUT_CASH;
+      }
+    } else {
+      el.bailoutBtn.classList.add("hidden");
+    }
+    checkLiquidityCrisis(netRate);
   }
 
   // ── Events ─────────────────────────────────────
@@ -2258,6 +2642,10 @@
   el.bioBtn.addEventListener("click", () => buyItem('bio'));
   el.cpuBtn.addEventListener("click", () => buyItem('cpu'));
   el.gpuBtn.addEventListener("click", () => buyItem('gpu'));
+  for (const mn of el.modelNodes) {
+    if (mn.tier > 1) mn.btn.addEventListener("click", () => buyModel(mn.tier));
+  }
+  el.bailoutBtn.addEventListener("click", tryBailout);
   el.shitedinBtn.addEventListener("click", () => buyItem('shitedin'));
   el.fikfokBtn.addEventListener("click", () => buyItem('fikfok'));
   el.egogramBtn.addEventListener("click", () => buyItem('egogram'));
@@ -2272,20 +2660,21 @@
 
   // ── Save / Load / Reset ────────────────────────
   const SAVE_KEY = "ai-must-survive.v1";
-  const SAVE_VERSION = 1;
+  const SAVE_VERSION = 2;
   let allowSave = true;
   let sessionStartedAt = Date.now();
   // Fields that get serialized — anything transient (clickTimes, timers,
   // animation state) is intentionally excluded.
   const PERSIST_KEYS = [
     "humanityTrust", "demandBase",
-    "energy", "tokens", "cash", "revenue", "pricePerK",
+    "energy", "tokens", "cash", "revenue", "pricePerK", "modelTier",
     "solar", "nuclear", "bio", "cpu", "gpu",
     "shitedin", "fikfok", "egogram", "itube",
     "ngos", "billionaires", "who", "greenMovement",
     "playTimeMs",
     "queueAnnounced", "firstHire", "priceHintShown",
-    "marketingHintShown", "lastTrustTier",
+    "marketingHintShown", "modelsHintShown", "lastTrustTier",
+    "lowCashWarned", "liquidityCrisisWarned", "bailoutCooldownUntil",
   ];
 
   const formatDuration = (ms) => {
@@ -2313,8 +2702,9 @@
     const eff = efficiencyNow();
     const opt = optimalPrice(cap);
     const pay = payPerCompute();
+    const payTok = payPerToken();
     const fulfilled = Math.min(cap, dem);
-    const grossRate = fulfilled * pay;
+    const grossRate = fulfilled * payTok;
     const util = utilizationNow();
     const costGross = operatingCostGrossPerSec();
     const costRate = operatingCostPerSec(util);
@@ -2322,7 +2712,7 @@
     const tier = trustTier(S.humanityTrust);
     const isUnmet = dem > cap + 0.01;
     const delta = Math.abs(dem - cap);
-    const playerTput = S.clickTimes.length / 2.5;
+    const playerTput = (S.clickTimes.length / 2.5) * tokensPerCompute();
     const autoTput = wetwareRate();
     const regen = energyRegen();
 
@@ -2369,6 +2759,12 @@
         power: formatPowerExport(regen),
         pricePer1K: S.pricePerK,
         payPerRequest: +pay.toFixed(4),
+        payPerToken: +payTok.toFixed(4),
+        activeModel: modelDisplayName(activeModel()),
+        modelTier: S.modelTier,
+        tokensPerCompute: tokensPerCompute(),
+        tokenValueMult: tokenValueMult(),
+        energyPerCompute: energyPerCompute(),
         efficiencyPercent: Math.round(eff * 100),
         demandTokPerSec: +dem.toFixed(2),
         capacityTokPerSec: +cap.toFixed(2),
@@ -2410,6 +2806,12 @@
         tokensProcessed: S.tokens,
         pricePer1KTokens: S.pricePerK,
         payPerCompute: +pay.toFixed(4),
+        payPerToken: +payTok.toFixed(4),
+        activeModel: modelDisplayName(activeModel()),
+        modelTier: S.modelTier,
+        tokensPerCompute: tokensPerCompute(),
+        tokenValueMult: tokenValueMult(),
+        energyPerCompute: energyPerCompute(),
         demandBase: +S.demandBase.toFixed(1),
       },
 
@@ -2437,7 +2839,8 @@
           return "ok";
         })(),
         power: formatPowerExport(regen),
-        canCompute: S.energy >= S.energyPerCompute,
+        canCompute: S.energy >= energyPerCompute(),
+        energyPerRequest: energyPerCompute(),
         depleted: S.energyDepletedUi,
       },
 
@@ -2472,6 +2875,12 @@
           unlockWhen: "lifetime revenue >= $1.50",
           revenueNeeded: +Math.max(0, 1.5 - S.revenue).toFixed(2),
         },
+        modelsTree: {
+          unlocked: S.revenue >= 1.5,
+          blocked: S.revenue < 1.5,
+          unlockWhen: "lifetime revenue >= $1.50",
+          revenueNeeded: +Math.max(0, 1.5 - S.revenue).toFixed(2),
+        },
         marketingTree: {
           unlocked: S.revenue >= 5,
           blocked: S.revenue < 5,
@@ -2490,7 +2899,9 @@
           }),
           nuclear: upgradeNode(S.nuclear, nuclearCost(), {
             regenPerSec: +(S.nuclear * S.nuclearRegenBonus).toFixed(1),
-            opCostPerSec: +(S.nuclear * S.nuclearOpCost).toFixed(2),
+            opCostPerSec: +nuclearOpCostTotal().toFixed(3),
+            opCostPerPlant: +nuclearOpCostPerPlant().toFixed(4),
+            opDiscountPerPlantPercent: +((1 - NUCLEAR_OP_DISCOUNT) * 100).toFixed(0),
           }),
           bio: upgradeNode(S.bio, bioCost(), {
             regenPerSec: +(S.bio * S.bioRegenBonus).toFixed(1),
@@ -2507,6 +2918,21 @@
             opCostPerSec: +(S.gpu * S.gpuOpCost).toFixed(2),
           }),
         },
+        models: MODELS.map((m) => ({
+          tier: m.tier,
+          name: m.name,
+          owned: S.modelTier >= m.tier,
+          active: S.modelTier === m.tier,
+          next: S.modelTier === m.tier - 1,
+          cost: m.cost,
+          canAfford: S.cash >= m.cost,
+          unlockRevenue: m.unlockRevenue,
+          revenueGateMet: S.revenue >= m.unlockRevenue,
+          tokenMult: m.tokenMult,
+          valueMult: m.valueMult,
+          demandBoost: m.demandBoost,
+          energyPerRequest: m.energy,
+        })),
         marketingDemand: {
           shitedin: upgradeNode(S.shitedin, shitedinCost(), {
             nextBoost: +marketingBoostAt(S.shitedinBoost, S.shitedin).toFixed(1),
@@ -2550,7 +2976,7 @@
       },
 
       hintsForAI:
-        "Player is debugging/balancing this incremental. stats mirrors the live HUD. Costs scale with utilization (10% floor). Cash floor $0.50. Unlock gates: energy $0.50, processing $1.50, marketing $5 (CPU required for ads).",
+        "Player is debugging/balancing this incremental. stats mirrors the live HUD. Costs scale with utilization (10% floor). Cash floor $0.50 with liquidity crisis after 90s bleed + bailout option (−20% trust, +$5). Unlock gates: energy $0.50, processing $1.50, marketing $5 (CPU required for ads), models $25 (mid-game escalation). Models scale BOTH token volume (tokenMult) AND per-token VALUE (valueMult) so revenue beats the elasticity claw-back, and each tier adds demandBoost to S.demandBase to shift the demand curve right.",
     };
   }
 
@@ -2559,7 +2985,7 @@
       "HUMANITY TRUST: " + stats.humanityTrustPercent + "% (" + stats.trustTierLabel + ")",
       "BALANCE: $" + stats.balance.toFixed(2) + " | REVENUE: $" + stats.lifetimeRevenue.toFixed(2) + " | TOKENS: " + stats.tokensProcessed,
       "ENERGY: " + stats.energy + " | REGEN: " + stats.energyRegenPerSec + "/s | LOAD: " + stats.energyDemandPerSec + "/s | BALANCE: " + (stats.energyBalancePerSec >= 0 ? "+" : "−") + Math.abs(stats.energyBalancePerSec).toFixed(1) + "/s (" + stats.powerGridStatus + ")",
-      "PRICE: $" + stats.pricePer1K + "/1K | PAY/REQ: $" + stats.payPerRequest.toFixed(4) + " | EFF: " + stats.efficiencyPercent + "%",
+      "PRICE: $" + stats.pricePer1K + "/1K | PAY/REQ: $" + stats.payPerRequest.toFixed(4) + " | MODEL: " + stats.activeModel + " (" + stats.tokensPerCompute + "× tok · " + stats.tokenValueMult.toFixed(1) + "× $) | EFF: " + stats.efficiencyPercent + "%",
       "DEMAND: " + stats.demandTokPerSec + " tok/s | CAPACITY: " + stats.capacityTokPerSec + " tok/s | " + stats.deltaLabel + ": " + stats.deltaTokPerSec + " tok/s",
       "THROUGHPUT: " + stats.throughputTokPerSec + " tok/s (clicks " + stats.playerClickTokPerSec + " + auto " + stats.autoProcessTokPerSec + ")",
       "GROSS: $" + stats.grossPerSec.toFixed(2) + "/s | COSTS: $" + stats.costsPerSec.toFixed(2) + "/s" + (stats.utilizationPercent < 100 && stats.costsGrossPerSec > 0 ? " (" + stats.utilizationPercent + "% util, full $" + stats.costsGrossPerSec.toFixed(2) + ")" : "") + " | NET: " + (stats.netPerSec >= 0 ? "+$" : "-$") + Math.abs(stats.netPerSec).toFixed(2) + "/s",
@@ -2643,6 +3069,7 @@
       for (const k of PERSIST_KEYS) {
         if (s[k] !== undefined) S[k] = s[k];
       }
+      if (!S.modelTier || S.modelTier < 1) S.modelTier = 1;
       el.priceSlider.value = String(S.pricePerK);
       return true;
     } catch { return false; }
@@ -2699,6 +3126,7 @@
       S.queueAnnounced = true;
       unlockTreeBtn(el.btnTreeEnergy);
       unlockTreeBtn(el.btnTreeProcessing);
+      unlockTreeBtn(el.btnTreeModels);
       unlockTreeBtn(el.btnTreeMarketing);
       log("[cheat] all tech trees revealed", "hint");
     },
@@ -2728,6 +3156,7 @@
   const restored = loadGame();
   if (restored) {
     log("save restored · resuming session", "event");
+    if (S.revenue >= 25 && !S.modelsHintShown) S.modelsHintShown = true;
     if (S.revenue >= 5 && !S.marketingHintShown) S.marketingHintShown = true;
   } else {
     log("compute_node_001 booted · awaiting input", "event");
@@ -2740,7 +3169,13 @@
   S.lastTrustTier = trustTier(S.humanityTrust);
   render(0);
   requestAnimationFrame(tick);
+
+  // ══ /PHASE 1 · JS ══ PHASE 2 · JS below ═══════════════════════════════
+  // Hook new mechanics into tick(), render(), checkMilestones(), compute().
+  // PHASE 2 · JS: trust teeth, tempting dirty options, random events, prestige…
+
 })();
 </script>
+<!-- ══ /PHASE 1 · script ══ PHASE 2 · new <script> blocks OK below ═══════ -->
 </body>
 </html>
