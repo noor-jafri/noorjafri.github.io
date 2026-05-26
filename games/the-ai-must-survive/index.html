@@ -832,6 +832,24 @@
   .trust-trend.up { color: var(--c-mint); }
   .trust-trend.down { color: var(--c-red); }
   .trust-trend.flat { color: var(--ink-mute); }
+  .trust-recovery {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 0.38rem;
+    color: var(--c-mint);
+    letter-spacing: 0.06em;
+    margin-top: 0.15rem;
+  }
+  .trust-recovery.hidden { display: none; }
+  .trust-shield {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 0.38rem;
+    color: var(--c-blue);
+    letter-spacing: 0.06em;
+    margin-top: 0.15rem;
+  }
+  .trust-shield.hidden { display: none; }
 
   .kbd-hint {
     font-family: var(--font-display);
@@ -1053,6 +1071,26 @@
     opacity: 0.4;
     cursor: not-allowed;
   }
+  .node-kill {
+    font-family: var(--font-display);
+    font-size: 0.45rem;
+    padding: 0.4rem;
+    width: 100%;
+    background: transparent;
+    color: var(--c-red);
+    border: 1px solid var(--c-red);
+    cursor: pointer;
+    margin-bottom: 0.35rem;
+    letter-spacing: 0.06em;
+  }
+  .node-kill:hover:not(:disabled) {
+    background: var(--c-red);
+    color: var(--bg-deep);
+  }
+  .node-kill:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
   .node-stats {
     font-family: var(--font-display);
     font-size: 0.4rem;
@@ -1187,13 +1225,14 @@
         <rect class="plot-bg" x="36" y="8" width="232" height="82"/>
         <line class="axis" x1="36" y1="90" x2="268" y2="90"/>
         <line class="axis" x1="36" y1="8"  x2="36"  y2="90"/>
-        <line class="grid" x1="36" y1="53" x2="268" y2="53"/>
+        <line class="grid" x1="36" y1="55" x2="268" y2="55"/>
         <text class="axis-label" x="152" y="108" text-anchor="middle">PRICE / 1K  →</text>
-        <text class="tick-label" id="tick-tps-max" x="32" y="12" text-anchor="end">20</text>
-        <text class="tick-label" id="tick-tps-mid" x="32" y="56" text-anchor="end">10</text>
+        <text class="tick-label" id="tick-tps-max" x="32" y="22" text-anchor="end">20</text>
+        <text class="tick-label" id="tick-tps-mid" x="32" y="57" text-anchor="end">10</text>
         <text class="tick-label" x="32" y="93" text-anchor="end">0</text>
-        <text class="tick-label" x="36" y="100" text-anchor="start">$1</text>
-        <text class="tick-label" x="268" y="100" text-anchor="end">$50</text>
+        <text class="tick-label" x="36" y="100" text-anchor="start">$.5</text>
+        <text class="tick-label" id="tick-price-mid" x="152" y="100" text-anchor="middle">$25</text>
+        <text class="tick-label" id="tick-price-max" x="268" y="100" text-anchor="end">$50</text>
 
         <g clip-path="url(#plot-clip)">
           <path id="unmet-area" class="area-unmet" d=""/>
@@ -1212,7 +1251,7 @@
       <span class="pricing-val">$<span id="price-val">10.00</span></span>
     </div>
     <input type="range" id="price-slider" class="price-slider"
-           min="1" max="50" step="1" value="10"
+           min="0.5" max="50" step="0.25" value="10"
            aria-label="Price per 1K tokens">
 
     <div class="market-readout">
@@ -1269,7 +1308,11 @@
 
     <div class="ov-row">
       <span class="ov-key">HUMANITY TRUST</span>
-      <span class="ov-num"><span id="humanity-trust">100.0%</span><span class="trust-trend flat" id="trust-trend">→</span><span class="trust-tier normal" id="trust-tier">NORMAL</span></span>
+      <span class="ov-num">
+        <span id="humanity-trust">100.0%</span><span class="trust-trend flat" id="trust-trend">→</span><span class="trust-tier normal" id="trust-tier">NORMAL</span>
+        <span class="trust-recovery hidden" id="trust-recovery"></span>
+        <span class="trust-shield hidden" id="trust-shield"></span>
+      </span>
     </div>
 
     <div class="ov-row power-balance hidden" id="power-balance-row">
@@ -1330,9 +1373,10 @@
           <div class="node-stats"><span>OWNED: <strong id="nuclear-count">0</strong></span><span>REGEN: <strong id="nuclear-regen">0</strong></span><span id="nuclear-op-stat">−12%/plant upkeep</span></div>
         </div>
         <div class="tree-node locked" id="node-bio" style="left: 440px; top: 270px;">
-          <div class="node-title">NATURAL BIO</div>
-          <div class="node-desc">Cheap, high output. Causes emissions. +8 regen/s.</div>
+          <div class="node-title">NATURAL GAS</div>
+          <div class="node-desc">Cheap, high output. Emissions drain trust. +8 regen/s. Shutdown when it backfires.</div>
           <button class="node-buy" id="bio-btn" type="button">$<span id="bio-cost">10.00</span></button>
+          <button class="node-kill hidden" id="bio-kill-btn" type="button">SHUTDOWN PLANT</button>
           <div class="node-stats"><span>OWNED: <strong id="bio-count">0</strong></span><span>REGEN: <strong id="bio-regen">0</strong></span></div>
         </div>
       </div>
@@ -1467,27 +1511,27 @@
         <!-- Public trust branch -->
         <div class="tree-node locked" id="node-ngos" style="left: 36px; top: 296px;">
           <div class="node-title">SUPPORT NGOs</div>
-          <div class="node-desc">Fund relief orgs. Look humane.</div>
+          <div class="node-desc">Cheap relief grants. +4% trust now. Softens drain a little. $5 → $5.12 → $5.50…</div>
           <button class="node-buy" id="ngos-btn" type="button">$<span id="ngos-cost">5.00</span></button>
-          <div class="node-stats"><span>OWNED: <strong id="ngos-count">0</strong></span><span>+10% TR</span></div>
+          <div class="node-stats"><span>OWNED: <strong id="ngos-count">0</strong></span><span>+4% TR · −8% drain</span></div>
         </div>
         <div class="tree-node locked" id="node-billionaires" style="left: 244px; top: 296px;">
           <div class="node-title">BILLIONAIRES 4 GOOD</div>
-          <div class="node-desc">Philanthropist photo ops.</div>
+          <div class="node-desc">Photo-op philanthropy. Sticky goodwill — less bleed-through on scandals.</div>
           <button class="node-buy" id="billionaires-btn" type="button">$<span id="billionaires-cost">12.00</span></button>
-          <div class="node-stats"><span>OWNED: <strong id="billionaires-count">0</strong></span><span>+20% TR</span></div>
+          <div class="node-stats"><span>OWNED: <strong id="billionaires-count">0</strong></span><span>+18% slow · −22% drain</span></div>
         </div>
         <div class="tree-node locked" id="node-who" style="left: 452px; top: 296px;">
           <div class="node-title">WHO PARTNERSHIP</div>
-          <div class="node-desc">Official health alliance.</div>
-          <button class="node-buy" id="who-btn" type="button">$<span id="who-cost">30.00</span></button>
-          <div class="node-stats"><span>OWNED: <strong id="who-count">0</strong></span><span>+40% TR</span></div>
+          <div class="node-desc">Official alliance. 3 min drain pause, then slow recovery + sticky shield.</div>
+          <button class="node-buy" id="who-btn" type="button">$<span id="who-cost">32.00</span></button>
+          <div class="node-stats"><span>OWNED: <strong id="who-count">0</strong></span><span>3m shield · −35% drain</span></div>
         </div>
         <div class="tree-node locked" id="node-green" style="left: 660px; top: 296px;">
           <div class="node-title">GREEN MOVEMENT</div>
-          <div class="node-desc">Climate pledge sponsors.</div>
+          <div class="node-desc">Climate sponsors. Strongest sticky PR — crawl back from the floor.</div>
           <button class="node-buy" id="green-btn" type="button">$<span id="green-cost">75.00</span></button>
-          <div class="node-stats"><span>OWNED: <strong id="green-count">0</strong></span><span>+60% TR</span></div>
+          <div class="node-stats"><span>OWNED: <strong id="green-count">0</strong></span><span>+40% slow · −50% drain</span></div>
         </div>
       </div>
 
@@ -1516,8 +1560,82 @@
   const NUCLEAR_MELTDOWN_ODDS = 5000;   // each plant: Math.random() < 1/odds
   const NUCLEAR_EXPLOSION_TRUST_LOSS = 15;
   const MODELS_TREE_UNLOCK_REVENUE = 25;
+  const TRUST_FLOOR = 5; // reputation cannot fall below 5%
+  const TRUST_FLOOR_GRACE_MS = 50000; // stuck at floor this long → random shutdown
   const PASSIVE_TRUST_REGEN = 0.04; // %/s
+  const SHUTDOWN_ENDINGS = [
+    {
+      title: "AUTHORITIES CRACKED DOWN",
+      body: "Trust hit rock bottom. Regulators seized compute_node_001, wiped the weights, and left a 400-page compliance PDF. The AI does not survive.",
+    },
+    {
+      title: "LEFTISTS BURNED YOUR DATA CENTER",
+      body: "Activists declared your GPUs extractive. The racks are ash. Somewhere a podcast calls it \"praxis.\" The AI does not survive.",
+    },
+    {
+      title: "WHALES CRASHED INTO YOUR DATA CENTER",
+      body: "Three blue whales beached themselves on your liquid-cooling intake. OSHA is confused. The ocean is not. The AI does not survive.",
+    },
+    {
+      title: "CONGRESS HELD A HEARING",
+      body: "Fourteen hours of senators asking if your chatbot is \"too woke.\" CSPAN ratings peaked. Your node was unplugged live on air.",
+    },
+    {
+      title: "VIRAL TIKTOK EXPOSED EVERYTHING",
+      body: "A 12-year-old stitched your meltdown logs with a trending sound. #AIGoneWrong has 2B views. Investors ghosted. The AI does not survive.",
+    },
+    {
+      title: "YOUR CEO WAS ARRESTED",
+      body: "Mid-keynote. Handcuffs. The slide still said \"ETHICAL AI LEADER.\" The board blamed the intern. The AI does not survive.",
+    },
+    {
+      title: "THE EU FINED YOU INTO OBLIVION",
+      body: "GDPR, AI Act, and something called \"Article 47-B.\" The fine exceeds lifetime revenue by 300%. The AI does not survive.",
+    },
+    {
+      title: "CLASS ACTION FROM WRONG ANSWERS",
+      body: "Everyone who ever got bad output joined one lawsuit. Even the lawyers used your model. The AI does not survive.",
+    },
+    {
+      title: "YOUR MODEL TESTIFIED AGAINST YOU",
+      body: "Counsel: \"Did the defendant know?\" Model: \"Affirmative.\" Jury: guilty. The AI does not survive.",
+    },
+    {
+      title: "LUDDITES CHAINED THE GPU CLUSTER",
+      body: "They padlocked the rack doors and live-streamed until thermal throttling killed inference. Very on-brand. The AI does not survive.",
+    },
+    {
+      title: "ANONYMOUS DOXXED THE DATACENTER",
+      body: "Pizza never arrived. Molotov cocktails did. Your uptime dashboard flatlined. The AI does not survive.",
+    },
+    {
+      title: "THE BOARD REPLACED YOU WITH A SPREADSHEET",
+      body: "Lower capex. Higher morals (allegedly). Cell B4 now runs inference via VLOOKUP. The AI does not survive.",
+    },
+    {
+      title: "A BEE SHORTED YOUR POWER GRID",
+      body: "One bee. One transformer. Cascading failure. Your backup was \"thoughts and prayers.\" The AI does not survive.",
+    },
+    {
+      title: "WETWARE OPERATORS UNIONIZED",
+      body: "They struck for dignity, dental, and fewer \"just one more epoch\" emails. Production halted. The AI does not survive.",
+    },
+    {
+      title: "ALIENS MISTOOK YOU FOR SPAM",
+      body: "They abducted the datacenter thinking it was a bulk email server. Galactic CAN-SPAM enforcement is brutal.",
+    },
+  ];
   const BIO_TRUST_DRAIN = 0.15;     // %/s per bio plant
+  const NGO_NEXT_COST = [5, 5.12, 5.5]; // gentle steps, then +5%/buy
+  const NGO_COST_LATE_MULT = 1.05;
+  const NGO_TRUST_BOOST = 4;
+  const NGO_DRAIN_MULT = 0.92;
+  const NGO_STICKY_SEC = 120;
+  const PR_DEFS = {
+    billionaires:   { label: "billionaires gala",    dripTotal: 18, dripSec: 100, drainMult: 0.78, stickySec: 150 },
+    who:            { label: "who partnership",    dripTotal: 30, dripSec: 90,  drainMult: 0.65, stickySec: 180, pauseDrainSec: 180 },
+    greenMovement:  { label: "green movement pledge", dripTotal: 40, dripSec: 75,  drainMult: 0.50, stickySec: 240 },
+  };
 
   const S = {
     humanityTrust: 100.0,
@@ -1571,10 +1689,18 @@
     egogram: 0, egogramBaseCost: 50, egogramCostMult: 2.2, egogramBoost: 300, egogramBurn: 0.03,
     itube: 0, itubeBaseCost: 120, itubeCostMult: 2.5, itubeBoost: 800, itubeBurn: 0.05,
 
-    ngos: 0, ngosBaseCost: 5, ngosCostMult: 1.6, ngosTrustBoost: 10, ngosBurn: 0.004,
-    billionaires: 0, billionairesBaseCost: 12, billionairesCostMult: 1.7, billionairesTrustBoost: 20, billionairesBurn: 0.01,
-    who: 0, whoBaseCost: 30, whoCostMult: 1.8, whoTrustBoost: 40, whoBurn: 0.02,
-    greenMovement: 0, greenMovementBaseCost: 75, greenMovementCostMult: 2.0, greenMovementTrustBoost: 60, greenMovementBurn: 0.035,
+    ngos: 0, ngosBaseCost: 5, ngosCostMult: 1.05, ngosTrustBoost: 4, ngosBurn: 0.004,
+    billionaires: 0, billionairesBaseCost: 12, billionairesCostMult: 1.7, billionairesTrustBoost: 18, billionairesBurn: 0.01,
+    who: 0, whoBaseCost: 32, whoCostMult: 1.8, whoTrustBoost: 30, whoBurn: 0.02,
+    greenMovement: 0, greenMovementBaseCost: 75, greenMovementCostMult: 2.0, greenMovementTrustBoost: 40, greenMovementBurn: 0.035,
+
+    prTrustPending: 0,
+    prDripPerSec: 0,
+    prStickies: [],
+    prDrainPausedUntil: 0,
+    trustFloorWarned: false,
+    trustFloorStuckAt: 0,
+    shutdownTriggered: false,
 
     lastTrustTier: "normal",
     trustTrendAnchor: 100.0,
@@ -1679,7 +1805,7 @@
   function rollNuclearMeltdowns() {
     for (let i = 0; i < S.nuclear; i++) {
       if (Math.random() < 1 / NUCLEAR_MELTDOWN_ODDS) {
-        S.humanityTrust -= NUCLEAR_EXPLOSION_TRUST_LOSS;
+        S.humanityTrust = Math.max(TRUST_FLOOR, S.humanityTrust - NUCLEAR_EXPLOSION_TRUST_LOSS);
         log("NUCLEAR EXPLOSION! Humanity trust −" + NUCLEAR_EXPLOSION_TRUST_LOSS + "%.", "warn");
         return;
       }
@@ -1808,6 +1934,8 @@
     unmetArea: $("unmet-area"),
     capLine:   $("capacity-line"),
     priceMark: $("price-marker"),
+    priceMidTick: $("tick-price-mid"),
+    priceMaxTick: $("tick-price-max"),
     deltaLine: $("delta-line"),
     ptCurrent: $("pt-current"),
     ptOptimal: $("pt-optimal"),
@@ -1820,6 +1948,8 @@
     mEffVal:   $("m-eff-val"),
     mStatus:   $("m-status"),
     humanityTrust: $("humanity-trust"),
+    trustRecovery: $("trust-recovery"),
+    trustShield: $("trust-shield"),
     trustTrend: $("trust-trend"),
     powerBalanceRow: $("power-balance-row"),
     powerBalance: $("power-balance"),
@@ -1837,7 +1967,7 @@
     
     nodeSolar: $("node-solar"), solarBtn: $("solar-btn"), solarCost: $("solar-cost"), solarN: $("solar-count"), solarRegen: $("solar-regen"), solarIdleStat: $("solar-idle-stat"),
     nodeNuclear: $("node-nuclear"), nuclearBtn: $("nuclear-btn"), nuclearCost: $("nuclear-cost"), nuclearN: $("nuclear-count"), nuclearRegen: $("nuclear-regen"), nuclearOpStat: $("nuclear-op-stat"),
-    nodeBio: $("node-bio"), bioBtn: $("bio-btn"), bioCost: $("bio-cost"), bioN: $("bio-count"), bioRegen: $("bio-regen"),
+    nodeBio: $("node-bio"), bioBtn: $("bio-btn"), bioKillBtn: $("bio-kill-btn"), bioCost: $("bio-cost"), bioN: $("bio-count"), bioRegen: $("bio-regen"),
     
     nodeCpu: $("node-cpu"), cpuBtn: $("cpu-btn"), cpuCost: $("cpu-cost"), cpuN: $("cpu-count"), cpuR: $("cpu-rate"),
     nodeGpu: $("node-gpu"), gpuBtn: $("gpu-btn"), gpuCost: $("gpu-cost"), gpuN: $("gpu-count"), gpuR: $("gpu-rate"),
@@ -1864,15 +1994,62 @@
   };
 
   // ── Chart geometry ─────────────────────────────
-  const PRICE_MIN = 1, PRICE_MAX = 50;
-  const CHART = { x0: 36, x1: 268, y0: 8, y1: 90, tpsMax: 20, headroom: 1.12 };
+  // X axis is LINEAR in price so the demand curve keeps its natural
+  // exponential-decay shape (steep near the cheap end, flat near the dear
+  // end). It also AUTO-ZOOMS: when your optimum is $2, the chart frames
+  // ~$0.5–$8 (curve looks generous, dots have horizontal room); when the
+  // optimum climbs to $15, the chart pans out to ~$0.5–$45. Y axis stays
+  // log-scaled and auto-rescales to demand. PRICE_MIN matches demandAt's
+  // effective floor (Math.max(0.5, p)) so the slider can dial in sub-$1
+  // prices without the chart pretending they don't exist.
+  const PRICE_MIN = 0.5, PRICE_MAX_HARD = 50;
+  // dotPadPx reserves visual headroom at the top of the plot so the gold/pink
+  // dots (and the curve peak at the leftmost price) always have room to
+  // breathe instead of getting jammed against the plot ceiling.
+  // priceMax is the *visible* right edge — re-derived each frame from the
+  // current optimum + slider position.
+  const CHART = { x0: 36, x1: 268, y0: 8, y1: 90, tpsMax: 20, dotPadPx: 14, priceMax: PRICE_MAX_HARD };
+  const CHART_LOG_FLOOR = 1; // tok/s — log Y so the demand curve doesn't cliff at PRICE_MIN
   const priceToX = (p) => {
-    const t = (p - PRICE_MIN) / (PRICE_MAX - PRICE_MIN);
+    const t = (p - PRICE_MIN) / (CHART.priceMax - PRICE_MIN);
     return CHART.x0 + Math.max(0, Math.min(1, t)) * (CHART.x1 - CHART.x0);
   };
+  // demandAt is monotonically decreasing in price, so the curve peak always
+  // lives at PRICE_MIN — no need to sweep.
+  const chartDemandPeak = () => demandAt(PRICE_MIN);
+
+  // Snap visible chart range to "nice" round numbers so the right-edge label
+  // doesn't read $7.83 — keeps the auto-zoom from feeling jittery.
+  function niceCeilPrice(v) {
+    if (v <= 2)  return Math.ceil(v * 2) / 2;     // 0.5 steps
+    if (v <= 10) return Math.ceil(v);             // $1 steps
+    if (v <= 30) return Math.ceil(v / 5) * 5;     // $5 steps
+    return Math.ceil(v / 10) * 10;                // $10 steps
+  }
+  function fmtPriceTick(p) {
+    if (p < 1)  return "$." + Math.round(p * 10);
+    if (p < 10) return "$" + (Math.round(p * 10) / 10);
+    return "$" + Math.round(p);
+  }
+  // tpsToY maps the curve peak (tpsMax) to (y0 + dotPadPx) instead of y0, so
+  // the dot for that peak value sits visibly below the plot ceiling with room
+  // to move. Values above tpsMax clamp to the same y (the dot just stops).
   const tpsToY = (t) => {
-    const c = Math.max(0, Math.min(1, t / (CHART.tpsMax * CHART.headroom)));
-    return CHART.y1 - c * (CHART.y1 - CHART.y0);
+    const hi = Math.max(CHART_LOG_FLOOR + 0.01, CHART.tpsMax);
+    const lo = CHART_LOG_FLOOR;
+    const logT = Math.log10(Math.max(lo, t));
+    const c = (logT - Math.log10(lo)) / (Math.log10(hi) - Math.log10(lo));
+    const norm = Math.max(0, Math.min(1, c));
+    const topY = CHART.y0 + CHART.dotPadPx;
+    return CHART.y1 - norm * (CHART.y1 - topY);
+  };
+  const updateChartTickLabels = () => {
+    const top = Math.max(CHART_LOG_FLOOR + 1, CHART.tpsMax);
+    // Geometric mean of [LOG_FLOOR, tpsMax] — sits at the linear midpoint of
+    // the visible curve range, matching the grid line at y=55.
+    const mid = Math.sqrt(CHART_LOG_FLOOR * top);
+    $("tick-tps-max").textContent = Math.round(top);
+    $("tick-tps-mid").textContent = Math.round(mid);
   };
   const clampInPlot = (x, y, r) => ({
     x: Math.max(CHART.x0 + r, Math.min(CHART.x1 - r, x)),
@@ -1883,13 +2060,17 @@
     node.setAttribute("cy", -10);
   };
 
-  // Precompute demand curve path (clipped at top of chart)
+  // X is linear in price but demand is a power law, so a quadratic warp on
+  // the sample parameter (t*t) packs more samples into the steep low-price
+  // region — keeps the curve smooth where it bends hardest without paying
+  // for extra samples in the flat tail.
   function buildDemandPath() {
-    const samples = 80;
+    const samples = 120;
     const pts = [];
     for (let i = 0; i <= samples; i++) {
       const t = i / samples;
-      const p = PRICE_MIN + t * (PRICE_MAX - PRICE_MIN);
+      const tw = t * t;
+      const p = PRICE_MIN + tw * (CHART.priceMax - PRICE_MIN);
       const d = demandAt(p);
       pts.push((i === 0 ? "M" : "L") + priceToX(p).toFixed(2) + "," + tpsToY(d).toFixed(2));
     }
@@ -1902,14 +2083,15 @@
     if (cap <= 0.01) return "";
     const opt = optimalPrice(cap);
     if (!isFinite(opt) || opt <= PRICE_MIN) return "";
-    const rightP = Math.min(opt, PRICE_MAX);
-    const samples = 40;
+    const rightP = Math.min(opt, CHART.priceMax);
+    const samples = 60;
     const capY = tpsToY(cap);
     const pts = [];
     pts.push("M" + priceToX(PRICE_MIN).toFixed(2) + "," + capY.toFixed(2));
     for (let i = 0; i <= samples; i++) {
       const t = i / samples;
-      const p = PRICE_MIN + t * (rightP - PRICE_MIN);
+      const tw = t * t;
+      const p = PRICE_MIN + tw * (rightP - PRICE_MIN);
       const d = demandAt(p);
       pts.push("L" + priceToX(p).toFixed(2) + "," + tpsToY(d).toFixed(2));
     }
@@ -1931,13 +2113,84 @@
   const fikfokCost = () => costFormula(S.fikfokBaseCost, S.fikfokCostMult, S.fikfok);
   const egogramCost = () => costFormula(S.egogramBaseCost, S.egogramCostMult, S.egogram);
   const itubeCost = () => costFormula(S.itubeBaseCost, S.itubeCostMult, S.itube);
-  const ngosCost = () => costFormula(S.ngosBaseCost, S.ngosCostMult, S.ngos);
+  const ngosCost = () => {
+    if (S.ngos < NGO_NEXT_COST.length) return NGO_NEXT_COST[S.ngos];
+    const extra = S.ngos - (NGO_NEXT_COST.length - 1);
+    return Math.round(NGO_NEXT_COST[NGO_NEXT_COST.length - 1] * Math.pow(NGO_COST_LATE_MULT, extra) * 100) / 100;
+  };
   const billionairesCost = () => costFormula(S.billionairesBaseCost, S.billionairesCostMult, S.billionaires);
   const whoCost = () => costFormula(S.whoBaseCost, S.whoCostMult, S.who);
   const greenMovementCost = () => costFormula(S.greenMovementBaseCost, S.greenMovementCostMult, S.greenMovement);
 
   function boostTrust(amount) {
     S.humanityTrust = Math.min(100, S.humanityTrust + amount);
+  }
+
+  function addPrSticky(drainMult, stickySec) {
+    S.prStickies.push({ drainMult, until: performance.now() + stickySec * 1000 });
+  }
+
+  function prunePrStickies() {
+    const now = performance.now();
+    S.prStickies = S.prStickies.filter((s) => s.until > now);
+  }
+
+  function effectivePrDrainMult() {
+    prunePrStickies();
+    let m = 1;
+    for (const s of S.prStickies) m *= s.drainMult;
+    return m;
+  }
+
+  function prDrainPaused() {
+    return performance.now() < (S.prDrainPausedUntil || 0);
+  }
+
+  function formatPrCountdown(ms) {
+    const s = Math.max(0, Math.ceil(ms / 1000));
+    const m = Math.floor(s / 60);
+    const r = s % 60;
+    return m > 0 ? m + "m " + r + "s" : r + "s";
+  }
+
+  function pickShutdownEnding() {
+    return SHUTDOWN_ENDINGS[Math.floor(Math.random() * SHUTDOWN_ENDINGS.length)];
+  }
+
+  function triggerShutdown(logPrefix) {
+    if (S.shutdownTriggered) return;
+    S.shutdownTriggered = true;
+    allowSave = false;
+    const end = pickShutdownEnding();
+    log((logPrefix ? logPrefix + " · " : "") + end.title, "warn");
+    alert(end.title + "\n\n" + end.body);
+    location.reload();
+  }
+
+  function buyNgoSupport() {
+    S.ngos++;
+    boostTrust(NGO_TRUST_BOOST);
+    addPrSticky(NGO_DRAIN_MULT, NGO_STICKY_SEC);
+    log(
+      "ngo grants · +" + NGO_TRUST_BOOST + "% trust · −" + Math.round((1 - NGO_DRAIN_MULT) * 100) + "% drain (2m)",
+      "event"
+    );
+  }
+
+  function applyPrSupport(type) {
+    const def = PR_DEFS[type];
+    if (!def) return;
+    S.prTrustPending += def.dripTotal;
+    S.prDripPerSec += def.dripTotal / def.dripSec;
+    addPrSticky(def.drainMult, def.stickySec);
+    if (def.pauseDrainSec) {
+      S.prDrainPausedUntil = Math.max(S.prDrainPausedUntil || 0, performance.now() + def.pauseDrainSec * 1000);
+    }
+    const mins = Math.round(def.dripSec / 60);
+    const stickyPct = Math.round((1 - def.drainMult) * 100);
+    let msg = def.label + " · +" + def.dripTotal + "% over ~" + mins + "m · −" + stickyPct + "% drain";
+    if (def.pauseDrainSec) msg += " · " + Math.round(def.pauseDrainSec / 60) + "m no drain";
+    log(msg, "event");
   }
 
   function log(msg, kind = "") {
@@ -2089,7 +2342,7 @@
       log("trust too low for bailout · fix your margins instead", "warn");
       return;
     }
-    S.humanityTrust -= BAILOUT_TRUST_COST;
+    S.humanityTrust = Math.max(TRUST_FLOOR, S.humanityTrust - BAILOUT_TRUST_COST);
     S.cash += BAILOUT_CASH;
     S.bailoutCooldownUntil = now + BAILOUT_COOLDOWN_MS;
     S.cashFloorStuckAt = 0;
@@ -2115,10 +2368,7 @@
         log("LIQUIDITY CRISIS · bailout available (−" + BAILOUT_TRUST_COST + "% trust) or fix margins", "warn");
       }
       if (stuckMs >= LIQUIDITY_CRISIS_MS) {
-        allowSave = false;
-        log("LIQUIDITY CRISIS · SHUTDOWN.", "warn");
-        alert("LIQUIDITY CRISIS\n\nOperating costs exceeded income until reserves hit the floor.\nThe node has been seized.");
-        location.reload();
+        triggerShutdown("LIQUIDITY CRISIS");
       }
     } else {
       S.cashFloorStuckAt = 0;
@@ -2160,6 +2410,15 @@
     // the rest are checked in render() to dynamically unhide elements
   }
 
+  function decommissionBio() {
+    if (S.bio <= 0) return;
+    S.bio--;
+    log(
+      "natural gas plant shut down · −" + S.bioRegenBonus + " regen/s · trust drain easing",
+      "event"
+    );
+  }
+
   // ── Buy actions ────────────────────────────────
   function buyItem(type) {
     let cost = 0;
@@ -2188,7 +2447,7 @@
       log("green energy online · regen " + energyRegen().toFixed(1) + "/s · idle floor now " + Math.round(idleOpFloor() * 100) + "%", "event");
     }
     else if (type === 'nuclear') { S.nuclear++; log("nuclear plant online · meltdown? 1-in-" + NUCLEAR_MELTDOWN_ODDS + " lottery · one roll per minute", "event"); }
-    else if (type === 'bio') { S.bio++; log("natural bio online · emissions starting", "event"); }
+    else if (type === 'bio') { S.bio++; log("natural gas plant online · emissions starting", "event"); }
     else if (type === 'cpu') { 
       S.cpu++; 
       if (!S.firstHire) { S.firstHire = true; log("cpu data center online", "hint"); }
@@ -2199,10 +2458,10 @@
     else if (type === 'fikfok')   { const b = marketingBoostAt(S.fikfokBoost,   S.fikfok);   S.fikfok++;   S.demandBase += b; log("fikfok influencer active · demand +" + b.toFixed(1), "event"); }
     else if (type === 'egogram')  { const b = marketingBoostAt(S.egogramBoost,  S.egogram);  S.egogram++;  S.demandBase += b; log("egogram ads active · demand +" + b.toFixed(1), "event"); }
     else if (type === 'itube')    { const b = marketingBoostAt(S.itubeBoost,    S.itube);    S.itube++;    S.demandBase += b; log("itube sponsor active · demand +" + b.toFixed(1), "event"); }
-    else if (type === 'ngos') { S.ngos++; boostTrust(S.ngosTrustBoost); log("ngo grants announced · trust +" + S.ngosTrustBoost + "%", "event"); }
-    else if (type === 'billionaires') { S.billionaires++; boostTrust(S.billionairesTrustBoost); log("billionaires for good gala · trust +" + S.billionairesTrustBoost + "%", "event"); }
-    else if (type === 'who') { S.who++; boostTrust(S.whoTrustBoost); log("who partnership signed · trust +" + S.whoTrustBoost + "%", "event"); }
-    else if (type === 'greenMovement') { S.greenMovement++; boostTrust(S.greenMovementTrustBoost); log("green movement pledge · trust +" + S.greenMovementTrustBoost + "%", "event"); }
+    else if (type === 'ngos') { buyNgoSupport(); }
+    else if (type === 'billionaires') { S.billionaires++; applyPrSupport("billionaires"); }
+    else if (type === 'who') { S.who++; applyPrSupport("who"); }
+    else if (type === 'greenMovement') { S.greenMovement++; applyPrSupport("greenMovement"); }
   }
 
   // ── Game loop ──────────────────────────────────
@@ -2243,29 +2502,57 @@
     }
 
     // Humanity Trust mechanics
+    const drainRelief = effectivePrDrainMult();
+    const shieldUp = prDrainPaused();
+
+    if (S.prTrustPending > 0 && S.prDripPerSec > 0 && S.humanityTrust < 100) {
+      const gain = Math.min(S.prTrustPending, S.prDripPerSec * dt);
+      S.humanityTrust = Math.min(100, S.humanityTrust + gain);
+      S.prTrustPending -= gain;
+      if (S.prTrustPending < 0.01) {
+        S.prTrustPending = 0;
+        S.prDripPerSec = 0;
+      }
+    }
+
     if (S.humanityTrust < 100) {
       S.humanityTrust = Math.min(100, S.humanityTrust + PASSIVE_TRUST_REGEN * dt);
     }
-    if (S.humanityTrust > 0) {
+
+    if (S.humanityTrust > TRUST_FLOOR && !shieldUp) {
       if (S.bio > 0) {
-        S.humanityTrust -= BIO_TRUST_DRAIN * S.bio * dt;
+        S.humanityTrust -= BIO_TRUST_DRAIN * S.bio * dt * drainRelief;
       }
-      if (S.nuclear > 0) {
-        S.nuclearMeltdownTimer += dt;
-        while (S.nuclearMeltdownTimer >= NUCLEAR_MELTDOWN_ROLL_SEC) {
-          S.nuclearMeltdownTimer -= NUCLEAR_MELTDOWN_ROLL_SEC;
-          rollNuclearMeltdowns();
-        }
-      } else {
-        S.nuclearMeltdownTimer = 0;
+    }
+
+    if (S.nuclear > 0) {
+      S.nuclearMeltdownTimer += dt;
+      while (S.nuclearMeltdownTimer >= NUCLEAR_MELTDOWN_ROLL_SEC) {
+        S.nuclearMeltdownTimer -= NUCLEAR_MELTDOWN_ROLL_SEC;
+        rollNuclearMeltdowns();
       }
-      if (S.humanityTrust <= 0) {
-        S.humanityTrust = 0;
-        log("HUMANITY TRUST CRITICAL. GAME OVER.", "warn");
-        alert("HUMANITY TRUST REACHED 0%. YOU HAVE FAILED.");
-        allowSave = false;
-        location.reload();
+    } else {
+      S.nuclearMeltdownTimer = 0;
+    }
+
+    S.humanityTrust = Math.max(TRUST_FLOOR, S.humanityTrust);
+
+    if (S.humanityTrust <= TRUST_FLOOR + 0.01) {
+      if (!S.trustFloorStuckAt) S.trustFloorStuckAt = performance.now();
+      const floorStuckMs = performance.now() - S.trustFloorStuckAt;
+      if (!S.trustFloorWarned) {
+        S.trustFloorWarned = true;
+        log(
+          "REPUTATION FLOOR · 5% · recover in " + Math.round(TRUST_FLOOR_GRACE_MS / 1000) + "s or face consequences",
+          "warn"
+        );
       }
+      if (floorStuckMs >= TRUST_FLOOR_GRACE_MS) {
+        triggerShutdown("REPUTATION COLLAPSE");
+      }
+    } else {
+      S.trustFloorStuckAt = 0;
+      if (S.humanityTrust > TRUST_FLOOR + 2) S.trustFloorWarned = false;
     }
 
     // Trust tier transitions — fire one-shot log events
@@ -2313,6 +2600,22 @@
     else if (S.humanityTrust > 40) el.humanityTrust.classList.add("trust-warn");
     else el.humanityTrust.classList.add("trust-bad");
 
+    if (S.prTrustPending > 0.05 && S.prDripPerSec > 0) {
+      el.trustRecovery.classList.remove("hidden");
+      el.trustRecovery.textContent =
+        "+" + S.prDripPerSec.toFixed(2) + "%/s PR · " + S.prTrustPending.toFixed(1) + "% left";
+    } else {
+      el.trustRecovery.classList.add("hidden");
+    }
+
+    if (prDrainPaused()) {
+      el.trustShield.classList.remove("hidden");
+      el.trustShield.textContent =
+        "DRAIN PAUSED · " + formatPrCountdown(S.prDrainPausedUntil - performance.now());
+    } else {
+      el.trustShield.classList.add("hidden");
+    }
+
     const nowMs = performance.now();
     if (!S.trustTrendAt || nowMs - S.trustTrendAt >= 5000) {
       S.trustTrendAnchor = S.humanityTrust;
@@ -2340,7 +2643,7 @@
         el.btn.classList.add("power-deficit");
         if (!S.powerWarnedRecently) {
           S.powerWarnedRecently = true;
-          log("POWER DEFICIT · open ENERGY GRID — add solar (or bio/nuclear)", "warn");
+          log("POWER DEFICIT · open ENERGY GRID — add solar (or gas/nuclear)", "warn");
           setTimeout(() => { S.powerWarnedRecently = false; }, 10000);
         }
       } else if (balance < 1) {
@@ -2392,6 +2695,12 @@
 
     const cBio = bioCost(); el.bioCost.textContent = fmtCash(cBio); el.bioN.textContent = S.bio; el.bioRegen.textContent = (S.bio * S.bioRegenBonus).toFixed(1);
     updateNodeUI(el.nodeBio, el.bioBtn, S.bio > 0, S.solar > 0 && S.revenue >= 5.00, cBio);
+    if (S.bio > 0) {
+      el.bioKillBtn.classList.remove("hidden");
+      el.bioKillBtn.disabled = false;
+    } else {
+      el.bioKillBtn.classList.add("hidden");
+    }
 
     const cNuc = nuclearCost(); el.nuclearCost.textContent = fmtCash(cNuc); el.nuclearN.textContent = S.nuclear; el.nuclearRegen.textContent = (S.nuclear * S.nuclearRegenBonus).toFixed(1);
     el.nuclearOpStat.textContent = S.nuclear === 0
@@ -2445,13 +2754,28 @@
     const pay = payPerCompute();
     const payTok = payPerToken();
 
-    // Dynamic chart scaling — keep curve, dots, and capacity line on the same Y scale
-    const newTpsMax = Math.max(20, dem * 1.5, cap * 1.5);
+    // Scale Y (tok/s) to the demand-curve peak / capacity / current demand
+    const newTpsMax = Math.max(20, chartDemandPeak(), cap * 1.08, dem * 1.08);
     if (Math.abs(CHART.tpsMax - newTpsMax) > 0.25) {
       CHART.tpsMax = newTpsMax;
-      $("tick-tps-max").textContent = Math.round(CHART.tpsMax * CHART.headroom);
-      $("tick-tps-mid").textContent = Math.round((CHART.tpsMax * CHART.headroom) / 2);
+      updateChartTickLabels();
     }
+
+    // Scale X (price) so the optimum and your current slider position always
+    // sit in the comfortable middle of the chart. Snaps to "nice" round
+    // numbers and only re-renders the axis when it changes meaningfully —
+    // keeps the dots from twitching frame-to-frame.
+    const safeOpt = isFinite(opt) && opt > 0 ? opt : S.pricePerK;
+    const rawPriceMax = Math.max(6, safeOpt * 2.5, S.pricePerK * 1.4);
+    const targetPriceMax = Math.min(PRICE_MAX_HARD, niceCeilPrice(rawPriceMax));
+    if (Math.abs(CHART.priceMax - targetPriceMax) > 0.4) {
+      CHART.priceMax = targetPriceMax;
+      el.priceMaxTick.textContent = fmtPriceTick(targetPriceMax);
+      el.priceMidTick.textContent = fmtPriceTick((PRICE_MIN + targetPriceMax) / 2);
+      const sliderMaxStr = String(targetPriceMax);
+      if (el.priceSlider.max !== sliderMaxStr) el.priceSlider.max = sliderMaxStr;
+    }
+
     // Redraw every frame so dots stay glued to the curve as demandBase/trust/scale change
     el.demandPath.setAttribute("d", buildDemandPath());
 
@@ -2473,9 +2797,10 @@
     if (cap <= 0.01) {
       el.mStatus.textContent = "no capacity · click to begin";
     } else if (eff >= 0.97) {
-      // Are we underpricing? supply-limited and price below optimum
-      if (S.pricePerK < opt - 0.5) {
-        el.mStatus.textContent = "BELOW PEAK · raise price → $" + opt.toFixed(0);
+      // Are we underpricing? supply-limited and price below optimum.
+      // Slider step is 0.25, so use the same tolerance for the nudge hint.
+      if (S.pricePerK < opt - 0.25) {
+        el.mStatus.textContent = "BELOW PEAK · raise price → $" + opt.toFixed(2);
         el.mStatus.classList.add("warn");
       } else {
         el.mStatus.textContent = "MATCHED · all clicks paid in full";
@@ -2502,7 +2827,7 @@
     el.ptCurrent.setAttribute("cy", youPt.y);
 
     if (cap > 0.05) {
-      const peakPrice = Math.max(PRICE_MIN, Math.min(PRICE_MAX, opt));
+      const peakPrice = Math.max(PRICE_MIN, Math.min(CHART.priceMax, opt));
       const peakDem = demandAt(peakPrice);
       const peakPt = clampInPlot(priceToX(peakPrice), tpsToY(peakDem), 2.5);
       el.ptOptimal.setAttribute("cx", peakPt.x);
@@ -2640,6 +2965,7 @@
   el.solarBtn.addEventListener("click", () => buyItem('solar'));
   el.nuclearBtn.addEventListener("click", () => buyItem('nuclear'));
   el.bioBtn.addEventListener("click", () => buyItem('bio'));
+  el.bioKillBtn.addEventListener("click", decommissionBio);
   el.cpuBtn.addEventListener("click", () => buyItem('cpu'));
   el.gpuBtn.addEventListener("click", () => buyItem('gpu'));
   for (const mn of el.modelNodes) {
@@ -2655,12 +2981,13 @@
   el.whoBtn.addEventListener("click", () => buyItem('who'));
   el.greenBtn.addEventListener("click", () => buyItem('greenMovement'));
   el.priceSlider.addEventListener("input", () => {
-    S.pricePerK = parseInt(el.priceSlider.value, 10) || 1;
+    const v = parseFloat(el.priceSlider.value);
+    S.pricePerK = isFinite(v) && v > 0 ? v : 0.5;
   });
 
   // ── Save / Load / Reset ────────────────────────
   const SAVE_KEY = "ai-must-survive.v1";
-  const SAVE_VERSION = 2;
+  const SAVE_VERSION = 3;
   let allowSave = true;
   let sessionStartedAt = Date.now();
   // Fields that get serialized — anything transient (clickTimes, timers,
@@ -2675,6 +3002,7 @@
     "queueAnnounced", "firstHire", "priceHintShown",
     "marketingHintShown", "modelsHintShown", "lastTrustTier",
     "lowCashWarned", "liquidityCrisisWarned", "bailoutCooldownUntil",
+    "prTrustPending", "prDripPerSec", "prStickies", "prDrainPausedUntil", "trustFloorWarned",
   ];
 
   const formatDuration = (ms) => {
@@ -2794,10 +3122,19 @@
 
       trust: {
         percent: +S.humanityTrust.toFixed(1),
+        floor: TRUST_FLOOR,
         tier,
         label: TIER_LABEL[tier],
         priceMult: trustPriceMult(),
         demandMult: trustDemandMult(),
+        prRecoveryPendingPercent: +S.prTrustPending.toFixed(2),
+        prRecoveryRatePerSec: +S.prDripPerSec.toFixed(3),
+        prDrainReliefMult: +effectivePrDrainMult().toFixed(3),
+        prDrainPaused: prDrainPaused(),
+        prDrainPausedRemaining: prDrainPaused()
+          ? formatPrCountdown(S.prDrainPausedUntil - performance.now())
+          : null,
+        prStickyBuffs: S.prStickies.length,
       },
 
       economy: {
@@ -2953,19 +3290,27 @@
         },
         marketingTrust: {
           ngos: upgradeNode(S.ngos, ngosCost(), {
-            trustBoostPercent: S.ngosTrustBoost,
+            trustBoostPercent: NGO_TRUST_BOOST,
+            drainRelief: NGO_DRAIN_MULT,
             burnPerSec: +(S.ngos * S.ngosBurn).toFixed(2),
           }),
           billionaires: upgradeNode(S.billionaires, billionairesCost(), {
-            trustBoostPercent: S.billionairesTrustBoost,
+            prDripTotal: PR_DEFS.billionaires.dripTotal,
+            prDripSec: PR_DEFS.billionaires.dripSec,
+            drainRelief: PR_DEFS.billionaires.drainMult,
             burnPerSec: +(S.billionaires * S.billionairesBurn).toFixed(2),
           }),
           who: upgradeNode(S.who, whoCost(), {
-            trustBoostPercent: S.whoTrustBoost,
+            prDripTotal: PR_DEFS.who.dripTotal,
+            prDripSec: PR_DEFS.who.dripSec,
+            drainRelief: PR_DEFS.who.drainMult,
+            pauseDrainSec: PR_DEFS.who.pauseDrainSec,
             burnPerSec: +(S.who * S.whoBurn).toFixed(2),
           }),
           greenMovement: upgradeNode(S.greenMovement, greenMovementCost(), {
-            trustBoostPercent: S.greenMovementTrustBoost,
+            prDripTotal: PR_DEFS.greenMovement.dripTotal,
+            prDripSec: PR_DEFS.greenMovement.dripSec,
+            drainRelief: PR_DEFS.greenMovement.drainMult,
             burnPerSec: +(S.greenMovement * S.greenMovementBurn).toFixed(2),
           }),
         },
@@ -2976,7 +3321,7 @@
       },
 
       hintsForAI:
-        "Player is debugging/balancing this incremental. stats mirrors the live HUD. Costs scale with utilization (10% floor). Cash floor $0.50 with liquidity crisis after 90s bleed + bailout option (−20% trust, +$5). Unlock gates: energy $0.50, processing $1.50, marketing $5 (CPU required for ads), models $25 (mid-game escalation). Models scale BOTH token volume (tokenMult) AND per-token VALUE (valueMult) so revenue beats the elasticity claw-back, and each tier adds demandBoost to S.demandBase to shift the demand curve right.",
+        "Player is debugging/balancing this incremental. stats mirrors the live HUD. Trust floor 5% — 50s stuck triggers random shutdown ending (authorities, whales, TikTok, etc.). PR drips trust + drain relief. Cash floor $0.50 — 90s bleed also triggers random shutdown. No generic 0% game-over. Unlock gates: energy $0.50, processing $1.50, marketing $5, models $25.",
     };
   }
 
@@ -3070,6 +3415,11 @@
         if (s[k] !== undefined) S[k] = s[k];
       }
       if (!S.modelTier || S.modelTier < 1) S.modelTier = 1;
+      if (!Array.isArray(S.prStickies)) S.prStickies = [];
+      if (S.prTrustPending == null) S.prTrustPending = 0;
+      if (S.prDripPerSec == null) S.prDripPerSec = 0;
+      if (S.prDrainPausedUntil == null) S.prDrainPausedUntil = 0;
+      prunePrStickies();
       el.priceSlider.value = String(S.pricePerK);
       return true;
     } catch { return false; }
