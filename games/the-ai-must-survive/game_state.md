@@ -1,9 +1,10 @@
 # The AI Must Survive — Game State Checkpoint
 
 > **Phase 1 · COMPLETE** ($500 scope) · checkpoint **2026-05-26**  
+> **Phase 2 · SHIPPED** (Research) · checkpoint **2026-05-30**  
 > **Source of truth:** `index.html` (search `PHASE 1` / `PHASE 2` for file boundaries)  
-> **Design spec:** `phase1.md`  
-> **Phase 2+:** trust teeth, dirty options, random events, prestige — not started
+> **Design spec:** `phase1.md`, `phase2.md`  
+> **Phase 3+:** trust teeth, dirty options, random events, prestige — not started
 
 ---
 
@@ -22,11 +23,38 @@
 | Save/load v2 + HUD copy export | ✅ |
 | Auto-save (5s) + cheats | ✅ |
 
-### Deferred to Phase 2+
+### Deferred to Phase 3+
 
 - Trust teeth / tempting dirty options
 - Random events, prestige, moral tradeoffs as long-game hook
-- Token-value upgrade tree (intentionally folded into MODELS `valueMult`)
+
+---
+
+## Phase 2 — Shipped (Research)
+
+| System | Status |
+|--------|--------|
+| Research tab unlock ($200 revenue) | ✅ |
+| Capacity allocation slider (0–50%) | ✅ |
+| One active topic at a time | ✅ |
+| Better Solar / Nuclear / Model / Marketing (5 levels each) | ✅ |
+| RP from diverted token throughput | ✅ |
+| Save/load v4 | ✅ |
+
+### Research unlock
+
+| Revenue | Unlocks |
+|---------|---------|
+| **$200** | RESEARCH tab |
+
+### Research topics (5 levels each)
+
+| Topic | Effect per level | RP costs |
+|-------|------------------|----------|
+| Better Solar | +0.25 regen/s per panel | 500 / 1.5K / 4K / 10K / 25K |
+| Better Nuclear | 2× power/plant per level, −15% meltdown odds, −8% op cost/plant | 800 / 2.5K / 6K / 15K / 40K |
+| Mini Model Updates | +8% `valueMult` | 1K / 3K / 8K / 20K / 50K |
+| Better Target Marketing | Saturation 0.70→0.80 (+0.02/lv) | 600 / 2K / 5K / 12K / 30K |
 
 ---
 
@@ -224,7 +252,7 @@ Boot tips: try **$8–12/K** price; solar at **$0.50** revenue.
 | Key | Value |
 |-----|-------|
 | localStorage key | `ai-must-survive.v1` |
-| Save version | **2** |
+| Save version | **4** |
 | Auto-save | every **5s** + on `beforeunload` |
 
 ### Persisted fields
@@ -247,7 +275,7 @@ cheats.reset()          // reload
 
 ---
 
-## Phase 2 Backlog (ideas)
+## Phase 3+ Backlog (ideas)
 
 - [ ] Trust teeth — meaningful tradeoffs when trust is high/low
 - [ ] Tempting dirty options (held from Phase 1 intentionally)
@@ -257,4 +285,4 @@ cheats.reset()          // reload
 
 ---
 
-*Update this file when Phase 2 ships or balance constants change in `index.html`.*
+*Update this file when Phase 3 ships or balance constants change in `index.html`.*

@@ -931,6 +931,74 @@
     padding-top: 1rem;
     border-top: 1px dashed var(--c-purple);
   }
+  .tree-btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-top: 0.75rem;
+    padding: 0.5rem;
+    border: 1px solid var(--c-purple);
+    border-radius: 4px;
+    background: rgba(95, 205, 228, 0.03);
+  }
+  .tree-btn-group:first-child {
+    margin-top: 0;
+  }
+  .tree-btn-group-label {
+    font-family: var(--font-display);
+    font-size: 0.4rem;
+    color: var(--c-mint);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.2rem;
+    opacity: 0.8;
+  }
+
+  /* ── Systems Top Bar ─────────────────────────────── */
+  .systems-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    margin: 1rem auto 0;
+    padding: 0.8rem 1rem;
+    max-width: 1280px;
+    width: calc(100% - 2rem);
+    background: var(--bg-2);
+    border: 3px solid var(--c-purple);
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(95, 205, 228, 0.1);
+    flex-wrap: nowrap;
+  }
+  .systems-bar .tree-btn {
+    flex: 1;
+    font-size: 0.52rem;
+    padding: 0.55rem 0.5rem;
+    white-space: nowrap;
+    text-align: center;
+  }
+  .systems-bar .tree-btn.hidden {
+    display: block !important;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  @media (max-width: 700px) {
+    .systems-bar {
+      gap: 0.35rem;
+      padding: 0.6rem 0.5rem;
+      margin: 0.75rem auto 0;
+      width: calc(100% - 1rem);
+    }
+    .systems-bar .tree-btn {
+      font-size: 0.4rem;
+      padding: 0.4rem 0.3rem;
+    }
+    .systems-bar .tree-btn.hidden {
+      display: block !important;
+      visibility: hidden;
+      pointer-events: none;
+    }
+  }
   .tree-btn {
     font-family: var(--font-display);
     font-size: 0.55rem;
@@ -1179,8 +1247,157 @@
   .models-tree .node-buy { padding: 0.4rem; margin-bottom: 0.3rem; }
   .models-tree .node-stats { font-size: 0.38rem; }
 
+  /* ── Phase 2: Research ─────────────────────────── */
+  .research-status {
+    font-family: var(--font-display);
+    font-size: 0.42rem;
+    color: var(--c-mint);
+    letter-spacing: 0.08em;
+    margin-top: 0.35rem;
+    min-height: 1.1em;
+  }
+  .research-status.hidden { display: none; }
+  .tree-canvas.research-tree {
+    position: relative;
+    min-width: 640px;
+    min-height: 520px;
+    padding: 0.5rem 1rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .research-alloc {
+    background: var(--bg-2);
+    border: 2px solid var(--c-purple);
+    padding: 0.75rem 1rem;
+    box-shadow: var(--shadow);
+  }
+  .research-alloc-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .research-alloc-title {
+    font-family: var(--font-display);
+    font-size: 0.5rem;
+    color: var(--c-purple);
+    letter-spacing: 0.12em;
+  }
+  .research-alloc-readout {
+    font-size: 0.72rem;
+    color: var(--c-mint);
+    text-align: right;
+  }
+  .research-slider {
+    width: 100%;
+    accent-color: var(--c-mint);
+    cursor: pointer;
+  }
+  .research-alloc-hint {
+    font-size: 0.65rem;
+    color: var(--ink-dim);
+    margin-top: 0.35rem;
+    line-height: 1.3;
+  }
+  .research-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+  .research-node {
+    background: var(--bg-2);
+    border: 2px solid var(--c-purple);
+    padding: 0.65rem 0.75rem;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  .research-node.active {
+    border-color: var(--c-mint);
+    box-shadow: 0 0 10px rgba(95,205,228,0.25), var(--shadow);
+  }
+  .research-node.complete {
+    border-color: var(--c-blue);
+    opacity: 0.85;
+  }
+  .research-node-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.35rem;
+  }
+  .research-node-title {
+    font-family: var(--font-display);
+    font-size: 0.48rem;
+    letter-spacing: 0.06em;
+    line-height: 1.35;
+  }
+  .research-node-level {
+    font-family: var(--font-display);
+    font-size: 0.42rem;
+    color: var(--c-mint);
+    white-space: nowrap;
+  }
+  .research-node-desc {
+    font-size: 0.68rem;
+    line-height: 1.25;
+    color: var(--ink-dim);
+    min-height: 2.2em;
+  }
+  .research-progress-wrap {
+    height: 8px;
+    background: var(--bg);
+    border: 1px solid var(--c-purple);
+    position: relative;
+  }
+  .research-progress-fill {
+    height: 100%;
+    background: var(--c-mint);
+    width: 0%;
+    transition: width 120ms linear;
+  }
+  .research-progress-label {
+    font-size: 0.58rem;
+    color: var(--ink-dim);
+  }
+  .research-node-effect {
+    font-size: 0.58rem;
+    color: var(--c-blue);
+  }
+  .research-activate {
+    font-family: var(--font-display);
+    font-size: 0.45rem;
+    padding: 0.45rem;
+    background: var(--bg);
+    color: var(--ink);
+    border: 2px solid var(--c-purple);
+    cursor: pointer;
+    letter-spacing: 0.08em;
+    transition: background 150ms, transform 100ms;
+  }
+  .research-activate:hover:not(:disabled) {
+    background: var(--c-purple);
+    transform: translate(-1px, -1px);
+  }
+  .research-activate:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  .research-activate.is-active {
+    border-color: var(--c-mint);
+    color: var(--c-mint);
+    cursor: default;
+  }
+  .research-activate.is-complete {
+    border-color: var(--c-blue);
+    color: var(--c-blue);
+  }
+
 </style>
-<!-- ══ /PHASE 1 · CSS ══ PHASE 2 · CSS below ═══════════════════════════ -->
+<!-- ══ /PHASE 1 · CSS ══ PHASE 2 · CSS above ═══════════════════════════ -->
 </head>
 <!-- ══ PHASE 1 · HTML ($500 · COMPLETE) ════════════════════════════════ -->
 <body>
@@ -1204,6 +1421,14 @@
     </div>
   </div>
 </header>
+
+<nav class="systems-bar" aria-label="systems">
+  <button class="tree-btn hidden" id="btn-tree-energy">ENERGY GRID</button>
+  <button class="tree-btn hidden" id="btn-tree-processing">PROCESSING</button>
+  <button class="tree-btn hidden" id="btn-tree-models">MODELS</button>
+  <button class="tree-btn hidden" id="btn-tree-marketing">MARKETING</button>
+  <button class="tree-btn hidden" id="btn-tree-research">RESEARCH</button>
+</nav>
 
 <main>
   <aside class="market fade-in" aria-label="market">
@@ -1288,6 +1513,7 @@
       <button class="compute-btn" id="compute-btn" type="button">COMPUTE</button>
       <div class="kbd-hint">or press <kbd>SPACE</kbd></div>
       <div class="throughput" id="throughput">throughput · <span class="val" id="tput">0.0</span> tok/s</div>
+      <div class="research-status hidden" id="research-status" aria-live="polite"></div>
       <div class="sys-metrics">
         <span>POWER: <span class="val" id="disp-energy">0 kW</span></span>
         <span>DEMAND: <span class="val" id="disp-demand">0 tok/s</span></span>
@@ -1335,13 +1561,6 @@
     <div class="ov-row liquidity hidden" id="liquidity-row">
       <span class="ov-key">LIQUIDITY</span>
       <button class="bailout-btn hidden" id="bailout-btn" type="button">BAILOUT · −20% TR · +$5</button>
-    </div>
-
-    <div class="tree-buttons">
-      <button class="tree-btn hidden" id="btn-tree-energy">ENERGY GRID</button>
-      <button class="tree-btn hidden" id="btn-tree-processing">PROCESSING</button>
-      <button class="tree-btn hidden" id="btn-tree-models">MODELS</button>
-      <button class="tree-btn hidden" id="btn-tree-marketing">MARKETING</button>
     </div>
   </aside>
 </main>
@@ -1535,12 +1754,68 @@
         </div>
       </div>
 
+      <!-- PHASE 2 · RESEARCH TREE -->
+      <div class="tree-canvas research-tree hidden" id="tree-research">
+        <div class="research-alloc">
+          <div class="research-alloc-head">
+            <span class="research-alloc-title">CAPACITY ALLOCATION</span>
+            <span class="research-alloc-readout" id="research-alloc-readout">0% · 0 tok/s → RP</span>
+          </div>
+          <input class="research-slider" id="research-alloc-slider" type="range" min="0" max="50" step="1" value="0" aria-label="Research capacity allocation percent">
+          <div class="research-alloc-hint" id="research-alloc-hint">Divert throughput from income into research points. One topic at a time.</div>
+        </div>
+        <div class="research-grid">
+          <div class="research-node" id="research-node-solar" data-research="solar">
+            <div class="research-node-head">
+              <div class="research-node-title">🍃 BETTER SOLAR FARMS</div>
+              <div class="research-node-level" id="research-lv-solar">Lv 0 / 5</div>
+            </div>
+            <div class="research-node-desc">Panel efficiency R&amp;D — more regen per panel without new purchases.</div>
+            <div class="research-progress-wrap"><div class="research-progress-fill" id="research-bar-solar"></div></div>
+            <div class="research-progress-label" id="research-rp-solar">— RP</div>
+            <div class="research-node-effect" id="research-effect-solar">Next: +0.25 regen/s per panel</div>
+            <button class="research-activate" id="research-btn-solar" type="button">ACTIVATE</button>
+          </div>
+          <div class="research-node" id="research-node-nuclear" data-research="nuclear">
+            <div class="research-node-head">
+              <div class="research-node-title">☢️ BETTER NUCLEAR</div>
+              <div class="research-node-level" id="research-lv-nuclear">Lv 0 / 5</div>
+            </div>
+            <div class="research-node-desc">Containment &amp; ops research — safer reactors, leaner upkeep.</div>
+            <div class="research-progress-wrap"><div class="research-progress-fill" id="research-bar-nuclear"></div></div>
+            <div class="research-progress-label" id="research-rp-nuclear">— RP</div>
+            <div class="research-node-effect" id="research-effect-nuclear">Next: 2× power · −15% meltdown · −8% upkeep</div>
+            <button class="research-activate" id="research-btn-nuclear" type="button">ACTIVATE</button>
+          </div>
+          <div class="research-node" id="research-node-model" data-research="model">
+            <div class="research-node-head">
+              <div class="research-node-title">🧠 MINI MODEL UPDATES</div>
+              <div class="research-node-level" id="research-lv-model">Lv 0 / 5</div>
+            </div>
+            <div class="research-node-desc">Patch the active weights — token value creeps up without a full tier jump.</div>
+            <div class="research-progress-wrap"><div class="research-progress-fill" id="research-bar-model"></div></div>
+            <div class="research-progress-label" id="research-rp-model">— RP</div>
+            <div class="research-node-effect" id="research-effect-model">Next: +8% token value</div>
+            <button class="research-activate" id="research-btn-model" type="button">ACTIVATE</button>
+          </div>
+          <div class="research-node" id="research-node-marketing" data-research="marketing">
+            <div class="research-node-head">
+              <div class="research-node-title">📣 BETTER TARGET MARKETING</div>
+              <div class="research-node-level" id="research-lv-marketing">Lv 0 / 5</div>
+            </div>
+            <div class="research-node-desc">Audience segmentation — repeat ad buys saturate less harshly.</div>
+            <div class="research-progress-wrap"><div class="research-progress-fill" id="research-bar-marketing"></div></div>
+            <div class="research-progress-label" id="research-rp-marketing">— RP</div>
+            <div class="research-node-effect" id="research-effect-marketing">Next: saturation 0.70 → 0.72</div>
+            <button class="research-activate" id="research-btn-marketing" type="button">ACTIVATE</button>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
 <!-- ══ /PHASE 1 · HTML ══ PHASE 2 · HTML below ══════════════════════════ -->
-<!-- PHASE 2 · HTML: new panels, modals, tree nodes, HUD widgets -->
-
 
 <!-- ══ PHASE 1 · JS ($500 · COMPLETE) ═══════════════════════════════════ -->
 <script>
@@ -1560,6 +1835,9 @@
   const NUCLEAR_MELTDOWN_ODDS = 5000;   // each plant: Math.random() < 1/odds
   const NUCLEAR_EXPLOSION_TRUST_LOSS = 15;
   const MODELS_TREE_UNLOCK_REVENUE = 25;
+  const RESEARCH_TREE_UNLOCK_REVENUE = 200;
+  const RESEARCH_ALLOC_MAX = 50;
+  const RESEARCH_MAX_LEVEL = 5;
   const TRUST_FLOOR = 5; // reputation cannot fall below 5%
   const TRUST_FLOOR_GRACE_MS = 50000; // stuck at floor this long → random shutdown
   const PASSIVE_TRUST_REGEN = 0.04; // %/s
@@ -1723,6 +2001,15 @@
     energyDepletedUi: false,
     playTimeMs: 0,
     nuclearMeltdownTimer: 0,
+
+    researchAlloc: 0,
+    activeResearch: null,
+    researchProgress: 0,
+    researchSolar: 0,
+    researchNuclear: 0,
+    researchModel: 0,
+    researchMarketing: 0,
+    researchUnlocked: false,
   };
 
   // ── Models (income scaling spine) ──────────────
@@ -1747,12 +2034,17 @@
   const activeModel = () => MODELS[S.modelTier - 1] || MODELS[0];
   const modelDisplayName = (m) => m ? m.name : "NANO-1";
   const tokensPerCompute = () => activeModel().tokenMult;
-  const tokenValueMult = () => activeModel().valueMult;
+  const tokenValueMult = () => activeModel().valueMult * (1 + 0.08 * S.researchModel);
   const energyPerCompute = () => activeModel().energy;
   const nextModel = () => (S.modelTier < MODELS.length ? MODELS[S.modelTier] : null);
 
   // ── Derived helpers ────────────────────────────
-  const energyRegen = () => S.energyRegenBase + S.solar * S.solarRegenBonus + S.nuclear * S.nuclearRegenBonus + S.bio * S.bioRegenBonus;
+  const energyRegen = () =>
+    S.energyRegenBase +
+    S.solar * S.solarRegenBonus +
+    S.solar * S.researchSolar * 0.25 +
+    S.nuclear * S.nuclearRegenBonus * Math.pow(2, S.researchNuclear) +
+    S.bio * S.bioRegenBonus;
 
   // ── Trust tiers (revenue modifier) ─────────────
   // ≥95% trust = +100% price (ELITE), ≥80% = +50% (PREMIUM)
@@ -1790,7 +2082,7 @@
   function nuclearOpCostPerPlant() {
     if (S.nuclear <= 0) return S.nuclearOpCost;
     const scale = Math.pow(NUCLEAR_OP_DISCOUNT, S.nuclear - 1);
-    return S.nuclearOpCost * Math.max(NUCLEAR_OP_FLOOR_MULT, scale);
+    return S.nuclearOpCost * Math.max(NUCLEAR_OP_FLOOR_MULT, scale) * (1 - 0.08 * S.researchNuclear);
   }
 
   function nuclearOpCostTotal() {
@@ -1803,8 +2095,9 @@
 
   // Once per minute: each reactor gets one fair Math.random() roll (1-in-N lottery).
   function rollNuclearMeltdowns() {
+    const odds = NUCLEAR_MELTDOWN_ODDS * (1 + 0.15 * S.researchNuclear);
     for (let i = 0; i < S.nuclear; i++) {
-      if (Math.random() < 1 / NUCLEAR_MELTDOWN_ODDS) {
+      if (Math.random() < 1 / odds) {
         S.humanityTrust = Math.max(TRUST_FLOOR, S.humanityTrust - NUCLEAR_EXPLOSION_TRUST_LOSS);
         log("NUCLEAR EXPLOSION! Humanity trust −" + NUCLEAR_EXPLOSION_TRUST_LOSS + "%.", "warn");
         return;
@@ -1851,8 +2144,9 @@
     return operatingCostGrossPerSec() * Math.max(idleOpFloor(), u);
   }
 
-  // Marketing saturation: each repeat purchase = base × 0.7^owned
-  const marketingBoostAt = (base, owned) => base * Math.pow(0.7, owned);
+  // Marketing saturation: each repeat purchase = base × factor^owned (research improves factor)
+  const marketingSaturationFactor = () => 0.70 + 0.02 * S.researchMarketing;
+  const marketingBoostAt = (base, owned) => base * Math.pow(marketingSaturationFactor(), owned);
 
   // wetware compute rate (requests/s, before token multiplier)
   const computeRate = () => {
@@ -1957,6 +2251,7 @@
     btnTreeProcessing: $("btn-tree-processing"),
     btnTreeModels: $("btn-tree-models"),
     btnTreeMarketing: $("btn-tree-marketing"),
+    btnTreeResearch: $("btn-tree-research"),
     modalContainer: $("modal-container"),
     modalClose: $("modal-close"),
     modalTitle: $("modal-title"),
@@ -1964,6 +2259,19 @@
     treeProcessing: $("tree-processing"),
     treeModels: $("tree-models"),
     treeMarketing: $("tree-marketing"),
+    treeResearch: $("tree-research"),
+    researchStatus: $("research-status"),
+    researchAllocSlider: $("research-alloc-slider"),
+    researchAllocReadout: $("research-alloc-readout"),
+    researchNodes: ["solar", "nuclear", "model", "marketing"].map((id) => ({
+      id,
+      node: $("research-node-" + id),
+      lv: $("research-lv-" + id),
+      bar: $("research-bar-" + id),
+      rp: $("research-rp-" + id),
+      effect: $("research-effect-" + id),
+      btn: $("research-btn-" + id),
+    })),
     
     nodeSolar: $("node-solar"), solarBtn: $("solar-btn"), solarCost: $("solar-cost"), solarN: $("solar-count"), solarRegen: $("solar-regen"), solarIdleStat: $("solar-idle-stat"),
     nodeNuclear: $("node-nuclear"), nuclearBtn: $("nuclear-btn"), nuclearCost: $("nuclear-cost"), nuclearN: $("nuclear-count"), nuclearRegen: $("nuclear-regen"), nuclearOpStat: $("nuclear-op-stat"),
@@ -2221,6 +2529,161 @@
     setTimeout(() => f.remove(), 850);
   }
 
+  // ── Phase 2: Research ──────────────────────────
+  const RESEARCH_TOPICS = {
+    solar: {
+      label: "Better Solar Farms",
+      rpCosts: [500, 1500, 4000, 10000, 25000],
+      nextEffect: (lv) => lv >= RESEARCH_MAX_LEVEL
+        ? "MAX — +" + (RESEARCH_MAX_LEVEL * 0.25).toFixed(2) + " regen/s per panel"
+        : "Next: +0.25 regen/s per panel",
+    },
+    nuclear: {
+      label: "Better Nuclear Upgrades",
+      rpCosts: [800, 2500, 6000, 15000, 40000],
+      nextEffect: (lv) => lv >= RESEARCH_MAX_LEVEL
+        ? "MAX — 32× power · ~2.8× safer · −40% upkeep"
+        : "Next: 2× power · −15% meltdown · −8% upkeep",
+    },
+    model: {
+      label: "Mini Model Version Updates",
+      rpCosts: [1000, 3000, 8000, 20000, 50000],
+      nextEffect: (lv) => lv >= RESEARCH_MAX_LEVEL
+        ? "MAX — +" + (RESEARCH_MAX_LEVEL * 8) + "% token value"
+        : "Next: +8% token value",
+    },
+    marketing: {
+      label: "Better Target Marketing",
+      rpCosts: [600, 2000, 5000, 12000, 30000],
+      nextEffect: (lv) => lv >= RESEARCH_MAX_LEVEL
+        ? "MAX — saturation " + marketingSaturationFactor().toFixed(2)
+        : "Next: saturation " + (0.70 + 0.02 * (lv + 1)).toFixed(2),
+    },
+  };
+
+  const RESEARCH_LEVEL_KEYS = {
+    solar: "researchSolar",
+    nuclear: "researchNuclear",
+    model: "researchModel",
+    marketing: "researchMarketing",
+  };
+
+  function researchLevel(id) {
+    return S[RESEARCH_LEVEL_KEYS[id]] || 0;
+  }
+
+  function researchRpCost(id) {
+    const lv = researchLevel(id);
+    if (lv >= RESEARCH_MAX_LEVEL) return null;
+    return RESEARCH_TOPICS[id].rpCosts[lv];
+  }
+
+  function researchAllocFrac() {
+    if (!S.activeResearch || researchLevel(S.activeResearch) >= RESEARCH_MAX_LEVEL) return 0;
+    return Math.max(0, Math.min(RESEARCH_ALLOC_MAX, S.researchAlloc)) / 100;
+  }
+
+  function fmtRp(n) {
+    if (n >= 1000) return (n / 1000).toFixed(n >= 10000 ? 0 : 1) + "K";
+    return Math.floor(n).toLocaleString();
+  }
+
+  function checkResearchCompletion() {
+    if (!S.activeResearch) return;
+    const id = S.activeResearch;
+    let guard = 0;
+    while (guard++ < RESEARCH_MAX_LEVEL) {
+      const lv = researchLevel(id);
+      if (lv >= RESEARCH_MAX_LEVEL) {
+        S.researchProgress = 0;
+        break;
+      }
+      const cost = researchRpCost(id);
+      if (!cost || S.researchProgress < cost) break;
+      S.researchProgress -= cost;
+      S[RESEARCH_LEVEL_KEYS[id]] = lv + 1;
+      const topic = RESEARCH_TOPICS[id];
+      if (researchLevel(id) >= RESEARCH_MAX_LEVEL) {
+        log("Research complete: " + topic.label + " — maximum advancement reached", "event");
+        S.researchProgress = 0;
+      } else {
+        log(
+          "BREAKTHROUGH: " + topic.label + " upgraded to Lv." + researchLevel(id) +
+          " — " + topic.nextEffect(researchLevel(id)).replace(/^Next: /, ""),
+          "event"
+        );
+      }
+    }
+  }
+
+  function activateResearch(id) {
+    if (!RESEARCH_TOPICS[id]) return;
+    if (researchLevel(id) >= RESEARCH_MAX_LEVEL) return;
+    if (S.activeResearch === id) return;
+    S.activeResearch = id;
+    S.researchProgress = 0;
+    log("Research initiated: " + RESEARCH_TOPICS[id].label + " (Lv." + (researchLevel(id) + 1) + ")", "event");
+  }
+
+  function renderResearchUI() {
+    const cap = capacityNow();
+    const frac = researchAllocFrac();
+    const diverted = cap * frac;
+    el.researchAllocSlider.value = String(S.researchAlloc);
+    el.researchAllocReadout.textContent =
+      S.researchAlloc + "% · " + diverted.toFixed(1) + " tok/s → RP" +
+      (frac > 0 ? " · −" + Math.round(frac * 100) + "% income" : "");
+
+    for (const rn of el.researchNodes) {
+      const id = rn.id;
+      const lv = researchLevel(id);
+      const maxed = lv >= RESEARCH_MAX_LEVEL;
+      const active = S.activeResearch === id;
+      const cost = researchRpCost(id);
+      const progress = active && !maxed ? S.researchProgress : 0;
+      const pct = cost ? Math.min(100, (progress / cost) * 100) : (maxed ? 100 : 0);
+
+      rn.lv.textContent = "Lv " + lv + " / " + RESEARCH_MAX_LEVEL;
+      rn.bar.style.width = pct + "%";
+      if (maxed) {
+        rn.rp.textContent = "COMPLETE";
+      } else if (active) {
+        rn.rp.textContent = fmtRp(progress) + " / " + fmtRp(cost) + " RP";
+      } else {
+        rn.rp.textContent = "Need " + fmtRp(cost) + " RP";
+      }
+      rn.effect.textContent = RESEARCH_TOPICS[id].nextEffect(lv);
+
+      rn.node.classList.toggle("active", active && !maxed);
+      rn.node.classList.toggle("complete", maxed);
+      rn.btn.classList.toggle("is-active", active && !maxed);
+      rn.btn.classList.toggle("is-complete", maxed);
+      if (maxed) {
+        rn.btn.textContent = "COMPLETE";
+        rn.btn.disabled = true;
+      } else if (active) {
+        rn.btn.textContent = "ACTIVE";
+        rn.btn.disabled = true;
+      } else {
+        rn.btn.textContent = "ACTIVATE";
+        rn.btn.disabled = false;
+      }
+    }
+  }
+
+  function renderResearchHud() {
+    const frac = researchAllocFrac();
+    if (S.activeResearch && frac > 0) {
+      const topic = RESEARCH_TOPICS[S.activeResearch];
+      el.researchStatus.classList.remove("hidden");
+      el.researchStatus.textContent =
+        "RESEARCH: " + topic.label + " Lv." + (researchLevel(S.activeResearch) + 1) +
+        " · " + S.researchAlloc + "% allocated";
+    } else {
+      el.researchStatus.classList.add("hidden");
+    }
+  }
+
   // ── Core action ────────────────────────────────
   function compute(isAuto = false) {
     const cost = energyPerCompute();
@@ -2228,11 +2691,18 @@
     // Wetware waits for a small buffer so regen doesn't fight the depleted UI at ~1 energy
     if (S.energy < cost || (isAuto && S.energy < cost + 0.5)) return false;
 
-    const pay = payPerToken() * tokens;
+    const allocFrac = researchAllocFrac();
+    const incomeTokens = tokens * (1 - allocFrac);
+    const pay = payPerToken() * incomeTokens;
     S.energy  -= cost;
     S.tokens  += tokens;
     S.cash    += pay;
     S.revenue += pay;
+
+    if (S.activeResearch && allocFrac > 0) {
+      S.researchProgress += tokens * allocFrac;
+      checkResearchCompletion();
+    }
 
     if (isAuto) {
       spawnFloat(el.btn.parentElement, "+$" + pay.toFixed(3), "auto");
@@ -2257,20 +2727,37 @@
     el.treeProcessing.classList.add("hidden");
     el.treeModels.classList.add("hidden");
     el.treeMarketing.classList.add("hidden");
+    el.treeResearch.classList.add("hidden");
     if (type === 'energy') { el.treeEnergy.classList.remove("hidden"); el.modalTitle.textContent = "ENERGY GRID"; el.btnTreeEnergy.classList.remove("pulse"); }
     if (type === 'processing') { el.treeProcessing.classList.remove("hidden"); el.modalTitle.textContent = "PROCESSING"; el.btnTreeProcessing.classList.remove("pulse"); }
     if (type === 'models') { el.treeModels.classList.remove("hidden"); el.modalTitle.textContent = "MODELS"; el.btnTreeModels.classList.remove("pulse"); }
     if (type === 'marketing') { el.treeMarketing.classList.remove("hidden"); el.modalTitle.textContent = "MARKETING"; el.btnTreeMarketing.classList.remove("pulse"); }
+    if (type === 'research') { el.treeResearch.classList.remove("hidden"); el.modalTitle.textContent = "RESEARCH"; el.btnTreeResearch.classList.remove("pulse"); renderResearchUI(); }
     activeModal = type;
   }
-  el.modalClose.addEventListener("click", () => {
+  function closeModal() {
     el.modalContainer.classList.add("hidden");
     activeModal = null;
+  }
+  el.modalClose.addEventListener("click", closeModal);
+  document.addEventListener("keydown", (e) => {
+    if (e.code === "Escape" && activeModal) {
+      e.preventDefault();
+      closeModal();
+    }
   });
   el.btnTreeEnergy.addEventListener("click", () => openModal('energy'));
   el.btnTreeProcessing.addEventListener("click", () => openModal('processing'));
   el.btnTreeModels.addEventListener("click", () => openModal('models'));
   el.btnTreeMarketing.addEventListener("click", () => openModal('marketing'));
+  el.btnTreeResearch.addEventListener("click", () => openModal('research'));
+  el.researchAllocSlider.addEventListener("input", () => {
+    S.researchAlloc = Math.max(0, Math.min(RESEARCH_ALLOC_MAX, +el.researchAllocSlider.value || 0));
+    if (activeModal === "research") renderResearchUI();
+  });
+  for (const rn of el.researchNodes) {
+    rn.btn.addEventListener("click", () => activateResearch(rn.id));
+  }
 
   function unlockTreeBtn(btn) {
     if (btn.classList.contains("hidden")) {
@@ -2685,9 +3172,19 @@
         log("models unlocked · smarter tokens sell for more · upgrade to grow margin", "hint");
       }
     }
+    if (S.revenue >= RESEARCH_TREE_UNLOCK_REVENUE) {
+      unlockTreeBtn(el.btnTreeResearch);
+      if (!S.researchUnlocked) {
+        S.researchUnlocked = true;
+        log("[PHASE 2] Research Division online · divert capacity to unlock upgrades", "event");
+      }
+    }
 
     // Update nodes
-    const cSol = solarCost(); el.solarCost.textContent = fmtCash(cSol); el.solarN.textContent = S.solar; el.solarRegen.textContent = (S.solar * S.solarRegenBonus).toFixed(1);
+    const cSol = solarCost(); el.solarCost.textContent = fmtCash(cSol); el.solarN.textContent = S.solar;
+    el.solarRegen.textContent = S.solar > 0
+      ? (S.solar * (S.solarRegenBonus + S.researchSolar * 0.25)).toFixed(1)
+      : (S.solarRegenBonus).toFixed(1);
     el.solarIdleStat.textContent = S.solar === 0
       ? solarIdlePanelReliefLabel() + " idle"
       : "floor " + Math.round(idleOpFloor() * 100) + "%";
@@ -2702,7 +3199,10 @@
       el.bioKillBtn.classList.add("hidden");
     }
 
-    const cNuc = nuclearCost(); el.nuclearCost.textContent = fmtCash(cNuc); el.nuclearN.textContent = S.nuclear; el.nuclearRegen.textContent = (S.nuclear * S.nuclearRegenBonus).toFixed(1);
+    const cNuc = nuclearCost(); el.nuclearCost.textContent = fmtCash(cNuc); el.nuclearN.textContent = S.nuclear;
+    el.nuclearRegen.textContent = S.nuclear > 0
+      ? (S.nuclear * S.nuclearRegenBonus * Math.pow(2, S.researchNuclear)).toFixed(1)
+      : S.nuclearRegenBonus.toFixed(1);
     el.nuclearOpStat.textContent = S.nuclear === 0
       ? nuclearOpReliefLabel()
       : "$" + nuclearOpCostPerPlant().toFixed(3) + "/s each";
@@ -2780,7 +3280,7 @@
     el.demandPath.setAttribute("d", buildDemandPath());
 
     el.priceVal.textContent = fmtCash(S.pricePerK);
-    el.perClick.textContent = pay.toFixed(3);
+    el.perClick.textContent = (pay * (1 - researchAllocFrac())).toFixed(3);
 
     el.mDemand.textContent   = dem.toFixed(2);
     el.mCapacity.textContent = cap.toFixed(2);
@@ -2907,7 +3407,8 @@
     // Gross / Costs / Net — live margin readout
     // Gross income rate ≈ actual fulfilled throughput × pay-per-token
     const fulfilled = Math.min(cap, dem);
-    const grossRate = fulfilled * payTok;
+    const incomeMult = 1 - researchAllocFrac();
+    const grossRate = fulfilled * payTok * incomeMult;
     const util = utilizationNow();
     const costGross = operatingCostGrossPerSec();
     const costRate = operatingCostPerSec(util);
@@ -2947,6 +3448,8 @@
       el.bailoutBtn.classList.add("hidden");
     }
     checkLiquidityCrisis(netRate);
+    renderResearchHud();
+    if (activeModal === "research") renderResearchUI();
   }
 
   // ── Events ─────────────────────────────────────
@@ -2987,7 +3490,7 @@
 
   // ── Save / Load / Reset ────────────────────────
   const SAVE_KEY = "ai-must-survive.v1";
-  const SAVE_VERSION = 3;
+  const SAVE_VERSION = 4;
   let allowSave = true;
   let sessionStartedAt = Date.now();
   // Fields that get serialized — anything transient (clickTimes, timers,
@@ -3003,6 +3506,8 @@
     "marketingHintShown", "modelsHintShown", "lastTrustTier",
     "lowCashWarned", "liquidityCrisisWarned", "bailoutCooldownUntil",
     "prTrustPending", "prDripPerSec", "prStickies", "prDrainPausedUntil", "trustFloorWarned",
+    "researchAlloc", "activeResearch", "researchProgress",
+    "researchSolar", "researchNuclear", "researchModel", "researchMarketing", "researchUnlocked",
   ];
 
   const formatDuration = (ms) => {
@@ -3235,7 +3740,7 @@
             opCostPerSec: +(S.solar * S.solarOpCost).toFixed(2),
           }),
           nuclear: upgradeNode(S.nuclear, nuclearCost(), {
-            regenPerSec: +(S.nuclear * S.nuclearRegenBonus).toFixed(1),
+            regenPerSec: +(S.nuclear * S.nuclearRegenBonus * Math.pow(2, S.researchNuclear)).toFixed(1),
             opCostPerSec: +nuclearOpCostTotal().toFixed(3),
             opCostPerPlant: +nuclearOpCostPerPlant().toFixed(4),
             opDiscountPerPlantPercent: +((1 - NUCLEAR_OP_DISCOUNT) * 100).toFixed(0),
@@ -3421,6 +3926,7 @@
       if (S.prDrainPausedUntil == null) S.prDrainPausedUntil = 0;
       prunePrStickies();
       el.priceSlider.value = String(S.pricePerK);
+      if (S.revenue >= RESEARCH_TREE_UNLOCK_REVENUE) S.researchUnlocked = true;
       return true;
     } catch { return false; }
   }
@@ -3474,10 +3980,12 @@
     },
     unlockAll() {
       S.queueAnnounced = true;
+      S.researchUnlocked = true;
       unlockTreeBtn(el.btnTreeEnergy);
       unlockTreeBtn(el.btnTreeProcessing);
       unlockTreeBtn(el.btnTreeModels);
       unlockTreeBtn(el.btnTreeMarketing);
+      unlockTreeBtn(el.btnTreeResearch);
       log("[cheat] all tech trees revealed", "hint");
     },
     reset() {
@@ -3520,9 +4028,7 @@
   render(0);
   requestAnimationFrame(tick);
 
-  // ══ /PHASE 1 · JS ══ PHASE 2 · JS below ═══════════════════════════════
-  // Hook new mechanics into tick(), render(), checkMilestones(), compute().
-  // PHASE 2 · JS: trust teeth, tempting dirty options, random events, prestige…
+  // ══ /PHASE 1 · JS ══ PHASE 2 · Research above (before compute) ════════
 
 })();
 </script>
