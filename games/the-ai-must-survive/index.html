@@ -1807,7 +1807,7 @@
         <text class="tick-label" id="tick-tps-max" x="32" y="22" text-anchor="end">20</text>
         <text class="tick-label" id="tick-tps-mid" x="32" y="57" text-anchor="end">10</text>
         <text class="tick-label" x="32" y="93" text-anchor="end">0</text>
-        <text class="tick-label" x="36" y="100" text-anchor="start">$.5</text>
+        <text class="tick-label" id="tick-price-min" x="36" y="100" text-anchor="start">$.01</text>
         <text class="tick-label" id="tick-price-mid" x="152" y="100" text-anchor="middle">$25</text>
         <text class="tick-label" id="tick-price-max" x="268" y="100" text-anchor="end">$50</text>
 
@@ -1828,7 +1828,7 @@
       <span class="pricing-val">$<span id="price-val">10.00</span></span>
     </div>
     <input type="range" id="price-slider" class="price-slider"
-           min="0.5" max="50" step="0.25" value="10"
+           min="0.01" max="50" step="0.01" value="10"
            aria-label="Price per 1K tokens">
 
     <div class="market-readout">
@@ -2553,7 +2553,7 @@
   };
 
   // demand(p) — tokens/sec the market wants at price p ($/1K), trust-adjusted
-  const demandAt = (p) => S.demandBase * Math.pow(Math.max(0.5, p), -S.elasticity) * trustDemandMult();
+  const demandAt = (p) => S.demandBase * Math.pow(Math.max(0.01, p), -S.elasticity) * trustDemandMult();
   const demandNow = () => demandAt(S.pricePerK);
 
   // More reactors share ops crews, fuel contracts, and paperwork — upkeep/plant drops.
@@ -2706,6 +2706,7 @@
     unmetArea: $("unmet-area"),
     capLine:   $("capacity-line"),
     priceMark: $("price-marker"),
+    priceMinTick: $("tick-price-min"),
     priceMidTick: $("tick-price-mid"),
     priceMaxTick: $("tick-price-max"),
     deltaLine: $("delta-line"),
@@ -2815,36 +2816,41 @@
   // end). It also AUTO-ZOOMS: when your optimum is $2, the chart frames
   // ~$0.5–$8 (curve looks generous, dots have horizontal room); when the
   // optimum climbs to $15, the chart pans out to ~$0.5–$45. Y axis stays
-  // log-scaled and auto-rescales to demand. PRICE_MIN matches demandAt's
-  // effective floor (Math.max(0.5, p)) so the slider can dial in sub-$1
-  // prices without the chart pretending they don't exist.
-  const PRICE_MIN = 0.5, PRICE_MAX_HARD = 50;
-  // dotPadPx reserves visual headroom at the top of the plot so the gold/pink
-  // dots (and the curve peak at the leftmost price) always have room to
-  // breathe instead of getting jammed against the plot ceiling.
-  // priceMax is the *visible* right edge — re-derived each frame from the
-  // current optimum + slider position.
-  const CHART = { x0: 36, x1: 268, y0: 8, y1: 90, tpsMax: 20, dotPadPx: 14, priceMax: PRICE_MAX_HARD };
-  const CHART_LOG_FLOOR = 1; // tok/s — log Y so the demand curve doesn't cliff at PRICE_MIN
+  // X axis is log-scale in price; both edges zoom dynamically so the curve
+  // always fills the chart whether you're pricing at $0.01 or $50.
+  const PRICE_MIN_HARD = 0.01, PRICE_MAX_HARD = 50;
+  const CHART = { x0: 36, x1: 268, y0: 8, y1: 90, tpsMax: 20, dotPadPx: 14, priceMin: PRICE_MIN_HARD, priceMax: PRICE_MAX_HARD };
+  const CHART_LOG_FLOOR = 1; // tok/s — log Y so the demand curve doesn't cliff at price floor
+
+  // Log-scale X: maps price → pixel using log10 of the visible [priceMin, priceMax] window.
   const priceToX = (p) => {
-    const t = (p - PRICE_MIN) / (CHART.priceMax - PRICE_MIN);
+    const lMin = Math.log10(CHART.priceMin), lMax = Math.log10(CHART.priceMax);
+    const t = (Math.log10(Math.max(CHART.priceMin, p)) - lMin) / (lMax - lMin);
     return CHART.x0 + Math.max(0, Math.min(1, t)) * (CHART.x1 - CHART.x0);
   };
-  // demandAt is monotonically decreasing in price, so the curve peak always
-  // lives at PRICE_MIN — no need to sweep.
-  const chartDemandPeak = () => demandAt(PRICE_MIN);
+  const chartDemandPeak = () => demandAt(CHART.priceMin);
 
-  // Snap visible chart range to "nice" round numbers so the right-edge label
-  // doesn't read $7.83 — keeps the auto-zoom from feeling jittery.
+  // Snap to nice round numbers — handles sub-penny to $50.
   function niceCeilPrice(v) {
-    if (v <= 2)  return Math.ceil(v * 2) / 2;     // 0.5 steps
-    if (v <= 10) return Math.ceil(v);             // $1 steps
-    if (v <= 30) return Math.ceil(v / 5) * 5;     // $5 steps
-    return Math.ceil(v / 10) * 10;                // $10 steps
+    if (v <= 0.05) return Math.ceil(v * 100) / 100;  // $0.01 steps
+    if (v <= 0.5)  return Math.ceil(v * 20) / 20;    // $0.05 steps
+    if (v <= 2)    return Math.ceil(v * 2) / 2;       // $0.50 steps
+    if (v <= 10)   return Math.ceil(v);               // $1 steps
+    if (v <= 30)   return Math.ceil(v / 5) * 5;       // $5 steps
+    return Math.ceil(v / 10) * 10;                    // $10 steps
+  }
+  function niceFloorPrice(v) {
+    if (v <= 0.02) return 0.01;
+    if (v <= 0.1)  return Math.floor(v * 20) / 20;   // $0.05 steps
+    if (v <= 0.5)  return Math.floor(v * 10) / 10;   // $0.10 steps
+    if (v <= 2)    return Math.floor(v * 2) / 2;      // $0.50 steps
+    if (v <= 10)   return Math.floor(v);              // $1 steps
+    return Math.floor(v / 5) * 5;
   }
   function fmtPriceTick(p) {
-    if (p < 1)  return "$." + Math.round(p * 10);
-    if (p < 10) return "$" + (Math.round(p * 10) / 10);
+    if (p < 0.1)  return "$" + p.toFixed(2);
+    if (p < 1)    return "$" + p.toFixed(2);
+    if (p < 10)   return "$" + (Math.round(p * 10) / 10);
     return "$" + Math.round(p);
   }
   // tpsToY maps the curve peak (tpsMax) to (y0 + dotPadPx) instead of y0, so
@@ -2883,10 +2889,11 @@
   function buildDemandPath() {
     const samples = 120;
     const pts = [];
+    const lMin = Math.log10(CHART.priceMin), lMax = Math.log10(CHART.priceMax);
     for (let i = 0; i <= samples; i++) {
       const t = i / samples;
-      const tw = t * t;
-      const p = PRICE_MIN + tw * (CHART.priceMax - PRICE_MIN);
+      // Uniform in log-price space — gives smooth curve across any zoom window
+      const p = Math.pow(10, lMin + t * (lMax - lMin));
       const d = demandAt(p);
       pts.push((i === 0 ? "M" : "L") + priceToX(p).toFixed(2) + "," + tpsToY(d).toFixed(2));
     }
@@ -2898,16 +2905,16 @@
   function buildUnmetPath(cap) {
     if (cap <= 0.01) return "";
     const opt = optimalPrice(cap);
-    if (!isFinite(opt) || opt <= PRICE_MIN) return "";
+    if (!isFinite(opt) || opt <= CHART.priceMin) return "";
     const rightP = Math.min(opt, CHART.priceMax);
     const samples = 60;
     const capY = tpsToY(cap);
     const pts = [];
-    pts.push("M" + priceToX(PRICE_MIN).toFixed(2) + "," + capY.toFixed(2));
+    const lMin = Math.log10(CHART.priceMin), lMax = Math.log10(rightP);
+    pts.push("M" + priceToX(CHART.priceMin).toFixed(2) + "," + capY.toFixed(2));
     for (let i = 0; i <= samples; i++) {
       const t = i / samples;
-      const tw = t * t;
-      const p = PRICE_MIN + tw * (rightP - PRICE_MIN);
+      const p = Math.pow(10, lMin + t * (lMax - lMin));
       const d = demandAt(p);
       pts.push("L" + priceToX(p).toFixed(2) + "," + tpsToY(d).toFixed(2));
     }
@@ -3780,10 +3787,15 @@
     const dt = Math.min(0.1, (now - last) / 1000); // clamp dt
     last = now;
 
+    // Energy cap scales with model so high-tier computes don't pin the bar at a low value
+    S.energyMax = Math.max(50, energyPerCompute() * 3);
+
     // Energy regen (base + solar panels)
     if (S.energy < S.energyMax) {
       S.energy = Math.min(S.energyMax, S.energy + energyRegen() * dt);
     }
+    // Clear depleted latch after regen, before auto-compute drains it back down
+    if (S.energy >= energyPerCompute() + 0.5) S.energyDepletedUi = false;
 
     // CPU auto-compute
     if (S.cpu > 0) {
@@ -4102,17 +4114,24 @@
       updateChartTickLabels();
     }
 
-    // Scale X (price) so the optimum and your current slider position always
-    // sit in the comfortable middle of the chart. Snaps to "nice" round
-    // numbers and only re-renders the axis when it changes meaningfully —
-    // keeps the dots from twitching frame-to-frame.
+    // Scale X (log-price) so both edges zoom to keep the curve well-framed.
+    // Left edge: just below the minimum of optimal/current price.
+    // Right edge: just above the maximum of optimal/current price.
     const safeOpt = isFinite(opt) && opt > 0 ? opt : S.pricePerK;
-    const rawPriceMax = Math.max(6, safeOpt * 2.5, S.pricePerK * 1.4);
+    const rawPriceMin = Math.max(PRICE_MIN_HARD, Math.min(safeOpt, S.pricePerK) * 0.3);
+    const rawPriceMax = Math.max(safeOpt * 2.5, S.pricePerK * 1.8, rawPriceMin * 10);
+    const targetPriceMin = Math.max(PRICE_MIN_HARD, niceFloorPrice(rawPriceMin));
     const targetPriceMax = Math.min(PRICE_MAX_HARD, niceCeilPrice(rawPriceMax));
-    if (Math.abs(CHART.priceMax - targetPriceMax) > 0.4) {
+    // Geometric midpoint looks right on a log axis
+    const targetPriceMid = Math.sqrt(targetPriceMin * targetPriceMax);
+    const axisChanged = Math.abs(Math.log10(CHART.priceMax) - Math.log10(targetPriceMax)) > 0.05 ||
+                        Math.abs(Math.log10(CHART.priceMin) - Math.log10(targetPriceMin)) > 0.05;
+    if (axisChanged) {
+      CHART.priceMin = targetPriceMin;
       CHART.priceMax = targetPriceMax;
+      el.priceMinTick.textContent = fmtPriceTick(targetPriceMin);
+      el.priceMidTick.textContent = fmtPriceTick(targetPriceMid);
       el.priceMaxTick.textContent = fmtPriceTick(targetPriceMax);
-      el.priceMidTick.textContent = fmtPriceTick((PRICE_MIN + targetPriceMax) / 2);
       const sliderMaxStr = String(targetPriceMax);
       if (el.priceSlider.max !== sliderMaxStr) el.priceSlider.max = sliderMaxStr;
     }
@@ -4168,7 +4187,7 @@
     el.ptCurrent.setAttribute("cy", youPt.y);
 
     if (cap > 0.05) {
-      const peakPrice = Math.max(PRICE_MIN, Math.min(CHART.priceMax, opt));
+      const peakPrice = Math.max(CHART.priceMin, Math.min(CHART.priceMax, opt));
       const peakDem = demandAt(peakPrice);
       const peakPt = clampInPlot(priceToX(peakPrice), tpsToY(peakDem), 2.5);
       el.ptOptimal.setAttribute("cx", peakPt.x);
@@ -4208,8 +4227,10 @@
     const cost = energyPerCompute();
     const can = S.energy >= cost;
     const clearUi = cost + 0.5;
-    if (S.energy < cost) S.energyDepletedUi = true;
-    else if (S.energy >= clearUi) S.energyDepletedUi = false;
+    const autoRunning = computeRate() > 0;
+    // Only show depleted if auto-compute is idle — cycling energy during active processing is normal
+    if (S.energy < cost && !autoRunning) S.energyDepletedUi = true;
+    else if (S.energy >= clearUi || autoRunning) S.energyDepletedUi = false;
 
     el.btn.disabled = !can;
     el.energyFill.classList.toggle("empty", S.energyDepletedUi);
