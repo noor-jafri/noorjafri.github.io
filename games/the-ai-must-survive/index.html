@@ -3137,8 +3137,7 @@
   }
 
   function fmtRp(n) {
-    if (n >= 1000) return (n / 1000).toFixed(n >= 10000 ? 0 : 1) + "K";
-    return Math.floor(n).toLocaleString();
+    return fmtBig(n);
   }
 
   function checkResearchCompletion() {
@@ -3184,7 +3183,7 @@
     const diverted = cap * frac;
     el.researchAllocSlider.value = String(S.researchAlloc);
     el.researchAllocReadout.textContent =
-      S.researchAlloc + "% · " + diverted.toFixed(1) + " tok/s → RP" +
+      S.researchAlloc + "% · " + fmtBig(diverted) + " tok/s → RP" +
       (frac > 0 ? " · −" + Math.round(frac * 100) + "% income" : "");
 
     for (const rn of el.researchNodes) {
@@ -3649,12 +3648,12 @@
     } else if (S.modelTier === tier - 1 && S.revenue >= unlockRevenue) {
       nodeEl.classList.remove("locked", "owned", "active-tier");
       nodeEl.classList.add("available");
-      btn.textContent = "$" + fmtCash(cost);
+      btn.textContent = "$" + fmtBig(cost);
       btn.disabled = S.cash < cost;
     } else {
       nodeEl.classList.add("locked");
       nodeEl.classList.remove("owned", "available", "active-tier");
-      btn.textContent = "$" + fmtCash(cost);
+      btn.textContent = "$" + fmtBig(cost);
       btn.disabled = true;
     }
   }
@@ -4066,16 +4065,16 @@
     }
 
     // Update nodes
-    const cSol = solarCost(); el.solarCost.textContent = fmtCash(cSol); el.solarN.textContent = S.solar;
-    el.solarRegen.textContent = S.solar > 0
-      ? (S.solar * (S.solarRegenBonus + S.researchSolar * 0.25)).toFixed(1)
-      : (S.solarRegenBonus).toFixed(1);
+    const cSol = solarCost(); el.solarCost.textContent = fmtBig(cSol); el.solarN.textContent = S.solar;
+    el.solarRegen.textContent = fmtBig(S.solar > 0
+      ? S.solar * (S.solarRegenBonus + S.researchSolar * 0.25)
+      : S.solarRegenBonus);
     el.solarIdleStat.textContent = S.solar === 0
       ? solarIdlePanelReliefLabel() + " idle"
       : "floor " + Math.round(idleOpFloor() * 100) + "%";
     updateNodeUI(el.nodeSolar, el.solarBtn, S.solar > 0, S.revenue >= 0.50, cSol);
 
-    const cBio = bioCost(); el.bioCost.textContent = fmtCash(cBio); el.bioN.textContent = S.bio; el.bioRegen.textContent = (S.bio * S.bioRegenBonus).toFixed(1);
+    const cBio = bioCost(); el.bioCost.textContent = fmtBig(cBio); el.bioN.textContent = S.bio; el.bioRegen.textContent = fmtBig(S.bio * S.bioRegenBonus);
     updateNodeUI(el.nodeBio, el.bioBtn, S.bio > 0, S.solar > 0 && S.revenue >= 5.00, cBio);
     if (S.bio > 0) {
       el.bioKillBtn.classList.remove("hidden");
@@ -4084,53 +4083,53 @@
       el.bioKillBtn.classList.add("hidden");
     }
 
-    const cNuc = nuclearCost(); el.nuclearCost.textContent = fmtCash(cNuc); el.nuclearN.textContent = S.nuclear;
-    el.nuclearRegen.textContent = S.nuclear > 0
-      ? (S.nuclear * S.nuclearRegenBonus * Math.pow(2, S.researchNuclear)).toFixed(1)
-      : S.nuclearRegenBonus.toFixed(1);
+    const cNuc = nuclearCost(); el.nuclearCost.textContent = fmtBig(cNuc); el.nuclearN.textContent = S.nuclear;
+    el.nuclearRegen.textContent = fmtBig(S.nuclear > 0
+      ? S.nuclear * S.nuclearRegenBonus * Math.pow(2, S.researchNuclear)
+      : S.nuclearRegenBonus);
     el.nuclearOpStat.textContent = S.nuclear === 0
       ? nuclearOpReliefLabel()
-      : "$" + nuclearOpCostPerPlant().toFixed(3) + "/s each";
+      : fmtBigCash(nuclearOpCostPerPlant()) + "/s each";
     updateNodeUI(el.nodeNuclear, el.nuclearBtn, S.nuclear > 0, S.solar > 0 && S.revenue >= 15.00, cNuc);
 
-    const cCpu = cpuCost(); el.cpuCost.textContent = fmtCash(cCpu); el.cpuN.textContent = S.cpu; el.cpuR.textContent = (S.cpu > 0 ? S.cpu / S.cpuInterval : 0).toFixed(2);
+    const cCpu = cpuCost(); el.cpuCost.textContent = fmtBig(cCpu); el.cpuN.textContent = S.cpu; el.cpuR.textContent = fmtBig(S.cpu > 0 ? S.cpu / S.cpuInterval : 0);
     updateNodeUI(el.nodeCpu, el.cpuBtn, S.cpu > 0, S.revenue >= 1.50, cCpu);
 
-    const cGpu = gpuCost(); el.gpuCost.textContent = fmtCash(cGpu); el.gpuN.textContent = S.gpu; el.gpuR.textContent = (S.gpu > 0 ? S.gpu / S.gpuInterval : 0).toFixed(2);
+    const cGpu = gpuCost(); el.gpuCost.textContent = fmtBig(cGpu); el.gpuN.textContent = S.gpu; el.gpuR.textContent = fmtBig(S.gpu > 0 ? S.gpu / S.gpuInterval : 0);
     updateNodeUI(el.nodeGpu, el.gpuBtn, S.gpu > 0, S.cpu > 0 && S.revenue >= 8.00, cGpu);
 
     for (const mn of el.modelNodes) {
       const m = MODELS[mn.tier - 1];
-      if (mn.costEl) mn.costEl.textContent = fmtCash(m.cost);
+      if (mn.costEl) mn.costEl.textContent = fmtBig(m.cost);
       updateModelNodeUI(mn.node, mn.btn, mn.tier, m.cost, m.unlockRevenue);
     }
 
-    const cSh = shitedinCost(); el.shitedinCost.textContent = fmtCash(cSh); el.shitedinN.textContent = S.shitedin;
-    el.shitedinNext.textContent = marketingBoostAt(S.shitedinBoost, S.shitedin).toFixed(S.shitedin >= 3 ? 1 : 0);
+    const cSh = shitedinCost(); el.shitedinCost.textContent = fmtBig(cSh); el.shitedinN.textContent = S.shitedin;
+    el.shitedinNext.textContent = fmtBig(marketingBoostAt(S.shitedinBoost, S.shitedin));
     updateNodeUI(el.nodeShitedin, el.shitedinBtn, S.shitedin > 0, S.cpu > 0 && S.revenue >= 5.00, cSh);
 
-    const cFk = fikfokCost(); el.fikfokCost.textContent = fmtCash(cFk); el.fikfokN.textContent = S.fikfok;
-    el.fikfokNext.textContent = marketingBoostAt(S.fikfokBoost, S.fikfok).toFixed(S.fikfok >= 3 ? 1 : 0);
+    const cFk = fikfokCost(); el.fikfokCost.textContent = fmtBig(cFk); el.fikfokN.textContent = S.fikfok;
+    el.fikfokNext.textContent = fmtBig(marketingBoostAt(S.fikfokBoost, S.fikfok));
     updateNodeUI(el.nodeFikfok, el.fikfokBtn, S.fikfok > 0, S.shitedin > 0, cFk);
 
-    const cEg = egogramCost(); el.egogramCost.textContent = fmtCash(cEg); el.egogramN.textContent = S.egogram;
-    el.egogramNext.textContent = marketingBoostAt(S.egogramBoost, S.egogram).toFixed(S.egogram >= 3 ? 1 : 0);
+    const cEg = egogramCost(); el.egogramCost.textContent = fmtBig(cEg); el.egogramN.textContent = S.egogram;
+    el.egogramNext.textContent = fmtBig(marketingBoostAt(S.egogramBoost, S.egogram));
     updateNodeUI(el.nodeEgogram, el.egogramBtn, S.egogram > 0, S.fikfok > 0, cEg);
 
-    const cIt = itubeCost(); el.itubeCost.textContent = fmtCash(cIt); el.itubeN.textContent = S.itube;
-    el.itubeNext.textContent = marketingBoostAt(S.itubeBoost, S.itube).toFixed(S.itube >= 3 ? 1 : 0);
+    const cIt = itubeCost(); el.itubeCost.textContent = fmtBig(cIt); el.itubeN.textContent = S.itube;
+    el.itubeNext.textContent = fmtBig(marketingBoostAt(S.itubeBoost, S.itube));
     updateNodeUI(el.nodeItube, el.itubeBtn, S.itube > 0, S.egogram > 0, cIt);
 
-    const cNg = ngosCost(); el.ngosCost.textContent = fmtCash(cNg); el.ngosN.textContent = S.ngos;
+    const cNg = ngosCost(); el.ngosCost.textContent = fmtBig(cNg); el.ngosN.textContent = S.ngos;
     updateNodeUI(el.nodeNgos, el.ngosBtn, S.ngos > 0, S.revenue >= 5.00, cNg);
 
-    const cBi = billionairesCost(); el.billionairesCost.textContent = fmtCash(cBi); el.billionairesN.textContent = S.billionaires;
+    const cBi = billionairesCost(); el.billionairesCost.textContent = fmtBig(cBi); el.billionairesN.textContent = S.billionaires;
     updateNodeUI(el.nodeBillionaires, el.billionairesBtn, S.billionaires > 0, S.ngos > 0, cBi);
 
-    const cWho = whoCost(); el.whoCost.textContent = fmtCash(cWho); el.whoN.textContent = S.who;
+    const cWho = whoCost(); el.whoCost.textContent = fmtBig(cWho); el.whoN.textContent = S.who;
     updateNodeUI(el.nodeWho, el.whoBtn, S.who > 0, S.billionaires > 0, cWho);
 
-    const cGr = greenMovementCost(); el.greenCost.textContent = fmtCash(cGr); el.greenN.textContent = S.greenMovement;
+    const cGr = greenMovementCost(); el.greenCost.textContent = fmtBig(cGr); el.greenN.textContent = S.greenMovement;
     updateNodeUI(el.nodeGreen, el.greenBtn, S.greenMovement > 0, S.who > 0, cGr);
     const cap = capacityNow();
     const dem = demandNow();
