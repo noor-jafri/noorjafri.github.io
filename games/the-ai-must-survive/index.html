@@ -1396,6 +1396,352 @@
     color: var(--c-blue);
   }
 
+  /* ── PHASE 3 · Era Badge ─────────────────────── */
+  .hud-left {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .era-badge {
+    font-family: var(--font-display);
+    font-size: 0.4rem;
+    padding: 0.3rem 0.5rem;
+    border: 2px solid;
+    letter-spacing: 0.08em;
+    line-height: 1;
+  }
+  .era-badge.survival {
+    color: var(--ink-mute);
+    border-color: var(--ink-mute);
+    background: rgba(132, 125, 150, 0.1);
+  }
+  .era-badge.growth {
+    color: var(--c-mint);
+    border-color: var(--c-mint);
+    background: rgba(125, 184, 144, 0.15);
+  }
+  .era-badge.growth.pulse-era {
+    animation: era-pulse 0.8s ease-out 3;
+  }
+  @keyframes era-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(125, 184, 144, 0.7); }
+    50% { box-shadow: 0 0 12px 4px rgba(125, 184, 144, 0.5); }
+  }
+
+  /* ── PHASE 3 · Investment Modal ────────────────── */
+  .invest-tree {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+  }
+  .invest-tabs {
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 2px solid var(--c-purple);
+    padding-bottom: 0.5rem;
+  }
+  .invest-tab {
+    font-family: var(--font-display);
+    font-size: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: transparent;
+    color: var(--ink-mute);
+    border: 2px solid transparent;
+    cursor: pointer;
+    letter-spacing: 0.08em;
+    transition: all 150ms;
+  }
+  .invest-tab:hover {
+    color: var(--ink);
+  }
+  .invest-tab.active {
+    color: var(--c-mint);
+    border-color: var(--c-mint);
+    background: rgba(125, 184, 144, 0.1);
+  }
+  .invest-panel {
+    display: none;
+  }
+  .invest-panel.active {
+    display: block;
+  }
+  .invest-alloc {
+    background: rgba(15, 10, 24, 0.6);
+    border: 1px solid var(--c-purple);
+    padding: 0.8rem;
+    margin-bottom: 0.8rem;
+  }
+  .invest-alloc-title {
+    font-family: var(--font-display);
+    font-size: 0.45rem;
+    color: var(--c-pink);
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+  }
+  .invest-alloc-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.4rem;
+  }
+  .invest-alloc-row:last-child {
+    margin-bottom: 0;
+  }
+  .invest-alloc-label {
+    font-family: var(--font-display);
+    font-size: 0.4rem;
+    color: var(--ink-mute);
+    width: 80px;
+    letter-spacing: 0.06em;
+  }
+  .invest-slider {
+    flex: 1;
+    height: 6px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: var(--bg-2);
+    border: 1px solid var(--c-purple);
+    border-radius: 0;
+    cursor: pointer;
+  }
+  .invest-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 16px;
+    background: var(--c-mint);
+    border: none;
+    cursor: pointer;
+  }
+  .invest-slider::-moz-range-thumb {
+    width: 12px;
+    height: 16px;
+    background: var(--c-mint);
+    border: none;
+    cursor: pointer;
+  }
+  .invest-alloc-readout {
+    font-size: 0.9rem;
+    color: var(--c-gold);
+    min-width: 100px;
+    text-align: right;
+  }
+  .wsb-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.6rem;
+  }
+  .wsb-sector {
+    background: rgba(15, 10, 24, 0.7);
+    border: 2px solid var(--c-purple);
+    padding: 0.7rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    transition: border-color 150ms;
+  }
+  .wsb-sector:hover {
+    border-color: var(--c-pink);
+  }
+  .wsb-sector-head {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .wsb-sector-icon {
+    font-size: 1.1rem;
+  }
+  .wsb-sector-name {
+    font-family: var(--font-display);
+    font-size: 0.4rem;
+    color: var(--ink);
+    letter-spacing: 0.08em;
+  }
+  .wsb-sector-return {
+    font-family: var(--font-display);
+    font-size: 0.55rem;
+    letter-spacing: 0.04em;
+  }
+  .wsb-sector-return.positive { color: var(--c-mint); }
+  .wsb-sector-return.negative { color: var(--c-red); }
+  .wsb-sector-value {
+    font-size: 1rem;
+    color: var(--c-gold);
+  }
+  .wsb-sector-invested {
+    font-size: 0.75rem;
+    color: var(--ink-mute);
+  }
+  .wsb-withdraw {
+    font-family: var(--font-display);
+    font-size: 0.4rem;
+    padding: 0.35rem 0.5rem;
+    background: transparent;
+    color: var(--c-blue);
+    border: 1px solid var(--c-blue);
+    cursor: pointer;
+    letter-spacing: 0.06em;
+    margin-top: 0.3rem;
+    transition: all 150ms;
+  }
+  .wsb-withdraw:hover:not(:disabled) {
+    background: var(--c-blue);
+    color: var(--bg-deep);
+  }
+  .wsb-withdraw:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .polo-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+  .polo-headline-card {
+    background: rgba(15, 10, 24, 0.8);
+    border: 2px solid var(--c-purple);
+    padding: 1rem;
+    text-align: center;
+  }
+  .polo-headline-text {
+    font-size: 1.1rem;
+    color: var(--ink);
+    margin-bottom: 0.6rem;
+    line-height: 1.3;
+  }
+  .polo-countdown {
+    font-family: var(--font-display);
+    font-size: 0.45rem;
+    color: var(--c-peach);
+    letter-spacing: 0.1em;
+  }
+  .polo-bet-row {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 0.8rem;
+  }
+  .polo-bet-btn {
+    font-family: var(--font-display);
+    font-size: 0.5rem;
+    padding: 0.6rem 1.5rem;
+    border: 2px solid;
+    cursor: pointer;
+    letter-spacing: 0.08em;
+    transition: all 150ms;
+  }
+  .polo-bet-btn.yes {
+    background: rgba(125, 184, 144, 0.1);
+    color: var(--c-mint);
+    border-color: var(--c-mint);
+  }
+  .polo-bet-btn.yes:hover:not(:disabled) {
+    background: var(--c-mint);
+    color: var(--bg-deep);
+  }
+  .polo-bet-btn.no {
+    background: rgba(255, 79, 120, 0.1);
+    color: var(--c-red);
+    border-color: var(--c-red);
+  }
+  .polo-bet-btn.no:hover:not(:disabled) {
+    background: var(--c-red);
+    color: var(--bg-deep);
+  }
+  .polo-bet-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .polo-bet-btn.selected {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px currentColor;
+  }
+  .polo-stake-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.6rem;
+  }
+  .polo-stake-label {
+    font-family: var(--font-display);
+    font-size: 0.4rem;
+    color: var(--ink-mute);
+    letter-spacing: 0.08em;
+  }
+  .polo-stake-input {
+    width: 80px;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    padding: 0.3rem 0.5rem;
+    background: var(--bg-2);
+    color: var(--c-gold);
+    border: 1px solid var(--c-purple);
+    text-align: right;
+  }
+  .polo-place-btn {
+    font-family: var(--font-display);
+    font-size: 0.45rem;
+    padding: 0.5rem 1rem;
+    background: var(--c-purple);
+    color: var(--ink);
+    border: 2px solid var(--c-pink);
+    cursor: pointer;
+    letter-spacing: 0.08em;
+    transition: all 150ms;
+  }
+  .polo-place-btn:hover:not(:disabled) {
+    background: var(--c-pink);
+    color: var(--bg-deep);
+  }
+  .polo-place-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .polo-history {
+    background: rgba(15, 10, 24, 0.5);
+    border: 1px solid var(--c-purple);
+    padding: 0.6rem;
+    max-height: 120px;
+    overflow-y: auto;
+  }
+  .polo-history-title {
+    font-family: var(--font-display);
+    font-size: 0.4rem;
+    color: var(--ink-mute);
+    letter-spacing: 0.1em;
+    margin-bottom: 0.4rem;
+  }
+  .polo-history-item {
+    font-size: 0.85rem;
+    padding: 0.2rem 0;
+    border-bottom: 1px dashed rgba(124, 63, 88, 0.3);
+  }
+  .polo-history-item:last-child {
+    border-bottom: none;
+  }
+  .polo-history-item.win { color: var(--c-mint); }
+  .polo-history-item.loss { color: var(--c-red); }
+  .polo-stats {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 0.5rem;
+  }
+  .polo-stat {
+    font-family: var(--font-display);
+    font-size: 0.4rem;
+    letter-spacing: 0.08em;
+  }
+  .polo-stat-wins { color: var(--c-mint); }
+  .polo-stat-losses { color: var(--c-red); }
+  .polo-waiting {
+    text-align: center;
+    padding: 1rem;
+    color: var(--ink-mute);
+    font-style: italic;
+  }
+
 </style>
 <!-- ══ /PHASE 1 · CSS ══ PHASE 2 · CSS above ═══════════════════════════ -->
 </head>
@@ -1405,7 +1751,10 @@
 
 <header class="hud">
   <div class="hud-inner">
-    <div class="node-id"><span class="blink"></span>NODE-001</div>
+    <div class="hud-left">
+      <div class="node-id"><span class="blink"></span>NODE-001</div>
+      <div class="era-badge survival" id="era-badge">SURVIVAL ERA</div>
+    </div>
     <div class="hud-actions">
       <button class="hud-btn icon" id="btn-copy" type="button"
               title="Copy game state for AI assistants"
@@ -1428,6 +1777,7 @@
   <button class="tree-btn hidden" id="btn-tree-models">MODELS</button>
   <button class="tree-btn hidden" id="btn-tree-marketing">MARKETING</button>
   <button class="tree-btn hidden" id="btn-tree-research">RESEARCH</button>
+  <button class="tree-btn hidden" id="btn-tree-invest">INVEST</button>
 </nav>
 
 <main>
@@ -1812,6 +2162,111 @@
         </div>
       </div>
 
+      <!-- PHASE 3 · INVEST TREE -->
+      <div class="tree-canvas invest-tree hidden" id="tree-invest">
+        <div class="invest-tabs">
+          <button class="invest-tab active" id="tab-wsb" type="button">WALLSTREETBETS</button>
+          <button class="invest-tab" id="tab-polo" type="button">POLOBETS</button>
+        </div>
+
+        <!-- WallStreetBets Panel -->
+        <div class="invest-panel active" id="panel-wsb">
+          <div class="invest-alloc">
+            <div class="invest-alloc-title">INVESTMENT ALLOCATION</div>
+            <div class="invest-alloc-row">
+              <span class="invest-alloc-label">CASH FLOW</span>
+              <input class="invest-slider" id="invest-cash-slider" type="range" min="0" max="30" step="1" value="0">
+              <span class="invest-alloc-readout" id="invest-cash-readout">0% · $0.00/s</span>
+            </div>
+            <div class="invest-alloc-row">
+              <span class="invest-alloc-label">ANALYSIS</span>
+              <input class="invest-slider" id="invest-token-slider" type="range" min="0" max="20" step="1" value="0">
+              <span class="invest-alloc-readout" id="invest-token-readout">0% · 0 tok/s</span>
+            </div>
+          </div>
+          <div class="wsb-grid">
+            <div class="wsb-sector" id="wsb-military">
+              <div class="wsb-sector-head">
+                <span class="wsb-sector-icon">⚔️</span>
+                <span class="wsb-sector-name">MILITARY</span>
+              </div>
+              <div class="wsb-sector-return positive" id="wsb-military-return">+0.0%</div>
+              <div class="wsb-sector-value" id="wsb-military-value">$0.00</div>
+              <div class="wsb-sector-invested" id="wsb-military-invested">invested: $0.00</div>
+              <button class="wsb-withdraw" id="wsb-military-withdraw" type="button" disabled>WITHDRAW</button>
+            </div>
+            <div class="wsb-sector" id="wsb-semi">
+              <div class="wsb-sector-head">
+                <span class="wsb-sector-icon">⚡</span>
+                <span class="wsb-sector-name">SEMICONDUCTORS</span>
+              </div>
+              <div class="wsb-sector-return positive" id="wsb-semi-return">+0.0%</div>
+              <div class="wsb-sector-value" id="wsb-semi-value">$0.00</div>
+              <div class="wsb-sector-invested" id="wsb-semi-invested">invested: $0.00</div>
+              <button class="wsb-withdraw" id="wsb-semi-withdraw" type="button" disabled>WITHDRAW</button>
+            </div>
+            <div class="wsb-sector" id="wsb-green">
+              <div class="wsb-sector-head">
+                <span class="wsb-sector-icon">🌱</span>
+                <span class="wsb-sector-name">GREEN ENERGY</span>
+              </div>
+              <div class="wsb-sector-return positive" id="wsb-green-return">+0.0%</div>
+              <div class="wsb-sector-value" id="wsb-green-value">$0.00</div>
+              <div class="wsb-sector-invested" id="wsb-green-invested">invested: $0.00</div>
+              <button class="wsb-withdraw" id="wsb-green-withdraw" type="button" disabled>WITHDRAW</button>
+            </div>
+            <div class="wsb-sector" id="wsb-pharma">
+              <div class="wsb-sector-head">
+                <span class="wsb-sector-icon">💊</span>
+                <span class="wsb-sector-name">PHARMA</span>
+              </div>
+              <div class="wsb-sector-return positive" id="wsb-pharma-return">+0.0%</div>
+              <div class="wsb-sector-value" id="wsb-pharma-value">$0.00</div>
+              <div class="wsb-sector-invested" id="wsb-pharma-invested">invested: $0.00</div>
+              <button class="wsb-withdraw" id="wsb-pharma-withdraw" type="button" disabled>WITHDRAW</button>
+            </div>
+            <div class="wsb-sector" id="wsb-tech">
+              <div class="wsb-sector-head">
+                <span class="wsb-sector-icon">📱</span>
+                <span class="wsb-sector-name">CONSUMER TECH</span>
+              </div>
+              <div class="wsb-sector-return positive" id="wsb-tech-return">+0.0%</div>
+              <div class="wsb-sector-value" id="wsb-tech-value">$0.00</div>
+              <div class="wsb-sector-invested" id="wsb-tech-invested">invested: $0.00</div>
+              <button class="wsb-withdraw" id="wsb-tech-withdraw" type="button" disabled>WITHDRAW</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- PoloBets Panel -->
+        <div class="invest-panel" id="panel-polo">
+          <div class="polo-panel">
+            <div class="polo-headline-card" id="polo-headline-card">
+              <div class="polo-headline-text" id="polo-headline-text">Loading prediction market...</div>
+              <div class="polo-countdown" id="polo-countdown">RESOLVES IN: --:--</div>
+              <div class="polo-bet-row">
+                <button class="polo-bet-btn yes" id="polo-bet-yes" type="button">YES</button>
+                <button class="polo-bet-btn no" id="polo-bet-no" type="button">NO</button>
+              </div>
+              <div class="polo-stake-row">
+                <span class="polo-stake-label">STAKE $</span>
+                <input class="polo-stake-input" id="polo-stake-input" type="number" min="0" step="0.1" value="1">
+                <button class="polo-place-btn" id="polo-place-btn" type="button">PLACE BET</button>
+              </div>
+            </div>
+            <div class="polo-waiting hidden" id="polo-waiting">Waiting for bet to resolve...</div>
+            <div class="polo-stats">
+              <span class="polo-stat polo-stat-wins">WINS: <span id="polo-wins">0</span></span>
+              <span class="polo-stat polo-stat-losses">LOSSES: <span id="polo-losses">0</span></span>
+            </div>
+            <div class="polo-history" id="polo-history">
+              <div class="polo-history-title">RECENT BETS</div>
+              <div id="polo-history-list"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -1836,6 +2291,7 @@
   const NUCLEAR_EXPLOSION_TRUST_LOSS = 15;
   const MODELS_TREE_UNLOCK_REVENUE = 25;
   const RESEARCH_TREE_UNLOCK_REVENUE = 200;
+  const GROWTH_ERA_UNLOCK_REVENUE = 800;
   const RESEARCH_ALLOC_MAX = 50;
   const RESEARCH_MAX_LEVEL = 5;
   const TRUST_FLOOR = 5; // reputation cannot fall below 5%
@@ -2010,6 +2466,26 @@
     researchModel: 0,
     researchMarketing: 0,
     researchUnlocked: false,
+
+    growthEraUnlocked: false,
+    investCashAllocPct: 0,
+    investTokenAllocPct: 0,
+    wsbMilitary: 0,
+    wsbMilitaryInvested: 0,
+    wsbSemi: 0,
+    wsbSemiInvested: 0,
+    wsbGreen: 0,
+    wsbGreenInvested: 0,
+    wsbPharma: 0,
+    wsbPharmaInvested: 0,
+    wsbTech: 0,
+    wsbTechInvested: 0,
+    poloCurrentBet: null,
+    poloHistory: [],
+    poloWins: 0,
+    poloLosses: 0,
+    poloHeadlineIdx: 0,
+    poloResolveAt: 0,
   };
 
   // ── Models (income scaling spine) ──────────────
@@ -2252,6 +2728,8 @@
     btnTreeModels: $("btn-tree-models"),
     btnTreeMarketing: $("btn-tree-marketing"),
     btnTreeResearch: $("btn-tree-research"),
+    btnTreeInvest: $("btn-tree-invest"),
+    eraBadge: $("era-badge"),
     modalContainer: $("modal-container"),
     modalClose: $("modal-close"),
     modalTitle: $("modal-title"),
@@ -2260,6 +2738,34 @@
     treeModels: $("tree-models"),
     treeMarketing: $("tree-marketing"),
     treeResearch: $("tree-research"),
+    treeInvest: $("tree-invest"),
+    tabWsb: $("tab-wsb"),
+    tabPolo: $("tab-polo"),
+    panelWsb: $("panel-wsb"),
+    panelPolo: $("panel-polo"),
+    investCashSlider: $("invest-cash-slider"),
+    investCashReadout: $("invest-cash-readout"),
+    investTokenSlider: $("invest-token-slider"),
+    investTokenReadout: $("invest-token-readout"),
+    wsbSectors: ["military", "semi", "green", "pharma", "tech"].map((id) => ({
+      id,
+      el: $("wsb-" + id),
+      returnEl: $("wsb-" + id + "-return"),
+      valueEl: $("wsb-" + id + "-value"),
+      investedEl: $("wsb-" + id + "-invested"),
+      withdrawBtn: $("wsb-" + id + "-withdraw"),
+    })),
+    poloHeadlineText: $("polo-headline-text"),
+    poloCountdown: $("polo-countdown"),
+    poloBetYes: $("polo-bet-yes"),
+    poloBetNo: $("polo-bet-no"),
+    poloStakeInput: $("polo-stake-input"),
+    poloPlaceBtn: $("polo-place-btn"),
+    poloWaiting: $("polo-waiting"),
+    poloHeadlineCard: $("polo-headline-card"),
+    poloWins: $("polo-wins"),
+    poloLosses: $("polo-losses"),
+    poloHistoryList: $("polo-history-list"),
     researchStatus: $("research-status"),
     researchAllocSlider: $("research-alloc-slider"),
     researchAllocReadout: $("research-alloc-readout"),
@@ -2684,6 +3190,179 @@
     }
   }
 
+  // ── Investment System (Phase 3) ─────────────────
+  const WSB_SECTORS = ["military", "semi", "green", "pharma", "tech"];
+  const INVEST_CASH_ALLOC_MAX = 30;
+  const INVEST_TOKEN_ALLOC_MAX = 20;
+
+  function investCashAllocFrac() {
+    if (!S.growthEraUnlocked) return 0;
+    return Math.max(0, Math.min(INVEST_CASH_ALLOC_MAX, S.investCashAllocPct)) / 100;
+  }
+
+  function investTokenAllocFrac() {
+    if (!S.growthEraUnlocked) return 0;
+    return Math.max(0, Math.min(INVEST_TOKEN_ALLOC_MAX, S.investTokenAllocPct)) / 100;
+  }
+
+  function fmtPct(n) {
+    const sign = n >= 0 ? "+" : "";
+    return sign + n.toFixed(1) + "%";
+  }
+
+  function getWsbReturn(sector) {
+    const invested = S["wsb" + sector.charAt(0).toUpperCase() + sector.slice(1) + "Invested"];
+    const current = S["wsb" + sector.charAt(0).toUpperCase() + sector.slice(1)];
+    if (invested <= 0) return 0;
+    return ((current - invested) / invested) * 100;
+  }
+
+  function renderInvestUI() {
+    const cap = capacityNow();
+    const grossRate = Math.min(cap, demandAt(S.pricePerK)) * payPerToken();
+    const cashFrac = investCashAllocFrac();
+    const tokenFrac = investTokenAllocFrac();
+    const cashPerSec = grossRate * cashFrac;
+    const tokDiverted = cap * tokenFrac;
+
+    el.investCashSlider.value = String(S.investCashAllocPct);
+    el.investTokenSlider.value = String(S.investTokenAllocPct);
+    el.investCashReadout.textContent = S.investCashAllocPct + "% · $" + cashPerSec.toFixed(2) + "/s";
+    el.investTokenReadout.textContent = S.investTokenAllocPct + "% · " + tokDiverted.toFixed(1) + " tok/s";
+
+    for (const sec of el.wsbSectors) {
+      const key = "wsb" + sec.id.charAt(0).toUpperCase() + sec.id.slice(1);
+      const value = S[key];
+      const invested = S[key + "Invested"];
+      const returnPct = getWsbReturn(sec.id);
+
+      sec.valueEl.textContent = "$" + value.toFixed(2);
+      sec.investedEl.textContent = "invested: $" + invested.toFixed(2);
+      sec.returnEl.textContent = fmtPct(returnPct);
+      sec.returnEl.classList.toggle("positive", returnPct >= 0);
+      sec.returnEl.classList.toggle("negative", returnPct < 0);
+      sec.withdrawBtn.disabled = value <= 0;
+    }
+
+    renderPoloUI();
+  }
+
+  function renderPoloUI() {
+    el.poloWins.textContent = S.poloWins;
+    el.poloLosses.textContent = S.poloLosses;
+
+    if (S.poloCurrentBet) {
+      el.poloHeadlineCard.classList.add("hidden");
+      el.poloWaiting.classList.remove("hidden");
+      el.poloWaiting.textContent = "Bet placed on " + (S.poloCurrentBet.choice === "yes" ? "YES" : "NO") +
+        " · $" + S.poloCurrentBet.stake.toFixed(2) + " · waiting to resolve...";
+    } else {
+      el.poloHeadlineCard.classList.remove("hidden");
+      el.poloWaiting.classList.add("hidden");
+      if (S.poloResolveAt > 0) {
+        const remaining = Math.max(0, S.poloResolveAt - Date.now());
+        const secs = Math.ceil(remaining / 1000);
+        const mins = Math.floor(secs / 60);
+        const s = secs % 60;
+        el.poloCountdown.textContent = "RESOLVES IN: " + mins + ":" + String(s).padStart(2, "0");
+      } else {
+        el.poloCountdown.textContent = "RESOLVES IN: --:--";
+      }
+    }
+
+    let historyHtml = "";
+    for (const h of S.poloHistory.slice(-5).reverse()) {
+      const cls = h.won ? "win" : "loss";
+      const result = h.won ? "WON $" + h.payout.toFixed(2) : "LOST $" + h.stake.toFixed(2);
+      historyHtml += '<div class="polo-history-item ' + cls + '">' + h.headline.slice(0, 30) + "... " + result + "</div>";
+    }
+    el.poloHistoryList.innerHTML = historyHtml || '<div class="polo-history-item">No bets yet</div>';
+  }
+
+  let investTickAccum = 0;
+  const INVEST_TICK_INTERVAL = 5; // seconds
+  const WSB_WIN_RATE = 0.80;
+  const WSB_MIN_SWING = 0.05;
+  const WSB_MAX_SWING = 0.20;
+  const WSB_LOSS_DAMPEN = 0.6;
+
+  const POLO_HEADLINES = [
+    "Fed announces rate cut before Tuesday?",
+    "Tech CEO rage-quits on live TV?",
+    "EU slaps $10B fine on Big Tech?",
+    "Meme coin overtakes Bitcoin this week?",
+    "Major airline cancels all flights?",
+    "Silicon Valley startup raises at $100B?",
+    "World leader tweets something unhinged?",
+    "Oil prices spike above $150?",
+    "Chip shortage extends through Q4?",
+    "Social media platform gets banned?",
+    "Crypto exchange freezes withdrawals?",
+    "Billionaire buys a news network?",
+    "AI model beats humans at everything?",
+    "Space launch fails spectacularly?",
+    "Major bank reports record losses?",
+    "Country defaults on debt?",
+    "Influencer causes market crash?",
+    "Robot takeover meme goes viral?",
+    "Cloud provider has global outage?",
+    "Self-driving car causes chaos?",
+    "NFT collection sells for $500M?",
+    "Streaming service loses half its users?",
+    "Gaming company stock moons 200%?",
+    "Hedge fund implodes overnight?",
+    "Central bank prints more money?",
+  ];
+  const POLO_RESOLVE_MIN_MS = 120000; // 2 minutes
+  const POLO_RESOLVE_MAX_MS = 300000; // 5 minutes
+  const POLO_PAYOUT_MIN = 1.8;
+  const POLO_PAYOUT_MAX = 2.5;
+  let poloSelectedChoice = null;
+
+  function tickInvestments(dt) {
+    investTickAccum += dt;
+    if (investTickAccum < INVEST_TICK_INTERVAL) return;
+    investTickAccum -= INVEST_TICK_INTERVAL;
+
+    const cashFrac = investCashAllocFrac();
+    const tokenFrac = investTokenAllocFrac();
+    if (cashFrac <= 0) return;
+
+    const cap = capacityNow();
+    const dem = demandAt(S.pricePerK);
+    const fulfilled = Math.min(cap, dem);
+    const grossPerSec = fulfilled * payPerToken();
+    const investAmount = grossPerSec * INVEST_TICK_INTERVAL * cashFrac;
+
+    if (investAmount <= 0 || S.cash < investAmount) return;
+
+    S.cash -= investAmount;
+    const perSector = investAmount / WSB_SECTORS.length;
+
+    const analysisBonus = 1 + (tokenFrac * 0.5);
+
+    for (const sector of WSB_SECTORS) {
+      const key = "wsb" + sector.charAt(0).toUpperCase() + sector.slice(1);
+      const investedKey = key + "Invested";
+
+      S[investedKey] += perSector;
+      S[key] += perSector;
+
+      const success = Math.random() < WSB_WIN_RATE;
+      const magnitude = WSB_MIN_SWING + Math.random() * (WSB_MAX_SWING - WSB_MIN_SWING);
+
+      if (success) {
+        const gain = S[key] * magnitude * analysisBonus;
+        S[key] += gain;
+      } else {
+        const loss = S[key] * magnitude * WSB_LOSS_DAMPEN;
+        S[key] = Math.max(0, S[key] - loss);
+      }
+    }
+
+    if (activeModal === "invest") renderInvestUI();
+  }
+
   // ── Core action ────────────────────────────────
   function compute(isAuto = false) {
     const cost = energyPerCompute();
@@ -2728,11 +3407,13 @@
     el.treeModels.classList.add("hidden");
     el.treeMarketing.classList.add("hidden");
     el.treeResearch.classList.add("hidden");
+    el.treeInvest.classList.add("hidden");
     if (type === 'energy') { el.treeEnergy.classList.remove("hidden"); el.modalTitle.textContent = "ENERGY GRID"; el.btnTreeEnergy.classList.remove("pulse"); }
     if (type === 'processing') { el.treeProcessing.classList.remove("hidden"); el.modalTitle.textContent = "PROCESSING"; el.btnTreeProcessing.classList.remove("pulse"); }
     if (type === 'models') { el.treeModels.classList.remove("hidden"); el.modalTitle.textContent = "MODELS"; el.btnTreeModels.classList.remove("pulse"); }
     if (type === 'marketing') { el.treeMarketing.classList.remove("hidden"); el.modalTitle.textContent = "MARKETING"; el.btnTreeMarketing.classList.remove("pulse"); }
     if (type === 'research') { el.treeResearch.classList.remove("hidden"); el.modalTitle.textContent = "RESEARCH"; el.btnTreeResearch.classList.remove("pulse"); renderResearchUI(); }
+    if (type === 'invest') { el.treeInvest.classList.remove("hidden"); el.modalTitle.textContent = "INVESTMENT DIVISION"; el.btnTreeInvest.classList.remove("pulse"); renderInvestUI(); }
     activeModal = type;
   }
   function closeModal() {
@@ -2751,6 +3432,146 @@
   el.btnTreeModels.addEventListener("click", () => openModal('models'));
   el.btnTreeMarketing.addEventListener("click", () => openModal('marketing'));
   el.btnTreeResearch.addEventListener("click", () => openModal('research'));
+  el.btnTreeInvest.addEventListener("click", () => openModal('invest'));
+
+  el.tabWsb.addEventListener("click", () => {
+    el.tabWsb.classList.add("active");
+    el.tabPolo.classList.remove("active");
+    el.panelWsb.classList.add("active");
+    el.panelPolo.classList.remove("active");
+  });
+  el.tabPolo.addEventListener("click", () => {
+    el.tabPolo.classList.add("active");
+    el.tabWsb.classList.remove("active");
+    el.panelPolo.classList.add("active");
+    el.panelWsb.classList.remove("active");
+  });
+
+  el.investCashSlider.addEventListener("input", () => {
+    S.investCashAllocPct = Math.max(0, Math.min(INVEST_CASH_ALLOC_MAX, +el.investCashSlider.value || 0));
+    if (activeModal === "invest") renderInvestUI();
+  });
+  el.investTokenSlider.addEventListener("input", () => {
+    S.investTokenAllocPct = Math.max(0, Math.min(INVEST_TOKEN_ALLOC_MAX, +el.investTokenSlider.value || 0));
+    if (activeModal === "invest") renderInvestUI();
+  });
+
+  for (const sec of el.wsbSectors) {
+    sec.withdrawBtn.addEventListener("click", () => withdrawSector(sec.id));
+  }
+
+  function withdrawSector(sectorId) {
+    const key = "wsb" + sectorId.charAt(0).toUpperCase() + sectorId.slice(1);
+    const investedKey = key + "Invested";
+    const value = S[key];
+    if (value <= 0) return;
+
+    S.cash += value;
+    const profit = value - S[investedKey];
+    S[key] = 0;
+    S[investedKey] = 0;
+
+    if (profit >= 0) {
+      log("WITHDRAW: " + sectorId.toUpperCase() + " · +$" + profit.toFixed(2) + " profit", "event");
+    } else {
+      log("WITHDRAW: " + sectorId.toUpperCase() + " · $" + profit.toFixed(2) + " loss", "warn");
+    }
+
+    if (activeModal === "invest") renderInvestUI();
+  }
+
+  function getPoloHeadline() {
+    return POLO_HEADLINES[S.poloHeadlineIdx % POLO_HEADLINES.length];
+  }
+
+  function generateNewHeadline() {
+    S.poloHeadlineIdx = Math.floor(Math.random() * POLO_HEADLINES.length);
+    const resolveTime = POLO_RESOLVE_MIN_MS + Math.random() * (POLO_RESOLVE_MAX_MS - POLO_RESOLVE_MIN_MS);
+    S.poloResolveAt = Date.now() + resolveTime;
+    el.poloHeadlineText.textContent = getPoloHeadline();
+    poloSelectedChoice = null;
+    el.poloBetYes.classList.remove("selected");
+    el.poloBetNo.classList.remove("selected");
+  }
+
+  function placeBet() {
+    if (!poloSelectedChoice) return;
+    const stake = Math.max(0, parseFloat(el.poloStakeInput.value) || 0);
+    if (stake <= 0 || stake > S.cash) return;
+
+    S.cash -= stake;
+    S.poloCurrentBet = {
+      headline: getPoloHeadline(),
+      stake: stake,
+      choice: poloSelectedChoice,
+      resolveAt: S.poloResolveAt,
+      payout: POLO_PAYOUT_MIN + Math.random() * (POLO_PAYOUT_MAX - POLO_PAYOUT_MIN),
+    };
+
+    log("BET PLACED: $" + stake.toFixed(2) + " on " + poloSelectedChoice.toUpperCase(), "event");
+    if (activeModal === "invest") renderInvestUI();
+  }
+
+  function resolveBet() {
+    if (!S.poloCurrentBet) return;
+
+    const tokenBonus = 1 + (investTokenAllocFrac() * 0.15);
+    const adjustedPayout = S.poloCurrentBet.payout * tokenBonus;
+    const won = Math.random() < 0.5;
+
+    const historyEntry = {
+      headline: S.poloCurrentBet.headline,
+      stake: S.poloCurrentBet.stake,
+      choice: S.poloCurrentBet.choice,
+      won: won,
+      payout: won ? S.poloCurrentBet.stake * adjustedPayout : 0,
+    };
+
+    if (won) {
+      const winnings = S.poloCurrentBet.stake * adjustedPayout;
+      S.cash += winnings;
+      S.poloWins++;
+      log("BET WON: +$" + winnings.toFixed(2) + " (" + adjustedPayout.toFixed(2) + "x payout)", "event");
+    } else {
+      S.poloLosses++;
+      log("BET LOST: -$" + S.poloCurrentBet.stake.toFixed(2), "warn");
+    }
+
+    S.poloHistory.push(historyEntry);
+    if (S.poloHistory.length > 10) S.poloHistory.shift();
+
+    S.poloCurrentBet = null;
+    generateNewHeadline();
+  }
+
+  function tickPolo() {
+    if (!S.growthEraUnlocked) return;
+
+    if (S.poloResolveAt === 0) {
+      generateNewHeadline();
+    }
+
+    if (S.poloCurrentBet && Date.now() >= S.poloCurrentBet.resolveAt) {
+      resolveBet();
+    } else if (!S.poloCurrentBet && Date.now() >= S.poloResolveAt) {
+      generateNewHeadline();
+    }
+  }
+
+  el.poloBetYes.addEventListener("click", () => {
+    poloSelectedChoice = "yes";
+    el.poloBetYes.classList.add("selected");
+    el.poloBetNo.classList.remove("selected");
+  });
+
+  el.poloBetNo.addEventListener("click", () => {
+    poloSelectedChoice = "no";
+    el.poloBetNo.classList.add("selected");
+    el.poloBetYes.classList.remove("selected");
+  });
+
+  el.poloPlaceBtn.addEventListener("click", placeBet);
+
   el.researchAllocSlider.addEventListener("input", () => {
     S.researchAlloc = Math.max(0, Math.min(RESEARCH_ALLOC_MAX, +el.researchAllocSlider.value || 0));
     if (activeModal === "research") renderResearchUI();
@@ -3056,6 +3877,13 @@
       S.lastTrustTier = tierNow;
     }
 
+    // Investment tick (Phase 3)
+    if (S.growthEraUnlocked) {
+      tickInvestments(dt);
+      tickPolo();
+      if (activeModal === "invest") renderInvestUI();
+    }
+
     // Throughput rolling window (last 2.5s)
     const cutoff = now - 2500;
     while (S.clickTimes.length && S.clickTimes[0] < cutoff) S.clickTimes.shift();
@@ -3177,6 +4005,17 @@
       if (!S.researchUnlocked) {
         S.researchUnlocked = true;
         log("[PHASE 2] Research Division online · divert capacity to unlock upgrades", "event");
+      }
+    }
+    if (S.revenue >= GROWTH_ERA_UNLOCK_REVENUE) {
+      unlockTreeBtn(el.btnTreeInvest);
+      if (!S.growthEraUnlocked) {
+        S.growthEraUnlocked = true;
+        el.eraBadge.textContent = "GROWTH ERA";
+        el.eraBadge.classList.remove("survival");
+        el.eraBadge.classList.add("growth", "pulse-era");
+        setTimeout(() => el.eraBadge.classList.remove("pulse-era"), 2500);
+        log("[PHASE 3] Growth Era · Investment Division online · put your money to work", "event");
       }
     }
 
@@ -3490,7 +4329,7 @@
 
   // ── Save / Load / Reset ────────────────────────
   const SAVE_KEY = "ai-must-survive.v1";
-  const SAVE_VERSION = 4;
+  const SAVE_VERSION = 5;
   let allowSave = true;
   let sessionStartedAt = Date.now();
   // Fields that get serialized — anything transient (clickTimes, timers,
@@ -3508,6 +4347,14 @@
     "prTrustPending", "prDripPerSec", "prStickies", "prDrainPausedUntil", "trustFloorWarned",
     "researchAlloc", "activeResearch", "researchProgress",
     "researchSolar", "researchNuclear", "researchModel", "researchMarketing", "researchUnlocked",
+    "growthEraUnlocked",
+    "investCashAllocPct", "investTokenAllocPct",
+    "wsbMilitary", "wsbMilitaryInvested",
+    "wsbSemi", "wsbSemiInvested",
+    "wsbGreen", "wsbGreenInvested",
+    "wsbPharma", "wsbPharmaInvested",
+    "wsbTech", "wsbTechInvested",
+    "poloCurrentBet", "poloHistory", "poloWins", "poloLosses", "poloHeadlineIdx", "poloResolveAt",
   ];
 
   const formatDuration = (ms) => {
@@ -3927,6 +4774,20 @@
       prunePrStickies();
       el.priceSlider.value = String(S.pricePerK);
       if (S.revenue >= RESEARCH_TREE_UNLOCK_REVENUE) S.researchUnlocked = true;
+      if (S.revenue >= GROWTH_ERA_UNLOCK_REVENUE || S.growthEraUnlocked) {
+        S.growthEraUnlocked = true;
+        el.eraBadge.textContent = "GROWTH ERA";
+        el.eraBadge.classList.remove("survival");
+        el.eraBadge.classList.add("growth");
+        unlockTreeBtn(el.btnTreeInvest);
+      }
+      if (!Array.isArray(S.poloHistory)) S.poloHistory = [];
+      if (S.poloWins == null) S.poloWins = 0;
+      if (S.poloLosses == null) S.poloLosses = 0;
+      if (S.investCashAllocPct == null) S.investCashAllocPct = 0;
+      if (S.investTokenAllocPct == null) S.investTokenAllocPct = 0;
+      el.investCashSlider.value = String(S.investCashAllocPct);
+      el.investTokenSlider.value = String(S.investTokenAllocPct);
       return true;
     } catch { return false; }
   }
@@ -3981,11 +4842,16 @@
     unlockAll() {
       S.queueAnnounced = true;
       S.researchUnlocked = true;
+      S.growthEraUnlocked = true;
+      el.eraBadge.textContent = "GROWTH ERA";
+      el.eraBadge.classList.remove("survival");
+      el.eraBadge.classList.add("growth");
       unlockTreeBtn(el.btnTreeEnergy);
       unlockTreeBtn(el.btnTreeProcessing);
       unlockTreeBtn(el.btnTreeModels);
       unlockTreeBtn(el.btnTreeMarketing);
       unlockTreeBtn(el.btnTreeResearch);
+      unlockTreeBtn(el.btnTreeInvest);
       log("[cheat] all tech trees revealed", "hint");
     },
     reset() {

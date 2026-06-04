@@ -2,9 +2,10 @@
 
 > **Phase 1 · COMPLETE** ($500 scope) · checkpoint **2026-05-26**  
 > **Phase 2 · SHIPPED** (Research) · checkpoint **2026-05-30**  
-> **Source of truth:** `index.html` (search `PHASE 1` / `PHASE 2` for file boundaries)  
-> **Design spec:** `phase1.md`, `phase2.md`  
-> **Phase 3+:** trust teeth, dirty options, random events, prestige — not started
+> **Phase 3 · SHIPPED** (Growth Era + Investments) · checkpoint **2026-05-30**  
+> **Source of truth:** `index.html` (search `PHASE 1` / `PHASE 2` / `PHASE 3` for boundaries)  
+> **Design spec:** `phase1.md`, `phase2.md`, `phase3.md`  
+> **Phase 4+:** trust teeth, dirty options, random events, prestige — not started
 
 ---
 
@@ -55,6 +56,53 @@
 | Better Nuclear | 2× power/plant per level, −15% meltdown odds, −8% op cost/plant | 800 / 2.5K / 6K / 15K / 40K |
 | Mini Model Updates | +8% `valueMult` | 1K / 3K / 8K / 20K / 50K |
 | Better Target Marketing | Saturation 0.70→0.80 (+0.02/lv) | 600 / 2K / 5K / 12K / 30K |
+
+---
+
+## Phase 3 — Shipped (Growth Era + Investments)
+
+| System | Status |
+|--------|--------|
+| Era badge (Survival → Growth) | ✅ |
+| INVEST tab unlock ($800 revenue) | ✅ |
+| WallStreetBets (5 sectors) | ✅ |
+| PoloBets (political betting) | ✅ |
+| Cash + token allocation sliders | ✅ |
+| 80/20 random returns with analysis bonus | ✅ |
+| Withdraw to cash per sector | ✅ |
+| Save/load v5 | ✅ |
+
+### Investment unlock
+
+| Revenue | Unlocks |
+|---------|---------|
+| **$800** | INVEST tab + Growth Era |
+
+### WallStreetBets sectors
+
+| Sector | Icon | Description |
+|--------|------|-------------|
+| Military | ⚔️ | Defense contractors |
+| Semiconductors | ⚡ | Chip makers |
+| Green Energy | 🌱 | Solar, wind, EV |
+| Pharma | 💊 | Drug discovery |
+| Consumer Tech | 📱 | Gadgets, software |
+
+### Investment mechanics
+
+- **Cash allocation**: 0-30% of gross income → investments (split across 5 sectors)
+- **Token allocation**: 0-20% of throughput → analysis bonus (+50% max returns)
+- **Tick interval**: 5 seconds
+- **Win rate**: 80% chance of gain per tick
+- **Swing range**: 5-20% per tick
+- **Loss dampening**: Losses reduced by 40%
+
+### PoloBets
+
+- Random satirical headlines
+- Resolves in 2-5 minutes
+- 50/50 outcome chance
+- Payout: 1.8x - 2.5x (+ analysis bonus)
 
 ---
 
@@ -252,7 +300,7 @@ Boot tips: try **$8–12/K** price; solar at **$0.50** revenue.
 | Key | Value |
 |-----|-------|
 | localStorage key | `ai-must-survive.v1` |
-| Save version | **4** |
+| Save version | **5** |
 | Auto-save | every **5s** + on `beforeunload` |
 
 ### Persisted fields
@@ -275,7 +323,7 @@ cheats.reset()          // reload
 
 ---
 
-## Phase 3+ Backlog (ideas)
+## Phase 4+ Backlog (ideas)
 
 - [ ] Trust teeth — meaningful tradeoffs when trust is high/low
 - [ ] Tempting dirty options (held from Phase 1 intentionally)
@@ -285,4 +333,4 @@ cheats.reset()          // reload
 
 ---
 
-*Update this file when Phase 3 ships or balance constants change in `index.html`.*
+*Update this file when Phase 4 ships or balance constants change in `index.html`.*
