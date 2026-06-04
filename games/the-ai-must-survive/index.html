@@ -377,14 +377,22 @@
 
 
   .sys-metrics {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.25rem 0.5rem;
     font-family: var(--font-display);
-    font-size: 0.4rem;
+    font-size: 0.42rem;
     color: var(--ink-mute);
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
     margin-top: 0.5rem;
+    text-align: center;
+  }
+  .sys-metrics span {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.1rem;
+    line-height: 1.3;
   }
   .sys-metrics .val { color: var(--c-mint); }
   .sys-metrics .val.cost { color: var(--c-peach); }
@@ -397,6 +405,15 @@
     margin-left: 0.4rem;
     opacity: 0.85;
   }
+  .trust-modifier {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 0.42rem;
+    letter-spacing: 0.1em;
+    color: var(--ink-mute);
+    margin-top: 0.1rem;
+  }
+  .trust-modifier.hidden { display: none; }
   .trust-tier.elite { color: var(--c-gold); }
   .trust-tier.premium { color: var(--c-mint); }
   .trust-tier.normal { color: var(--ink-mute); }
@@ -1888,14 +1905,10 @@
       <span class="ov-key">HUMANITY TRUST</span>
       <span class="ov-num">
         <span id="humanity-trust">100.0%</span><span class="trust-trend flat" id="trust-trend">→</span><span class="trust-tier normal" id="trust-tier">NORMAL</span>
+        <br><span class="trust-modifier hidden" id="trust-modifier"></span>
         <span class="trust-recovery hidden" id="trust-recovery"></span>
         <span class="trust-shield hidden" id="trust-shield"></span>
       </span>
-    </div>
-
-    <div class="ov-row power-balance hidden" id="power-balance-row">
-      <span class="ov-key">POWER GRID</span>
-      <span class="ov-num" id="power-balance">—</span>
     </div>
 
     <div class="ov-row tokens">
@@ -2545,11 +2558,18 @@
     return "normal";
   }
   const TIER_LABEL = {
-    elite:   "ELITE · +100% PRICE",
-    premium: "PREMIUM · +50% PRICE",
+    elite:   "ELITE",
+    premium: "PREMIUM",
     normal:  "NORMAL",
-    watched: "WATCHED · -20% DEMAND",
-    crisis:  "CRISIS · -40% DEMAND",
+    watched: "WATCHED",
+    crisis:  "CRISIS",
+  };
+  const TIER_MODIFIER = {
+    elite:   "+100% PRICE",
+    premium: "+50% PRICE",
+    normal:  "",
+    watched: "−20% DEMAND",
+    crisis:  "−40% DEMAND",
   };
 
   // demand(p) — tokens/sec the market wants at price p ($/1K), trust-adjusted
@@ -2700,7 +2720,8 @@
     dispGross:  $("disp-gross"),
     dispCosts:  $("disp-costs"),
     dispNet:    $("disp-net"),
-    trustTier:  $("trust-tier"),
+    trustTier:     $("trust-tier"),
+    trustModifier: $("trust-modifier"),
     // Market chart + readouts
     demandPath:$("demand-path"),
     unmetArea: $("unmet-area"),
@@ -2724,8 +2745,7 @@
     trustRecovery: $("trust-recovery"),
     trustShield: $("trust-shield"),
     trustTrend: $("trust-trend"),
-    powerBalanceRow: $("power-balance-row"),
-    powerBalance: $("power-balance"),
+
     btnTreeEnergy: $("btn-tree-energy"),
     btnTreeProcessing: $("btn-tree-processing"),
     btnTreeModels: $("btn-tree-models"),
@@ -2926,6 +2946,24 @@
   // ── Helpers ────────────────────────────────────
   const fmtCash = (n) => n.toFixed(2);
   const fmtInt  = (n) => Math.floor(n).toLocaleString();
+  function fmtBig(n) {
+    const abs = Math.abs(n);
+    if (abs >= 1e15) return (n / 1e15).toFixed(2) + "Q";
+    if (abs >= 1e12) return (n / 1e12).toFixed(2) + "T";
+    if (abs >= 1e9)  return (n / 1e9).toFixed(2) + "B";
+    if (abs >= 1e6)  return (n / 1e6).toFixed(2) + "M";
+    if (abs >= 1e3)  return (n / 1e3).toFixed(1) + "K";
+    return n.toFixed(abs < 10 ? 2 : 1);
+  }
+  function fmtBigCash(n) {
+    const abs = Math.abs(n);
+    const sign = n < 0 ? "-$" : "$";
+    if (abs >= 1e12) return sign + (abs / 1e12).toFixed(2) + "T";
+    if (abs >= 1e9)  return sign + (abs / 1e9).toFixed(2) + "B";
+    if (abs >= 1e6)  return sign + (abs / 1e6).toFixed(2) + "M";
+    if (abs >= 1e3)  return sign + (abs / 1e3).toFixed(1) + "K";
+    return sign + abs.toFixed(2);
+  }
   const costFormula = (base, mult, owned) => Math.round(base * Math.pow(mult, owned) * 100) / 100;
   const solarCost = () => costFormula(S.solarBaseCost, S.solarCostMult, S.solar);
   const nuclearCost = () => costFormula(S.nuclearBaseCost, S.nuclearCostMult, S.nuclear);
@@ -3915,9 +3953,9 @@
     el.energyFill.style.width = pct + "%";
     el.energyFill.classList.toggle("low",   pct > 0 && pct < 30);
 
-    el.tokensTot.textContent  = fmtInt(S.tokens);
-    el.revenueTot.textContent = fmtCash(S.revenue);
-    el.cash.textContent       = fmtCash(S.cash);
+    el.tokensTot.textContent  = fmtBig(S.tokens);
+    el.revenueTot.textContent = fmtBig(S.revenue);
+    el.cash.textContent       = fmtBig(S.cash);
     el.activeModel.textContent = modelDisplayName(activeModel());
 
     const atFloor = S.cash <= CASH_FLOOR + 0.001;
@@ -3957,16 +3995,15 @@
     const tier = trustTier(S.humanityTrust);
     el.trustTier.textContent = TIER_LABEL[tier];
     el.trustTier.className = "trust-tier " + tier;
+    const mod = TIER_MODIFIER[tier];
+    el.trustModifier.textContent = mod;
+    el.trustModifier.classList.toggle("hidden", !mod);
 
     // Power grid balance — warn before auto processors outrun regen
     const autoLoad = S.cpu > 0 || S.gpu > 0;
     const balance = energyBalancePerSec();
     if (autoLoad) {
-      el.powerBalanceRow.classList.remove("hidden");
-      el.powerBalance.className = "ov-num";
       if (balance < -0.05) {
-        el.powerBalance.textContent = "DEFICIT · −" + Math.abs(balance).toFixed(1) + "/s";
-        el.powerBalance.classList.add("deficit");
         el.gridStatus.textContent = "GRID: −" + Math.abs(balance).toFixed(1) + "/s DEFICIT";
         el.gridStatus.className = "grid-status deficit";
         el.btn.classList.add("power-deficit");
@@ -3976,20 +4013,15 @@
           setTimeout(() => { S.powerWarnedRecently = false; }, 10000);
         }
       } else if (balance < 1) {
-        el.powerBalance.textContent = "TIGHT · +" + balance.toFixed(1) + "/s";
-        el.powerBalance.classList.add("tight");
         el.gridStatus.textContent = "GRID: +" + balance.toFixed(1) + "/s tight";
         el.gridStatus.className = "grid-status tight";
         el.btn.classList.remove("power-deficit");
       } else {
-        el.powerBalance.textContent = "+" + balance.toFixed(1) + "/s HEADROOM";
-        el.powerBalance.classList.add("ok");
-        el.gridStatus.textContent = "GRID: +" + balance.toFixed(1) + "/s headroom";
+        el.gridStatus.textContent = "GRID: +" + fmtBig(balance) + "/s headroom";
         el.gridStatus.className = "grid-status ok";
         el.btn.classList.remove("power-deficit");
       }
     } else {
-      el.powerBalanceRow.classList.add("hidden");
       el.gridStatus.textContent = "";
       el.gridStatus.className = "grid-status";
       el.btn.classList.remove("power-deficit");
@@ -4252,7 +4284,7 @@
     }
 
     // Throughput
-    const tputDisplay = tput.toFixed(1);
+    const tputDisplay = fmtBig(tput);
     el.tput.textContent = tputDisplay;
     el.tput.classList.toggle("hot", tput >= 4);
 
@@ -4263,8 +4295,8 @@
       return kW.toFixed(1) + " kW";
     }
     el.dispEnergy.textContent = formatPower(energyRegen());
-    el.dispDemand.textContent = dem.toFixed(1) + " tok/s";
-    el.dispProc.textContent = cap.toFixed(1) + " tok/s";
+    el.dispDemand.textContent = fmtBig(dem) + " tok/s";
+    el.dispProc.textContent   = fmtBig(cap) + " tok/s";
 
     // Gross / Costs / Net — live margin readout
     // Gross income rate ≈ actual fulfilled throughput × pay-per-token
@@ -4275,14 +4307,14 @@
     const costGross = operatingCostGrossPerSec();
     const costRate = operatingCostPerSec(util);
     const netRate = grossRate - costRate;
-    el.dispGross.textContent = "$" + grossRate.toFixed(2) + "/s";
-    el.dispCosts.textContent = "$" + costRate.toFixed(2) + "/s";
+    el.dispGross.textContent = fmtBigCash(grossRate) + "/s";
+    el.dispCosts.textContent = fmtBigCash(costRate) + "/s";
     if (util < 0.99 && costGross > 0.001) {
-      el.dispCosts.title = "full $" + costGross.toFixed(2) + "/s · " + Math.round(util * 100) + "% utilized · idle floor " + Math.round(idleOpFloor() * 100) + "%";
+      el.dispCosts.title = "full " + fmtBigCash(costGross) + "/s · " + Math.round(util * 100) + "% utilized · idle floor " + Math.round(idleOpFloor() * 100) + "%";
     } else {
       el.dispCosts.title = "";
     }
-    el.dispNet.textContent = (netRate >= 0 ? "+$" : "-$") + Math.abs(netRate).toFixed(2) + "/s";
+    el.dispNet.textContent = (netRate >= 0 ? "+" : "") + fmtBigCash(netRate) + "/s";
     el.dispCosts.className = "val" + (costRate > 0 ? " cost" : "");
     el.dispNet.className = "val " + (netRate >= 0.001 ? "profit" : (netRate <= -0.001 ? "loss net-negative" : ""));
     if (netRate < -0.01) {
@@ -4442,7 +4474,7 @@
         playTime: formatDuration(totalPlayMs()),
         humanityTrustPercent: +S.humanityTrust.toFixed(1),
         trustTier: tier,
-        trustTierLabel: TIER_LABEL[tier],
+        trustTierLabel: TIER_LABEL[tier] + (TIER_MODIFIER[tier] ? " · " + TIER_MODIFIER[tier] : ""),
         trustPriceMult: trustPriceMult(),
         trustDemandMult: trustDemandMult(),
         tokensProcessed: S.tokens,
@@ -4499,7 +4531,7 @@
         percent: +S.humanityTrust.toFixed(1),
         floor: TRUST_FLOOR,
         tier,
-        label: TIER_LABEL[tier],
+        label: TIER_LABEL[tier] + (TIER_MODIFIER[tier] ? " · " + TIER_MODIFIER[tier] : ""),
         priceMult: trustPriceMult(),
         demandMult: trustDemandMult(),
         prRecoveryPendingPercent: +S.prTrustPending.toFixed(2),
