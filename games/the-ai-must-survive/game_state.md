@@ -3,9 +3,9 @@
 > **Phase 1 · COMPLETE** ($500 scope) · checkpoint **2026-05-26**  
 > **Phase 2 · SHIPPED** (Research) · checkpoint **2026-05-30**  
 > **Phase 3 · SHIPPED** (Growth Era + Investments) · checkpoint **2026-05-30**  
-> **Source of truth:** `index.html` (search `PHASE 1` / `PHASE 2` / `PHASE 3` for boundaries)  
-> **Design spec:** `phase1.md`, `phase2.md`, `phase3.md`  
-> **Phase 4+:** trust teeth, dirty options, random events, prestige — not started
+> **Phase 4 · SHIPPED** (Influence Era) · checkpoint **2026-06-06**  
+> **Source of truth:** `index.html` (search `PHASE 1` / `PHASE 2` / `PHASE 3` / `PHASE 4`)  
+> **Design specs:** `phase1.md`, `phase2.md`, `phase3.md`, `phase4.md`
 
 ---
 
@@ -24,11 +24,6 @@
 | Save/load v2 + HUD copy export | ✅ |
 | Auto-save (5s) + cheats | ✅ |
 
-### Deferred to Phase 3+
-
-- Trust teeth / tempting dirty options
-- Random events, prestige, moral tradeoffs as long-game hook
-
 ---
 
 ## Phase 2 — Shipped (Research)
@@ -38,24 +33,21 @@
 | Research tab unlock ($200 revenue) | ✅ |
 | Capacity allocation slider (0–50%) | ✅ |
 | One active topic at a time | ✅ |
-| Better Solar / Nuclear / Model / Marketing (5 levels each) | ✅ |
+| 4 original topics: Better Solar / Nuclear / Model / Marketing (5 levels each) | ✅ |
 | RP from diverted token throughput | ✅ |
 | Save/load v4 | ✅ |
-
-### Research unlock
-
-| Revenue | Unlocks |
-|---------|---------|
-| **$200** | RESEARCH tab |
 
 ### Research topics (5 levels each)
 
 | Topic | Effect per level | RP costs |
 |-------|------------------|----------|
 | Better Solar | +0.25 regen/s per panel | 500 / 1.5K / 4K / 10K / 25K |
-| Better Nuclear | 2× power/plant per level, −15% meltdown odds, −8% op cost/plant | 800 / 2.5K / 6K / 15K / 40K |
+| Better Nuclear | 2× power/plant, −15% meltdown, −8% op cost | 800 / 2.5K / 6K / 15K / 40K |
 | Mini Model Updates | +8% `valueMult` | 1K / 3K / 8K / 20K / 50K |
 | Better Target Marketing | Saturation 0.70→0.80 (+0.02/lv) | 600 / 2K / 5K / 12K / 30K |
+| ⚡ Advanced Energy Research *(Phase 4)* | +20% energy regen from all sources | 5K / 15K / 40K / 100K / 250K |
+| 💸 Inference Cost Collapse *(Phase 4)* | −12% operating costs | 6K / 18K / 50K / 120K / 300K |
+| 🧠 Self-Optimising Models *(Phase 4)* | +10% token value multiplier | 8K / 25K / 70K / 180K / 450K |
 
 ---
 
@@ -68,41 +60,111 @@
 | WallStreetBets (5 sectors) | ✅ |
 | PoloBets (political betting) | ✅ |
 | Cash + token allocation sliders | ✅ |
-| 80/20 random returns with analysis bonus | ✅ |
+| Random returns with streak + analysis bonus | ✅ |
 | Withdraw to cash per sector | ✅ |
 | Save/load v5 | ✅ |
 
-### Investment unlock
+### WallStreetBets sector profiles
 
-| Revenue | Unlocks |
-|---------|---------|
-| **$800** | INVEST tab + Growth Era |
-
-### WallStreetBets sectors
-
-| Sector | Icon | Description |
-|--------|------|-------------|
-| Military | ⚔️ | Defense contractors |
-| Semiconductors | ⚡ | Chip makers |
-| Green Energy | 🌱 | Solar, wind, EV |
-| Pharma | 💊 | Drug discovery |
-| Consumer Tech | 📱 | Gadgets, software |
-
-### Investment mechanics
-
-- **Cash allocation**: 0-30% of gross income → investments (split across 5 sectors)
-- **Token allocation**: 0-20% of throughput → analysis bonus (+50% max returns)
-- **Tick interval**: 5 seconds
-- **Win rate**: 80% chance of gain per tick
-- **Swing range**: 5-20% per tick
-- **Loss dampening**: Losses reduced by 40%
+| Sector | Win Rate | Swing | Loss Dampen |
+|--------|----------|-------|-------------|
+| Military (DEF) | 56% | 0.4–1.5% | 85% |
+| Silicon (CPU) | 52% | 1.0–4.0% | 80% |
+| Eco Grid (ECO) | 58% | 0.3–1.2% | 75% |
+| Biotech (BIO) | 42% | 1.0–8.0% | 90% |
+| Netware (NET) | 50% | 1.5–5.0% | 85% |
 
 ### PoloBets
 
-- Random satirical headlines
-- Resolves in 2-5 minutes
-- 50/50 outcome chance
-- Payout: 1.8x - 2.5x (+ analysis bonus)
+- Random satirical headlines (+ war headlines when Manufacture Conflict active)
+- Resolves in 2–5 minutes · Payout 1.8–2.5× + analysis bonus
+- Base win chance 50% (65% with Astroturf Comments influence node)
+
+---
+
+## Phase 4 — Shipped (Influence Era)
+
+| System | Status |
+|--------|--------|
+| Era badge (Growth → Influence, gold/crimson) at $3,000 revenue | ✅ |
+| INFLUENCE tab unlock | ✅ |
+| Influence Division modal (vertical tree layout) | ✅ |
+| Serial unlock queue (one at a time, token cost + timer) | ✅ |
+| Media chain (5 nodes, top-to-bottom) | ✅ |
+| Political chain (4 nodes + Lobby branch) | ✅ |
+| RDU Cluster Farms → Processing tree | ✅ |
+| 3 new Research topics (Advanced Energy / Inference Collapse / Self-Optimising) | ✅ |
+| Vertical Marketing expansion (4 nodes after iTube) | ✅ |
+| All effects wired into existing systems | ✅ |
+| Save/load v6 | ✅ |
+
+### Influence Era unlock
+
+| Revenue | Event |
+|---------|-------|
+| **$3,000** | INFLUENCE tab + gold era badge + `[PHASE 4]` log |
+| **$50,000** | Pacing milestone (no gate — era continues open-ended) |
+
+### Influence tree — token costs & timers
+
+**Root gate (top of both chains):**
+
+| Node | Prereq | Tokens | Timer | Effect |
+|------|--------|--------|-------|--------|
+| 🕸️ Soft Control | Influence Era | 50K | 1m | +5% all WSB returns · unlocks both chains |
+
+**📰 Media chain (left column, unlocks sequentially):**
+
+| Node | Prereq | Tokens | Timer | Effect |
+|------|--------|--------|-------|--------|
+| Flood News | Soft Control | 40K | 1m | +6% WSB win-rate · passive trust regen |
+| Astroturf Comments | Flood News | 80K | 2m | PoloBets win 50%→65% |
+| Propaganda on AI | Astroturf | 90K | 2.5m | Trust regen ↑↑ · demand +500 base · gates Political |
+| Own the Narrative | Propaganda | 200K | 4m | Stacks media buffs · −50% PR event severity |
+| Memetic Engineering | Own Network | 400K | 6m | +40% global demandBase multiplier |
+
+**🏛️ Political chain (right column, gated by Propaganda):**
+
+| Node | Prereq | Tokens | Timer | Effect |
+|------|--------|--------|-------|--------|
+| Right-Wing Parties | Soft Control + Propaganda | 80K | 2m | Auto-unlocks Gov Contracts |
+| Gov Contracts | Right-Wing (auto) | — | — | +2,000 flat demandBase |
+| Manufacture Conflict | Gov Contracts | 150K | 4m | +50% Military returns & win-rate · war PoloBets headlines |
+| Privatize Everything | Wars | 300K | 6m | 2× Gov Contracts bonus |
+| Lobby Regulators *(branch right)* | Right-Wing | 100K | 3m | Bio plant trust drain eliminated |
+
+### Processing tree additions (Phase 4)
+
+| Node | Base $ | Mult | Effect | Gate |
+|------|--------|------|--------|------|
+| RDU Cluster Farms | 2,500 | 3.5× | 4× compute throughput (same energy) | GPU + Influence Era |
+
+### Vertical Marketing expansion (Phase 4)
+
+| Node | Base $ | Mult | Base boost | Burn/s | Gate |
+|------|--------|------|------------|--------|------|
+| Billboard Megagrid | 300 | 2.8× | +1,500 | 0.12 | iTube + Influence Era |
+| AI Influencer Army | 700 | 3.0× | +3,500 | 0.30 | Billboard |
+| Neural Ad Implants | 1,800 | 3.2× | +8,000 | 0.75 | AI Influencers |
+| Dream Sponsorships | 4,500 | 3.5× | +20,000 | 2.0 | Neural Ads |
+
+### Phase 4 effects on existing systems
+
+| Influence node / research | System hooked |
+|---------------------------|---------------|
+| Soft Control | WSB all sectors ×1.05 on wins |
+| Flood News | `effectiveWinRate +0.06` all WSB sectors |
+| Astroturf | `poloWinChance` 0.50→0.65 |
+| Propaganda | trust regen +0.15%/s · demandBase +500 |
+| Own Network | trust regen +0.08%/s · nuclear meltdown trust loss ×0.5 |
+| Memetic Engineering | demand formula ×1.40 |
+| Gov Contracts | demandBase +2,000 (×2 with Privatize) |
+| Manufacture Conflict | Military WSB winRate +0.50 mag · war headlines in PoloBets |
+| Lobby Regulators | bio plant trust drain = 0 |
+| RDU Cluster Farms | `computeRate` ×4 |
+| Adv. Energy Research (lv) | `energyRegen` × (1 + 0.20×lv) |
+| Inference Collapse (lv) | `operatingCostGross` × max(0.10, 1 − 0.12×lv) |
+| Self-Optimising Models (lv) | `tokenValueMult` × (1 + 0.10×lv) |
 
 ---
 
@@ -110,55 +172,45 @@
 
 | Resource | Default | Notes |
 |----------|---------|-------|
-| **Energy** | 50 / 50 | Base regen **6.0/s**. Each compute costs `energyPerCompute()` (model-dependent). |
-| **Tokens** | 0 | Lifetime processed; scales with `tokensPerCompute()` per request. |
-| **Cash** | $0 | Spendable balance. Floors at **$0.50** (`CASH_FLOOR`). |
-| **Revenue** | $0 | Lifetime gross earned (before ongoing costs). |
-| **Humanity Trust** | 100% | **5% floor**. PR drip recovery. Passive regen **0.04%/s** when &lt; 100%. |
+| **Energy** | 50 / 50 | Base regen **6.0/s**. Scaled by Adv. Energy Research. |
+| **Tokens** | 0 | Lifetime processed; also spent on Influence unlocks. |
+| **Cash** | $0 | Spendable. Floors at **$0.50**. |
+| **Revenue** | $0 | Lifetime gross (unlock gates key off this). |
+| **Humanity Trust** | 100% | **5% floor**. Passive regen **0.04%/s** + influence media boosts. |
 
 ---
 
 ## Economy Formulas
 
-### Demand
+### Demand (Phase 4 extended)
 ```
-demand(p) = demandBase × p^(-elasticity) × trustDemandMult()
-```
-- `demandBase` starts at **200** tok/s reference; grows from marketing + model `demandBoost`.
-- `elasticity` = **1.5**
-- Price slider: **$1–$50** per 1K tokens (`pricePerK`)
+effectiveDemandBase = (S.demandBase + infDemandBonus()) × infDemandMult()
+demand(p) = effectiveDemandBase × p^(-1.5) × trustDemandMult()
 
-### Capacity
+infDemandBonus()  = infGovContracts ? 2000 × (infPrivatize ? 2 : 1) : 0
+                  + infPropaganda   ? 500 : 0
+infDemandMult()   = infMemetic ? 1.40 : 1.0
 ```
-capacity = (recentClicks/2.5s + computeRate) × tokensPerCompute()
-```
-- Recent clicks tracked in a **2.5s** window.
-- `computeRate` = CPU rate + GPU rate (requests/s, before token mult).
-- CPU: `cpu / 0.5` req/s per unit → **2 req/s** each.
-- GPU: `gpu / 0.1` req/s per unit → **10 req/s** each.
 
-### Efficiency & pay
+### Capacity (Phase 4 extended)
 ```
-efficiency = min(1, demand / capacity)   // capacity ≈ 0 → 1
-payPerToken = (pricePerK/1000) × efficiency × trustPriceMult × tokenValueMult
-payPerCompute = payPerToken × tokensPerCompute
+computeRate = (cpu/0.5 + gpu/0.1) × (rduClusters > 0 ? 4.0 : 1.0)
+capacity    = (recentClicks/2.5s + computeRate) × tokensPerCompute()
 ```
-- `tokenValueMult` and `tokensPerCompute` come from the **active MODEL** tier.
-- `valueMult` bypasses elasticity — revenue per token genuinely climbs with model tier.
 
-### Margin (net revenue)
+### Token value (Phase 4 extended)
 ```
-grossRate  = min(capacity, demand) × payPerToken
-costRate   = operatingCostGross × max(idleOpFloor, utilization)
-netRate    = grossRate - costRate
+tokenValueMult = model.valueMult × (1 + 0.08×researchModel) × (1 + 0.10×researchSelfKernels)
 ```
-- **Utilization** = `min(1, min(cap, dem) / cap)`.
-- **Idle op floor** = `max(2%, 10% - solar×0.6%)` — solar panels lower minimum burn when idle.
-- Sys-metrics HUD: `GROSS / COSTS / NET` per second.
 
-### Upgrade cost scaling
+### Energy regen (Phase 4 extended)
 ```
-nextCost = round(base × mult^owned × 100) / 100
+energyRegen = (base + solar×bonus + nuclear×bonus + bio×bonus) × (1 + 0.20×researchAdvEnergy)
+```
+
+### Operating cost (Phase 4 extended)
+```
+operatingCostGross = (all hardware + marketing burns + thermal) × max(0.10, 1 − 0.12×researchInfCollapse)
 ```
 
 ---
@@ -170,128 +222,33 @@ nextCost = round(base × mult^owned × 100) / 100
 | ≥ 95% | ELITE | **2.0×** | 1.0× |
 | ≥ 80% | PREMIUM | **1.5×** | 1.0× |
 | 50–80% | NORMAL | 1.0× | 1.0× |
-| &lt; 50% | WATCHED | 1.0× | **0.8×** |
-| &lt; 30% | CRISIS | 1.0× | **0.6×** |
-
-Tier transitions log one-shot events. Tier label shown next to trust readout.
+| < 50% | WATCHED | 1.0× | **0.8×** |
+| < 30% | CRISIS | 1.0× | **0.6×** |
 
 ### Trust drains & gains
 
 | Source | Effect |
 |--------|--------|
-| Bio plants | **−0.15%/s** per plant (emissions) |
-| Nuclear meltdown | **−15%** per explosion |
-| Meltdown odds | **1 / 5000** per plant per minute (one roll/min uptime) |
-| Passive regen | **+0.04%/s** when trust &lt; 100% |
-| Trust floor | **5%** — cannot drain below; **50s** stuck at floor → random shutdown ending |
-| Shutdown endings | Random flavor (authorities, whales, TikTok, EU fine, etc.) — not a generic 0% screen |
-| PR drip (NGO / billionaires / WHO / green) | Slow % recovery over 1–2.5 min; stacks if you buy again |
-| PR sticky relief | Multiplicative drain reduction while buff active (stack across buys) |
-| WHO partnership | **3 min** with zero emissions drain, then drip + sticky relief resume |
-
----
-
-## Marketing Saturation
-
-Each repeat purchase of the same demand channel:
-```
-boost = baseBoost × 0.7^owned
-```
-Forces branching across ShitedIn → FikFok → Egogram → iTube instead of spamming one channel. **NEXT: +X** shown live on each node.
+| Bio plants | **−0.15%/s** per plant (0 with Lobby Regulators) |
+| Nuclear meltdown | **−15%** (−7.5% with Own Network) |
+| Meltdown odds | 1/5000 per plant per minute |
+| Passive regen | **+0.04%/s** base · +0.06 Flood News · +0.15 Propaganda · +0.08 Own Network |
+| Trust floor | **5%** → 50s stuck → random shutdown |
+| PR buys (NGO/Billionaires/WHO/Green) | Drip recovery + drain relief |
 
 ---
 
 ## Tech Trees & Unlock Gates
 
-### Tree buttons (lifetime revenue)
-
 | Revenue | Unlocks |
 |---------|---------|
-| **$0.50** | ENERGY GRID + request queue announced |
+| **$0.50** | ENERGY GRID |
 | **$1.50** | PROCESSING |
 | **$5.00** | MARKETING |
 | **$25.00** | MODELS |
-
-### Energy grid
-
-| Node | Base $ | Mult | Effect | Gate |
-|------|--------|------|--------|------|
-| **Solar** | 1 | 1.12× | +1 regen/s, −0.6%/panel idle floor | $0.50 rev |
-| **Natural gas** | 10 | 1.8× | +8 regen/s, emissions drain · **SHUTDOWN** removes one plant | solar + $5 rev |
-| **Nuclear** | 28 | 1.7× | +15 regen/s, shared ops (−12%/plant upkeep, floor 40%) | solar + $15 rev |
-
-Op costs/s (at full util): solar **$0**, bio **$0.005**, nuclear **$0.08/plant** (scaled).
-
-### Processing
-
-| Node | Base $ | Mult | Rate | Op $/s | Gate |
-|------|--------|------|------|--------|------|
-| **CPU** | 2 | 1.6× | 2 req/s each | 0.003 | $1.50 rev |
-| **GPU** | 25 | 2.0× | 10 req/s each | 0.025 | CPU + $8 rev |
-
-### MODELS (income scaling spine)
-
-Linear tier upgrades. Each purchase sets active model, adds `demandBoost` to `demandBase`.
-
-| Tier | Name | TOK mult | $ mult | ⚡/req | Cost | Rev gate |
-|------|------|----------|--------|--------|------|----------|
-| 1 | NANO-1 | 1× | 1.0× | 1 | — | — |
-| 2 | CLOD 2 | 2× | 1.6× | 2 | $12 | $1.50 |
-| 3 | GEMINIGHT 3 | 4× | 2.4× | 3 | $35 | $5 |
-| 4 | GPT-OOPS 4 | 8× | 3.6× | 5 | $90 | $15 |
-| 5 | GROKKK-5 | 16× | 5.4× | 8 | $220 | $40 |
-| 6 | AUGUR | 32× | 8.0× | 12 | $550 | $100 |
-| 7 | PROMETHEUS | 64× | 12.0× | 18 | $1400 | $250 |
-| 8 | BASILISK | 128× | 18.0× | 26 | $3500 | $600 |
-| 9 | SINGULARITY-∞ | 256× | 28.0× | 36 | $9000 | $1500 |
-
-Version numbers drop at tier 6 (AUGUR)+. Must upgrade in order.
-
-### Marketing — demand branch
-
-| Node | Base $ | Mult | Base boost | Burn/s | Gate |
-|------|--------|------|------------|--------|------|
-| ShitedIn | 5 | 1.8× | +50 | 0.002 | CPU + $5 rev |
-| FikFok | 20 | 2.0× | +150 | 0.006 | ShitedIn |
-| Egogram | 50 | 2.2× | +300 | 0.03 | FikFok |
-| iTube | 120 | 2.5× | +800 | 0.05 | Egogram |
-
-### Marketing — public trust branch
-
-| Node | Base $ | Mult | Trust / buy | Burn/s | Gate |
-|------|--------|------|-------------|--------|------|
-| Support NGOs | **5 → 5.12 → 5.50**, then +5%/buy | **+4%** instant, −8% drain 2m | 0.004 | $5 rev |
-| Billionaires 4 Good | 12 | 1.7× | +18% over ~1.7m, −22% drain 2.5m | 0.01 | NGOs |
-| WHO Partnership | 32 | 1.8× | +30% over ~1.5m, **3m drain pause**, −35% drain 3m | 0.02 | Billionaires |
-| Green Movement | 75 | 2.0× | +40% over ~1.25m, −50% drain 4m | 0.035 | WHO |
-
----
-
-## Soft-Lock & Bailout
-
-| Constant | Value |
-|----------|-------|
-| Cash floor | **$0.50** |
-| Liquidity crisis warning | **90s** stuck at floor |
-| Bailout grant | **+$5** cash |
-| Bailout cost | **−20%** trust |
-| Bailout cooldown | **120s** |
-
-Cash row pulses red at floor. Bailout button appears during liquidity crisis (trust must stay &gt; 20%).
-
----
-
-## Milestones & Hints
-
-| Trigger | Event |
-|---------|-------|
-| $0.50 revenue | Request queue announced |
-| $5 revenue | Marketing hint (capacity before ads) |
-| $25 revenue | Models hint (upgrade for margin) |
-| First CPU hire | Special log |
-| Efficiency &lt; 60% with cap &gt; 0.5 | Price-lowering hint (once) |
-
-Boot tips: try **$8–12/K** price; solar at **$0.50** revenue.
+| **$200** | RESEARCH |
+| **$800** | INVEST + Growth Era |
+| **$3,000** | INFLUENCE + Influence Era |
 
 ---
 
@@ -300,37 +257,25 @@ Boot tips: try **$8–12/K** price; solar at **$0.50** revenue.
 | Key | Value |
 |-----|-------|
 | localStorage key | `ai-must-survive.v1` |
-| Save version | **5** |
+| Save version | **6** |
 | Auto-save | every **5s** + on `beforeunload` |
 
-### Persisted fields
-`humanityTrust`, `demandBase`, `energy`, `tokens`, `cash`, `revenue`, `pricePerK`, `modelTier`, all upgrade counts (`solar`…`greenMovement`), `playTimeMs`, milestone/hint flags, `lastTrustTier`, `bailoutCooldownUntil`.
-
-### Export (`copyState` / HUD copy button)
-JSON snapshot with sections: `stats`, `playTime`, `trust`, `economy`, `margin`, `energy`, `market`, `unlocks`, `upgrades` (includes full MODELS array state).
+### New Phase 4 persisted fields
+`influenceEraUnlocked`, `influenceTokensSpent`, `influenceActiveUnlock`, `infSoftControl`, `infFloodNews`, `infAstroturf`, `infPropaganda`, `infOwnNetwork`, `infMemetic`, `infRightWing`, `infGovContracts`, `infWars`, `infPrivatize`, `infLobby`, `rduClusters`, `researchAdvEnergy`, `researchInfCollapse`, `researchSelfKernels`, `mktBillboard`, `mktInfluencerArmy`, `mktNeuralAds`, `mktDreamSponsor`
 
 ---
 
 ## Dev Cheats (console)
 
 ```js
-cheats.addCash(10)      // +$10
-cheats.addEnergy(50)    // +50 energy
-cheats.unlockAll()      // reveal all tree buttons
-cheats.reset()          // reload
+cheats.addCash(10)          // +$10
+cheats.addTokens(100000)    // +100K tokens  ← new Phase 4
+cheats.addEnergy(50)        // +50 energy
+cheats.unlockAll()          // all trees + Influence Era
+cheats.reset()              // reload
 // Shortcut: Ctrl/Cmd + Shift + M → +$10
 ```
 
 ---
 
-## Phase 4+ Backlog (ideas)
-
-- [ ] Trust teeth — meaningful tradeoffs when trust is high/low
-- [ ] Tempting dirty options (held from Phase 1 intentionally)
-- [ ] Random events / regulators / PR crises
-- [ ] Prestige or meta layer
-- [ ] Revenue pacing hooks discussed in design (tiers, contracts, etc.)
-
----
-
-*Update this file when Phase 4 ships or balance constants change in `index.html`.*
+*Updated 2026-06-06 when Phase 4 shipped. Update again when Phase 5 scope is locked.*
