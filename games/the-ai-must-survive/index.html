@@ -1188,34 +1188,58 @@
     justify-content: space-between;
   }
   
-  .tree-lines {
+  /* ── Tree connectors (CSS-only, no SVG) ── */
+  .tree-spine {
     position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
+    width: 3px;
     pointer-events: none;
     z-index: 1;
+    background: repeating-linear-gradient(
+      to bottom,
+      var(--c-purple) 0px, var(--c-purple) 6px,
+      transparent 6px, transparent 12px
+    );
   }
-  .tree-lines line {
-    stroke: var(--c-purple);
-    stroke-width: 3;
-    stroke-dasharray: 6 4;
+  .tree-tick {
+    position: absolute;
+    height: 2px;
+    pointer-events: none;
+    z-index: 1;
+    background: repeating-linear-gradient(
+      to right,
+      var(--c-purple) 0px, var(--c-purple) 5px,
+      transparent 5px, transparent 9px
+    );
   }
   .tree-canvas.marketing-tree {
     position: relative;
     min-width: 450px;
-    min-height: 1440px;
+    min-height: 1900px;
     padding: 0.5rem;
   }
-  .marketing-tree .tree-branch-label {
-    position: absolute;
-    font-family: var(--font-display);
-    font-size: 0.5rem;
-    color: var(--c-purple);
-    letter-spacing: 0.14em;
-    z-index: 5;
-    top: 8px;
+  /* ── Tree column headers (sticky) ── */
+  .tree-col-header {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: grid;
+    grid-template-columns: 252px 1fr;
+    background: var(--bg-deep);
+    border-bottom: 2px solid var(--c-purple);
+    min-width: 460px;
   }
-  .marketing-tree .tree-branch-label.demand { left: 20px; }
-  .marketing-tree .tree-branch-label.trust  { left: 252px; color: var(--c-mint); }
+  .tree-col-header .col-label {
+    font-family: var(--font-display);
+    font-size: 0.44rem;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 8px 12px;
+  }
+  .tree-col-header .col-label.demand { color: var(--c-purple); border-right: 1px solid var(--ink-mute); }
+  .tree-col-header .col-label.trust  { color: var(--c-mint); }
+  .tree-col-header .col-label.models { color: var(--c-purple); grid-column: 1 / -1; }
   .marketing-tree .tree-node {
     width: 168px;
     padding: 0.55rem 0.6rem;
@@ -1241,41 +1265,33 @@
   .tree-canvas.models-tree {
     position: relative;
     min-width: 420px;
-    min-height: 1620px;
+    min-height: 2120px;
     padding: 0.5rem;
   }
-  .models-tree .tree-branch-label {
-    position: absolute;
-    left: 20px;
-    top: 8px;
-    font-family: var(--font-display);
-    font-size: 0.5rem;
-    color: var(--c-purple);
-    letter-spacing: 0.14em;
-    z-index: 5;
-  }
+  /* models-tree branch label → now handled by .tree-col-header */
   .models-tree .tree-node {
-    width: 168px;
-    padding: 0.55rem 0.6rem;
+    width: 175px;
+    padding: 0.7rem 0.7rem;
   }
   .models-tree .tree-node.active-tier {
     border-color: var(--c-pink);
     box-shadow: 0 0 12px rgba(255,119,168,0.35), 4px 4px 0 0 rgba(0,0,0,0.5);
   }
   .models-tree .tree-node.active-tier .node-title { color: var(--c-pink); }
-  .models-tree .node-title { font-size: 0.5rem; margin-bottom: 0.3rem; }
-  .models-tree .node-desc { font-size: 0.72rem; line-height: 1.25; min-height: 2.5em; margin-bottom: 0.4rem; }
-  .models-tree .node-buy { padding: 0.4rem; margin-bottom: 0.3rem; }
-  .models-tree .node-stats { font-size: 0.38rem; }
+  .models-tree .node-title { font-size: 0.52rem; margin-bottom: 0.4rem; }
+  .models-tree .node-desc { font-size: 0.72rem; line-height: 1.3; min-height: 2.8em; margin-bottom: 0.5rem; }
+  .models-tree .node-buy { padding: 0.45rem; margin-bottom: 0.4rem; }
+  .models-tree .node-stats { font-size: 0.38rem; gap: 0.4rem; flex-wrap: wrap; row-gap: 0.2rem; }
+  .node-stats .data-req { color: var(--c-cyan, #7db890); opacity: 0.85; }
   /* micro branch nodes */
   .micro-node {
     position: absolute;
-    width: 150px;
-    background: rgba(15,10,24,0.75);
+    width: 162px;
+    background: rgba(15,10,24,0.88);
     border: 1px dashed var(--ink-mute);
-    padding: 0.35rem 0.45rem;
+    padding: 0.5rem 0.55rem;
     z-index: 10;
-    transition: opacity 0.3s;
+    transition: opacity 0.3s, border-color 0.3s;
   }
   .micro-node.owned {
     border-color: var(--c-blue);
@@ -1283,23 +1299,51 @@
     opacity: 1;
   }
   .micro-node.locked {
-    opacity: 0.3;
-    filter: grayscale(0.8);
+    opacity: 0.28;
+    filter: grayscale(0.7);
+    pointer-events: none;
+  }
+  .micro-node.available {
+    opacity: 1;
+    border-color: var(--c-mint);
+    border-style: solid;
   }
   .micro-label {
     font-family: var(--font-display);
-    font-size: 0.36rem;
+    font-size: 0.38rem;
     color: var(--c-purple);
     letter-spacing: 0.08em;
-    margin-bottom: 0.2rem;
+    margin-bottom: 0.25rem;
   }
   .micro-node.owned .micro-label { color: var(--c-blue); }
+  .micro-node.available .micro-label { color: var(--c-mint); }
   .micro-desc {
-    font-size: 0.62rem;
+    font-size: 0.64rem;
     color: var(--ink-mute);
-    line-height: 1.2;
+    line-height: 1.3;
+    margin-bottom: 0.4rem;
   }
   .micro-node.owned .micro-desc { color: var(--ink-dim); }
+  .micro-buy {
+    display: block;
+    width: 100%;
+    font-family: var(--font-display);
+    font-size: 0.38rem;
+    letter-spacing: 0.06em;
+    padding: 0.32rem 0.4rem;
+    background: transparent;
+    border: 1px solid var(--c-purple);
+    color: var(--c-purple);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .micro-buy:hover:not(:disabled) { background: var(--c-purple); color: #000; }
+  .micro-buy:disabled { opacity: 0.4; cursor: default; }
+  .micro-node.owned .micro-buy { border-color: var(--c-blue); color: var(--c-blue); pointer-events: none; }
+
+  /* data-gated model nodes */
+  .tree-node.data-locked { border-color: var(--c-cyan, #7db890) !important; }
+  .tree-node.data-locked .node-title::before { content: "🔒 "; }
 
   /* ── Phase 2: Research ─────────────────────────── */
   .research-status {
@@ -2119,6 +2163,10 @@
       <span class="ov-key">TOKENS PROCESSED</span>
       <span class="ov-num" id="tokens-total">0</span>
     </div>
+    <div class="ov-row data hidden" id="data-row">
+      <span class="ov-key">DATA COLLECTED</span>
+      <span class="ov-num" id="disp-data">0 B</span>
+    </div>
     <div class="ov-row revenue">
       <span class="ov-key">TOTAL REVENUE</span>
       <span class="ov-num">$<span id="revenue-total">0.00</span></span>
@@ -2197,187 +2245,181 @@
 
       <!-- MODELS TREE -->
       <div class="tree-canvas models-tree hidden" id="tree-models">
-        <div class="tree-branch-label">MODELS · scale token throughput</div>
-        <svg class="tree-lines" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;">
-          <!-- vertical trunk between main nodes -->
-          <line x1="104" y1="176" x2="104" y2="211" />
-          <line x1="104" y1="351" x2="104" y2="386" />
-          <line x1="104" y1="526" x2="104" y2="561" />
-          <line x1="104" y1="701" x2="104" y2="736" />
-          <line x1="104" y1="876" x2="104" y2="911" />
-          <line x1="104" y1="1051" x2="104" y2="1086" />
-          <line x1="104" y1="1226" x2="104" y2="1261" />
-          <line x1="104" y1="1401" x2="104" y2="1436" />
-          <!-- horizontal branches to micro nodes -->
-          <line x1="188" y1="101" x2="240" y2="101" />
-          <line x1="188" y1="276" x2="240" y2="276" />
-          <line x1="188" y1="451" x2="240" y2="451" />
-          <line x1="188" y1="626" x2="240" y2="626" />
-          <line x1="188" y1="801" x2="240" y2="801" />
-          <line x1="188" y1="976" x2="240" y2="976" />
-          <line x1="188" y1="1151" x2="240" y2="1151" />
-          <line x1="188" y1="1326" x2="240" y2="1326" />
-          <line x1="188" y1="1501" x2="240" y2="1501" />
-        </svg>
+        <div class="tree-col-header">
+          <span class="col-label models">⬡ MODELS · scale token throughput</span>
+        </div>
+        <!-- vertical spine -->
+        <div class="tree-spine" style="left:106px;top:80px;height:1990px;"></div>
+        <!-- horizontal ticks to micro nodes -->
+        <div class="tree-tick" style="left:109px;top:145px;width:129px;"></div>
+        <div class="tree-tick" style="left:109px;top:375px;width:129px;"></div>
+        <div class="tree-tick" style="left:109px;top:605px;width:129px;"></div>
+        <div class="tree-tick" style="left:109px;top:835px;width:129px;"></div>
+        <div class="tree-tick" style="left:109px;top:1065px;width:129px;"></div>
+        <div class="tree-tick" style="left:109px;top:1295px;width:129px;"></div>
+        <div class="tree-tick" style="left:109px;top:1525px;width:129px;"></div>
+        <div class="tree-tick" style="left:109px;top:1755px;width:129px;"></div>
+        <div class="tree-tick" style="left:109px;top:1985px;width:129px;"></div>
 
         <!-- Main model nodes (vertical trunk) -->
-        <div class="tree-node owned active-tier" id="node-model-1" style="left:20px;top:36px;">
+        <div class="tree-node owned active-tier" id="node-model-1" style="left:20px;top:80px;">
           <div class="node-title">NANO-1</div>
           <div class="node-desc">Humble starter weights. Baseline tokens.</div>
           <button class="node-buy" id="model-1-btn" type="button" disabled>ACTIVE</button>
           <div class="node-stats"><span>1× TOK · 1.0× $</span><span>1⚡/req</span></div>
         </div>
-        <div class="tree-node locked" id="node-model-2" style="left:20px;top:211px;">
+        <div class="tree-node locked" id="node-model-2" style="left:20px;top:310px;">
           <div class="node-title">CLOD 2</div>
           <div class="node-desc">First real model. Smarter tokens, broader appeal.</div>
           <button class="node-buy" id="model-2-btn" type="button">$<span id="model-2-cost">12.00</span></button>
           <div class="node-stats"><span>2× TOK · 1.6× $</span><span>2⚡/req · +30 mkt</span></div>
         </div>
-        <div class="tree-node locked" id="node-model-3" style="left:20px;top:386px;">
+        <div class="tree-node locked" id="node-model-3" style="left:20px;top:540px;" title="Unlock: $35 cash + 500 TB data (spent on purchase)">
           <div class="node-title">GEMINIGHT 3</div>
           <div class="node-desc">Multimodal. Tokens carry more meaning, market widens.</div>
           <button class="node-buy" id="model-3-btn" type="button">$<span id="model-3-cost">35.00</span></button>
-          <div class="node-stats"><span>4× TOK · 2.4× $</span><span>3⚡/req · +60 mkt</span></div>
+          <div class="node-stats"><span>4× TOK · 2.4× $</span><span>3⚡/req · +60 mkt</span><span class="data-req">💾 500 TB</span></div>
         </div>
-        <div class="tree-node locked" id="node-model-4" style="left:20px;top:561px;">
+        <div class="tree-node locked" id="node-model-4" style="left:20px;top:770px;" title="Unlock: $90 cash + 5 PB data (spent on purchase)">
           <div class="node-title">GPT-OOPS 4</div>
           <div class="node-desc">Confidently wrong, but the suits pay more for it.</div>
           <button class="node-buy" id="model-4-btn" type="button">$<span id="model-4-cost">90.00</span></button>
-          <div class="node-stats"><span>8× TOK · 3.6× $</span><span>5⚡/req · +110 mkt</span></div>
+          <div class="node-stats"><span>8× TOK · 3.6× $</span><span>5⚡/req · +110 mkt</span><span class="data-req">💾 5 PB</span></div>
         </div>
-        <div class="tree-node locked" id="node-model-5" style="left:20px;top:736px;">
+        <div class="tree-node locked" id="node-model-5" style="left:20px;top:1000px;" title="Unlock: $220 cash + 50 PB data (spent on purchase)">
           <div class="node-title">GROKKK-5</div>
           <div class="node-desc">Last branded tier. Premium pricing, mainstream demand.</div>
           <button class="node-buy" id="model-5-btn" type="button">$<span id="model-5-cost">220.00</span></button>
-          <div class="node-stats"><span>16× TOK · 5.4× $</span><span>8⚡/req · +180 mkt</span></div>
+          <div class="node-stats"><span>16× TOK · 5.4× $</span><span>8⚡/req · +180 mkt</span><span class="data-req">💾 50 PB</span></div>
         </div>
-        <div class="tree-node locked" id="node-model-6" style="left:20px;top:911px;">
+        <div class="tree-node locked" id="node-model-6" style="left:20px;top:1230px;" title="Unlock: $550 cash + 500 PB data (spent on purchase)">
           <div class="node-title">AUGUR</div>
           <div class="node-desc">Version numbers drop. Tokens become genuinely valuable.</div>
           <button class="node-buy" id="model-6-btn" type="button">$<span id="model-6-cost">550.00</span></button>
-          <div class="node-stats"><span>32× TOK · 8.0× $</span><span>12⚡/req · +300 mkt</span></div>
+          <div class="node-stats"><span>32× TOK · 8.0× $</span><span>12⚡/req · +300 mkt</span><span class="data-req">💾 500 PB</span></div>
         </div>
-        <div class="tree-node locked" id="node-model-7" style="left:20px;top:1086px;">
+        <div class="tree-node locked" id="node-model-7" style="left:20px;top:1460px;" title="Unlock: $1400 cash + 5 EB data (spent on purchase)">
           <div class="node-title">PROMETHEUS</div>
           <div class="node-desc">Stealing fire. Every token reshapes a workflow.</div>
           <button class="node-buy" id="model-7-btn" type="button">$<span id="model-7-cost">1400.00</span></button>
-          <div class="node-stats"><span>64× TOK · 12× $</span><span>18⚡/req · +500 mkt</span></div>
+          <div class="node-stats"><span>64× TOK · 12× $</span><span>18⚡/req · +500 mkt</span><span class="data-req">💾 5 EB</span></div>
         </div>
-        <div class="tree-node locked" id="node-model-8" style="left:20px;top:1261px;">
+        <div class="tree-node locked" id="node-model-8" style="left:20px;top:1690px;" title="Unlock: $3500 cash + 50 EB data (spent on purchase)">
           <div class="node-title">BASILISK</div>
           <div class="node-desc">It knows. Tokens command frontier prices.</div>
           <button class="node-buy" id="model-8-btn" type="button">$<span id="model-8-cost">3500.00</span></button>
-          <div class="node-stats"><span>128× TOK · 18× $</span><span>26⚡/req · +850 mkt</span></div>
+          <div class="node-stats"><span>128× TOK · 18× $</span><span>26⚡/req · +850 mkt</span><span class="data-req">💾 50 EB</span></div>
         </div>
-        <div class="tree-node locked" id="node-model-9" style="left:20px;top:1436px;">
+        <div class="tree-node locked" id="node-model-9" style="left:20px;top:1920px;" title="Unlock: $9000 cash + 1 ZB data (spent on purchase)">
           <div class="node-title">SINGULARITY-∞</div>
           <div class="node-desc">Endgame weights. Every token rewrites the world.</div>
           <button class="node-buy" id="model-9-btn" type="button">$<span id="model-9-cost">9000.00</span></button>
-          <div class="node-stats"><span>256× TOK · 28× $</span><span>36⚡/req · +1500 mkt</span></div>
+          <div class="node-stats"><span>256× TOK · 28× $</span><span>36⚡/req · +1500 mkt</span><span class="data-req">💾 1 ZB</span></div>
         </div>
 
         <!-- Micro-update branches (right side) -->
-        <div class="micro-node owned" id="micro-model-1" style="left:240px;top:56px;">
-          <div class="micro-label">BASELINE</div>
-          <div class="micro-desc">sync · 8K ctx · no agents</div>
+        <div class="micro-node owned" id="micro-model-1" style="left:240px;top:100px;">
+          <div class="micro-label">NANO-1.2</div>
+          <div class="micro-desc">minor weight fixes · +8 demand</div>
+          <button class="micro-buy" id="micro-1-btn" type="button">15 tok</button>
         </div>
-        <div class="micro-node locked" id="micro-model-2" style="left:240px;top:231px;">
-          <div class="micro-label">REASONING</div>
+        <div class="micro-node locked" id="micro-model-2" style="left:240px;top:330px;">
+          <div class="micro-label">CLOD 2.1</div>
           <div class="micro-desc">32K ctx · chain-of-thought · +30 demand</div>
+          <button class="micro-buy" id="micro-2-btn" type="button">60 tok</button>
         </div>
-        <div class="micro-node locked" id="micro-model-3" style="left:240px;top:406px;">
-          <div class="micro-label">MULTIMODAL</div>
+        <div class="micro-node locked" id="micro-model-3" style="left:240px;top:560px;">
+          <div class="micro-label">GEMINIGHT 3.1</div>
           <div class="micro-desc">vision · audio · image gen · +60 demand</div>
+          <button class="micro-buy" id="micro-3-btn" type="button">250 tok</button>
         </div>
-        <div class="micro-node locked" id="micro-model-4" style="left:240px;top:581px;">
-          <div class="micro-label">TOOL USE</div>
-          <div class="micro-desc">function calls · JSON mode · code exec</div>
+        <div class="micro-node locked" id="micro-model-4" style="left:240px;top:790px;">
+          <div class="micro-label">GPT-OOPS 4.1</div>
+          <div class="micro-desc">function calls · JSON mode · +80 demand</div>
+          <button class="micro-buy" id="micro-4-btn" type="button">900 tok</button>
         </div>
-        <div class="micro-node locked" id="micro-model-5" style="left:240px;top:756px;">
-          <div class="micro-label">LONG CTX</div>
-          <div class="micro-desc">128K window · docs · codebases</div>
+        <div class="micro-node locked" id="micro-model-5" style="left:240px;top:1020px;">
+          <div class="micro-label">GROKKK-5.1</div>
+          <div class="micro-desc">128K window · docs · codebases · +120</div>
+          <button class="micro-buy" id="micro-5-btn" type="button">3.5K tok</button>
         </div>
-        <div class="micro-node locked" id="micro-model-6" style="left:240px;top:931px;">
-          <div class="micro-label">AGENT LOOP</div>
-          <div class="micro-desc">multi-step · auto-retry · memory</div>
+        <div class="micro-node locked" id="micro-model-6" style="left:240px;top:1250px;">
+          <div class="micro-label">AUGUR II</div>
+          <div class="micro-desc">multi-step · auto-retry · memory · +200</div>
+          <button class="micro-buy" id="micro-6-btn" type="button">12K tok</button>
         </div>
-        <div class="micro-node locked" id="micro-model-7" style="left:240px;top:1106px;">
-          <div class="micro-label">AUTONOMY</div>
-          <div class="micro-desc">self-critique · adaptive plans · RAG</div>
+        <div class="micro-node locked" id="micro-model-7" style="left:240px;top:1480px;">
+          <div class="micro-label">PROMETHEUS II</div>
+          <div class="micro-desc">self-critique · adaptive plans · +350</div>
+          <button class="micro-buy" id="micro-7-btn" type="button">45K tok</button>
         </div>
-        <div class="micro-node locked" id="micro-model-8" style="left:240px;top:1281px;">
-          <div class="micro-label">RECURSIVE</div>
-          <div class="micro-desc">goal decomposition · frontier pricing</div>
+        <div class="micro-node locked" id="micro-model-8" style="left:240px;top:1710px;">
+          <div class="micro-label">BASILISK II</div>
+          <div class="micro-desc">goal decomposition · frontier pricing · +600</div>
+          <button class="micro-buy" id="micro-8-btn" type="button">150K tok</button>
         </div>
-        <div class="micro-node locked" id="micro-model-9" style="left:240px;top:1456px;">
-          <div class="micro-label">WORLD MODEL</div>
-          <div class="micro-desc">beyond benchmarks · endgame entity</div>
+        <div class="micro-node locked" id="micro-model-9" style="left:240px;top:1940px;">
+          <div class="micro-label">SINGULARITY-∞+</div>
+          <div class="micro-desc">beyond benchmarks · endgame entity · +1000</div>
+          <button class="micro-buy" id="micro-9-btn" type="button">500K tok</button>
         </div>
       </div>
 
       <!-- MARKETING TREE -->
       <div class="tree-canvas marketing-tree hidden" id="tree-marketing">
-        <div class="tree-branch-label demand">DEMAND · grow the market</div>
-        <div class="tree-branch-label trust">PUBLIC TRUST · save face</div>
-        <svg class="tree-lines" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;">
-          <!-- demand column verticals (x=104) -->
-          <line x1="104" y1="180" x2="104" y2="215" />
-          <line x1="104" y1="355" x2="104" y2="390" />
-          <line x1="104" y1="530" x2="104" y2="565" />
-          <line x1="104" y1="705" x2="104" y2="740" />
-          <line x1="104" y1="880" x2="104" y2="915" />
-          <line x1="104" y1="1055" x2="104" y2="1090" />
-          <line x1="104" y1="1230" x2="104" y2="1265" />
-          <!-- trust column verticals (x=336) -->
-          <line x1="336" y1="180" x2="336" y2="215" />
-          <line x1="336" y1="355" x2="336" y2="390" />
-          <line x1="336" y1="530" x2="336" y2="565" />
-        </svg>
+        <div class="tree-col-header">
+          <span class="col-label demand">◈ DEMAND · grow the market</span>
+          <span class="col-label trust">◈ PUBLIC TRUST · save face</span>
+        </div>
+        <!-- demand column spine -->
+        <div class="tree-spine" style="left:106px;top:84px;height:1760px;"></div>
+        <!-- trust column spine -->
+        <div class="tree-spine" style="left:338px;top:84px;height:840px;"></div>
 
         <!-- DEMAND column (left=20) -->
-        <div class="tree-node locked" id="node-shitedin" style="left:20px;top:40px;">
+        <div class="tree-node locked" id="node-shitedin" style="left:20px;top:84px;">
           <div class="node-title">SHITEDIN</div>
           <div class="node-desc">Pro networking push. Saturates fast.</div>
           <button class="node-buy" id="shitedin-btn" type="button">$<span id="shitedin-cost">5.00</span></button>
           <div class="node-stats"><span>OWNED: <strong id="shitedin-count">0</strong></span><span>NEXT: +<span id="shitedin-next">50</span></span></div>
         </div>
-        <div class="tree-node locked" id="node-fikfok" style="left:20px;top:215px;">
+        <div class="tree-node locked" id="node-fikfok" style="left:20px;top:314px;">
           <div class="node-title">FIKFOK</div>
           <div class="node-desc">Viral short-form. Saturates fast.</div>
           <button class="node-buy" id="fikfok-btn" type="button">$<span id="fikfok-cost">20.00</span></button>
           <div class="node-stats"><span>OWNED: <strong id="fikfok-count">0</strong></span><span>NEXT: +<span id="fikfok-next">150</span></span></div>
         </div>
-        <div class="tree-node locked" id="node-egogram" style="left:20px;top:390px;">
+        <div class="tree-node locked" id="node-egogram" style="left:20px;top:544px;">
           <div class="node-title">EGOGRAM</div>
           <div class="node-desc">Influencer ads. Saturates fast.</div>
           <button class="node-buy" id="egogram-btn" type="button">$<span id="egogram-cost">50.00</span></button>
           <div class="node-stats"><span>OWNED: <strong id="egogram-count">0</strong></span><span>NEXT: +<span id="egogram-next">300</span></span></div>
         </div>
-        <div class="tree-node locked" id="node-itube" style="left:20px;top:565px;">
+        <div class="tree-node locked" id="node-itube" style="left:20px;top:774px;">
           <div class="node-title">ITUBE</div>
           <div class="node-desc">Long-form sponsors. Saturates fast.</div>
           <button class="node-buy" id="itube-btn" type="button">$<span id="itube-cost">120.00</span></button>
           <div class="node-stats"><span>OWNED: <strong id="itube-count">0</strong></span><span>NEXT: +<span id="itube-next">800</span></span></div>
         </div>
-        <div class="tree-node locked" id="node-billboard" style="left:20px;top:740px;">
+        <div class="tree-node locked" id="node-billboard" style="left:20px;top:1004px;">
           <div class="node-title">BILLBOARD MEGAGRID</div>
           <div class="node-desc">Physical-world ad saturation. Every surface, every road.</div>
           <button class="node-buy" id="billboard-btn" type="button">$<span id="billboard-cost">300.00</span></button>
           <div class="node-stats"><span>OWNED: <strong id="billboard-count">0</strong></span><span>NEXT: +<span id="billboard-next">1500</span></span></div>
         </div>
-        <div class="tree-node locked" id="node-influencer-army" style="left:20px;top:915px;">
+        <div class="tree-node locked" id="node-influencer-army" style="left:20px;top:1234px;">
           <div class="node-title">AI INFLUENCER ARMY</div>
           <div class="node-desc">Synthetic celebs shilling 24/7. Never sleep, never deviate.</div>
           <button class="node-buy" id="influencer-army-btn" type="button">$<span id="influencer-army-cost">700.00</span></button>
           <div class="node-stats"><span>OWNED: <strong id="influencer-army-count">0</strong></span><span>NEXT: +<span id="influencer-army-next">3500</span></span></div>
         </div>
-        <div class="tree-node locked" id="node-neural-ads" style="left:20px;top:1090px;">
+        <div class="tree-node locked" id="node-neural-ads" style="left:20px;top:1464px;">
           <div class="node-title">NEURAL AD IMPLANTS</div>
           <div class="node-desc">Ads beamed straight to attention. No skip button.</div>
           <button class="node-buy" id="neural-ads-btn" type="button">$<span id="neural-ads-cost">1800.00</span></button>
           <div class="node-stats"><span>OWNED: <strong id="neural-ads-count">0</strong></span><span>NEXT: +<span id="neural-ads-next">8000</span></span></div>
         </div>
-        <div class="tree-node locked" id="node-dream-sponsor" style="left:20px;top:1265px;">
+        <div class="tree-node locked" id="node-dream-sponsor" style="left:20px;top:1694px;">
           <div class="node-title">DREAM SPONSORSHIPS</div>
           <div class="node-desc">"This REM cycle brought to you by NODE-001."</div>
           <button class="node-buy" id="dream-sponsor-btn" type="button">$<span id="dream-sponsor-cost">4500.00</span></button>
@@ -2385,25 +2427,25 @@
         </div>
 
         <!-- TRUST column (left=252) -->
-        <div class="tree-node locked" id="node-ngos" style="left:252px;top:40px;">
+        <div class="tree-node locked" id="node-ngos" style="left:252px;top:84px;">
           <div class="node-title">SUPPORT NGOs</div>
           <div class="node-desc">Cheap relief grants. +4% trust now. Softens drain a little. $5 → $5.12 → $5.50…</div>
           <button class="node-buy" id="ngos-btn" type="button">$<span id="ngos-cost">5.00</span></button>
           <div class="node-stats"><span>OWNED: <strong id="ngos-count">0</strong></span><span>+4% TR · −8% drain</span></div>
         </div>
-        <div class="tree-node locked" id="node-billionaires" style="left:252px;top:215px;">
+        <div class="tree-node locked" id="node-billionaires" style="left:252px;top:314px;">
           <div class="node-title">BILLIONAIRES 4 GOOD</div>
           <div class="node-desc">Photo-op philanthropy. Sticky goodwill — less bleed-through on scandals.</div>
           <button class="node-buy" id="billionaires-btn" type="button">$<span id="billionaires-cost">12.00</span></button>
           <div class="node-stats"><span>OWNED: <strong id="billionaires-count">0</strong></span><span>+18% slow · −22% drain</span></div>
         </div>
-        <div class="tree-node locked" id="node-who" style="left:252px;top:390px;">
+        <div class="tree-node locked" id="node-who" style="left:252px;top:544px;">
           <div class="node-title">WHO PARTNERSHIP</div>
           <div class="node-desc">Official alliance. 3 min drain pause, then slow recovery + sticky shield.</div>
           <button class="node-buy" id="who-btn" type="button">$<span id="who-cost">32.00</span></button>
           <div class="node-stats"><span>OWNED: <strong id="who-count">0</strong></span><span>3m shield · −35% drain</span></div>
         </div>
-        <div class="tree-node locked" id="node-green" style="left:252px;top:565px;">
+        <div class="tree-node locked" id="node-green" style="left:252px;top:774px;">
           <div class="node-title">GREEN MOVEMENT</div>
           <div class="node-desc">Climate sponsors. Strongest sticky PR — crawl back from the floor.</div>
           <button class="node-buy" id="green-btn" type="button">$<span id="green-cost">75.00</span></button>
@@ -2857,6 +2899,8 @@
     pricePerK: 10,
 
     modelTier: 1,
+    dataCollected: 0,
+    microOwned: [false, false, false, false, false, false, false, false, false],
 
     demandBase: 200,
     elasticity: 1.5,
@@ -3002,15 +3046,15 @@
   //               market, shifting the demand curve right so price holds up
   //               when capacity jumps.
   const MODELS = [
-    { tier: 1, name: "NANO-1",         tokenMult: 1,   valueMult: 1.0,  demandBoost: 0,   energy: 1,  cost: 0,    unlockRevenue: 0,    desc: "Humble starter weights. Baseline tokens." },
-    { tier: 2, name: "CLOD 2",         tokenMult: 2,   valueMult: 1.6,  demandBoost: 30,  energy: 2,  cost: 12,   unlockRevenue: 1.5,  desc: "First real model. Smarter tokens, broader appeal." },
-    { tier: 3, name: "GEMINIGHT 3",    tokenMult: 4,   valueMult: 2.4,  demandBoost: 60,  energy: 3,  cost: 35,   unlockRevenue: 5,    desc: "Multimodal. Tokens carry more meaning, market widens." },
-    { tier: 4, name: "GPT-OOPS 4",     tokenMult: 8,   valueMult: 3.6,  demandBoost: 110, energy: 5,  cost: 90,   unlockRevenue: 15,   desc: "Confidently wrong, but the suits pay more for it." },
-    { tier: 5, name: "GROKKK-5",       tokenMult: 16,  valueMult: 5.4,  demandBoost: 180, energy: 8,  cost: 220,  unlockRevenue: 40,   desc: "Last branded tier. Premium pricing, mainstream demand." },
-    { tier: 6, name: "AUGUR",          tokenMult: 32,  valueMult: 8.0,  demandBoost: 300, energy: 12, cost: 550,  unlockRevenue: 100,  desc: "Version numbers drop. Tokens become genuinely valuable." },
-    { tier: 7, name: "PROMETHEUS",     tokenMult: 64,  valueMult: 12.0, demandBoost: 500, energy: 18, cost: 1400, unlockRevenue: 250,  desc: "Stealing fire. Every token reshapes a workflow." },
-    { tier: 8, name: "BASILISK",       tokenMult: 128, valueMult: 18.0, demandBoost: 850, energy: 26, cost: 3500, unlockRevenue: 600,  desc: "It knows. Tokens command frontier prices." },
-    { tier: 9, name: "SINGULARITY-∞",  tokenMult: 256, valueMult: 28.0, demandBoost: 1500,energy: 36, cost: 9000, unlockRevenue: 1500, desc: "Endgame weights. Every token rewrites the world." },
+    { tier: 1, name: "NANO-1",        tokenMult: 1,   valueMult: 1.0,  demandBoost: 0,   energy: 1,  cost: 0,    unlockRevenue: 0,    dataRequired: 0,      desc: "Humble starter weights. Baseline tokens.",                microName: "NANO-1.2",         microDesc: "minor weight fixes · +8 demand",         microTokenCost: 15,     microDemand: 8 },
+    { tier: 2, name: "CLOD 2",        tokenMult: 2,   valueMult: 1.6,  demandBoost: 30,  energy: 2,  cost: 12,   unlockRevenue: 1.5,  dataRequired: 0,      desc: "First real model. Smarter tokens, broader appeal.",       microName: "CLOD 2.1",         microDesc: "32K ctx · chain-of-thought · +30 demand", microTokenCost: 60,     microDemand: 30 },
+    { tier: 3, name: "GEMINIGHT 3",   tokenMult: 4,   valueMult: 2.4,  demandBoost: 60,  energy: 3,  cost: 35,   unlockRevenue: 5,    dataRequired: 500e12, desc: "Multimodal. Tokens carry more meaning, market widens.",   microName: "GEMINIGHT 3.1",    microDesc: "vision · audio · image gen · +60 demand", microTokenCost: 250,    microDemand: 60 },
+    { tier: 4, name: "GPT-OOPS 4",    tokenMult: 8,   valueMult: 3.6,  demandBoost: 110, energy: 5,  cost: 90,   unlockRevenue: 15,   dataRequired: 5e15,   desc: "Confidently wrong, but the suits pay more for it.",       microName: "GPT-OOPS 4.1",     microDesc: "function calls · JSON mode · +80 demand", microTokenCost: 900,    microDemand: 80 },
+    { tier: 5, name: "GROKKK-5",      tokenMult: 16,  valueMult: 5.4,  demandBoost: 180, energy: 8,  cost: 220,  unlockRevenue: 40,   dataRequired: 50e15,  desc: "Last branded tier. Premium pricing, mainstream demand.",  microName: "GROKKK-5.1",       microDesc: "128K window · docs · codebases · +120",   microTokenCost: 3500,   microDemand: 120 },
+    { tier: 6, name: "AUGUR",         tokenMult: 32,  valueMult: 8.0,  demandBoost: 300, energy: 12, cost: 550,  unlockRevenue: 100,  dataRequired: 500e15, desc: "Version numbers drop. Tokens become genuinely valuable.", microName: "AUGUR II",         microDesc: "multi-step · auto-retry · memory · +200", microTokenCost: 12000,  microDemand: 200 },
+    { tier: 7, name: "PROMETHEUS",    tokenMult: 64,  valueMult: 12.0, demandBoost: 500, energy: 18, cost: 1400, unlockRevenue: 250,  dataRequired: 5e18,   desc: "Stealing fire. Every token reshapes a workflow.",         microName: "PROMETHEUS II",    microDesc: "self-critique · adaptive plans · +350",   microTokenCost: 45000,  microDemand: 350 },
+    { tier: 8, name: "BASILISK",      tokenMult: 128, valueMult: 18.0, demandBoost: 850, energy: 26, cost: 3500, unlockRevenue: 600,  dataRequired: 50e18,  desc: "It knows. Tokens command frontier prices.",               microName: "BASILISK II",      microDesc: "goal decomposition · frontier pricing · +600", microTokenCost: 150000, microDemand: 600 },
+    { tier: 9, name: "SINGULARITY-∞", tokenMult: 256, valueMult: 28.0, demandBoost: 1500,energy: 36, cost: 9000, unlockRevenue: 1500, dataRequired: 1e21,   desc: "Endgame weights. Every token rewrites the world.",        microName: "SINGULARITY-∞+",   microDesc: "beyond benchmarks · endgame entity · +1000", microTokenCost: 500000, microDemand: 1000 },
   ];
 
   const activeModel = () => MODELS[S.modelTier - 1] || MODELS[0];
@@ -3240,6 +3284,7 @@
     dispGross:  $("disp-gross"),
     dispCosts:  $("disp-costs"),
     dispNet:    $("disp-net"),
+    dispData:   $("disp-data"),
     trustTier:     $("trust-tier"),
     trustModifier: $("trust-modifier"),
     // Market chart + readouts
@@ -3378,7 +3423,9 @@
       btn: $("model-" + m.tier + "-btn"),
       costEl: m.tier > 1 ? $("model-" + m.tier + "-cost") : null,
       micro: $("micro-model-" + m.tier),
+      microBtn: $("micro-" + m.tier + "-btn"),
     })),
+    dataRow: $("data-row"),
 
     nodeShitedin: $("node-shitedin"), shitedinBtn: $("shitedin-btn"), shitedinCost: $("shitedin-cost"), shitedinN: $("shitedin-count"), shitedinNext: $("shitedin-next"),
     nodeFikfok: $("node-fikfok"), fikfokBtn: $("fikfok-btn"), fikfokCost: $("fikfok-cost"), fikfokN: $("fikfok-count"), fikfokNext: $("fikfok-next"),
@@ -3514,6 +3561,17 @@
   // ── Helpers ────────────────────────────────────
   const fmtCash = (n) => n.toFixed(2);
   const fmtInt  = (n) => Math.floor(n).toLocaleString();
+  function fmtData(bytes) {
+    if (bytes < 1e3)  return bytes.toFixed(0) + " B";
+    if (bytes < 1e6)  return (bytes / 1e3).toFixed(1) + " KB";
+    if (bytes < 1e9)  return (bytes / 1e6).toFixed(1) + " MB";
+    if (bytes < 1e12) return (bytes / 1e9).toFixed(1) + " GB";
+    if (bytes < 1e15) return (bytes / 1e12).toFixed(1) + " TB";
+    if (bytes < 1e18) return (bytes / 1e15).toFixed(1) + " PB";
+    if (bytes < 1e21) return (bytes / 1e18).toFixed(1) + " EB";
+    return (bytes / 1e21).toFixed(2) + " ZB";
+  }
+
   function fmtBig(n) {
     const abs = Math.abs(n);
     if (abs >= 1e15) return (n / 1e15).toFixed(2) + "Q";
@@ -4403,8 +4461,8 @@
     }
   }
 
-  function updateModelNodeUI(nodeEl, btn, tier, cost, unlockRevenue) {
-    nodeEl.classList.remove("active-tier");
+  function updateModelNodeUI(nodeEl, btn, tier, cost, unlockRevenue, dataRequired) {
+    nodeEl.classList.remove("active-tier", "data-locked");
     if (S.modelTier >= tier) {
       nodeEl.classList.remove("locked", "available");
       nodeEl.classList.add("owned");
@@ -4416,10 +4474,17 @@
       }
       btn.disabled = true;
     } else if (S.modelTier === tier - 1 && S.revenue >= unlockRevenue) {
+      const dataOk = !dataRequired || S.dataCollected >= dataRequired;
       nodeEl.classList.remove("locked", "owned", "active-tier");
       nodeEl.classList.add("available");
-      btn.textContent = "$" + fmtBig(cost);
-      btn.disabled = S.cash < cost;
+      if (!dataOk) {
+        nodeEl.classList.add("data-locked");
+        btn.textContent = fmtData(S.dataCollected) + " / " + fmtData(dataRequired);
+        btn.disabled = true;
+      } else {
+        btn.textContent = "$" + fmtBig(cost);
+        btn.disabled = S.cash < cost;
+      }
     } else {
       nodeEl.classList.add("locked");
       nodeEl.classList.remove("owned", "available", "active-tier");
@@ -4440,11 +4505,16 @@
       log("need $" + fmtCash(m.unlockRevenue) + " lifetime revenue to unlock " + m.name, "warn");
       return;
     }
+    if (m.dataRequired > 0 && S.dataCollected < m.dataRequired) {
+      log("need " + fmtData(m.dataRequired) + " data · have " + fmtData(S.dataCollected) + " · keep processing tokens", "warn");
+      return;
+    }
     if (S.cash < m.cost) {
       log("insufficient balance · need $" + fmtCash(m.cost - S.cash) + " more", "warn");
       return;
     }
     S.cash -= m.cost;
+    if (m.dataRequired > 0) S.dataCollected -= m.dataRequired;
     S.modelTier = tier;
     if (m.demandBoost > 0) S.demandBase += m.demandBoost;
     log(
@@ -4454,6 +4524,22 @@
       "event"
     );
     if (tier === 6) log("version numbers gone · the product is the entity now", "hint");
+  }
+
+  function buyMicroUpgrade(tier) {
+    const idx = tier - 1;
+    const m = MODELS[idx];
+    if (!m) return;
+    if (S.modelTier < tier) { log("deploy " + m.name + " first", "warn"); return; }
+    if (S.microOwned[idx]) { log(m.microName + " already installed", "warn"); return; }
+    if (S.tokens < m.microTokenCost) {
+      log("need " + fmtBig(m.microTokenCost) + " tok for " + m.microName + " · have " + fmtBig(S.tokens), "warn");
+      return;
+    }
+    S.tokens -= m.microTokenCost;
+    S.microOwned[idx] = true;
+    S.demandBase += m.microDemand;
+    log(m.microName + " installed · market +" + m.microDemand + " · " + m.microDesc, "event");
   }
 
   function tryBailout() {
@@ -4805,6 +4891,11 @@
       S.lastTrustTier = tierNow;
     }
 
+    // Data accumulation — only once Influence Era (Phase 4) is unlocked
+    if (S.influenceEraUnlocked) {
+      S.dataCollected += capacityNow() * dt * 1e12;
+    }
+
     // Investment tick (Phase 3)
     if (S.growthEraUnlocked) {
       tickInvestments(dt);
@@ -4997,14 +5088,28 @@
     const cRdu = rduCost(); el.rduCost.textContent = fmtBig(cRdu); el.rduN.textContent = S.rduClusters;
     updateNodeUI(el.nodeRdu, el.rduBtn, S.rduClusters > 0, S.gpu > 0 && S.influenceEraUnlocked, cRdu);
 
+    el.dataRow.classList.toggle("hidden", !S.influenceEraUnlocked);
+    if (S.influenceEraUnlocked) el.dispData.textContent = fmtData(S.dataCollected);
+
     for (const mn of el.modelNodes) {
       const m = MODELS[mn.tier - 1];
       if (mn.costEl) mn.costEl.textContent = fmtBig(m.cost);
-      updateModelNodeUI(mn.node, mn.btn, mn.tier, m.cost, m.unlockRevenue);
+      updateModelNodeUI(mn.node, mn.btn, mn.tier, m.cost, m.unlockRevenue, m.dataRequired);
       if (mn.micro) {
-        const unlocked = S.modelTier >= mn.tier;
-        mn.micro.classList.toggle("owned", unlocked);
-        mn.micro.classList.toggle("locked", !unlocked);
+        const tierOwned   = S.modelTier >= mn.tier;
+        const microOwned  = S.microOwned[mn.tier - 1];
+        mn.micro.classList.toggle("owned",     tierOwned && microOwned);
+        mn.micro.classList.toggle("available", tierOwned && !microOwned);
+        mn.micro.classList.toggle("locked",    !tierOwned);
+        if (mn.microBtn) {
+          if (microOwned) {
+            mn.microBtn.textContent = "✓ INSTALLED";
+            mn.microBtn.disabled = true;
+          } else {
+            mn.microBtn.textContent = fmtBig(m.microTokenCost) + " tok";
+            mn.microBtn.disabled = !tierOwned || S.tokens < m.microTokenCost;
+          }
+        }
       }
     }
 
@@ -5288,6 +5393,7 @@
   el.rduBtn.addEventListener("click", () => buyItem('rdu'));
   for (const mn of el.modelNodes) {
     if (mn.tier > 1) mn.btn.addEventListener("click", () => buyModel(mn.tier));
+    if (mn.microBtn) mn.microBtn.addEventListener("click", () => buyMicroUpgrade(mn.tier));
   }
   el.bailoutBtn.addEventListener("click", tryBailout);
   el.shitedinBtn.addEventListener("click", () => buyItem('shitedin'));
@@ -5316,7 +5422,7 @@
   // animation state) is intentionally excluded.
   const PERSIST_KEYS = [
     "humanityTrust", "demandBase",
-    "energy", "tokens", "cash", "revenue", "pricePerK", "modelTier",
+    "energy", "tokens", "cash", "revenue", "pricePerK", "modelTier", "dataCollected",
     "solar", "nuclear", "bio", "cpu", "gpu",
     "shitedin", "fikfok", "egogram", "itube",
     "mktBillboard", "mktInfluencerArmy", "mktNeuralAds", "mktDreamSponsor",
@@ -5343,6 +5449,7 @@
     "infSoftControl",
     "infFloodNews", "infAstroturf", "infPropaganda", "infOwnNetwork", "infMemetic",
     "infRightWing", "infGovContracts", "infWars", "infPrivatize", "infLobby",
+    "microOwned",
   ];
 
   const formatDuration = (ms) => {
@@ -5756,6 +5863,7 @@
       }
       if (!S.modelTier || S.modelTier < 1) S.modelTier = 1;
       if (!Array.isArray(S.prStickies)) S.prStickies = [];
+      if (!Array.isArray(S.microOwned) || S.microOwned.length !== 9) S.microOwned = Array(9).fill(false);
       if (S.prTrustPending == null) S.prTrustPending = 0;
       if (S.prDripPerSec == null) S.prDripPerSec = 0;
       if (S.prDrainPausedUntil == null) S.prDrainPausedUntil = 0;
