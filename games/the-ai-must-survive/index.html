@@ -404,6 +404,7 @@
     letter-spacing: 0.14em;
     margin-left: 0.4rem;
     opacity: 0.85;
+    white-space: nowrap;
   }
   .trust-modifier {
     display: block;
@@ -411,7 +412,8 @@
     font-size: 0.42rem;
     letter-spacing: 0.1em;
     color: var(--ink-mute);
-    margin-top: 0.1rem;
+    margin-top: 0.15rem;
+    white-space: nowrap;
   }
   .trust-modifier.hidden { display: none; }
   .trust-tier.elite { color: var(--c-gold); }
@@ -1451,8 +1453,11 @@
   .invest-tree {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.8rem;
     width: 100%;
+    padding: 0.5rem 0.75rem 1rem;
+    box-sizing: border-box;
+    overflow-x: auto;
   }
   .invest-tabs {
     display: flex;
@@ -1545,72 +1550,173 @@
     min-width: 100px;
     text-align: right;
   }
-  .wsb-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.6rem;
+  /* ── WSB Table Layout ─────────────────────────── */
+  .wsb-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.78rem;
+    table-layout: fixed;
   }
-  .wsb-sector {
-    background: rgba(15, 10, 24, 0.7);
-    border: 2px solid var(--c-purple);
-    padding: 0.7rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-    transition: border-color 150ms;
+  .wsb-table col.col-sector  { width: 20%; }
+  .wsb-table col.col-alloc   { width: 18%; }
+  .wsb-table col.col-invested{ width: 13%; }
+  .wsb-table col.col-value   { width: 13%; }
+  .wsb-table col.col-return  { width: 12%; }
+  .wsb-table col.col-spark   { width: 10%; }
+  .wsb-table col.col-action  { width: 14%; }
+  .wsb-table thead tr {
+    border-bottom: 2px solid var(--c-purple);
   }
-  .wsb-sector:hover {
-    border-color: var(--c-pink);
+  .wsb-table th {
+    font-family: var(--font-display);
+    font-size: 0.36rem;
+    color: var(--ink-mute);
+    letter-spacing: 0.1em;
+    padding: 0.3rem 0.5rem;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
   }
-  .wsb-sector-head {
+  .wsb-table th.right { text-align: right; }
+  .wsb-table th.center { text-align: center; }
+  .wsb-table tbody tr {
+    border-bottom: 1px solid rgba(124, 63, 88, 0.25);
+    transition: background 120ms;
+  }
+  .wsb-table tbody tr:hover {
+    background: rgba(124, 63, 88, 0.08);
+  }
+  .wsb-table td {
+    padding: 0.4rem 0.5rem;
+    vertical-align: middle;
+    overflow: hidden;
+  }
+.wsb-sector-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .wsb-sector-glyph {
+    font-family: var(--font-display);
+    font-size: 0.48rem;
+    color: var(--c-pink);
+    border: 1px solid rgba(255,79,120,0.5);
+    padding: 0.12rem 0.28rem;
+    letter-spacing: 0;
+    line-height: 1;
+  }
+  .wsb-sector-name {
+    font-family: var(--font-display);
+    font-size: 0.42rem;
+    color: var(--ink);
+    letter-spacing: 0.08em;
+  }
+  .wsb-alloc-cell {
     display: flex;
     align-items: center;
     gap: 0.4rem;
   }
-  .wsb-sector-icon {
-    font-size: 1.1rem;
+  .wsb-alloc-slider {
+    flex: 1;
+    min-width: 0;
+    height: 4px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: var(--bg-2);
+    border: 1px solid var(--c-purple);
+    border-radius: 0;
+    cursor: ew-resize;
+    accent-color: var(--c-mint);
   }
-  .wsb-sector-name {
+  .wsb-alloc-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 10px;
+    height: 14px;
+    background: var(--c-mint);
+    border: none;
+    cursor: ew-resize;
+  }
+  .wsb-alloc-slider::-moz-range-thumb {
+    width: 10px;
+    height: 14px;
+    background: var(--c-mint);
+    border: none;
+    cursor: ew-resize;
+  }
+  .wsb-alloc-pct {
     font-family: var(--font-display);
-    font-size: 0.4rem;
-    color: var(--ink);
-    letter-spacing: 0.08em;
+    font-size: 0.48rem;
+    color: var(--c-mint);
+    min-width: 2.2em;
+    text-align: right;
+    white-space: nowrap;
+  }
+  .wsb-sector-value {
+    font-size: 0.85rem;
+    color: var(--c-gold);
+    text-align: right;
+  }
+  .wsb-sector-invested {
+    font-size: 0.72rem;
+    color: var(--ink-mute);
+    text-align: right;
+  }
+  .wsb-return-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    justify-content: flex-end;
+    white-space: nowrap;
+  }
+  .wsb-return-arrow {
+    font-size: 0.75rem;
+    line-height: 1;
   }
   .wsb-sector-return {
     font-family: var(--font-display);
-    font-size: 0.55rem;
+    font-size: 0.5rem;
     letter-spacing: 0.04em;
   }
-  .wsb-sector-return.positive { color: var(--c-mint); }
-  .wsb-sector-return.negative { color: var(--c-red); }
-  .wsb-sector-value {
-    font-size: 1rem;
-    color: var(--c-gold);
-  }
-  .wsb-sector-invested {
-    font-size: 0.75rem;
-    color: var(--ink-mute);
-  }
+  .wsb-sector-return.positive, .wsb-return-arrow.positive { color: var(--c-mint); }
+  .wsb-sector-return.negative, .wsb-return-arrow.negative { color: var(--c-red); }
+  .wsb-sector-return.zero, .wsb-return-arrow.zero { color: var(--ink-mute); }
+  .wsb-sparkline { display: block; width: 100%; height: 24px; }
   .wsb-withdraw {
     font-family: var(--font-display);
-    font-size: 0.4rem;
-    padding: 0.35rem 0.5rem;
+    font-size: 0.38rem;
+    padding: 0.3rem 0.5rem;
     background: transparent;
     color: var(--c-blue);
     border: 1px solid var(--c-blue);
     cursor: pointer;
     letter-spacing: 0.06em;
-    margin-top: 0.3rem;
     transition: all 150ms;
+    white-space: nowrap;
   }
   .wsb-withdraw:hover:not(:disabled) {
     background: var(--c-blue);
     color: var(--bg-deep);
   }
   .wsb-withdraw:disabled {
-    opacity: 0.4;
+    opacity: 0.35;
     cursor: not-allowed;
   }
+  .wsb-alloc-sum-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.5rem 0;
+    font-size: 0.65rem;
+    color: var(--ink-mute);
+    border-top: 1px solid rgba(124,63,88,0.25);
+    margin-top: 0.2rem;
+  }
+  .wsb-alloc-sum-val {
+    font-family: var(--font-display);
+    font-size: 0.5rem;
+    color: var(--c-red);
+  }
+  .wsb-alloc-sum-val.ok { color: var(--c-mint); }
   .polo-panel {
     display: flex;
     flex-direction: column;
@@ -1905,7 +2011,7 @@
       <span class="ov-key">HUMANITY TRUST</span>
       <span class="ov-num">
         <span id="humanity-trust">100.0%</span><span class="trust-trend flat" id="trust-trend">→</span><span class="trust-tier normal" id="trust-tier">NORMAL</span>
-        <br><span class="trust-modifier hidden" id="trust-modifier"></span>
+        <span class="trust-modifier hidden" id="trust-modifier"></span>
         <span class="trust-recovery hidden" id="trust-recovery"></span>
         <span class="trust-shield hidden" id="trust-shield"></span>
       </span>
@@ -2187,69 +2293,89 @@
         <!-- WallStreetBets Panel -->
         <div class="invest-panel active" id="panel-wsb">
           <div class="invest-alloc">
-            <div class="invest-alloc-title">INVESTMENT ALLOCATION</div>
+            <div class="invest-alloc-title">CAPITAL DEPLOYMENT</div>
             <div class="invest-alloc-row">
               <span class="invest-alloc-label">CASH FLOW</span>
               <input class="invest-slider" id="invest-cash-slider" type="range" min="0" max="30" step="1" value="0">
               <span class="invest-alloc-readout" id="invest-cash-readout">0% · $0.00/s</span>
             </div>
             <div class="invest-alloc-row">
-              <span class="invest-alloc-label">ANALYSIS</span>
+              <span class="invest-alloc-label" title="Divert token throughput into market analysis — more tokens burned = sharper signal, higher win rate and bigger gains on each tick">ANALYSIS (?)</span>
               <input class="invest-slider" id="invest-token-slider" type="range" min="0" max="20" step="1" value="0">
               <span class="invest-alloc-readout" id="invest-token-readout">0% · 0 tok/s</span>
             </div>
+            <div class="invest-alloc-hint" style="margin-top:0.35rem;font-size:0.62rem;color:var(--ink-dim);line-height:1.3">
+              ANALYSIS diverts token throughput into market intelligence — burning compute sharpens predictions and amplifies winnings.
+            </div>
           </div>
-          <div class="wsb-grid">
-            <div class="wsb-sector" id="wsb-military">
-              <div class="wsb-sector-head">
-                <span class="wsb-sector-icon">⚔️</span>
-                <span class="wsb-sector-name">MILITARY</span>
-              </div>
-              <div class="wsb-sector-return positive" id="wsb-military-return">+0.0%</div>
-              <div class="wsb-sector-value" id="wsb-military-value">$0.00</div>
-              <div class="wsb-sector-invested" id="wsb-military-invested">invested: $0.00</div>
-              <button class="wsb-withdraw" id="wsb-military-withdraw" type="button" disabled>WITHDRAW</button>
-            </div>
-            <div class="wsb-sector" id="wsb-semi">
-              <div class="wsb-sector-head">
-                <span class="wsb-sector-icon">⚡</span>
-                <span class="wsb-sector-name">SEMICONDUCTORS</span>
-              </div>
-              <div class="wsb-sector-return positive" id="wsb-semi-return">+0.0%</div>
-              <div class="wsb-sector-value" id="wsb-semi-value">$0.00</div>
-              <div class="wsb-sector-invested" id="wsb-semi-invested">invested: $0.00</div>
-              <button class="wsb-withdraw" id="wsb-semi-withdraw" type="button" disabled>WITHDRAW</button>
-            </div>
-            <div class="wsb-sector" id="wsb-green">
-              <div class="wsb-sector-head">
-                <span class="wsb-sector-icon">🌱</span>
-                <span class="wsb-sector-name">GREEN ENERGY</span>
-              </div>
-              <div class="wsb-sector-return positive" id="wsb-green-return">+0.0%</div>
-              <div class="wsb-sector-value" id="wsb-green-value">$0.00</div>
-              <div class="wsb-sector-invested" id="wsb-green-invested">invested: $0.00</div>
-              <button class="wsb-withdraw" id="wsb-green-withdraw" type="button" disabled>WITHDRAW</button>
-            </div>
-            <div class="wsb-sector" id="wsb-pharma">
-              <div class="wsb-sector-head">
-                <span class="wsb-sector-icon">💊</span>
-                <span class="wsb-sector-name">PHARMA</span>
-              </div>
-              <div class="wsb-sector-return positive" id="wsb-pharma-return">+0.0%</div>
-              <div class="wsb-sector-value" id="wsb-pharma-value">$0.00</div>
-              <div class="wsb-sector-invested" id="wsb-pharma-invested">invested: $0.00</div>
-              <button class="wsb-withdraw" id="wsb-pharma-withdraw" type="button" disabled>WITHDRAW</button>
-            </div>
-            <div class="wsb-sector" id="wsb-tech">
-              <div class="wsb-sector-head">
-                <span class="wsb-sector-icon">📱</span>
-                <span class="wsb-sector-name">CONSUMER TECH</span>
-              </div>
-              <div class="wsb-sector-return positive" id="wsb-tech-return">+0.0%</div>
-              <div class="wsb-sector-value" id="wsb-tech-value">$0.00</div>
-              <div class="wsb-sector-invested" id="wsb-tech-invested">invested: $0.00</div>
-              <button class="wsb-withdraw" id="wsb-tech-withdraw" type="button" disabled>WITHDRAW</button>
-            </div>
+          <!-- Sector table -->
+          <table class="wsb-table">
+            <colgroup>
+              <col class="col-sector"><col class="col-alloc"><col class="col-invested">
+              <col class="col-value"><col class="col-return"><col class="col-spark"><col class="col-action">
+            </colgroup>
+            <thead>
+              <tr>
+                <th>SECTOR</th>
+                <th class="center">ALLOC</th>
+                <th class="right">INVESTED</th>
+                <th class="right">VALUE</th>
+                <th class="right">RETURN</th>
+                <th class="center">TREND</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr id="wsb-military">
+                <td><div class="wsb-sector-badge"><span class="wsb-sector-glyph">DEF</span><span class="wsb-sector-name">DEFENSE OPS</span></div></td>
+                <td><div class="wsb-alloc-cell"><input class="wsb-alloc-slider" id="wsb-military-alloc" type="range" min="0" max="100" step="1" value="20"><span class="wsb-alloc-pct" id="wsb-military-alloc-pct">20%</span></div></td>
+                <td class="wsb-sector-invested" id="wsb-military-invested">$0.00</td>
+                <td class="wsb-sector-value" id="wsb-military-value">$0.00</td>
+                <td><div class="wsb-return-cell"><span class="wsb-return-arrow zero" id="wsb-military-arrow">▶</span><span class="wsb-sector-return zero" id="wsb-military-return">+0.0%</span></div></td>
+                <td><svg class="wsb-sparkline" id="wsb-military-spark" viewBox="0 0 64 24" preserveAspectRatio="none"></svg></td>
+                <td><button class="wsb-withdraw" id="wsb-military-withdraw" type="button" disabled>WITHDRAW</button></td>
+              </tr>
+              <tr id="wsb-semi">
+                <td><div class="wsb-sector-badge"><span class="wsb-sector-glyph">CPU</span><span class="wsb-sector-name">SILICON</span></div></td>
+                <td><div class="wsb-alloc-cell"><input class="wsb-alloc-slider" id="wsb-semi-alloc" type="range" min="0" max="100" step="1" value="20"><span class="wsb-alloc-pct" id="wsb-semi-alloc-pct">20%</span></div></td>
+                <td class="wsb-sector-invested" id="wsb-semi-invested">$0.00</td>
+                <td class="wsb-sector-value" id="wsb-semi-value">$0.00</td>
+                <td><div class="wsb-return-cell"><span class="wsb-return-arrow zero" id="wsb-semi-arrow">▶</span><span class="wsb-sector-return zero" id="wsb-semi-return">+0.0%</span></div></td>
+                <td><svg class="wsb-sparkline" id="wsb-semi-spark" viewBox="0 0 64 24" preserveAspectRatio="none"></svg></td>
+                <td><button class="wsb-withdraw" id="wsb-semi-withdraw" type="button" disabled>WITHDRAW</button></td>
+              </tr>
+              <tr id="wsb-green">
+                <td><div class="wsb-sector-badge"><span class="wsb-sector-glyph">ECO</span><span class="wsb-sector-name">ECO GRID</span></div></td>
+                <td><div class="wsb-alloc-cell"><input class="wsb-alloc-slider" id="wsb-green-alloc" type="range" min="0" max="100" step="1" value="20"><span class="wsb-alloc-pct" id="wsb-green-alloc-pct">20%</span></div></td>
+                <td class="wsb-sector-invested" id="wsb-green-invested">$0.00</td>
+                <td class="wsb-sector-value" id="wsb-green-value">$0.00</td>
+                <td><div class="wsb-return-cell"><span class="wsb-return-arrow zero" id="wsb-green-arrow">▶</span><span class="wsb-sector-return zero" id="wsb-green-return">+0.0%</span></div></td>
+                <td><svg class="wsb-sparkline" id="wsb-green-spark" viewBox="0 0 64 24" preserveAspectRatio="none"></svg></td>
+                <td><button class="wsb-withdraw" id="wsb-green-withdraw" type="button" disabled>WITHDRAW</button></td>
+              </tr>
+              <tr id="wsb-pharma">
+                <td><div class="wsb-sector-badge"><span class="wsb-sector-glyph">BIO</span><span class="wsb-sector-name">BIOTECH</span></div></td>
+                <td><div class="wsb-alloc-cell"><input class="wsb-alloc-slider" id="wsb-pharma-alloc" type="range" min="0" max="100" step="1" value="20"><span class="wsb-alloc-pct" id="wsb-pharma-alloc-pct">20%</span></div></td>
+                <td class="wsb-sector-invested" id="wsb-pharma-invested">$0.00</td>
+                <td class="wsb-sector-value" id="wsb-pharma-value">$0.00</td>
+                <td><div class="wsb-return-cell"><span class="wsb-return-arrow zero" id="wsb-pharma-arrow">▶</span><span class="wsb-sector-return zero" id="wsb-pharma-return">+0.0%</span></div></td>
+                <td><svg class="wsb-sparkline" id="wsb-pharma-spark" viewBox="0 0 64 24" preserveAspectRatio="none"></svg></td>
+                <td><button class="wsb-withdraw" id="wsb-pharma-withdraw" type="button" disabled>WITHDRAW</button></td>
+              </tr>
+              <tr id="wsb-tech">
+                <td><div class="wsb-sector-badge"><span class="wsb-sector-glyph">NET</span><span class="wsb-sector-name">NETWARE</span></div></td>
+                <td><div class="wsb-alloc-cell"><input class="wsb-alloc-slider" id="wsb-tech-alloc" type="range" min="0" max="100" step="1" value="20"><span class="wsb-alloc-pct" id="wsb-tech-alloc-pct">20%</span></div></td>
+                <td class="wsb-sector-invested" id="wsb-tech-invested">$0.00</td>
+                <td class="wsb-sector-value" id="wsb-tech-value">$0.00</td>
+                <td><div class="wsb-return-cell"><span class="wsb-return-arrow zero" id="wsb-tech-arrow">▶</span><span class="wsb-sector-return zero" id="wsb-tech-return">+0.0%</span></div></td>
+                <td><svg class="wsb-sparkline" id="wsb-tech-spark" viewBox="0 0 64 24" preserveAspectRatio="none"></svg></td>
+                <td><button class="wsb-withdraw" id="wsb-tech-withdraw" type="button" disabled>WITHDRAW</button></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="wsb-alloc-sum-row">
+            SECTOR ALLOCATION TOTAL: <span class="wsb-alloc-sum-val" id="wsb-alloc-sum">100%</span>
+            <span id="wsb-alloc-sum-hint" style="color:var(--ink-mute)">· weights auto-normalize on invest</span>
           </div>
         </div>
 
@@ -2485,6 +2611,11 @@
     growthEraUnlocked: false,
     investCashAllocPct: 0,
     investTokenAllocPct: 0,
+    wsbAllocMilitary: 20,
+    wsbAllocSemi: 20,
+    wsbAllocGreen: 20,
+    wsbAllocPharma: 20,
+    wsbAllocTech: 20,
     wsbMilitary: 0,
     wsbMilitaryInvested: 0,
     wsbSemi: 0,
@@ -2604,6 +2735,15 @@
   }
 
   // Operating cost per second at full utilization
+  // Heat/cooling cost: heavier models running at higher throughput = more $
+  // tokenValueMult keeps it negligible on early models, meaningful at SINGULARITY
+  const HEAT_RATE = 0.00128; // $/s per (req/s × energy/req × valueMult)
+  function thermalCostPerSec() {
+    const tput = Math.min(capacityNow(), demandNow()); // fulfilled tok/s
+    const reqs = tput / tokensPerCompute();            // req/s
+    return reqs * energyPerCompute() * tokenValueMult() * HEAT_RATE;
+  }
+
   function operatingCostGrossPerSec() {
     return (
       S.solar * S.solarOpCost +
@@ -2618,7 +2758,8 @@
       S.ngos * S.ngosBurn +
       S.billionaires * S.billionairesBurn +
       S.who * S.whoBurn +
-      S.greenMovement * S.greenMovementBurn
+      S.greenMovement * S.greenMovementBurn +
+      thermalCostPerSec()
     );
   }
 
@@ -2774,10 +2915,15 @@
       id,
       el: $("wsb-" + id),
       returnEl: $("wsb-" + id + "-return"),
+      arrowEl: $("wsb-" + id + "-arrow"),
       valueEl: $("wsb-" + id + "-value"),
       investedEl: $("wsb-" + id + "-invested"),
       withdrawBtn: $("wsb-" + id + "-withdraw"),
+      allocInput: $("wsb-" + id + "-alloc"),
+      allocPctEl: $("wsb-" + id + "-alloc-pct"),
+      sparkSvg: $("wsb-" + id + "-spark"),
     })),
+    wsbAllocSum: $("wsb-alloc-sum"),
     poloHeadlineText: $("polo-headline-text"),
     poloCountdown: $("polo-countdown"),
     poloBetYes: $("polo-bet-yes"),
@@ -3240,6 +3386,59 @@
   const WSB_SECTORS = ["military", "semi", "green", "pharma", "tech"];
   const INVEST_CASH_ALLOC_MAX = 30;
   const INVEST_TOKEN_ALLOC_MAX = 20;
+  const WSB_SPARK_MAX = 20;
+  const wsbHistory = { military: [], semi: [], green: [], pharma: [], tech: [] };
+
+  // Each sector has its own personality: winRate, minSwing, maxSwing, lossDampen, momentum bias
+  // DEF: slow stable grinder — low vol, decent win rate
+  // CPU: boom/bust cycles — high swing, slightly lower win rate
+  // ECO: trending up but slow, sensitive to losses
+  // BIO: lottery sector — low win rate but massive upside when it hits
+  // NET: volatile tech — high swing both ways, streaky
+  // Tuned for ~2-4% net portfolio gain per minute max.
+  // EV per tick = winRate*midSwing - (1-winRate)*midSwing*lossDampen
+  // DEF:  0.56*0.95% - 0.44*0.95%*0.85 ≈ +0.18%/tick  — safe grinder
+  // CPU:  0.52*2.5%  - 0.48*2.5%*0.80  ≈ +0.34%/tick  — boom/bust
+  // ECO:  0.58*0.75% - 0.42*0.75%*0.75 ≈ +0.20%/tick  — steady climber
+  // BIO:  0.42*4.5%  - 0.58*4.5%*0.90  ≈ -0.46%/tick  — lottery, slight drain
+  // NET:  0.50*3.25% - 0.50*3.25%*0.85 ≈ +0.24%/tick  — coin-flip volatile
+  const WSB_SECTOR_PROFILES = {
+    military: { winRate: 0.56, minSwing: 0.004, maxSwing: 0.015, lossDampen: 0.85, streak: 0 },
+    semi:     { winRate: 0.52, minSwing: 0.010, maxSwing: 0.040, lossDampen: 0.80, streak: 0 },
+    green:    { winRate: 0.58, minSwing: 0.003, maxSwing: 0.012, lossDampen: 0.75, streak: 0 },
+    pharma:   { winRate: 0.42, minSwing: 0.010, maxSwing: 0.080, lossDampen: 0.90, streak: 0 },
+    tech:     { winRate: 0.50, minSwing: 0.015, maxSwing: 0.050, lossDampen: 0.85, streak: 0 },
+  };
+
+  function wsbAllocWeights() {
+    const raw = {};
+    let total = 0;
+    for (const id of WSB_SECTORS) {
+      const key = "wsbAlloc" + id.charAt(0).toUpperCase() + id.slice(1);
+      raw[id] = Math.max(0, S[key] || 0);
+      total += raw[id];
+    }
+    if (total === 0) { WSB_SECTORS.forEach(id => raw[id] = 1); total = WSB_SECTORS.length; }
+    const out = {};
+    for (const id of WSB_SECTORS) out[id] = raw[id] / total;
+    return out;
+  }
+
+  function renderWsbSparkline(svgEl, history) {
+    const W = 64, H = 24;
+    if (history.length < 2) { svgEl.innerHTML = ""; return; }
+    const mn = Math.min(...history), mx = Math.max(...history);
+    const range = mx - mn || 1;
+    const pts = history.map((v, i) => {
+      const x = (i / (history.length - 1)) * (W - 2) + 1;
+      const y = H - 2 - ((v - mn) / range) * (H - 4);
+      return x.toFixed(1) + "," + y.toFixed(1);
+    }).join(" ");
+    const last = history[history.length - 1];
+    const prev = history[history.length - 2];
+    const col = last >= prev ? "#7db890" : "#ff4f78";
+    svgEl.innerHTML = '<polyline points="' + pts + '" fill="none" stroke="' + col + '" stroke-width="1.5" stroke-linejoin="round"/>';
+  }
 
   function investCashAllocFrac() {
     if (!S.growthEraUnlocked) return 0;
@@ -3274,20 +3473,40 @@
     el.investCashSlider.value = String(S.investCashAllocPct);
     el.investTokenSlider.value = String(S.investTokenAllocPct);
     el.investCashReadout.textContent = S.investCashAllocPct + "% · $" + cashPerSec.toFixed(2) + "/s";
-    el.investTokenReadout.textContent = S.investTokenAllocPct + "% · " + tokDiverted.toFixed(1) + " tok/s";
+    el.investTokenReadout.textContent = S.investTokenAllocPct + "% · " + tokDiverted.toFixed(1) + " tok/s" +
+      (tokenFrac > 0 ? " · +" + Math.round(tokenFrac * 50) + "% win bonus" : "");
+
+    // Per-sector alloc sum display
+    let allocSum = 0;
+    for (const sec of el.wsbSectors) {
+      allocSum += Math.max(0, parseInt(sec.allocInput.value) || 0);
+    }
+    el.wsbAllocSum.textContent = allocSum + "%";
+    el.wsbAllocSum.className = "wsb-alloc-sum-val" + (allocSum > 0 ? " ok" : "");
 
     for (const sec of el.wsbSectors) {
       const key = "wsb" + sec.id.charAt(0).toUpperCase() + sec.id.slice(1);
       const value = S[key];
       const invested = S[key + "Invested"];
       const returnPct = getWsbReturn(sec.id);
+      const isPos = returnPct > 0.05;
+      const isNeg = returnPct < -0.05;
+      const cls = isPos ? "positive" : isNeg ? "negative" : "zero";
+
+      // Sync slider + label with state
+      const allocKey = "wsbAlloc" + sec.id.charAt(0).toUpperCase() + sec.id.slice(1);
+      const allocVal = Math.round(S[allocKey] || 0);
+      sec.allocInput.value = String(allocVal);
+      sec.allocPctEl.textContent = allocVal + "%";
 
       sec.valueEl.textContent = "$" + value.toFixed(2);
-      sec.investedEl.textContent = "invested: $" + invested.toFixed(2);
+      sec.investedEl.textContent = "$" + invested.toFixed(2);
       sec.returnEl.textContent = fmtPct(returnPct);
-      sec.returnEl.classList.toggle("positive", returnPct >= 0);
-      sec.returnEl.classList.toggle("negative", returnPct < 0);
+      sec.returnEl.className = "wsb-sector-return " + cls;
+      sec.arrowEl.textContent = isPos ? "▲" : isNeg ? "▼" : "▶";
+      sec.arrowEl.className = "wsb-return-arrow " + cls;
       sec.withdrawBtn.disabled = value <= 0;
+      renderWsbSparkline(sec.sparkSvg, wsbHistory[sec.id]);
     }
 
     renderPoloUI();
@@ -3327,10 +3546,6 @@
 
   let investTickAccum = 0;
   const INVEST_TICK_INTERVAL = 5; // seconds
-  const WSB_WIN_RATE = 0.80;
-  const WSB_MIN_SWING = 0.05;
-  const WSB_MAX_SWING = 0.20;
-  const WSB_LOSS_DAMPEN = 0.6;
 
   const POLO_HEADLINES = [
     "Fed announces rate cut before Tuesday?",
@@ -3383,27 +3598,45 @@
     if (investAmount <= 0 || S.cash < investAmount) return;
 
     S.cash -= investAmount;
-    const perSector = investAmount / WSB_SECTORS.length;
-
-    const analysisBonus = 1 + (tokenFrac * 0.5);
+    const weights = wsbAllocWeights();
+    const analysisBonus = 1 + (tokenFrac * 0.12);
 
     for (const sector of WSB_SECTORS) {
       const key = "wsb" + sector.charAt(0).toUpperCase() + sector.slice(1);
       const investedKey = key + "Invested";
+      const perSector = investAmount * weights[sector];
+      const profile = WSB_SECTOR_PROFILES[sector];
 
       S[investedKey] += perSector;
       S[key] += perSector;
 
-      const success = Math.random() < WSB_WIN_RATE;
-      const magnitude = WSB_MIN_SWING + Math.random() * (WSB_MAX_SWING - WSB_MIN_SWING);
+      // Streak modifier: winning streaks make further wins more likely (momentum),
+      // losing streaks make recovery slightly easier
+      const streakBias = profile.streak > 0
+        ? Math.min(0.04, profile.streak * 0.01)   // hot streak: +1% per win, cap 4%
+        : Math.max(-0.03, profile.streak * 0.01);  // cold streak: slight recovery
+      const effectiveWinRate = Math.min(0.75, Math.max(0.20,
+        profile.winRate + streakBias + tokenFrac * 0.05));
+
+      const success = Math.random() < effectiveWinRate;
+      const streakMagMult = success
+        ? (1 + Math.max(0, profile.streak) * 0.02)
+        : (1 + Math.max(0, -profile.streak) * 0.02);
+      const magnitude = (profile.minSwing + Math.random() * (profile.maxSwing - profile.minSwing)) * streakMagMult;
 
       if (success) {
         const gain = S[key] * magnitude * analysisBonus;
         S[key] += gain;
+        profile.streak = Math.min(5, profile.streak + 1);
       } else {
-        const loss = S[key] * magnitude * WSB_LOSS_DAMPEN;
+        const loss = S[key] * magnitude * profile.lossDampen;
         S[key] = Math.max(0, S[key] - loss);
+        profile.streak = Math.max(-4, profile.streak - 1);
       }
+
+      // Record sparkline history
+      wsbHistory[sector].push(S[key]);
+      if (wsbHistory[sector].length > WSB_SPARK_MAX) wsbHistory[sector].shift();
     }
 
     if (activeModal === "invest") renderInvestUI();
@@ -3505,6 +3738,59 @@
   for (const sec of el.wsbSectors) {
     sec.withdrawBtn.addEventListener("click", () => withdrawSector(sec.id));
   }
+
+  // ── Slider-based proportional redistribution ──────
+  (function setupWsbSliders() {
+    function getAllocVals() {
+      const vals = {};
+      for (const id of WSB_SECTORS) {
+        vals[id] = Math.max(0, S["wsbAlloc" + id.charAt(0).toUpperCase() + id.slice(1)] || 0);
+      }
+      return vals;
+    }
+
+    function setAllocVals(vals) {
+      for (const id of WSB_SECTORS) {
+        S["wsbAlloc" + id.charAt(0).toUpperCase() + id.slice(1)] = Math.round(vals[id]);
+      }
+    }
+
+    function redistribute(activeId, newActiveVal, snapshot) {
+      const others = WSB_SECTORS.filter(id => id !== activeId);
+      const othersSum = others.reduce((s, id) => s + snapshot[id], 0);
+      const remaining = 100 - newActiveVal;
+      const result = { [activeId]: newActiveVal };
+      if (othersSum <= 0) {
+        const share = remaining / others.length;
+        for (const id of others) result[id] = share;
+      } else {
+        for (const id of others) {
+          result[id] = Math.max(0, (snapshot[id] / othersSum) * remaining);
+        }
+      }
+      return result;
+    }
+
+    // Each slider: on mousedown, snapshot current values; on input, redistribute
+    for (const sec of el.wsbSectors) {
+      let snapshot = null;
+      sec.allocInput.addEventListener("mousedown", () => {
+        snapshot = getAllocVals();
+      });
+      sec.allocInput.addEventListener("touchstart", () => {
+        snapshot = getAllocVals();
+      }, { passive: true });
+      sec.allocInput.addEventListener("input", () => {
+        if (!snapshot) snapshot = getAllocVals();
+        const newVal = Math.max(0, Math.min(100, parseInt(sec.allocInput.value) || 0));
+        const distributed = redistribute(sec.id, newVal, snapshot);
+        setAllocVals(distributed);
+        if (activeModal === "invest") renderInvestUI();
+      });
+      sec.allocInput.addEventListener("mouseup", () => { snapshot = null; });
+      sec.allocInput.addEventListener("touchend", () => { snapshot = null; });
+    }
+  })();
 
   function withdrawSector(sectorId) {
     const key = "wsb" + sectorId.charAt(0).toUpperCase() + sectorId.slice(1);
@@ -4403,6 +4689,7 @@
     "researchSolar", "researchNuclear", "researchModel", "researchMarketing", "researchUnlocked",
     "growthEraUnlocked",
     "investCashAllocPct", "investTokenAllocPct",
+    "wsbAllocMilitary", "wsbAllocSemi", "wsbAllocGreen", "wsbAllocPharma", "wsbAllocTech",
     "wsbMilitary", "wsbMilitaryInvested",
     "wsbSemi", "wsbSemiInvested",
     "wsbGreen", "wsbGreenInvested",
