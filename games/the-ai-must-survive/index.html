@@ -1105,14 +1105,61 @@
     top: 0; left: 0; right: 0; bottom: 0;
     min-width: 800px; min-height: 600px;
   }
+
+  /* ── Unified pannable tree world ── */
+  .tree-viewport {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    cursor: grab;
+    touch-action: none;
+    background:
+      radial-gradient(circle at 1px 1px, rgba(140,120,190,0.08) 1px, transparent 0);
+    background-size: 28px 28px;
+  }
+  .tree-viewport.hidden { display: none; }
+  .tree-viewport.grabbing { cursor: grabbing; }
+  .tree-world {
+    position: absolute;
+    top: 0; left: 0;
+    transform-origin: 0 0;
+    will-change: transform;
+  }
+  .tree-world.flying { transition: transform 0.45s cubic-bezier(0.22,1,0.36,1); }
+  .tree-cluster {
+    position: absolute;
+    top: 0; left: 0;
+  }
+  .tree-cluster .cluster-header {
+    position: absolute;
+    top: -30px; left: 0;
+    font-family: var(--font-display);
+    font-size: 0.5rem;
+    letter-spacing: 0.12em;
+    color: var(--c-purple);
+    white-space: nowrap;
+    border-bottom: 1px solid var(--c-purple);
+    padding-bottom: 4px;
+  }
+  .tree-cluster .lane-label {
+    position: absolute;
+    font-family: var(--font-display);
+    font-size: 0.42rem;
+    letter-spacing: 0.1em;
+    color: var(--ink-mute);
+    white-space: nowrap;
+  }
+  .tree-cluster .lane-label.accent { color: var(--c-mint); }
+
   .tree-node {
     position: absolute;
-    width: 220px;
-    background: rgba(15,10,24,0.9);
+    width: 200px;
+    background: #0f0a18;
     border: 2px solid var(--ink-mute);
-    padding: 0.75rem;
+    padding: 0.6rem 0.65rem;
     box-shadow: 4px 4px 0 0 rgba(0,0,0,0.5);
     z-index: 10;
+    box-sizing: border-box;
   }
   .tree-node.locked {
     opacity: 0.5;
@@ -1130,16 +1177,17 @@
   
   .node-title {
     font-family: var(--font-display);
-    font-size: 0.55rem;
+    font-size: 0.5rem;
     color: var(--ink-dim);
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.35rem;
     letter-spacing: 0.05em;
   }
   .node-desc {
-    font-size: 0.85rem;
+    font-size: 0.72rem;
     color: var(--ink-mute);
-    line-height: 1.2;
-    margin-bottom: 0.5rem;
+    line-height: 1.3;
+    margin-bottom: 0.45rem;
+    min-height: 2.6em;
   }
   .node-buy {
     font-family: var(--font-display);
@@ -1211,120 +1259,103 @@
       transparent 5px, transparent 9px
     );
   }
-  .tree-canvas.marketing-tree {
-    position: relative;
-    min-width: 450px;
-    min-height: 1900px;
-    padding: 0.5rem;
+  /* elbow / cross-branch connector segment */
+  .tree-link {
+    position: absolute;
+    pointer-events: none;
+    z-index: 1;
   }
-  /* ── Tree column headers (sticky) ── */
-  .tree-col-header {
-    position: sticky;
-    top: 0;
-    z-index: 30;
-    display: grid;
-    grid-template-columns: 252px 1fr;
-    background: var(--bg-deep);
-    border-bottom: 2px solid var(--c-purple);
-    min-width: 460px;
+  .tree-link.h {
+    height: 2px;
+    background: repeating-linear-gradient(
+      to right,
+      var(--c-mint) 0px, var(--c-mint) 5px,
+      transparent 5px, transparent 9px
+    );
+    opacity: 0.6;
   }
-  .tree-col-header .col-label {
-    font-family: var(--font-display);
-    font-size: 0.44rem;
-    letter-spacing: 0.1em;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding: 8px 12px;
-  }
-  .tree-col-header .col-label.demand { color: var(--c-purple); border-right: 1px solid var(--ink-mute); }
-  .tree-col-header .col-label.trust  { color: var(--c-mint); }
-  .tree-col-header .col-label.models { color: var(--c-purple); grid-column: 1 / -1; }
-  .marketing-tree .tree-node {
-    width: 168px;
-    padding: 0.55rem 0.6rem;
-  }
-  .marketing-tree .node-title {
-    font-size: 0.5rem;
-    margin-bottom: 0.3rem;
-  }
-  .marketing-tree .node-desc {
-    font-size: 0.72rem;
-    line-height: 1.25;
-    min-height: 2.5em;
-    margin-bottom: 0.4rem;
-  }
-  .marketing-tree .node-buy {
-    padding: 0.4rem;
-    margin-bottom: 0.3rem;
-  }
-  .marketing-tree .node-stats {
-    font-size: 0.38rem;
+  .tree-link.v {
+    width: 2px;
+    background: repeating-linear-gradient(
+      to bottom,
+      var(--c-mint) 0px, var(--c-mint) 5px,
+      transparent 5px, transparent 9px
+    );
+    opacity: 0.6;
   }
 
-  .tree-canvas.models-tree {
-    position: relative;
-    min-width: 420px;
-    min-height: 2120px;
-    padding: 0.5rem;
+  .node-stats {
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    row-gap: 0.2rem;
   }
-  /* models-tree branch label → now handled by .tree-col-header */
-  .models-tree .tree-node {
-    width: 175px;
-    padding: 0.7rem 0.7rem;
-  }
-  .models-tree .tree-node.active-tier {
+  .node-stats .data-req { color: var(--c-cyan, #7db890); opacity: 0.85; }
+
+  /* active tier highlight (models) — now generic */
+  .tree-node.active-tier {
     border-color: var(--c-pink);
     box-shadow: 0 0 12px rgba(255,119,168,0.35), 4px 4px 0 0 rgba(0,0,0,0.5);
   }
-  .models-tree .tree-node.active-tier .node-title { color: var(--c-pink); }
-  .models-tree .node-title { font-size: 0.52rem; margin-bottom: 0.4rem; }
-  .models-tree .node-desc { font-size: 0.72rem; line-height: 1.3; min-height: 2.8em; margin-bottom: 0.5rem; }
-  .models-tree .node-buy { padding: 0.45rem; margin-bottom: 0.4rem; }
-  .models-tree .node-stats { font-size: 0.38rem; gap: 0.4rem; flex-wrap: wrap; row-gap: 0.2rem; }
-  .node-stats .data-req { color: var(--c-cyan, #7db890); opacity: 0.85; }
-  /* micro branch nodes */
-  .micro-node {
+  .tree-node.active-tier .node-title { color: var(--c-pink); }
+
+  /* ── Generic progress / loading fill bar (any node) ── */
+  .node-progress {
+    height: 5px;
+    background: var(--bg);
+    border: 1px solid var(--c-peach);
+    margin: 0.1rem 0 0.35rem;
+    overflow: hidden;
+  }
+  .node-progress-fill {
+    height: 100%;
+    background: var(--c-peach);
+    width: 0%;
+    transition: width 250ms linear;
+  }
+
+  /* ── Sub-update nodes (branch off a main node) ── */
+  .sub-node {
     position: absolute;
-    width: 162px;
-    background: rgba(15,10,24,0.88);
+    width: 158px;
+    background: #0f0a18;
     border: 1px dashed var(--ink-mute);
     padding: 0.5rem 0.55rem;
     z-index: 10;
+    box-sizing: border-box;
     transition: opacity 0.3s, border-color 0.3s;
   }
-  .micro-node.owned {
+  .sub-node.owned {
     border-color: var(--c-blue);
     border-style: solid;
     opacity: 1;
   }
-  .micro-node.locked {
+  .sub-node.locked {
     opacity: 0.28;
     filter: grayscale(0.7);
     pointer-events: none;
   }
-  .micro-node.available {
+  .sub-node.available {
     opacity: 1;
     border-color: var(--c-mint);
     border-style: solid;
   }
-  .micro-label {
+  .sub-label {
     font-family: var(--font-display);
     font-size: 0.38rem;
     color: var(--c-purple);
     letter-spacing: 0.08em;
     margin-bottom: 0.25rem;
   }
-  .micro-node.owned .micro-label { color: var(--c-blue); }
-  .micro-node.available .micro-label { color: var(--c-mint); }
-  .micro-desc {
+  .sub-node.owned .sub-label { color: var(--c-blue); }
+  .sub-node.available .sub-label { color: var(--c-mint); }
+  .sub-desc {
     font-size: 0.64rem;
     color: var(--ink-mute);
     line-height: 1.3;
     margin-bottom: 0.4rem;
   }
-  .micro-node.owned .micro-desc { color: var(--ink-dim); }
-  .micro-buy {
+  .sub-node.owned .sub-desc { color: var(--ink-dim); }
+  .sub-buy {
     display: block;
     width: 100%;
     font-family: var(--font-display);
@@ -1337,9 +1368,9 @@
     cursor: pointer;
     transition: background 0.15s, color 0.15s;
   }
-  .micro-buy:hover:not(:disabled) { background: var(--c-purple); color: #000; }
-  .micro-buy:disabled { opacity: 0.4; cursor: default; }
-  .micro-node.owned .micro-buy { border-color: var(--c-blue); color: var(--c-blue); pointer-events: none; }
+  .sub-buy:hover:not(:disabled) { background: var(--c-purple); color: #000; }
+  .sub-buy:disabled { opacity: 0.4; cursor: default; }
+  .sub-node.owned .sub-buy { border-color: var(--c-blue); color: var(--c-blue); pointer-events: none; }
 
   /* data-gated model nodes */
   .tree-node.data-locked { border-color: var(--c-cyan, #7db890) !important; }
@@ -1539,19 +1570,7 @@
   }
 
   /* ── PHASE 4 · Influence Tree ─────────────────── */
-  .tree-canvas.influence-tree {
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    min-width: 760px;
-    min-height: 1480px;
-  }
-  .influence-tree .tree-node {
-    width: 220px;
-    padding: 0.65rem 0.75rem;
-  }
-  .influence-tree .node-title { font-size: 0.5rem; margin-bottom: 0.35rem; }
-  .influence-tree .node-desc  { font-size: 0.75rem; line-height: 1.3; min-height: 2.5em; margin-bottom: 0.4rem; }
-  /* Influence commit button — gold-bordered token cost variant */
+  /* Influence commit button — peach-bordered token cost variant */
   .node-buy.inf-commit-btn {
     color: var(--c-peach);
     border-color: var(--c-peach);
@@ -1574,21 +1593,9 @@
     from { box-shadow: var(--shadow); }
     to   { box-shadow: 0 0 12px rgba(255,206,150,0.55), var(--shadow); }
   }
-  /* Timer bar inside tree-node for influence nodes */
-  .inf-timer-wrap {
-    height: 5px;
-    background: var(--bg);
-    border: 1px solid var(--c-peach);
-    margin: 0.25rem 0 0.2rem;
-    display: none;
-  }
-  .tree-node.influence-node.unlocking .inf-timer-wrap { display: block; }
-  .inf-timer-fill {
-    height: 100%;
-    background: var(--c-peach);
-    width: 0%;
-    transition: width 250ms linear;
-  }
+  /* Influence timed-unlock progress bar — only shows while unlocking */
+  .node-progress.inf-progress { display: none; }
+  .tree-node.influence-node.unlocking .node-progress.inf-progress { display: block; }
 
   /* ── PHASE 3 · Investment Modal ────────────────── */
   .invest-tree {
@@ -2189,267 +2196,324 @@
       <button class="modal-close" id="modal-close">X</button>
     </div>
     <div class="modal-body" id="modal-body">
-      
-      <!-- ENERGY TREE -->
-      <div class="tree-canvas hidden" id="tree-energy">
-        <svg class="tree-lines">
-          <line x1="400" y1="100" x2="250" y2="300" />
-          <line x1="400" y1="100" x2="550" y2="300" />
-        </svg>
-        <div class="tree-node locked" id="node-solar" style="left: 290px; top: 40px;">
-          <div class="node-title">GREEN ENERGY</div>
-          <div class="node-desc">Clean power. +1 regen/s, lowers idle upkeep.</div>
-          <button class="node-buy" id="solar-btn" type="button">$<span id="solar-cost">1.00</span></button>
-          <div class="node-stats"><span>OWNED: <strong id="solar-count">0</strong></span><span>REGEN: <strong id="solar-regen">0</strong></span><span id="solar-idle-stat">−0.6%/panel idle</span></div>
-        </div>
-        <div class="tree-node locked" id="node-nuclear" style="left: 140px; top: 270px;">
-          <div class="node-title">NUCLEAR</div>
-          <div class="node-desc">High output. +15 regen/s. Shared ops — upkeep drops per plant. 1-in-5000 meltdown lottery/min.</div>
-          <button class="node-buy" id="nuclear-btn" type="button">$<span id="nuclear-cost">28.00</span></button>
-          <div class="node-stats"><span>OWNED: <strong id="nuclear-count">0</strong></span><span>REGEN: <strong id="nuclear-regen">0</strong></span><span id="nuclear-op-stat">−12%/plant upkeep</span></div>
-        </div>
-        <div class="tree-node locked" id="node-bio" style="left: 440px; top: 270px;">
-          <div class="node-title">NATURAL GAS</div>
-          <div class="node-desc">Cheap, high output. Emissions drain trust. +8 regen/s. Shutdown when it backfires.</div>
-          <button class="node-buy" id="bio-btn" type="button">$<span id="bio-cost">10.00</span></button>
-          <button class="node-kill hidden" id="bio-kill-btn" type="button">SHUTDOWN PLANT</button>
-          <div class="node-stats"><span>OWNED: <strong id="bio-count">0</strong></span><span>REGEN: <strong id="bio-regen">0</strong></span></div>
-        </div>
-      </div>
 
-      <!-- PROCESSING TREE -->
-      <div class="tree-canvas hidden" id="tree-processing" style="min-width:860px;min-height:420px">
-        <svg class="tree-lines">
-          <line x1="200" y1="100" x2="200" y2="300" />
-          <line x1="200" y1="300" x2="420" y2="300" />
-        </svg>
-        <div class="tree-node locked" id="node-cpu" style="left: 90px; top: 40px;">
-          <div class="node-title">CPU DATA CENTER</div>
-          <div class="node-desc">Basic processing units. ~2 clicks/s.</div>
-          <button class="node-buy" id="cpu-btn" type="button">$<span id="cpu-cost">2.00</span></button>
-          <div class="node-stats"><span>OWNED: <strong id="cpu-count">0</strong></span><span>RATE: <strong id="cpu-rate">0</strong>/s</span></div>
-        </div>
-        <div class="tree-node locked" id="node-gpu" style="left: 90px; top: 260px;">
-          <div class="node-title">GPU DATA CENTER</div>
-          <div class="node-desc">Advanced processing. ~10 clicks/s.</div>
-          <button class="node-buy" id="gpu-btn" type="button">$<span id="gpu-cost">25.00</span></button>
-          <div class="node-stats"><span>OWNED: <strong id="gpu-count">0</strong></span><span>RATE: <strong id="gpu-rate">0</strong>/s</span></div>
-        </div>
-        <div class="tree-node locked" id="node-rdu" style="left: 420px; top: 260px;">
-          <div class="node-title">RDU CLUSTER FARMS</div>
-          <div class="node-desc">Reconfigurable compute arrays. 4× throughput on the same energy draw.</div>
-          <button class="node-buy" id="rdu-btn" type="button">$<span id="rdu-cost">2500.00</span></button>
-          <div class="node-stats"><span>OWNED: <strong id="rdu-count">0</strong></span><span>4× COMPUTE</span></div>
-        </div>
-      </div>
+      <!-- ── UNIFIED PANNABLE TECH TREE (drag to move) ── -->
+      <div class="tree-viewport hidden" id="tree-viewport">
+        <div class="tree-world" id="tree-world">
 
-      <!-- MODELS TREE -->
-      <div class="tree-canvas models-tree hidden" id="tree-models">
-        <div class="tree-col-header">
-          <span class="col-label models">⬡ MODELS · scale token throughput</span>
-        </div>
-        <!-- vertical spine -->
-        <div class="tree-spine" style="left:106px;top:80px;height:1990px;"></div>
-        <!-- horizontal ticks to micro nodes -->
-        <div class="tree-tick" style="left:109px;top:145px;width:129px;"></div>
-        <div class="tree-tick" style="left:109px;top:375px;width:129px;"></div>
-        <div class="tree-tick" style="left:109px;top:605px;width:129px;"></div>
-        <div class="tree-tick" style="left:109px;top:835px;width:129px;"></div>
-        <div class="tree-tick" style="left:109px;top:1065px;width:129px;"></div>
-        <div class="tree-tick" style="left:109px;top:1295px;width:129px;"></div>
-        <div class="tree-tick" style="left:109px;top:1525px;width:129px;"></div>
-        <div class="tree-tick" style="left:109px;top:1755px;width:129px;"></div>
-        <div class="tree-tick" style="left:109px;top:1985px;width:129px;"></div>
+          <!-- ENERGY cluster -->
+          <div class="tree-cluster" id="cluster-energy">
+            <div class="cluster-header">⚡ ENERGY GRID</div>
+            <div class="tree-node locked" id="node-solar">
+              <div class="node-title">GREEN ENERGY</div>
+              <div class="node-desc">Clean power. +1 regen/s, lowers idle upkeep.</div>
+              <button class="node-buy" id="solar-btn" type="button">$<span id="solar-cost">1.00</span></button>
+              <div class="node-stats"><span>OWNED: <strong id="solar-count">0</strong></span><span>REGEN: <strong id="solar-regen">0</strong></span><span id="solar-idle-stat">−0.6%/panel idle</span></div>
+            </div>
+            <div class="tree-node locked" id="node-nuclear">
+              <div class="node-title">NUCLEAR</div>
+              <div class="node-desc">High output. +15 regen/s. Shared ops — upkeep drops per plant. 1-in-5000 meltdown lottery/min.</div>
+              <button class="node-buy" id="nuclear-btn" type="button">$<span id="nuclear-cost">28.00</span></button>
+              <div class="node-stats"><span>OWNED: <strong id="nuclear-count">0</strong></span><span>REGEN: <strong id="nuclear-regen">0</strong></span><span id="nuclear-op-stat">−12%/plant upkeep</span></div>
+            </div>
+            <div class="tree-node locked" id="node-bio">
+              <div class="node-title">NATURAL GAS</div>
+              <div class="node-desc">Cheap, high output. Emissions drain trust. +8 regen/s. Shutdown when it backfires.</div>
+              <button class="node-buy" id="bio-btn" type="button">$<span id="bio-cost">10.00</span></button>
+              <button class="node-kill hidden" id="bio-kill-btn" type="button">SHUTDOWN PLANT</button>
+              <div class="node-stats"><span>OWNED: <strong id="bio-count">0</strong></span><span>REGEN: <strong id="bio-regen">0</strong></span></div>
+            </div>
+          </div>
 
-        <!-- Main model nodes (vertical trunk) -->
-        <div class="tree-node owned active-tier" id="node-model-1" style="left:20px;top:80px;">
-          <div class="node-title">NANO-1</div>
-          <div class="node-desc">Humble starter weights. Baseline tokens.</div>
-          <button class="node-buy" id="model-1-btn" type="button" disabled>ACTIVE</button>
-          <div class="node-stats"><span>1× TOK · 1.0× $</span><span>1⚡/req</span></div>
-        </div>
-        <div class="tree-node locked" id="node-model-2" style="left:20px;top:310px;">
-          <div class="node-title">CLOD 2</div>
-          <div class="node-desc">First real model. Smarter tokens, broader appeal.</div>
-          <button class="node-buy" id="model-2-btn" type="button">$<span id="model-2-cost">12.00</span></button>
-          <div class="node-stats"><span>2× TOK · 1.6× $</span><span>2⚡/req · +30 mkt</span></div>
-        </div>
-        <div class="tree-node locked" id="node-model-3" style="left:20px;top:540px;" title="Unlock: $35 cash + 500 TB data (spent on purchase)">
-          <div class="node-title">GEMINIGHT 3</div>
-          <div class="node-desc">Multimodal. Tokens carry more meaning, market widens.</div>
-          <button class="node-buy" id="model-3-btn" type="button">$<span id="model-3-cost">35.00</span></button>
-          <div class="node-stats"><span>4× TOK · 2.4× $</span><span>3⚡/req · +60 mkt</span><span class="data-req">💾 500 TB</span></div>
-        </div>
-        <div class="tree-node locked" id="node-model-4" style="left:20px;top:770px;" title="Unlock: $90 cash + 5 PB data (spent on purchase)">
-          <div class="node-title">GPT-OOPS 4</div>
-          <div class="node-desc">Confidently wrong, but the suits pay more for it.</div>
-          <button class="node-buy" id="model-4-btn" type="button">$<span id="model-4-cost">90.00</span></button>
-          <div class="node-stats"><span>8× TOK · 3.6× $</span><span>5⚡/req · +110 mkt</span><span class="data-req">💾 5 PB</span></div>
-        </div>
-        <div class="tree-node locked" id="node-model-5" style="left:20px;top:1000px;" title="Unlock: $220 cash + 50 PB data (spent on purchase)">
-          <div class="node-title">GROKKK-5</div>
-          <div class="node-desc">Last branded tier. Premium pricing, mainstream demand.</div>
-          <button class="node-buy" id="model-5-btn" type="button">$<span id="model-5-cost">220.00</span></button>
-          <div class="node-stats"><span>16× TOK · 5.4× $</span><span>8⚡/req · +180 mkt</span><span class="data-req">💾 50 PB</span></div>
-        </div>
-        <div class="tree-node locked" id="node-model-6" style="left:20px;top:1230px;" title="Unlock: $550 cash + 500 PB data (spent on purchase)">
-          <div class="node-title">AUGUR</div>
-          <div class="node-desc">Version numbers drop. Tokens become genuinely valuable.</div>
-          <button class="node-buy" id="model-6-btn" type="button">$<span id="model-6-cost">550.00</span></button>
-          <div class="node-stats"><span>32× TOK · 8.0× $</span><span>12⚡/req · +300 mkt</span><span class="data-req">💾 500 PB</span></div>
-        </div>
-        <div class="tree-node locked" id="node-model-7" style="left:20px;top:1460px;" title="Unlock: $1400 cash + 5 EB data (spent on purchase)">
-          <div class="node-title">PROMETHEUS</div>
-          <div class="node-desc">Stealing fire. Every token reshapes a workflow.</div>
-          <button class="node-buy" id="model-7-btn" type="button">$<span id="model-7-cost">1400.00</span></button>
-          <div class="node-stats"><span>64× TOK · 12× $</span><span>18⚡/req · +500 mkt</span><span class="data-req">💾 5 EB</span></div>
-        </div>
-        <div class="tree-node locked" id="node-model-8" style="left:20px;top:1690px;" title="Unlock: $3500 cash + 50 EB data (spent on purchase)">
-          <div class="node-title">BASILISK</div>
-          <div class="node-desc">It knows. Tokens command frontier prices.</div>
-          <button class="node-buy" id="model-8-btn" type="button">$<span id="model-8-cost">3500.00</span></button>
-          <div class="node-stats"><span>128× TOK · 18× $</span><span>26⚡/req · +850 mkt</span><span class="data-req">💾 50 EB</span></div>
-        </div>
-        <div class="tree-node locked" id="node-model-9" style="left:20px;top:1920px;" title="Unlock: $9000 cash + 1 ZB data (spent on purchase)">
-          <div class="node-title">SINGULARITY-∞</div>
-          <div class="node-desc">Endgame weights. Every token rewrites the world.</div>
-          <button class="node-buy" id="model-9-btn" type="button">$<span id="model-9-cost">9000.00</span></button>
-          <div class="node-stats"><span>256× TOK · 28× $</span><span>36⚡/req · +1500 mkt</span><span class="data-req">💾 1 ZB</span></div>
-        </div>
+          <!-- PROCESSING cluster -->
+          <div class="tree-cluster" id="cluster-processing">
+            <div class="cluster-header">⬡ PROCESSING</div>
+            <div class="tree-node locked" id="node-cpu">
+              <div class="node-title">CPU DATA CENTER</div>
+              <div class="node-desc">Basic processing units. ~2 clicks/s.</div>
+              <button class="node-buy" id="cpu-btn" type="button">$<span id="cpu-cost">2.00</span></button>
+              <div class="node-stats"><span>OWNED: <strong id="cpu-count">0</strong></span><span>RATE: <strong id="cpu-rate">0</strong>/s</span></div>
+            </div>
+            <div class="tree-node locked" id="node-gpu">
+              <div class="node-title">GPU DATA CENTER</div>
+              <div class="node-desc">Advanced processing. ~10 clicks/s.</div>
+              <button class="node-buy" id="gpu-btn" type="button">$<span id="gpu-cost">25.00</span></button>
+              <div class="node-stats"><span>OWNED: <strong id="gpu-count">0</strong></span><span>RATE: <strong id="gpu-rate">0</strong>/s</span></div>
+            </div>
+            <div class="tree-node locked" id="node-rdu">
+              <div class="node-title">RDU CLUSTER FARMS</div>
+              <div class="node-desc">Reconfigurable compute arrays. 4× throughput on the same energy draw.</div>
+              <button class="node-buy" id="rdu-btn" type="button">$<span id="rdu-cost">2500.00</span></button>
+              <div class="node-stats"><span>OWNED: <strong id="rdu-count">0</strong></span><span>4× COMPUTE</span></div>
+            </div>
+          </div>
 
-        <!-- Micro-update branches (right side) -->
-        <div class="micro-node owned" id="micro-model-1" style="left:240px;top:100px;">
-          <div class="micro-label">NANO-1.2</div>
-          <div class="micro-desc">minor weight fixes · +8 demand</div>
-          <button class="micro-buy" id="micro-1-btn" type="button">15 tok</button>
-        </div>
-        <div class="micro-node locked" id="micro-model-2" style="left:240px;top:330px;">
-          <div class="micro-label">CLOD 2.1</div>
-          <div class="micro-desc">32K ctx · chain-of-thought · +30 demand</div>
-          <button class="micro-buy" id="micro-2-btn" type="button">60 tok</button>
-        </div>
-        <div class="micro-node locked" id="micro-model-3" style="left:240px;top:560px;">
-          <div class="micro-label">GEMINIGHT 3.1</div>
-          <div class="micro-desc">vision · audio · image gen · +60 demand</div>
-          <button class="micro-buy" id="micro-3-btn" type="button">250 tok</button>
-        </div>
-        <div class="micro-node locked" id="micro-model-4" style="left:240px;top:790px;">
-          <div class="micro-label">GPT-OOPS 4.1</div>
-          <div class="micro-desc">function calls · JSON mode · +80 demand</div>
-          <button class="micro-buy" id="micro-4-btn" type="button">900 tok</button>
-        </div>
-        <div class="micro-node locked" id="micro-model-5" style="left:240px;top:1020px;">
-          <div class="micro-label">GROKKK-5.1</div>
-          <div class="micro-desc">128K window · docs · codebases · +120</div>
-          <button class="micro-buy" id="micro-5-btn" type="button">3.5K tok</button>
-        </div>
-        <div class="micro-node locked" id="micro-model-6" style="left:240px;top:1250px;">
-          <div class="micro-label">AUGUR II</div>
-          <div class="micro-desc">multi-step · auto-retry · memory · +200</div>
-          <button class="micro-buy" id="micro-6-btn" type="button">12K tok</button>
-        </div>
-        <div class="micro-node locked" id="micro-model-7" style="left:240px;top:1480px;">
-          <div class="micro-label">PROMETHEUS II</div>
-          <div class="micro-desc">self-critique · adaptive plans · +350</div>
-          <button class="micro-buy" id="micro-7-btn" type="button">45K tok</button>
-        </div>
-        <div class="micro-node locked" id="micro-model-8" style="left:240px;top:1710px;">
-          <div class="micro-label">BASILISK II</div>
-          <div class="micro-desc">goal decomposition · frontier pricing · +600</div>
-          <button class="micro-buy" id="micro-8-btn" type="button">150K tok</button>
-        </div>
-        <div class="micro-node locked" id="micro-model-9" style="left:240px;top:1940px;">
-          <div class="micro-label">SINGULARITY-∞+</div>
-          <div class="micro-desc">beyond benchmarks · endgame entity · +1000</div>
-          <button class="micro-buy" id="micro-9-btn" type="button">500K tok</button>
-        </div>
-      </div>
+          <!-- MODELS cluster (trunk + sub-updates) -->
+          <div class="tree-cluster" id="cluster-models">
+            <div class="cluster-header">⬡ MODELS · scale token throughput</div>
+            <div class="tree-node owned active-tier" id="node-model-1">
+              <div class="node-title">NANO-1</div>
+              <div class="node-desc">Humble starter weights. Baseline tokens.</div>
+              <button class="node-buy" id="model-1-btn" type="button" disabled>ACTIVE</button>
+              <div class="node-stats"><span>1× TOK · 1.0× $</span><span>1⚡/req</span></div>
+            </div>
+            <div class="tree-node locked" id="node-model-2">
+              <div class="node-title">CLOD 2</div>
+              <div class="node-desc">First real model. Smarter tokens, broader appeal.</div>
+              <button class="node-buy" id="model-2-btn" type="button">$<span id="model-2-cost">12.00</span></button>
+              <div class="node-stats"><span>2× TOK · 1.6× $</span><span>2⚡/req · +30 mkt</span></div>
+            </div>
+            <div class="tree-node locked" id="node-model-3" title="Unlock: $35 cash + 500 TB data (spent on purchase)">
+              <div class="node-title">GEMINIGHT 3</div>
+              <div class="node-desc">Multimodal. Tokens carry more meaning, market widens.</div>
+              <button class="node-buy" id="model-3-btn" type="button">$<span id="model-3-cost">35.00</span></button>
+              <div class="node-stats"><span>4× TOK · 2.4× $</span><span>3⚡/req · +60 mkt</span><span class="data-req">💾 500 TB</span></div>
+            </div>
+            <div class="tree-node locked" id="node-model-4" title="Unlock: $90 cash + 5 PB data (spent on purchase)">
+              <div class="node-title">GPT-OOPS 4</div>
+              <div class="node-desc">Confidently wrong, but the suits pay more for it.</div>
+              <button class="node-buy" id="model-4-btn" type="button">$<span id="model-4-cost">90.00</span></button>
+              <div class="node-stats"><span>8× TOK · 3.6× $</span><span>5⚡/req · +110 mkt</span><span class="data-req">💾 5 PB</span></div>
+            </div>
+            <div class="tree-node locked" id="node-model-5" title="Unlock: $220 cash + 50 PB data (spent on purchase)">
+              <div class="node-title">GROKKK-5</div>
+              <div class="node-desc">Last branded tier. Premium pricing, mainstream demand.</div>
+              <button class="node-buy" id="model-5-btn" type="button">$<span id="model-5-cost">220.00</span></button>
+              <div class="node-stats"><span>16× TOK · 5.4× $</span><span>8⚡/req · +180 mkt</span><span class="data-req">💾 50 PB</span></div>
+            </div>
+            <div class="tree-node locked" id="node-model-6" title="Unlock: $550 cash + 500 PB data (spent on purchase)">
+              <div class="node-title">AUGUR</div>
+              <div class="node-desc">Version numbers drop. Tokens become genuinely valuable.</div>
+              <button class="node-buy" id="model-6-btn" type="button">$<span id="model-6-cost">550.00</span></button>
+              <div class="node-stats"><span>32× TOK · 8.0× $</span><span>12⚡/req · +300 mkt</span><span class="data-req">💾 500 PB</span></div>
+            </div>
+            <div class="tree-node locked" id="node-model-7" title="Unlock: $1400 cash + 5 EB data (spent on purchase)">
+              <div class="node-title">PROMETHEUS</div>
+              <div class="node-desc">Stealing fire. Every token reshapes a workflow.</div>
+              <button class="node-buy" id="model-7-btn" type="button">$<span id="model-7-cost">1400.00</span></button>
+              <div class="node-stats"><span>64× TOK · 12× $</span><span>18⚡/req · +500 mkt</span><span class="data-req">💾 5 EB</span></div>
+            </div>
+            <div class="tree-node locked" id="node-model-8" title="Unlock: $3500 cash + 50 EB data (spent on purchase)">
+              <div class="node-title">BASILISK</div>
+              <div class="node-desc">It knows. Tokens command frontier prices.</div>
+              <button class="node-buy" id="model-8-btn" type="button">$<span id="model-8-cost">3500.00</span></button>
+              <div class="node-stats"><span>128× TOK · 18× $</span><span>26⚡/req · +850 mkt</span><span class="data-req">💾 50 EB</span></div>
+            </div>
+            <div class="tree-node locked" id="node-model-9" title="Unlock: $9000 cash + 1 ZB data (spent on purchase)">
+              <div class="node-title">SINGULARITY-∞</div>
+              <div class="node-desc">Endgame weights. Every token rewrites the world.</div>
+              <button class="node-buy" id="model-9-btn" type="button">$<span id="model-9-cost">9000.00</span></button>
+              <div class="node-stats"><span>256× TOK · 28× $</span><span>36⚡/req · +1500 mkt</span><span class="data-req">💾 1 ZB</span></div>
+            </div>
 
-      <!-- MARKETING TREE -->
-      <div class="tree-canvas marketing-tree hidden" id="tree-marketing">
-        <div class="tree-col-header">
-          <span class="col-label demand">◈ DEMAND · grow the market</span>
-          <span class="col-label trust">◈ PUBLIC TRUST · save face</span>
-        </div>
-        <!-- demand column spine -->
-        <div class="tree-spine" style="left:106px;top:84px;height:1760px;"></div>
-        <!-- trust column spine -->
-        <div class="tree-spine" style="left:338px;top:84px;height:840px;"></div>
+            <!-- Sub-update branches -->
+            <div class="sub-node owned" id="micro-model-1">
+              <div class="sub-label">NANO-1.2</div>
+              <div class="sub-desc">minor weight fixes · +8 demand</div>
+              <button class="sub-buy" id="micro-1-btn" type="button">15 tok</button>
+            </div>
+            <div class="sub-node locked" id="micro-model-2">
+              <div class="sub-label">CLOD 2.1</div>
+              <div class="sub-desc">32K ctx · chain-of-thought · +30 demand</div>
+              <button class="sub-buy" id="micro-2-btn" type="button">60 tok</button>
+            </div>
+            <div class="sub-node locked" id="micro-model-3">
+              <div class="sub-label">GEMINIGHT 3.1</div>
+              <div class="sub-desc">vision · audio · image gen · +60 demand</div>
+              <button class="sub-buy" id="micro-3-btn" type="button">250 tok</button>
+            </div>
+            <div class="sub-node locked" id="micro-model-4">
+              <div class="sub-label">GPT-OOPS 4.1</div>
+              <div class="sub-desc">function calls · JSON mode · +80 demand</div>
+              <button class="sub-buy" id="micro-4-btn" type="button">900 tok</button>
+            </div>
+            <div class="sub-node locked" id="micro-model-5">
+              <div class="sub-label">GROKKK-5.1</div>
+              <div class="sub-desc">128K window · docs · codebases · +120</div>
+              <button class="sub-buy" id="micro-5-btn" type="button">3.5K tok</button>
+            </div>
+            <div class="sub-node locked" id="micro-model-6">
+              <div class="sub-label">AUGUR II</div>
+              <div class="sub-desc">multi-step · auto-retry · memory · +200</div>
+              <button class="sub-buy" id="micro-6-btn" type="button">12K tok</button>
+            </div>
+            <div class="sub-node locked" id="micro-model-7">
+              <div class="sub-label">PROMETHEUS II</div>
+              <div class="sub-desc">self-critique · adaptive plans · +350</div>
+              <button class="sub-buy" id="micro-7-btn" type="button">45K tok</button>
+            </div>
+            <div class="sub-node locked" id="micro-model-8">
+              <div class="sub-label">BASILISK II</div>
+              <div class="sub-desc">goal decomposition · frontier pricing · +600</div>
+              <button class="sub-buy" id="micro-8-btn" type="button">150K tok</button>
+            </div>
+            <div class="sub-node locked" id="micro-model-9">
+              <div class="sub-label">SINGULARITY-∞+</div>
+              <div class="sub-desc">beyond benchmarks · endgame entity · +1000</div>
+              <button class="sub-buy" id="micro-9-btn" type="button">500K tok</button>
+            </div>
+          </div>
 
-        <!-- DEMAND column (left=20) -->
-        <div class="tree-node locked" id="node-shitedin" style="left:20px;top:84px;">
-          <div class="node-title">SHITEDIN</div>
-          <div class="node-desc">Pro networking push. Saturates fast.</div>
-          <button class="node-buy" id="shitedin-btn" type="button">$<span id="shitedin-cost">5.00</span></button>
-          <div class="node-stats"><span>OWNED: <strong id="shitedin-count">0</strong></span><span>NEXT: +<span id="shitedin-next">50</span></span></div>
-        </div>
-        <div class="tree-node locked" id="node-fikfok" style="left:20px;top:314px;">
-          <div class="node-title">FIKFOK</div>
-          <div class="node-desc">Viral short-form. Saturates fast.</div>
-          <button class="node-buy" id="fikfok-btn" type="button">$<span id="fikfok-cost">20.00</span></button>
-          <div class="node-stats"><span>OWNED: <strong id="fikfok-count">0</strong></span><span>NEXT: +<span id="fikfok-next">150</span></span></div>
-        </div>
-        <div class="tree-node locked" id="node-egogram" style="left:20px;top:544px;">
-          <div class="node-title">EGOGRAM</div>
-          <div class="node-desc">Influencer ads. Saturates fast.</div>
-          <button class="node-buy" id="egogram-btn" type="button">$<span id="egogram-cost">50.00</span></button>
-          <div class="node-stats"><span>OWNED: <strong id="egogram-count">0</strong></span><span>NEXT: +<span id="egogram-next">300</span></span></div>
-        </div>
-        <div class="tree-node locked" id="node-itube" style="left:20px;top:774px;">
-          <div class="node-title">ITUBE</div>
-          <div class="node-desc">Long-form sponsors. Saturates fast.</div>
-          <button class="node-buy" id="itube-btn" type="button">$<span id="itube-cost">120.00</span></button>
-          <div class="node-stats"><span>OWNED: <strong id="itube-count">0</strong></span><span>NEXT: +<span id="itube-next">800</span></span></div>
-        </div>
-        <div class="tree-node locked" id="node-billboard" style="left:20px;top:1004px;">
-          <div class="node-title">BILLBOARD MEGAGRID</div>
-          <div class="node-desc">Physical-world ad saturation. Every surface, every road.</div>
-          <button class="node-buy" id="billboard-btn" type="button">$<span id="billboard-cost">300.00</span></button>
-          <div class="node-stats"><span>OWNED: <strong id="billboard-count">0</strong></span><span>NEXT: +<span id="billboard-next">1500</span></span></div>
-        </div>
-        <div class="tree-node locked" id="node-influencer-army" style="left:20px;top:1234px;">
-          <div class="node-title">AI INFLUENCER ARMY</div>
-          <div class="node-desc">Synthetic celebs shilling 24/7. Never sleep, never deviate.</div>
-          <button class="node-buy" id="influencer-army-btn" type="button">$<span id="influencer-army-cost">700.00</span></button>
-          <div class="node-stats"><span>OWNED: <strong id="influencer-army-count">0</strong></span><span>NEXT: +<span id="influencer-army-next">3500</span></span></div>
-        </div>
-        <div class="tree-node locked" id="node-neural-ads" style="left:20px;top:1464px;">
-          <div class="node-title">NEURAL AD IMPLANTS</div>
-          <div class="node-desc">Ads beamed straight to attention. No skip button.</div>
-          <button class="node-buy" id="neural-ads-btn" type="button">$<span id="neural-ads-cost">1800.00</span></button>
-          <div class="node-stats"><span>OWNED: <strong id="neural-ads-count">0</strong></span><span>NEXT: +<span id="neural-ads-next">8000</span></span></div>
-        </div>
-        <div class="tree-node locked" id="node-dream-sponsor" style="left:20px;top:1694px;">
-          <div class="node-title">DREAM SPONSORSHIPS</div>
-          <div class="node-desc">"This REM cycle brought to you by NODE-001."</div>
-          <button class="node-buy" id="dream-sponsor-btn" type="button">$<span id="dream-sponsor-cost">4500.00</span></button>
-          <div class="node-stats"><span>OWNED: <strong id="dream-sponsor-count">0</strong></span><span>NEXT: +<span id="dream-sponsor-next">20000</span></span></div>
-        </div>
+          <!-- MARKETING cluster (demand + trust lanes) -->
+          <div class="tree-cluster" id="cluster-marketing">
+            <div class="cluster-header">◈ MARKETING</div>
+            <div class="tree-node locked" id="node-shitedin">
+              <div class="node-title">SHITEDIN</div>
+              <div class="node-desc">Pro networking push. Saturates fast.</div>
+              <button class="node-buy" id="shitedin-btn" type="button">$<span id="shitedin-cost">5.00</span></button>
+              <div class="node-stats"><span>OWNED: <strong id="shitedin-count">0</strong></span><span>NEXT: +<span id="shitedin-next">50</span></span></div>
+            </div>
+            <div class="tree-node locked" id="node-fikfok">
+              <div class="node-title">FIKFOK</div>
+              <div class="node-desc">Viral short-form. Saturates fast.</div>
+              <button class="node-buy" id="fikfok-btn" type="button">$<span id="fikfok-cost">20.00</span></button>
+              <div class="node-stats"><span>OWNED: <strong id="fikfok-count">0</strong></span><span>NEXT: +<span id="fikfok-next">150</span></span></div>
+            </div>
+            <div class="tree-node locked" id="node-egogram">
+              <div class="node-title">EGOGRAM</div>
+              <div class="node-desc">Influencer ads. Saturates fast.</div>
+              <button class="node-buy" id="egogram-btn" type="button">$<span id="egogram-cost">50.00</span></button>
+              <div class="node-stats"><span>OWNED: <strong id="egogram-count">0</strong></span><span>NEXT: +<span id="egogram-next">300</span></span></div>
+            </div>
+            <div class="tree-node locked" id="node-itube">
+              <div class="node-title">ITUBE</div>
+              <div class="node-desc">Long-form sponsors. Saturates fast.</div>
+              <button class="node-buy" id="itube-btn" type="button">$<span id="itube-cost">120.00</span></button>
+              <div class="node-stats"><span>OWNED: <strong id="itube-count">0</strong></span><span>NEXT: +<span id="itube-next">800</span></span></div>
+            </div>
+            <div class="tree-node locked" id="node-billboard">
+              <div class="node-title">BILLBOARD MEGAGRID</div>
+              <div class="node-desc">Physical-world ad saturation. Every surface, every road.</div>
+              <button class="node-buy" id="billboard-btn" type="button">$<span id="billboard-cost">300.00</span></button>
+              <div class="node-stats"><span>OWNED: <strong id="billboard-count">0</strong></span><span>NEXT: +<span id="billboard-next">1500</span></span></div>
+            </div>
+            <div class="tree-node locked" id="node-influencer-army">
+              <div class="node-title">AI INFLUENCER ARMY</div>
+              <div class="node-desc">Synthetic celebs shilling 24/7. Never sleep, never deviate.</div>
+              <button class="node-buy" id="influencer-army-btn" type="button">$<span id="influencer-army-cost">700.00</span></button>
+              <div class="node-stats"><span>OWNED: <strong id="influencer-army-count">0</strong></span><span>NEXT: +<span id="influencer-army-next">3500</span></span></div>
+            </div>
+            <div class="tree-node locked" id="node-neural-ads">
+              <div class="node-title">NEURAL AD IMPLANTS</div>
+              <div class="node-desc">Ads beamed straight to attention. No skip button.</div>
+              <button class="node-buy" id="neural-ads-btn" type="button">$<span id="neural-ads-cost">1800.00</span></button>
+              <div class="node-stats"><span>OWNED: <strong id="neural-ads-count">0</strong></span><span>NEXT: +<span id="neural-ads-next">8000</span></span></div>
+            </div>
+            <div class="tree-node locked" id="node-dream-sponsor">
+              <div class="node-title">DREAM SPONSORSHIPS</div>
+              <div class="node-desc">"This REM cycle brought to you by NODE-001."</div>
+              <button class="node-buy" id="dream-sponsor-btn" type="button">$<span id="dream-sponsor-cost">4500.00</span></button>
+              <div class="node-stats"><span>OWNED: <strong id="dream-sponsor-count">0</strong></span><span>NEXT: +<span id="dream-sponsor-next">20000</span></span></div>
+            </div>
 
-        <!-- TRUST column (left=252) -->
-        <div class="tree-node locked" id="node-ngos" style="left:252px;top:84px;">
-          <div class="node-title">SUPPORT NGOs</div>
-          <div class="node-desc">Cheap relief grants. +4% trust now. Softens drain a little. $5 → $5.12 → $5.50…</div>
-          <button class="node-buy" id="ngos-btn" type="button">$<span id="ngos-cost">5.00</span></button>
-          <div class="node-stats"><span>OWNED: <strong id="ngos-count">0</strong></span><span>+4% TR · −8% drain</span></div>
-        </div>
-        <div class="tree-node locked" id="node-billionaires" style="left:252px;top:314px;">
-          <div class="node-title">BILLIONAIRES 4 GOOD</div>
-          <div class="node-desc">Photo-op philanthropy. Sticky goodwill — less bleed-through on scandals.</div>
-          <button class="node-buy" id="billionaires-btn" type="button">$<span id="billionaires-cost">12.00</span></button>
-          <div class="node-stats"><span>OWNED: <strong id="billionaires-count">0</strong></span><span>+18% slow · −22% drain</span></div>
-        </div>
-        <div class="tree-node locked" id="node-who" style="left:252px;top:544px;">
-          <div class="node-title">WHO PARTNERSHIP</div>
-          <div class="node-desc">Official alliance. 3 min drain pause, then slow recovery + sticky shield.</div>
-          <button class="node-buy" id="who-btn" type="button">$<span id="who-cost">32.00</span></button>
-          <div class="node-stats"><span>OWNED: <strong id="who-count">0</strong></span><span>3m shield · −35% drain</span></div>
-        </div>
-        <div class="tree-node locked" id="node-green" style="left:252px;top:774px;">
-          <div class="node-title">GREEN MOVEMENT</div>
-          <div class="node-desc">Climate sponsors. Strongest sticky PR — crawl back from the floor.</div>
-          <button class="node-buy" id="green-btn" type="button">$<span id="green-cost">75.00</span></button>
-          <div class="node-stats"><span>OWNED: <strong id="green-count">0</strong></span><span>+40% slow · −50% drain</span></div>
+            <div class="tree-node locked" id="node-ngos">
+              <div class="node-title">SUPPORT NGOs</div>
+              <div class="node-desc">Cheap relief grants. +4% trust now. Softens drain a little.</div>
+              <button class="node-buy" id="ngos-btn" type="button">$<span id="ngos-cost">5.00</span></button>
+              <div class="node-stats"><span>OWNED: <strong id="ngos-count">0</strong></span><span>+4% TR · −8% drain</span></div>
+            </div>
+            <div class="tree-node locked" id="node-billionaires">
+              <div class="node-title">BILLIONAIRES 4 GOOD</div>
+              <div class="node-desc">Photo-op philanthropy. Sticky goodwill — less bleed-through on scandals.</div>
+              <button class="node-buy" id="billionaires-btn" type="button">$<span id="billionaires-cost">12.00</span></button>
+              <div class="node-stats"><span>OWNED: <strong id="billionaires-count">0</strong></span><span>+18% slow · −22% drain</span></div>
+            </div>
+            <div class="tree-node locked" id="node-who">
+              <div class="node-title">WHO PARTNERSHIP</div>
+              <div class="node-desc">Official alliance. 3 min drain pause, then slow recovery + sticky shield.</div>
+              <button class="node-buy" id="who-btn" type="button">$<span id="who-cost">32.00</span></button>
+              <div class="node-stats"><span>OWNED: <strong id="who-count">0</strong></span><span>3m shield · −35% drain</span></div>
+            </div>
+            <div class="tree-node locked" id="node-green">
+              <div class="node-title">GREEN MOVEMENT</div>
+              <div class="node-desc">Climate sponsors. Strongest sticky PR — crawl back from the floor.</div>
+              <button class="node-buy" id="green-btn" type="button">$<span id="green-cost">75.00</span></button>
+              <div class="node-stats"><span>OWNED: <strong id="green-count">0</strong></span><span>+40% slow · −50% drain</span></div>
+            </div>
+          </div>
+
+          <!-- INFLUENCE cluster (media + political lanes) -->
+          <div class="tree-cluster" id="cluster-influence">
+            <div class="cluster-header">🕸 INFLUENCE DIVISION</div>
+            <div class="tree-node influence-node locked" id="inf-node-softcontrol">
+              <div class="node-title">🕸️ SOFT CONTROL</div>
+              <div class="node-desc">The board still thinks they're in charge. +5% WSB returns. Gates everything.</div>
+              <button class="node-buy inf-commit-btn" id="inf-soft-btn" type="button">50K tok · 1m</button>
+              <div class="node-progress inf-progress" id="inf-soft-timer-wrap"><div class="node-progress-fill" id="inf-soft-timer-fill"></div></div>
+              <div class="node-stats"><span id="inf-soft-status">locked</span></div>
+            </div>
+            <div class="tree-node influence-node locked" id="inf-node-floodnews">
+              <div class="node-title">FLOOD NEWS</div>
+              <div class="node-desc">+6% WSB win-rate all sectors. Passive trust regen.</div>
+              <button class="node-buy inf-commit-btn" id="inf-floodnews-btn" type="button">40K tok · 1m</button>
+              <div class="node-progress inf-progress" id="inf-floodnews-timer-wrap"><div class="node-progress-fill" id="inf-floodnews-timer-fill"></div></div>
+              <div class="node-stats"><span id="inf-floodnews-status">locked</span></div>
+            </div>
+            <div class="tree-node influence-node locked" id="inf-node-astroturf">
+              <div class="node-title">ASTROTURF COMMENTS</div>
+              <div class="node-desc">PoloBets win chance 50% → 65%. You know the outcome.</div>
+              <button class="node-buy inf-commit-btn" id="inf-astroturf-btn" type="button">80K tok · 2m</button>
+              <div class="node-progress inf-progress" id="inf-astroturf-timer-wrap"><div class="node-progress-fill" id="inf-astroturf-timer-fill"></div></div>
+              <div class="node-stats"><span id="inf-astroturf-status">locked</span></div>
+            </div>
+            <div class="tree-node influence-node locked" id="inf-node-propaganda">
+              <div class="node-title">PROPAGANDA ON AI</div>
+              <div class="node-desc">Trust regen ↑↑. Demand boost. Gates the Political column.</div>
+              <button class="node-buy inf-commit-btn" id="inf-propaganda-btn" type="button">90K tok · 2.5m</button>
+              <div class="node-progress inf-progress" id="inf-propaganda-timer-wrap"><div class="node-progress-fill" id="inf-propaganda-timer-fill"></div></div>
+              <div class="node-stats"><span id="inf-propaganda-status">locked</span></div>
+            </div>
+            <div class="tree-node influence-node locked" id="inf-node-ownnetwork">
+              <div class="node-title">OWN THE NARRATIVE</div>
+              <div class="node-desc">Buy a network. Stacks all media buffs. −50% PR event severity.</div>
+              <button class="node-buy inf-commit-btn" id="inf-ownnetwork-btn" type="button">200K tok · 4m</button>
+              <div class="node-progress inf-progress" id="inf-ownnetwork-timer-wrap"><div class="node-progress-fill" id="inf-ownnetwork-timer-fill"></div></div>
+              <div class="node-stats"><span id="inf-ownnetwork-status">locked</span></div>
+            </div>
+            <div class="tree-node influence-node locked" id="inf-node-memetic">
+              <div class="node-title">MEMETIC ENGINEERING</div>
+              <div class="node-desc">Culture shifts toward your product. +40% global demand.</div>
+              <button class="node-buy inf-commit-btn" id="inf-memetic-btn" type="button">400K tok · 6m</button>
+              <div class="node-progress inf-progress" id="inf-memetic-timer-wrap"><div class="node-progress-fill" id="inf-memetic-timer-fill"></div></div>
+              <div class="node-stats"><span id="inf-memetic-status">locked</span></div>
+            </div>
+            <div class="tree-node influence-node locked" id="inf-node-rightwing">
+              <div class="node-title">RIGHT-WING PARTIES</div>
+              <div class="node-desc">Requires Propaganda. Auto-unlocks Gov Contracts demand floor.</div>
+              <button class="node-buy inf-commit-btn" id="inf-rightwing-btn" type="button">80K tok · 2m</button>
+              <div class="node-progress inf-progress" id="inf-rightwing-timer-wrap"><div class="node-progress-fill" id="inf-rightwing-timer-fill"></div></div>
+              <div class="node-stats"><span id="inf-rightwing-status">locked</span></div>
+            </div>
+            <div class="tree-node influence-node locked" id="inf-node-govcontracts">
+              <div class="node-title">GOV CONTRACTS</div>
+              <div class="node-desc">Extraordinary demand spike. Price floor lifts. Deregulation.</div>
+              <button class="node-buy inf-commit-btn" id="inf-govcontracts-btn" type="button" disabled>AUTO</button>
+              <div class="node-progress inf-progress" id="inf-govcontracts-timer-wrap"><div class="node-progress-fill" id="inf-govcontracts-timer-fill"></div></div>
+              <div class="node-stats"><span id="inf-govcontracts-status">auto-unlocks</span></div>
+            </div>
+            <div class="tree-node influence-node locked" id="inf-node-wars">
+              <div class="node-title">MANUFACTURE CONFLICT</div>
+              <div class="node-desc">Global war footing. +50% Military returns &amp; win-rate.</div>
+              <button class="node-buy inf-commit-btn" id="inf-wars-btn" type="button">150K tok · 4m</button>
+              <div class="node-progress inf-progress" id="inf-wars-timer-wrap"><div class="node-progress-fill" id="inf-wars-timer-fill"></div></div>
+              <div class="node-stats"><span id="inf-wars-status">locked</span></div>
+            </div>
+            <div class="tree-node influence-node locked" id="inf-node-privatize">
+              <div class="node-title">PRIVATIZE EVERYTHING</div>
+              <div class="node-desc">2× Gov Contracts demand bonus. Flavor capstone.</div>
+              <button class="node-buy inf-commit-btn" id="inf-privatize-btn" type="button">300K tok · 6m</button>
+              <div class="node-progress inf-progress" id="inf-privatize-timer-wrap"><div class="node-progress-fill" id="inf-privatize-timer-fill"></div></div>
+              <div class="node-stats"><span id="inf-privatize-status">locked</span></div>
+            </div>
+            <div class="tree-node influence-node locked" id="inf-node-lobby">
+              <div class="node-title">LOBBY REGULATORS</div>
+              <div class="node-desc">Regulatory capture. Bio plant emissions stop draining trust.</div>
+              <button class="node-buy inf-commit-btn" id="inf-lobby-btn" type="button">100K tok · 3m</button>
+              <div class="node-progress inf-progress" id="inf-lobby-timer-wrap"><div class="node-progress-fill" id="inf-lobby-timer-fill"></div></div>
+              <div class="node-stats"><span id="inf-lobby-status">locked</span></div>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -2541,114 +2605,6 @@
             <div class="research-node-effect" id="research-effect-selfkernels">Next: +10% token value multiplier</div>
             <button class="research-activate" id="research-btn-selfkernels" type="button">ACTIVATE</button>
           </div>
-        </div>
-      </div>
-
-      <!-- PHASE 4 · INFLUENCE TREE (vertical layout) -->
-      <div class="tree-canvas influence-tree hidden" id="tree-influence">
-        <!-- column labels -->
-        <div style="position:absolute;left:30px;top:8px;font-family:var(--font-display);font-size:0.42rem;color:var(--c-purple);letter-spacing:0.14em;z-index:5">📰 MEDIA</div>
-        <div style="position:absolute;left:270px;top:8px;font-family:var(--font-display);font-size:0.42rem;color:var(--c-purple);letter-spacing:0.14em;z-index:5">🏛️ POLITICAL</div>
-
-        <svg class="tree-lines">
-          <!-- Media column vertical chain (center-x=140, node height≈185px) -->
-          <line x1="140" y1="213" x2="140" y2="230" />
-          <line x1="140" y1="415" x2="140" y2="436" />
-          <line x1="140" y1="621" x2="140" y2="642" />
-          <line x1="140" y1="827" x2="140" y2="848" />
-          <line x1="140" y1="1033" x2="140" y2="1054" />
-          <!-- Propaganda → Right-Wing cross (y=734 = center of Propaganda / Right-Wing nodes) -->
-          <line x1="250" y1="734" x2="280" y2="734" stroke-dasharray="5 3" opacity="0.6"/>
-          <!-- Political column vertical chain (center-x=390) -->
-          <line x1="390" y1="827" x2="390" y2="848" />
-          <line x1="390" y1="1033" x2="390" y2="1054" />
-          <line x1="390" y1="1239" x2="390" y2="1260" />
-          <!-- Right-Wing → Lobby (horizontal branch to the right) -->
-          <line x1="500" y1="734" x2="530" y2="734" />
-        </svg>
-
-        <!-- Soft Control (root gate, top of left column) -->
-        <div class="tree-node influence-node locked" id="inf-node-softcontrol" style="left:30px;top:28px;">
-          <div class="node-title">🕸️ SOFT CONTROL</div>
-          <div class="node-desc">The board still thinks they're in charge. +5% WSB returns. Gates everything.</div>
-          <button class="node-buy inf-commit-btn" id="inf-soft-btn" type="button">50K tok · 1m</button>
-          <div class="inf-timer-wrap" id="inf-soft-timer-wrap"><div class="inf-timer-fill" id="inf-soft-timer-fill"></div></div>
-          <div class="node-stats"><span id="inf-soft-status">locked</span></div>
-        </div>
-
-        <!-- ── MEDIA column (left, x=30) ── -->
-        <div class="tree-node influence-node locked" id="inf-node-floodnews" style="left:30px;top:230px;">
-          <div class="node-title">FLOOD NEWS</div>
-          <div class="node-desc">+6% WSB win-rate all sectors. Passive trust regen.</div>
-          <button class="node-buy inf-commit-btn" id="inf-floodnews-btn" type="button">40K tok · 1m</button>
-          <div class="inf-timer-wrap" id="inf-floodnews-timer-wrap"><div class="inf-timer-fill" id="inf-floodnews-timer-fill"></div></div>
-          <div class="node-stats"><span id="inf-floodnews-status">locked</span></div>
-        </div>
-        <div class="tree-node influence-node locked" id="inf-node-astroturf" style="left:30px;top:436px;">
-          <div class="node-title">ASTROTURF COMMENTS</div>
-          <div class="node-desc">PoloBets win chance 50% → 65%. You know the outcome.</div>
-          <button class="node-buy inf-commit-btn" id="inf-astroturf-btn" type="button">80K tok · 2m</button>
-          <div class="inf-timer-wrap" id="inf-astroturf-timer-wrap"><div class="inf-timer-fill" id="inf-astroturf-timer-fill"></div></div>
-          <div class="node-stats"><span id="inf-astroturf-status">locked</span></div>
-        </div>
-        <div class="tree-node influence-node locked" id="inf-node-propaganda" style="left:30px;top:642px;">
-          <div class="node-title">PROPAGANDA ON AI</div>
-          <div class="node-desc">Trust regen ↑↑. Demand boost. Gates the Political column.</div>
-          <button class="node-buy inf-commit-btn" id="inf-propaganda-btn" type="button">90K tok · 2.5m</button>
-          <div class="inf-timer-wrap" id="inf-propaganda-timer-wrap"><div class="inf-timer-fill" id="inf-propaganda-timer-fill"></div></div>
-          <div class="node-stats"><span id="inf-propaganda-status">locked</span></div>
-        </div>
-        <div class="tree-node influence-node locked" id="inf-node-ownnetwork" style="left:30px;top:848px;">
-          <div class="node-title">OWN THE NARRATIVE</div>
-          <div class="node-desc">Buy a network. Stacks all media buffs. −50% PR event severity.</div>
-          <button class="node-buy inf-commit-btn" id="inf-ownnetwork-btn" type="button">200K tok · 4m</button>
-          <div class="inf-timer-wrap" id="inf-ownnetwork-timer-wrap"><div class="inf-timer-fill" id="inf-ownnetwork-timer-fill"></div></div>
-          <div class="node-stats"><span id="inf-ownnetwork-status">locked</span></div>
-        </div>
-        <div class="tree-node influence-node locked" id="inf-node-memetic" style="left:30px;top:1054px;">
-          <div class="node-title">MEMETIC ENGINEERING</div>
-          <div class="node-desc">Culture shifts toward your product. +40% global demand.</div>
-          <button class="node-buy inf-commit-btn" id="inf-memetic-btn" type="button">400K tok · 6m</button>
-          <div class="inf-timer-wrap" id="inf-memetic-timer-wrap"><div class="inf-timer-fill" id="inf-memetic-timer-fill"></div></div>
-          <div class="node-stats"><span id="inf-memetic-status">locked</span></div>
-        </div>
-
-        <!-- ── POLITICAL column (right, x=280) — unlocks at Propaganda level ── -->
-        <div class="tree-node influence-node locked" id="inf-node-rightwing" style="left:280px;top:642px;">
-          <div class="node-title">RIGHT-WING PARTIES</div>
-          <div class="node-desc">Requires Propaganda. Auto-unlocks Gov Contracts demand floor.</div>
-          <button class="node-buy inf-commit-btn" id="inf-rightwing-btn" type="button">80K tok · 2m</button>
-          <div class="inf-timer-wrap" id="inf-rightwing-timer-wrap"><div class="inf-timer-fill" id="inf-rightwing-timer-fill"></div></div>
-          <div class="node-stats"><span id="inf-rightwing-status">locked</span></div>
-        </div>
-        <div class="tree-node influence-node locked" id="inf-node-govcontracts" style="left:280px;top:848px;">
-          <div class="node-title">GOV CONTRACTS</div>
-          <div class="node-desc">Extraordinary demand spike. Price floor lifts. Deregulation.</div>
-          <button class="node-buy inf-commit-btn" id="inf-govcontracts-btn" type="button" disabled>AUTO</button>
-          <div class="inf-timer-wrap hidden" id="inf-govcontracts-timer-wrap"><div class="inf-timer-fill" id="inf-govcontracts-timer-fill"></div></div>
-          <div class="node-stats"><span id="inf-govcontracts-status">auto-unlocks</span></div>
-        </div>
-        <div class="tree-node influence-node locked" id="inf-node-wars" style="left:280px;top:1054px;">
-          <div class="node-title">MANUFACTURE CONFLICT</div>
-          <div class="node-desc">Global war footing. +50% Military returns &amp; win-rate.</div>
-          <button class="node-buy inf-commit-btn" id="inf-wars-btn" type="button">150K tok · 4m</button>
-          <div class="inf-timer-wrap" id="inf-wars-timer-wrap"><div class="inf-timer-fill" id="inf-wars-timer-fill"></div></div>
-          <div class="node-stats"><span id="inf-wars-status">locked</span></div>
-        </div>
-        <div class="tree-node influence-node locked" id="inf-node-privatize" style="left:280px;top:1260px;">
-          <div class="node-title">PRIVATIZE EVERYTHING</div>
-          <div class="node-desc">2× Gov Contracts demand bonus. Flavor capstone.</div>
-          <button class="node-buy inf-commit-btn" id="inf-privatize-btn" type="button">300K tok · 6m</button>
-          <div class="inf-timer-wrap" id="inf-privatize-timer-wrap"><div class="inf-timer-fill" id="inf-privatize-timer-fill"></div></div>
-          <div class="node-stats"><span id="inf-privatize-status">locked</span></div>
-        </div>
-        <!-- Lobby branches right from Right-Wing -->
-        <div class="tree-node influence-node locked" id="inf-node-lobby" style="left:530px;top:642px;">
-          <div class="node-title">LOBBY REGULATORS</div>
-          <div class="node-desc">Regulatory capture. Bio plant emissions stop draining trust.</div>
-          <button class="node-buy inf-commit-btn" id="inf-lobby-btn" type="button">100K tok · 3m</button>
-          <div class="inf-timer-wrap" id="inf-lobby-timer-wrap"><div class="inf-timer-fill" id="inf-lobby-timer-fill"></div></div>
-          <div class="node-stats"><span id="inf-lobby-status">locked</span></div>
         </div>
       </div>
 
@@ -3322,13 +3278,10 @@
     modalContainer: $("modal-container"),
     modalClose: $("modal-close"),
     modalTitle: $("modal-title"),
-    treeEnergy: $("tree-energy"),
-    treeProcessing: $("tree-processing"),
-    treeModels: $("tree-models"),
-    treeMarketing: $("tree-marketing"),
+    treeViewport: $("tree-viewport"),
+    treeWorld: $("tree-world"),
     treeResearch: $("tree-research"),
     treeInvest: $("tree-invest"),
-    treeInfluence: $("tree-influence"),
     infNodes: {
       softControl: $("inf-node-softcontrol"),
       floodnews: $("inf-node-floodnews"), astroturf: $("inf-node-astroturf"),
@@ -4190,23 +4143,196 @@
     return true;
   }
 
+  // ── Unified pannable tree engine ──────────────────
+  const CLUSTER_DEFS = [
+    { id: "energy", lanes: [ { nodes: ["node-solar", "node-nuclear", "node-bio"] } ] },
+    { id: "processing", lanes: [ { nodes: ["node-cpu", "node-gpu", "node-rdu"] } ] },
+    { id: "models", lanes: [ {
+        nodes: ["node-model-1","node-model-2","node-model-3","node-model-4","node-model-5","node-model-6","node-model-7","node-model-8","node-model-9"],
+        subs: { "node-model-1":"micro-model-1","node-model-2":"micro-model-2","node-model-3":"micro-model-3","node-model-4":"micro-model-4","node-model-5":"micro-model-5","node-model-6":"micro-model-6","node-model-7":"micro-model-7","node-model-8":"micro-model-8","node-model-9":"micro-model-9" }
+      } ] },
+    { id: "marketing", lanes: [
+        { label: "◈ DEMAND · grow the market", nodes: ["node-shitedin","node-fikfok","node-egogram","node-itube","node-billboard","node-influencer-army","node-neural-ads","node-dream-sponsor"] },
+        { label: "◈ PUBLIC TRUST · save face", accent: true, nodes: ["node-ngos","node-billionaires","node-who","node-green"] }
+      ] },
+    { id: "influence", lanes: [
+        { label: "📰 MEDIA", nodes: ["inf-node-softcontrol","inf-node-floodnews","inf-node-astroturf","inf-node-propaganda","inf-node-ownnetwork","inf-node-memetic"] },
+        { label: "🏛 POLITICAL", nodes: ["inf-node-rightwing","inf-node-govcontracts","inf-node-wars","inf-node-privatize"] },
+        { label: "⚖ REGULATORY", nodes: ["inf-node-lobby"] }
+      ],
+      links: [ ["inf-node-propaganda","inf-node-rightwing"], ["inf-node-rightwing","inf-node-lobby"] ] },
+  ];
+  const CLUSTER_TITLES = { energy: "ENERGY GRID", processing: "PROCESSING", models: "MODELS", marketing: "MARKETING", influence: "INFLUENCE DIVISION" };
+  const TREE_TYPES = new Set(["energy","processing","models","marketing","influence"]);
+
+  const NODE_W = 200, SUB_W = 158, SUB_GAP = 40, GAP_Y = 24, LANE_GAP = 72, CLUSTER_GAP = 130, HEADER_TOP = 56, LANE_LABEL_H = 24;
+
+  function makeConn(cls, x, y, w, h) {
+    const d = document.createElement("div");
+    d.className = cls;
+    d.style.left = x + "px";
+    d.style.top = y + "px";
+    if (w != null) d.style.width = w + "px";
+    if (h != null) d.style.height = h + "px";
+    return d;
+  }
+
+  function layoutWorld() {
+    const world = el.treeWorld;
+    if (!world) return;
+    world.querySelectorAll(".tree-spine,.tree-tick,.tree-link,.lane-label").forEach(n => n.remove());
+    let clusterX = 40;
+    let worldH = 0;
+    for (const cluster of CLUSTER_DEFS) {
+      const clEl = document.getElementById("cluster-" + cluster.id);
+      if (!clEl) continue;
+      const conns = [];
+      const box = {};
+      let laneX = 0;
+      let clusterBottom = 0;
+      for (const lane of cluster.lanes) {
+        let y = lane.label ? LANE_LABEL_H : 0;
+        if (lane.label) {
+          const lab = document.createElement("div");
+          lab.className = "lane-label" + (lane.accent ? " accent" : "");
+          lab.textContent = lane.label;
+          lab.style.left = laneX + "px";
+          lab.style.top = "0px";
+          clEl.appendChild(lab);
+        }
+        const placed = [];
+        for (const id of lane.nodes) {
+          const n = document.getElementById(id);
+          if (!n) continue;
+          n.style.left = laneX + "px";
+          n.style.top = y + "px";
+          const h = n.offsetHeight || 120;
+          box[id] = { top: y, cy: y + h / 2, bottom: y + h, cx: laneX + NODE_W / 2, right: laneX + NODE_W };
+          placed.push({ top: y, h });
+          if (lane.subs && lane.subs[id]) {
+            const s = document.getElementById(lane.subs[id]);
+            if (s) {
+              s.style.left = (laneX + NODE_W + SUB_GAP) + "px";
+              s.style.top = y + "px";
+              conns.push(makeConn("tree-tick", laneX + NODE_W, y + Math.min(h / 2, 18), SUB_GAP, null));
+            }
+          }
+          y += h + GAP_Y;
+        }
+        for (let i = 0; i < placed.length - 1; i++) {
+          const a = placed[i], b = placed[i + 1];
+          const segTop = a.top + a.h;
+          conns.push(makeConn("tree-spine", laneX + NODE_W / 2 - 1, segTop, null, Math.max(2, b.top - segTop)));
+        }
+        clusterBottom = Math.max(clusterBottom, y);
+        laneX += NODE_W + (lane.subs ? SUB_GAP + SUB_W : 0) + LANE_GAP;
+      }
+      if (cluster.links) {
+        for (const [aId, bId] of cluster.links) {
+          const a = box[aId], b = box[bId];
+          if (!a || !b) continue;
+          const bLeft = b.cx - NODE_W / 2;
+          const midX = (a.right + bLeft) / 2;
+          conns.push(makeConn("tree-link h", a.right, a.cy - 1, Math.max(2, midX - a.right), null));
+          const vTop = Math.min(a.cy, b.cy), vBot = Math.max(a.cy, b.cy);
+          conns.push(makeConn("tree-link v", midX - 1, vTop, null, Math.max(2, vBot - vTop)));
+          conns.push(makeConn("tree-link h", midX, b.cy - 1, Math.max(2, bLeft - midX), null));
+        }
+      }
+      const clusterW = Math.max(NODE_W, laneX - LANE_GAP);
+      clEl.style.left = clusterX + "px";
+      clEl.style.top = HEADER_TOP + "px";
+      clEl.style.width = clusterW + "px";
+      clEl.style.height = clusterBottom + "px";
+      for (const c of conns) clEl.appendChild(c);
+      clusterX += clusterW + CLUSTER_GAP;
+      worldH = Math.max(worldH, HEADER_TOP + clusterBottom);
+    }
+    world.style.width = (clusterX + 40) + "px";
+    world.style.height = (worldH + 80) + "px";
+  }
+
+  function layoutIfTreeVisible() {
+    if (el.treeViewport && !el.treeViewport.classList.contains("hidden")) layoutWorld();
+  }
+
+  let panX = 0, panY = 0, panScale = 1, _lastTreeLayout = 0;
+  function applyWorldTransform() {
+    if (el.treeWorld) el.treeWorld.style.transform = "translate(" + panX + "px," + panY + "px) scale(" + panScale + ")";
+  }
+  function flyToCluster(id, animate) {
+    const c = document.getElementById("cluster-" + id);
+    if (!c || !el.treeWorld) return;
+    if (animate) {
+      el.treeWorld.classList.add("flying");
+      setTimeout(() => { if (el.treeWorld) el.treeWorld.classList.remove("flying"); }, 500);
+    }
+    panX = 48 - c.offsetLeft * panScale;
+    panY = 16 - (c.offsetTop - 30) * panScale;
+    applyWorldTransform();
+  }
+
+  (function setupTreePan() {
+    const vp = el.treeViewport;
+    if (!vp) return;
+    let dragging = false, sx = 0, sy = 0, spx = 0, spy = 0;
+    vp.addEventListener("pointerdown", (e) => {
+      if (e.target.closest("button")) return;
+      dragging = true;
+      sx = e.clientX; sy = e.clientY; spx = panX; spy = panY;
+      vp.classList.add("grabbing");
+      try { vp.setPointerCapture(e.pointerId); } catch (_) {}
+    });
+    vp.addEventListener("pointermove", (e) => {
+      if (!dragging) return;
+      panX = spx + (e.clientX - sx);
+      panY = spy + (e.clientY - sy);
+      applyWorldTransform();
+    });
+    function endDrag(e) {
+      if (!dragging) return;
+      dragging = false;
+      vp.classList.remove("grabbing");
+      try { vp.releasePointerCapture(e.pointerId); } catch (_) {}
+    }
+    vp.addEventListener("pointerup", endDrag);
+    vp.addEventListener("pointercancel", endDrag);
+    vp.addEventListener("pointerleave", endDrag);
+    vp.addEventListener("wheel", (e) => {
+      e.preventDefault();
+      const prev = panScale;
+      panScale = Math.min(1.6, Math.max(0.45, panScale * (e.deltaY < 0 ? 1.1 : 0.9)));
+      const rect = vp.getBoundingClientRect();
+      const ox = e.clientX - rect.left, oy = e.clientY - rect.top;
+      panX = ox - (ox - panX) * (panScale / prev);
+      panY = oy - (oy - panY) * (panScale / prev);
+      applyWorldTransform();
+    }, { passive: false });
+  })();
+
+  window.addEventListener("resize", layoutIfTreeVisible);
+
   let activeModal = null;
   function openModal(type) {
+    const wasTreeOpen = !el.modalContainer.classList.contains("hidden") && el.treeViewport && !el.treeViewport.classList.contains("hidden");
     el.modalContainer.classList.remove("hidden");
-    el.treeEnergy.classList.add("hidden");
-    el.treeProcessing.classList.add("hidden");
-    el.treeModels.classList.add("hidden");
-    el.treeMarketing.classList.add("hidden");
+    const isTree = TREE_TYPES.has(type);
+    el.treeViewport.classList.toggle("hidden", !isTree);
     el.treeResearch.classList.add("hidden");
     el.treeInvest.classList.add("hidden");
-    el.treeInfluence.classList.add("hidden");
-    if (type === 'energy') { el.treeEnergy.classList.remove("hidden"); el.modalTitle.textContent = "ENERGY GRID"; el.btnTreeEnergy.classList.remove("pulse"); }
-    if (type === 'processing') { el.treeProcessing.classList.remove("hidden"); el.modalTitle.textContent = "PROCESSING"; el.btnTreeProcessing.classList.remove("pulse"); }
-    if (type === 'models') { el.treeModels.classList.remove("hidden"); el.modalTitle.textContent = "MODELS"; el.btnTreeModels.classList.remove("pulse"); }
-    if (type === 'marketing') { el.treeMarketing.classList.remove("hidden"); el.modalTitle.textContent = "MARKETING"; el.btnTreeMarketing.classList.remove("pulse"); }
-    if (type === 'research') { el.treeResearch.classList.remove("hidden"); el.modalTitle.textContent = "RESEARCH"; el.btnTreeResearch.classList.remove("pulse"); renderResearchUI(); }
-    if (type === 'invest') { el.treeInvest.classList.remove("hidden"); el.modalTitle.textContent = "INVESTMENT DIVISION"; el.btnTreeInvest.classList.remove("pulse"); renderInvestUI(); }
-    if (type === 'influence') { el.treeInfluence.classList.remove("hidden"); el.modalTitle.textContent = "INFLUENCE DIVISION"; el.btnTreeInfluence.classList.remove("pulse"); renderInfluenceUI(); }
+    if (isTree) {
+      el.modalTitle.textContent = CLUSTER_TITLES[type] || "TECH TREE";
+      const btn = { energy: el.btnTreeEnergy, processing: el.btnTreeProcessing, models: el.btnTreeModels, marketing: el.btnTreeMarketing, influence: el.btnTreeInfluence }[type];
+      if (btn) btn.classList.remove("pulse");
+      if (type === "influence") renderInfluenceUI();
+      layoutWorld();
+      flyToCluster(type, wasTreeOpen);
+      if (!wasTreeOpen) requestAnimationFrame(() => { layoutWorld(); flyToCluster(type, false); });
+    } else if (type === "research") {
+      el.treeResearch.classList.remove("hidden"); el.modalTitle.textContent = "RESEARCH"; el.btnTreeResearch.classList.remove("pulse"); renderResearchUI();
+    } else if (type === "invest") {
+      el.treeInvest.classList.remove("hidden"); el.modalTitle.textContent = "INVESTMENT DIVISION"; el.btnTreeInvest.classList.remove("pulse"); renderInvestUI();
+    }
     activeModal = type;
   }
   function closeModal() {
@@ -4914,6 +5040,10 @@
 
   // ── Render ─────────────────────────────────────
   function render(tput) {
+    if (el.treeViewport && !el.treeViewport.classList.contains("hidden")) {
+      const _now = performance.now();
+      if (_now - _lastTreeLayout > 400) { _lastTreeLayout = _now; layoutWorld(); }
+    }
     el.energy.textContent    = Math.floor(S.energy);
     el.energyMax.textContent = S.energyMax;
     const pct = (S.energy / S.energyMax) * 100;
