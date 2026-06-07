@@ -3195,6 +3195,7 @@
             <!-- question card -->
             <div class="polo-headline-card" id="polo-headline-card">
               <div class="polo-question" id="polo-headline-text">Loading prediction market...</div>
+              <div class="polo-countdown" id="polo-countdown">RESOLVES IN: --:--</div>
               <div class="polo-bet-row">
                 <button class="polo-bet-btn yes" id="polo-bet-yes" type="button">
                   <span class="bet-label">YES</span>
@@ -5238,15 +5239,17 @@
     const value = S[key];
     if (value <= 0) return;
 
-    S.cash += value;
     const profit = value - S[investedKey];
+    S.cash += value;
+    if (profit > 0) S.revenue += profit; // only realized gains count as revenue
     S[key] = 0;
     S[investedKey] = 0;
+    WSB_SECTOR_PROFILES[sectorId].streak = 0; // reset streak on full exit
 
     if (profit >= 0) {
-      log("WITHDRAW: " + sectorId.toUpperCase() + " · +$" + profit.toFixed(2) + " profit", "event");
+      log("WITHDRAW: " + sectorId.toUpperCase() + " · +$" + profit.toFixed(2) + " profit → revenue", "event");
     } else {
-      log("WITHDRAW: " + sectorId.toUpperCase() + " · $" + profit.toFixed(2) + " loss", "warn");
+      log("WITHDRAW: " + sectorId.toUpperCase() + " · $" + Math.abs(profit).toFixed(2) + " loss realized", "warn");
     }
 
     if (activeModal === "invest") renderInvestUI();
