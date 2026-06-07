@@ -5491,11 +5491,6 @@
     if (m.dataRequired > 0) S.dataCollected -= m.dataRequired;
     S.modelTier = tier;
     if (m.demandBoost > 0) S.demandBase += m.demandBoost;
-    if (m.suggestedPrice && m.suggestedPrice > S.pricePerK) {
-      S.pricePerK = m.suggestedPrice;
-      el.priceSlider.value = String(S.pricePerK);
-      log("price bumped to $" + S.pricePerK + "/1K — adjust in market panel", "hint");
-    }
     log(
       m.name + " deployed · " + m.tokenMult + "× tokens · " +
       m.valueMult.toFixed(1) + "× $/token · " + m.energy + "⚡/req" +
