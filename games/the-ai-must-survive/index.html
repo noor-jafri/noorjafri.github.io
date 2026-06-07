@@ -1165,6 +1165,18 @@
     opacity: 0.5;
     filter: grayscale(1);
     pointer-events: none;
+    position: relative;
+  }
+  .tree-node.locked::after {
+    content: "🔒";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.5rem;
+    filter: sepia(1) saturate(4) hue-rotate(5deg) brightness(1.1);
+    pointer-events: none;
+    z-index: 2;
   }
   .tree-node.available {
     border-color: var(--c-mint);
