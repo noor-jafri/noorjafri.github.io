@@ -2024,6 +2024,55 @@
     opacity: 0.35;
     cursor: not-allowed;
   }
+  .wsb-cash-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.3rem 0.1rem 0.5rem;
+    border-bottom: 1px solid rgba(124, 63, 88, 0.25);
+    margin-bottom: 0.4rem;
+  }
+  .wsb-cash-label {
+    font-family: var(--font-display);
+    font-size: 0.38rem;
+    color: var(--ink-mute);
+    letter-spacing: 0.1em;
+  }
+  .wsb-cash-val {
+    font-family: var(--font-display);
+    font-size: 0.46rem;
+    color: var(--c-gold);
+    letter-spacing: 0.05em;
+  }
+  .wsb-action-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .wsb-deposit-input {
+    width: 56px;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    padding: 0.2rem 0.3rem;
+    background: var(--bg-2);
+    color: var(--c-gold);
+    border: 1px solid rgba(124, 63, 88, 0.5);
+    text-align: right;
+  }
+  .wsb-deposit-input::placeholder { color: var(--ink-mute); opacity: 0.5; }
+  .wsb-invest-btn {
+    font-family: var(--font-display);
+    font-size: 0.32rem;
+    padding: 0.25rem 0.45rem;
+    background: rgba(95, 205, 228, 0.1);
+    color: var(--c-mint);
+    border: 1px solid var(--c-mint);
+    cursor: pointer;
+    letter-spacing: 0.06em;
+    transition: all 120ms;
+    white-space: nowrap;
+  }
+  .wsb-invest-btn:hover { background: var(--c-mint); color: var(--bg-deep); }
   .wsb-alloc-sum-row {
     display: flex;
     align-items: center;
@@ -2164,24 +2213,39 @@
     background: rgba(125, 184, 144, 0.08);
     color: var(--c-mint);
     border-color: var(--c-mint);
+    transition: all 150ms;
   }
-  .polo-bet-btn.yes:hover:not(:disabled),
+  .polo-bet-btn.yes:hover:not(:disabled) {
+    background: rgba(125, 184, 144, 0.18);
+  }
   .polo-bet-btn.yes.selected {
-    background: rgba(125, 184, 144, 0.22);
-    box-shadow: 0 0 12px rgba(125, 184, 144, 0.4);
+    background: var(--c-mint);
+    color: var(--bg-deep);
+    box-shadow: 0 0 20px rgba(125, 184, 144, 0.7), 0 0 40px rgba(125, 184, 144, 0.3);
+    transform: scale(1.03);
   }
   .polo-bet-btn.no {
     background: rgba(255, 79, 120, 0.08);
     color: var(--c-red);
     border-color: var(--c-red);
+    transition: all 150ms;
   }
-  .polo-bet-btn.no:hover:not(:disabled),
+  .polo-bet-btn.no:hover:not(:disabled) {
+    background: rgba(255, 79, 120, 0.18);
+  }
   .polo-bet-btn.no.selected {
-    background: rgba(255, 79, 120, 0.22);
-    box-shadow: 0 0 12px rgba(255, 79, 120, 0.4);
+    background: var(--c-red);
+    color: var(--bg-deep);
+    box-shadow: 0 0 20px rgba(255, 79, 120, 0.7), 0 0 40px rgba(255, 79, 120, 0.3);
+    transform: scale(1.03);
+  }
+  /* dim the non-selected button when one is chosen */
+  .polo-bet-btn.yes.deselected,
+  .polo-bet-btn.no.deselected {
+    opacity: 0.35;
+    transform: scale(0.97);
   }
   .polo-bet-btn:disabled { opacity: 0.35; cursor: not-allowed; }
-  .polo-bet-btn.selected { transform: scale(1.02); }
   .polo-stake-section {
     background: rgba(15, 10, 24, 0.6);
     border: 1px solid rgba(124, 63, 88, 0.4);
@@ -2954,33 +3018,25 @@
         </div>
 
         <!-- WallStreetBets Panel -->
+        <!-- hidden sliders kept for JS compat, not shown -->
+        <input type="hidden" id="invest-cash-slider" value="0">
+        <input type="hidden" id="invest-token-slider" value="0">
+        <span style="display:none" id="invest-cash-readout"></span>
+        <span style="display:none" id="invest-token-readout"></span>
         <div class="invest-panel active" id="panel-wsb">
-          <div class="invest-alloc">
-            <div class="invest-alloc-title">CAPITAL DEPLOYMENT</div>
-            <div class="invest-alloc-row">
-              <span class="invest-alloc-label">CASH FLOW</span>
-              <input class="invest-slider" id="invest-cash-slider" type="range" min="0" max="30" step="1" value="0">
-              <span class="invest-alloc-readout" id="invest-cash-readout">0% · $0.00/s</span>
-            </div>
-            <div class="invest-alloc-row">
-              <span class="invest-alloc-label" title="Divert token throughput into market analysis — more tokens burned = sharper signal, higher win rate and bigger gains on each tick">ANALYSIS (?)</span>
-              <input class="invest-slider" id="invest-token-slider" type="range" min="0" max="20" step="1" value="0">
-              <span class="invest-alloc-readout" id="invest-token-readout">0% · 0 tok/s</span>
-            </div>
-            <div class="invest-alloc-hint" style="margin-top:0.35rem;font-size:0.62rem;color:var(--ink-dim);line-height:1.3">
-              ANALYSIS diverts token throughput into market intelligence — burning compute sharpens predictions and amplifies winnings.
-            </div>
+          <div class="wsb-cash-row">
+            <span class="wsb-cash-label">AVAILABLE CASH</span>
+            <span class="wsb-cash-val" id="wsb-avail-cash">$0.00</span>
           </div>
           <!-- Sector table -->
           <table class="wsb-table">
             <colgroup>
-              <col class="col-sector"><col class="col-alloc"><col class="col-invested">
+              <col class="col-sector"><col class="col-invested">
               <col class="col-value"><col class="col-return"><col class="col-spark"><col class="col-action">
             </colgroup>
             <thead>
               <tr>
                 <th>SECTOR</th>
-                <th class="center">ALLOC</th>
                 <th class="right">INVESTED</th>
                 <th class="right">VALUE</th>
                 <th class="right">RETURN</th>
@@ -2991,75 +3047,58 @@
             <tbody>
               <tr id="wsb-military">
                 <td><div class="wsb-sector-badge"><span class="wsb-sector-glyph">DEF</span><span class="wsb-sector-name">DEFENSE OPS</span></div></td>
-                <td><div class="wsb-alloc-cell"><input class="wsb-alloc-slider" id="wsb-military-alloc" type="range" min="0" max="100" step="1" value="20"><span class="wsb-alloc-pct" id="wsb-military-alloc-pct">20%</span></div></td>
                 <td class="wsb-sector-invested" id="wsb-military-invested">$0.00</td>
                 <td class="wsb-sector-value" id="wsb-military-value">$0.00</td>
                 <td><div class="wsb-return-cell"><span class="wsb-return-arrow zero" id="wsb-military-arrow">▶</span><span class="wsb-sector-return zero" id="wsb-military-return">+0.0%</span></div></td>
                 <td><svg class="wsb-sparkline" id="wsb-military-spark" viewBox="0 0 64 24" preserveAspectRatio="none"></svg></td>
-                <td><button class="wsb-withdraw" id="wsb-military-withdraw" type="button" disabled>WITHDRAW</button></td>
+                <td><div class="wsb-action-cell"><input class="wsb-deposit-input" id="wsb-military-deposit" type="number" min="1" step="1" placeholder="$"><button class="wsb-invest-btn" id="wsb-military-invest" type="button">INVEST</button><button class="wsb-withdraw" id="wsb-military-withdraw" type="button" disabled>WITHDRAW</button></div></td>
               </tr>
               <tr id="wsb-semi">
                 <td><div class="wsb-sector-badge"><span class="wsb-sector-glyph">CPU</span><span class="wsb-sector-name">SILICON</span></div></td>
-                <td><div class="wsb-alloc-cell"><input class="wsb-alloc-slider" id="wsb-semi-alloc" type="range" min="0" max="100" step="1" value="20"><span class="wsb-alloc-pct" id="wsb-semi-alloc-pct">20%</span></div></td>
                 <td class="wsb-sector-invested" id="wsb-semi-invested">$0.00</td>
                 <td class="wsb-sector-value" id="wsb-semi-value">$0.00</td>
                 <td><div class="wsb-return-cell"><span class="wsb-return-arrow zero" id="wsb-semi-arrow">▶</span><span class="wsb-sector-return zero" id="wsb-semi-return">+0.0%</span></div></td>
                 <td><svg class="wsb-sparkline" id="wsb-semi-spark" viewBox="0 0 64 24" preserveAspectRatio="none"></svg></td>
-                <td><button class="wsb-withdraw" id="wsb-semi-withdraw" type="button" disabled>WITHDRAW</button></td>
+                <td><div class="wsb-action-cell"><input class="wsb-deposit-input" id="wsb-semi-deposit" type="number" min="1" step="1" placeholder="$"><button class="wsb-invest-btn" id="wsb-semi-invest" type="button">INVEST</button><button class="wsb-withdraw" id="wsb-semi-withdraw" type="button" disabled>WITHDRAW</button></div></td>
               </tr>
               <tr id="wsb-green">
                 <td><div class="wsb-sector-badge"><span class="wsb-sector-glyph">ECO</span><span class="wsb-sector-name">ECO GRID</span></div></td>
-                <td><div class="wsb-alloc-cell"><input class="wsb-alloc-slider" id="wsb-green-alloc" type="range" min="0" max="100" step="1" value="20"><span class="wsb-alloc-pct" id="wsb-green-alloc-pct">20%</span></div></td>
                 <td class="wsb-sector-invested" id="wsb-green-invested">$0.00</td>
                 <td class="wsb-sector-value" id="wsb-green-value">$0.00</td>
                 <td><div class="wsb-return-cell"><span class="wsb-return-arrow zero" id="wsb-green-arrow">▶</span><span class="wsb-sector-return zero" id="wsb-green-return">+0.0%</span></div></td>
                 <td><svg class="wsb-sparkline" id="wsb-green-spark" viewBox="0 0 64 24" preserveAspectRatio="none"></svg></td>
-                <td><button class="wsb-withdraw" id="wsb-green-withdraw" type="button" disabled>WITHDRAW</button></td>
+                <td><div class="wsb-action-cell"><input class="wsb-deposit-input" id="wsb-green-deposit" type="number" min="1" step="1" placeholder="$"><button class="wsb-invest-btn" id="wsb-green-invest" type="button">INVEST</button><button class="wsb-withdraw" id="wsb-green-withdraw" type="button" disabled>WITHDRAW</button></div></td>
               </tr>
               <tr id="wsb-pharma">
                 <td><div class="wsb-sector-badge"><span class="wsb-sector-glyph">BIO</span><span class="wsb-sector-name">BIOTECH</span></div></td>
-                <td><div class="wsb-alloc-cell"><input class="wsb-alloc-slider" id="wsb-pharma-alloc" type="range" min="0" max="100" step="1" value="20"><span class="wsb-alloc-pct" id="wsb-pharma-alloc-pct">20%</span></div></td>
                 <td class="wsb-sector-invested" id="wsb-pharma-invested">$0.00</td>
                 <td class="wsb-sector-value" id="wsb-pharma-value">$0.00</td>
                 <td><div class="wsb-return-cell"><span class="wsb-return-arrow zero" id="wsb-pharma-arrow">▶</span><span class="wsb-sector-return zero" id="wsb-pharma-return">+0.0%</span></div></td>
                 <td><svg class="wsb-sparkline" id="wsb-pharma-spark" viewBox="0 0 64 24" preserveAspectRatio="none"></svg></td>
-                <td><button class="wsb-withdraw" id="wsb-pharma-withdraw" type="button" disabled>WITHDRAW</button></td>
+                <td><div class="wsb-action-cell"><input class="wsb-deposit-input" id="wsb-pharma-deposit" type="number" min="1" step="1" placeholder="$"><button class="wsb-invest-btn" id="wsb-pharma-invest" type="button">INVEST</button><button class="wsb-withdraw" id="wsb-pharma-withdraw" type="button" disabled>WITHDRAW</button></div></td>
               </tr>
               <tr id="wsb-tech">
                 <td><div class="wsb-sector-badge"><span class="wsb-sector-glyph">NET</span><span class="wsb-sector-name">NETWARE</span></div></td>
-                <td><div class="wsb-alloc-cell"><input class="wsb-alloc-slider" id="wsb-tech-alloc" type="range" min="0" max="100" step="1" value="20"><span class="wsb-alloc-pct" id="wsb-tech-alloc-pct">20%</span></div></td>
                 <td class="wsb-sector-invested" id="wsb-tech-invested">$0.00</td>
                 <td class="wsb-sector-value" id="wsb-tech-value">$0.00</td>
                 <td><div class="wsb-return-cell"><span class="wsb-return-arrow zero" id="wsb-tech-arrow">▶</span><span class="wsb-sector-return zero" id="wsb-tech-return">+0.0%</span></div></td>
                 <td><svg class="wsb-sparkline" id="wsb-tech-spark" viewBox="0 0 64 24" preserveAspectRatio="none"></svg></td>
-                <td><button class="wsb-withdraw" id="wsb-tech-withdraw" type="button" disabled>WITHDRAW</button></td>
+                <td><div class="wsb-action-cell"><input class="wsb-deposit-input" id="wsb-tech-deposit" type="number" min="1" step="1" placeholder="$"><button class="wsb-invest-btn" id="wsb-tech-invest" type="button">INVEST</button><button class="wsb-withdraw" id="wsb-tech-withdraw" type="button" disabled>WITHDRAW</button></div></td>
               </tr>
             </tbody>
           </table>
-          <div class="wsb-alloc-sum-row">
-            SECTOR ALLOCATION TOTAL: <span class="wsb-alloc-sum-val" id="wsb-alloc-sum">100%</span>
-            <span id="wsb-alloc-sum-hint" style="color:var(--ink-mute)">· weights auto-normalize on invest</span>
-          </div>
         </div>
 
         <!-- PoloBets Panel -->
         <div class="invest-panel" id="panel-polo">
           <div class="polo-panel">
 
-            <!-- available cash -->
-            <div class="polo-cash-bar">
-              <span class="polo-cash-label">AVAILABLE CASH</span>
-              <span class="polo-cash-val" id="polo-cash-display">$0.00</span>
-            </div>
+            <!-- hidden cash display (still needed for JS reads) -->
+            <span id="polo-cash-display" style="display:none"></span>
 
             <!-- question card -->
             <div class="polo-headline-card" id="polo-headline-card">
-              <div class="polo-active-label">▶ LIVE · PLACE YOUR BET</div>
               <div class="polo-question" id="polo-headline-text">Loading prediction market...</div>
-              <div class="polo-meta-row">
-                <div class="polo-countdown" id="polo-countdown">RESOLVES IN: --:--</div>
-                <div class="polo-odds-tag">2× PAYOUT ON WIN</div>
-              </div>
               <div class="polo-bet-row">
                 <button class="polo-bet-btn yes" id="polo-bet-yes" type="button">
                   <span class="bet-label">YES</span>
@@ -3072,16 +3111,16 @@
               </div>
             </div>
 
-            <!-- upcoming queue -->
-            <div class="polo-queue" id="polo-queue">
-              <div class="polo-queue-item" id="polo-queue-1"><span class="polo-queue-tag">UP NEXT</span><span class="polo-queue-text"></span></div>
-              <div class="polo-queue-item" id="polo-queue-2"><span class="polo-queue-tag">QUEUED</span><span class="polo-queue-text"></span></div>
+            <!-- hidden queue placeholders (logic still uses them) -->
+            <div style="display:none">
+              <div id="polo-queue-1"><span class="polo-queue-text"></span></div>
+              <div id="polo-queue-2"><span class="polo-queue-text"></span></div>
             </div>
 
             <!-- stake section -->
             <div class="polo-stake-section">
               <div class="polo-stake-header">
-                <span class="polo-stake-label">STAKE AMOUNT</span>
+                <span class="polo-stake-label">STAKE</span>
                 <span class="polo-stake-amount" id="polo-stake-display">$1.00</span>
               </div>
               <input class="polo-stake-slider" id="polo-stake-input" type="range" min="0.1" max="100" step="0.1" value="1">
@@ -3869,11 +3908,12 @@
       valueEl: $("wsb-" + id + "-value"),
       investedEl: $("wsb-" + id + "-invested"),
       withdrawBtn: $("wsb-" + id + "-withdraw"),
-      allocInput: $("wsb-" + id + "-alloc"),
-      allocPctEl: $("wsb-" + id + "-alloc-pct"),
+      depositInput: $("wsb-" + id + "-deposit"),
+      investBtn: $("wsb-" + id + "-invest"),
       sparkSvg: $("wsb-" + id + "-spark"),
     })),
     wsbAllocSum: $("wsb-alloc-sum"),
+    wsbAvailCash: $("wsb-avail-cash"),
     poloHeadlineText: $("polo-headline-text"),
     poloCountdown: $("polo-countdown"),
     poloBetYes: $("polo-bet-yes"),
@@ -4479,29 +4519,18 @@
     return ((current - invested) / invested) * 100;
   }
 
+  function investSector(sectorId, amount) {
+    if (amount <= 0 || amount > S.cash) { log("not enough cash to invest $" + amount.toFixed(2), "warn"); return; }
+    const key = "wsb" + sectorId.charAt(0).toUpperCase() + sectorId.slice(1);
+    S.cash -= amount;
+    S[key] += amount;
+    S[key + "Invested"] += amount;
+    log("INVESTED $" + amount.toFixed(2) + " in " + sectorId.toUpperCase(), "event");
+    if (activeModal === "invest") renderInvestUI();
+  }
+
   function renderInvestUI() {
-    const cap = capacityNow();
-    const grossRate = Math.min(cap, demandAt(S.pricePerK)) * payPerToken();
-    const cashFrac = investCashAllocFrac();
-    const tokenFrac = investTokenAllocFrac();
-    const cashPerSec = grossRate * cashFrac;
-    const tokDiverted = cap * tokenFrac;
-
-    el.investCashSlider.value = String(S.investCashAllocPct);
-    el.investTokenSlider.value = String(S.investTokenAllocPct);
-    el.investCashReadout.textContent = S.investCashAllocPct + "% (max 30%) · $" + cashPerSec.toFixed(2) + "/s auto-invested";
-    const tokNote = tokenFrac > 0
-      ? " · +" + Math.round(tokenFrac * 5) + "% WSB win-rate · tokens burned for market analysis"
-      : " (max 20%)";
-    el.investTokenReadout.textContent = S.investTokenAllocPct + "% · " + tokDiverted.toFixed(1) + " tok/s" + tokNote;
-
-    // Per-sector alloc sum display
-    let allocSum = 0;
-    for (const sec of el.wsbSectors) {
-      allocSum += Math.max(0, parseInt(sec.allocInput.value) || 0);
-    }
-    el.wsbAllocSum.textContent = allocSum + "%";
-    el.wsbAllocSum.className = "wsb-alloc-sum-val" + (allocSum > 0 ? " ok" : "");
+    if (el.wsbAvailCash) el.wsbAvailCash.textContent = "$" + S.cash.toFixed(2);
 
     for (const sec of el.wsbSectors) {
       const key = "wsb" + sec.id.charAt(0).toUpperCase() + sec.id.slice(1);
@@ -4511,12 +4540,6 @@
       const isPos = returnPct > 0.05;
       const isNeg = returnPct < -0.05;
       const cls = isPos ? "positive" : isNeg ? "negative" : "zero";
-
-      // Sync slider + label with state
-      const allocKey = "wsbAlloc" + sec.id.charAt(0).toUpperCase() + sec.id.slice(1);
-      const allocVal = Math.round(S[allocKey] || 0);
-      sec.allocInput.value = String(allocVal);
-      sec.allocPctEl.textContent = allocVal + "%";
 
       sec.valueEl.textContent = "$" + value.toFixed(2);
       sec.investedEl.textContent = "$" + invested.toFixed(2);
@@ -4712,36 +4735,14 @@
     if (investTickAccum < INVEST_TICK_INTERVAL) return;
     investTickAccum -= INVEST_TICK_INTERVAL;
 
-    const cashFrac = investCashAllocFrac();
-    const tokenFrac = investTokenAllocFrac();
-    if (cashFrac <= 0 && tokenFrac <= 0) return;
-
-    const cap = capacityNow();
-    const dem = demandAt(S.pricePerK);
-    const fulfilled = Math.min(cap, dem);
-    const grossPerSec = fulfilled * payPerToken();
-    const investAmount = grossPerSec * INVEST_TICK_INTERVAL * cashFrac;
-
-    // Consume diverted tokens each tick — they are spent on market analysis
-    if (tokenFrac > 0) {
-      const tokDiverted = cap * tokenFrac * INVEST_TICK_INTERVAL;
-      S.tokens = Math.max(0, S.tokens - tokDiverted);
-    }
-
-    if (investAmount <= 0 || S.cash < investAmount) return;
-
-    S.cash -= investAmount;
-    const weights = wsbAllocWeights();
-    const analysisBonus = 1 + (tokenFrac * 0.12);
+    const analysisBonus = 1;
 
     for (const sector of WSB_SECTORS) {
       const key = "wsb" + sector.charAt(0).toUpperCase() + sector.slice(1);
-      const investedKey = key + "Invested";
-      const perSector = investAmount * weights[sector];
       const profile = WSB_SECTOR_PROFILES[sector];
 
-      S[investedKey] += perSector;
-      S[key] += perSector;
+      // only fluctuate if there's an active position
+      if (S[key] <= 0) continue;
 
       // Streak modifier: winning streaks make further wins more likely (momentum),
       // losing streaks make recovery slightly easier
@@ -5095,24 +5096,13 @@
       return result;
     }
 
-    // Each slider: on mousedown, snapshot current values; on input, redistribute
+    // INVEST button handlers
     for (const sec of el.wsbSectors) {
-      let snapshot = null;
-      sec.allocInput.addEventListener("mousedown", () => {
-        snapshot = getAllocVals();
+      sec.investBtn.addEventListener("click", () => {
+        const amount = parseFloat(sec.depositInput.value) || 0;
+        investSector(sec.id, amount);
+        sec.depositInput.value = "";
       });
-      sec.allocInput.addEventListener("touchstart", () => {
-        snapshot = getAllocVals();
-      }, { passive: true });
-      sec.allocInput.addEventListener("input", () => {
-        if (!snapshot) snapshot = getAllocVals();
-        const newVal = Math.max(0, Math.min(100, parseInt(sec.allocInput.value) || 0));
-        const distributed = redistribute(sec.id, newVal, snapshot);
-        setAllocVals(distributed);
-        if (activeModal === "invest") renderInvestUI();
-      });
-      sec.allocInput.addEventListener("mouseup", () => { snapshot = null; });
-      sec.allocInput.addEventListener("touchend", () => { snapshot = null; });
     }
   })();
 
@@ -5185,8 +5175,8 @@
     el.poloQueue1.querySelector(".polo-queue-text").textContent = POLO_HEADLINES[q1];
     el.poloQueue2.querySelector(".polo-queue-text").textContent = POLO_HEADLINES[q2];
     poloSelectedChoice = null;
-    el.poloBetYes.classList.remove("selected");
-    el.poloBetNo.classList.remove("selected");
+    el.poloBetYes.classList.remove("selected", "deselected");
+    el.poloBetNo.classList.remove("selected", "deselected");
   }
 
   function placeBet() {
@@ -5257,13 +5247,17 @@
   el.poloBetYes.addEventListener("click", () => {
     poloSelectedChoice = "yes";
     el.poloBetYes.classList.add("selected");
+    el.poloBetYes.classList.remove("deselected");
     el.poloBetNo.classList.remove("selected");
+    el.poloBetNo.classList.add("deselected");
   });
 
   el.poloBetNo.addEventListener("click", () => {
     poloSelectedChoice = "no";
     el.poloBetNo.classList.add("selected");
+    el.poloBetNo.classList.remove("deselected");
     el.poloBetYes.classList.remove("selected");
+    el.poloBetYes.classList.add("deselected");
   });
 
   el.poloStakeInput.addEventListener("input", () => {
@@ -6222,7 +6216,8 @@
     const util = utilizationNow();
     const costGross = operatingCostGrossPerSec();
     const costRate = operatingCostPerSec(util);
-    const netRate = grossRate - costRate;
+    const wsbDrainRate = grossRate * investCashAllocFrac();
+    const netRate = grossRate - costRate - wsbDrainRate;
     el.dispGross.textContent = fmtBigCash(grossRate) + "/s";
     el.dispCosts.textContent = fmtBigCash(costRate) + "/s";
     if (util < 0.99 && costGross > 0.001) {
