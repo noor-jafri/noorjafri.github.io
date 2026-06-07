@@ -5794,7 +5794,8 @@
     // CPU auto-compute
     if (S.cpu > 0) {
       S.cpuTimer += dt;
-      const interval = S.cpuInterval / S.cpu;
+      const rduMult = S.rduClusters > 0 ? RDU_CAPACITY_MULT : 1.0;
+      const interval = S.cpuInterval / (S.cpu * rduMult);
       while (S.cpuTimer >= interval) {
         S.cpuTimer -= interval;
         if (!compute(true)) break;
@@ -5803,7 +5804,8 @@
     // GPU auto-compute
     if (S.gpu > 0) {
       S.gpuTimer += dt;
-      const interval = S.gpuInterval / S.gpu;
+      const rduMult = S.rduClusters > 0 ? RDU_CAPACITY_MULT : 1.0;
+      const interval = S.gpuInterval / (S.gpu * rduMult);
       while (S.gpuTimer >= interval) {
         S.gpuTimer -= interval;
         if (!compute(true)) break;
