@@ -4655,14 +4655,7 @@
       renderWsbSparkline(sec.sparkSvg, wsbHistory[sec.id]);
     }
 
-    // Update priority slider pct labels to reflect effective share
-    const weights = wsbAllocWeights();
-    for (const sec of el.wsbSectors) {
-      if (!sec.allocPctEl) continue;
-      const pct = Math.round(weights[sec.id] * 100);
-      sec.allocPctEl.textContent = pct + "%";
-      sec.allocPctEl.className = "wsb-priority-pct" + (pct === 0 ? " zero" : "");
-    }
+    refreshAllocPctLabels();
 
     renderPoloUI();
   }
@@ -5124,7 +5117,7 @@
     } else if (type === "research") {
       el.treeResearch.classList.remove("hidden"); el.modalTitle.textContent = "RESEARCH"; el.btnTreeResearch.classList.remove("pulse"); renderResearchUI();
     } else if (type === "invest") {
-      el.treeInvest.classList.remove("hidden"); el.modalTitle.textContent = "INVESTMENT DIVISION"; el.btnTreeInvest.classList.remove("pulse"); renderInvestUI();
+      el.treeInvest.classList.remove("hidden"); el.modalTitle.textContent = "INVESTMENT DIVISION"; el.btnTreeInvest.classList.remove("pulse"); renderInvestUI(); refreshAllocPctLabels();
     }
     activeModal = type;
   }
@@ -5190,9 +5183,27 @@
     sec.withdrawBtn.addEventListener("click", () => withdrawSector(sec.id));
   }
 
+  // ── Priority slider helpers ────────────────────────────────────────────────
+  function syncAllocSliderTrack(sliderEl) {
+    const pct = parseInt(sliderEl.value, 10);
+    sliderEl.style.background = `linear-gradient(to right, var(--c-mint) ${pct}%, rgba(125,184,144,0.15) ${pct}%)`;
+  }
+
+  function refreshAllocPctLabels() {
+    const weights = wsbAllocWeights();
+    for (const s of el.wsbSectors) {
+      if (!s.allocPctEl) continue;
+      const pct = Math.round(weights[s.id] * 100);
+      s.allocPctEl.textContent = pct + "%";
+      s.allocPctEl.className = "wsb-priority-pct" + (pct === 0 ? " zero" : "");
+      if (s.allocSlider) syncAllocSliderTrack(s.allocSlider);
+    }
+  }
+
   // ── Priority slider handlers (linked — always sum to 100) ────────────────
   for (const sec of el.wsbSectors) {
     if (!sec.allocSlider) continue;
+    syncAllocSliderTrack(sec.allocSlider); // init track fill
     sec.allocSlider.addEventListener("input", () => {
       const sectors = el.wsbSectors;
       const newVal = Math.max(0, Math.min(100, parseInt(sec.allocSlider.value, 10)));
@@ -5217,7 +5228,7 @@
         const key = "wsbAlloc" + s.id.charAt(0).toUpperCase() + s.id.slice(1);
         S[key] = parseInt(s.allocSlider.value, 10);
       }
-      if (activeModal === "invest") renderInvestUI();
+      refreshAllocPctLabels();
     });
   }
 
