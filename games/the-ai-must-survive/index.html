@@ -1099,6 +1099,125 @@
     background: var(--bg-deep);
   }
   
+  /* ── Help Button ── */
+  .hud-btn.help-btn {
+    background: transparent;
+    border-color: var(--c-purple);
+    color: var(--c-purple);
+    font-weight: bold;
+    min-width: 1.8rem;
+  }
+  .hud-btn.help-btn:hover { background: var(--c-purple); color: #000; }
+
+  /* ── Help Modal ── */
+  .help-window {
+    max-width: 620px;
+    width: 95vw;
+    max-height: 82vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .help-body {
+    flex: 1;
+    overflow-y: auto;
+    background: var(--bg-deep);
+    padding: 0;
+  }
+  .help-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--ink-mute);
+    background: var(--bg-2);
+    flex-shrink: 0;
+  }
+  .help-tab {
+    flex: 1;
+    font-family: var(--font-display);
+    font-size: 0.55rem;
+    letter-spacing: 0.08em;
+    padding: 0.55rem 0.4rem;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--ink-dim);
+    cursor: pointer;
+    transition: color 0.15s;
+  }
+  .help-tab.active { color: var(--c-mint); border-bottom-color: var(--c-mint); }
+  .help-tab:hover:not(.active) { color: var(--ink-bright, #e0e0e0); }
+  .help-panel { display: none; padding: 1rem 1.1rem; }
+  .help-panel.active { display: block; }
+  .help-section {
+    margin-bottom: 1.2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .help-section:last-child { border-bottom: none; }
+  .help-currency-title {
+    font-family: var(--font-display);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+  }
+  .help-currency-title.tok  { color: var(--c-blue); }
+  .help-currency-title.cash { color: var(--c-gold); }
+  .help-currency-title.data { color: var(--c-cyan, #7db890); }
+  .help-section-title {
+    font-family: var(--font-display);
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    color: var(--c-mint);
+    margin-bottom: 0.45rem;
+  }
+  .help-body p, .help-body li {
+    font-size: 0.78rem;
+    color: var(--ink-dim, #b0b0c8);
+    line-height: 1.55;
+    margin-bottom: 0.4rem;
+  }
+  .help-body strong { color: var(--ink-bright, #e2e2e2); }
+  .help-body code {
+    font-family: var(--font-display);
+    font-size: 0.68rem;
+    color: var(--c-peach);
+    background: rgba(255,119,51,0.1);
+    padding: 0.05em 0.25em;
+    border-radius: 2px;
+  }
+  .help-body ul { padding-left: 1.2em; margin-bottom: 0.4rem; }
+  .help-note {
+    font-size: 0.73rem !important;
+    color: var(--c-peach) !important;
+    border-left: 2px solid var(--c-peach);
+    padding-left: 0.6rem !important;
+    margin-top: 0.4rem;
+  }
+  .help-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.72rem;
+    margin-bottom: 0.5rem;
+  }
+  .help-table th {
+    font-family: var(--font-display);
+    font-size: 0.55rem;
+    letter-spacing: 0.08em;
+    color: var(--ink-mute);
+    text-align: left;
+    padding: 0.3rem 0.5rem;
+    border-bottom: 1px solid var(--ink-mute);
+  }
+  .help-table td {
+    padding: 0.3rem 0.5rem;
+    color: var(--ink-dim, #b0b0c8);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .help-table .tier-elite   { color: var(--c-gold); }
+  .help-table .tier-premium { color: var(--c-mint); }
+  .help-table .tier-watched { color: var(--c-peach); }
+  .help-table .tier-crisis  { color: var(--c-red); }
+  .help-table .tier-floor   { color: var(--c-red); font-weight: bold; }
+
   /* Tree Nodes */
   .tree-canvas {
     position: absolute;
@@ -1188,21 +1307,21 @@
   
   .node-title {
     font-family: var(--font-display);
-    font-size: 0.5rem;
-    color: var(--ink-dim);
+    font-size: 0.65rem;
+    color: var(--ink-bright, #e0e0e0);
     margin-bottom: 0.35rem;
     letter-spacing: 0.05em;
   }
   .node-desc {
-    font-size: 0.72rem;
-    color: var(--ink-mute);
-    line-height: 1.3;
+    font-size: 0.78rem;
+    color: var(--ink-dim, #b0b0c8);
+    line-height: 1.45;
     margin-bottom: 0.45rem;
     min-height: 2.6em;
   }
   .node-buy {
     font-family: var(--font-display);
-    font-size: 0.5rem;
+    font-size: 0.6rem;
     padding: 0.5rem;
     width: 100%;
     background: var(--bg-2);
@@ -1221,7 +1340,7 @@
   }
   .node-kill {
     font-family: var(--font-display);
-    font-size: 0.45rem;
+    font-size: 0.58rem;
     padding: 0.4rem;
     width: 100%;
     background: transparent;
@@ -1241,8 +1360,8 @@
   }
   .node-stats {
     font-family: var(--font-display);
-    font-size: 0.4rem;
-    color: var(--ink-mute);
+    font-size: 0.55rem;
+    color: var(--ink-dim, #b0b0c8);
     display: flex;
     justify-content: space-between;
   }
@@ -1382,6 +1501,13 @@
   .sub-buy:hover:not(:disabled) { background: var(--c-purple); color: #000; }
   .sub-buy:disabled { opacity: 0.4; cursor: default; }
   .sub-node.owned .sub-buy { border-color: var(--c-blue); color: var(--c-blue); pointer-events: none; }
+
+  /* Micro-upgrade timed-unlock progress */
+  .node-progress.micro-progress { display: none; }
+  .sub-node.unlocking .node-progress.micro-progress { display: block; }
+  .sub-node.unlocking { border-color: var(--c-peach) !important; border-style: solid; opacity: 1; }
+  .sub-node.unlocking .sub-label { color: var(--c-peach); }
+  .sub-node.unlocking .sub-buy { border-color: var(--c-peach); color: var(--c-peach); }
 
   /* data-gated model nodes */
   .tree-node.data-locked { border-color: var(--c-cyan, #7db890) !important; }
@@ -2050,6 +2176,7 @@
       </button>
       <button class="hud-btn" id="btn-save"  type="button" title="Save now (auto-saves every 5s)">SAVE</button>
       <button class="hud-btn warn" id="btn-reset" type="button" title="Wipe save and reset">RESET</button>
+      <button class="hud-btn help-btn" id="btn-help" type="button" title="How to play">?</button>
       <a class="hud-btn" href="../index.html" title="Back to arcade">◂ ARCADE</a>
     </div>
   </div>
@@ -2182,7 +2309,7 @@
       <span class="ov-num" id="tokens-total">0</span>
     </div>
     <div class="ov-row data hidden" id="data-row">
-      <span class="ov-key">DATA COLLECTED</span>
+      <span class="ov-key" title="Passive training data — accumulates from tok/s. Required to unlock tier 3+ models.">DATA COLLECTED 💾</span>
       <span class="ov-num" id="disp-data">0 B</span>
     </div>
     <div class="ov-row revenue">
@@ -2223,13 +2350,13 @@
             </div>
             <div class="tree-node locked" id="node-nuclear">
               <div class="node-title">NUCLEAR</div>
-              <div class="node-desc">High output. +15 regen/s. Shared ops — upkeep drops per plant. 1-in-5000 meltdown lottery/min.</div>
+              <div class="node-desc">High output. +15 regen/s. Upkeep drops per plant. Each reactor rolls 1-in-5000 meltdown/min independently — risk scales with count.</div>
               <button class="node-buy" id="nuclear-btn" type="button">$<span id="nuclear-cost">28.00</span></button>
               <div class="node-stats"><span>OWNED: <strong id="nuclear-count">0</strong></span><span>REGEN: <strong id="nuclear-regen">0</strong></span><span id="nuclear-op-stat">−12%/plant upkeep</span></div>
             </div>
             <div class="tree-node locked" id="node-bio">
               <div class="node-title">NATURAL GAS</div>
-              <div class="node-desc">Cheap, high output. Emissions drain trust. +8 regen/s. Shutdown when it backfires.</div>
+              <div class="node-desc">Cheap, high output. Emissions drain −0.15%/s trust per plant — always. Buy LOBBY REGULATORS to stop it.</div>
               <button class="node-buy" id="bio-btn" type="button">$<span id="bio-cost">10.00</span></button>
               <button class="node-kill hidden" id="bio-kill-btn" type="button">SHUTDOWN PLANT</button>
               <div class="node-stats"><span>OWNED: <strong id="bio-count">0</strong></span><span>REGEN: <strong id="bio-regen">0</strong></span></div>
@@ -2253,7 +2380,7 @@
             </div>
             <div class="tree-node locked" id="node-rdu">
               <div class="node-title">RDU CLUSTER FARMS</div>
-              <div class="node-desc">Reconfigurable compute arrays. 4× throughput on the same energy draw.</div>
+              <div class="node-desc">Multiplies ALL CPU &amp; GPU throughput by 4×. One purchase, permanent. Energy draw stays the same.</div>
               <button class="node-buy" id="rdu-btn" type="button">$<span id="rdu-cost">2500.00</span></button>
               <div class="node-stats"><span>OWNED: <strong id="rdu-count">0</strong></span><span>4× COMPUTE</span></div>
             </div>
@@ -2321,46 +2448,55 @@
             <div class="sub-node owned" id="micro-model-1">
               <div class="sub-label">NANO-1.2</div>
               <div class="sub-desc">minor weight fixes · +8 demand</div>
+              <div class="node-progress micro-progress"><div class="node-progress-fill" id="micro-1-fill"></div></div>
               <button class="sub-buy" id="micro-1-btn" type="button">15 tok</button>
             </div>
             <div class="sub-node locked" id="micro-model-2">
               <div class="sub-label">CLOD 2.1</div>
               <div class="sub-desc">32K ctx · chain-of-thought · +30 demand</div>
+              <div class="node-progress micro-progress"><div class="node-progress-fill" id="micro-2-fill"></div></div>
               <button class="sub-buy" id="micro-2-btn" type="button">60 tok</button>
             </div>
             <div class="sub-node locked" id="micro-model-3">
               <div class="sub-label">GEMINIGHT 3.1</div>
               <div class="sub-desc">vision · audio · image gen · +60 demand</div>
+              <div class="node-progress micro-progress"><div class="node-progress-fill" id="micro-3-fill"></div></div>
               <button class="sub-buy" id="micro-3-btn" type="button">250 tok</button>
             </div>
             <div class="sub-node locked" id="micro-model-4">
               <div class="sub-label">GPT-OOPS 4.1</div>
               <div class="sub-desc">function calls · JSON mode · +80 demand</div>
+              <div class="node-progress micro-progress"><div class="node-progress-fill" id="micro-4-fill"></div></div>
               <button class="sub-buy" id="micro-4-btn" type="button">900 tok</button>
             </div>
             <div class="sub-node locked" id="micro-model-5">
               <div class="sub-label">GROKKK-5.1</div>
               <div class="sub-desc">128K window · docs · codebases · +120</div>
+              <div class="node-progress micro-progress"><div class="node-progress-fill" id="micro-5-fill"></div></div>
               <button class="sub-buy" id="micro-5-btn" type="button">3.5K tok</button>
             </div>
             <div class="sub-node locked" id="micro-model-6">
               <div class="sub-label">AUGUR II</div>
               <div class="sub-desc">multi-step · auto-retry · memory · +200</div>
+              <div class="node-progress micro-progress"><div class="node-progress-fill" id="micro-6-fill"></div></div>
               <button class="sub-buy" id="micro-6-btn" type="button">12K tok</button>
             </div>
             <div class="sub-node locked" id="micro-model-7">
               <div class="sub-label">PROMETHEUS II</div>
               <div class="sub-desc">self-critique · adaptive plans · +350</div>
+              <div class="node-progress micro-progress"><div class="node-progress-fill" id="micro-7-fill"></div></div>
               <button class="sub-buy" id="micro-7-btn" type="button">45K tok</button>
             </div>
             <div class="sub-node locked" id="micro-model-8">
               <div class="sub-label">BASILISK II</div>
               <div class="sub-desc">goal decomposition · frontier pricing · +600</div>
+              <div class="node-progress micro-progress"><div class="node-progress-fill" id="micro-8-fill"></div></div>
               <button class="sub-buy" id="micro-8-btn" type="button">150K tok</button>
             </div>
             <div class="sub-node locked" id="micro-model-9">
               <div class="sub-label">SINGULARITY-∞+</div>
               <div class="sub-desc">beyond benchmarks · endgame entity · +1000</div>
+              <div class="node-progress micro-progress"><div class="node-progress-fill" id="micro-9-fill"></div></div>
               <button class="sub-buy" id="micro-9-btn" type="button">500K tok</button>
             </div>
           </div>
@@ -2469,14 +2605,14 @@
             </div>
             <div class="tree-node influence-node locked" id="inf-node-propaganda">
               <div class="node-title">PROPAGANDA ON AI</div>
-              <div class="node-desc">Trust regen ↑↑. Demand boost. Gates the Political column.</div>
+              <div class="node-desc">+0.15%/s passive trust regen. +500 market demand. Gates the Political column.</div>
               <button class="node-buy inf-commit-btn" id="inf-propaganda-btn" type="button">90K tok · 2.5m</button>
               <div class="node-progress inf-progress" id="inf-propaganda-timer-wrap"><div class="node-progress-fill" id="inf-propaganda-timer-fill"></div></div>
               <div class="node-stats"><span id="inf-propaganda-status">locked</span></div>
             </div>
             <div class="tree-node influence-node locked" id="inf-node-ownnetwork">
               <div class="node-title">OWN THE NARRATIVE</div>
-              <div class="node-desc">Buy a network. Stacks all media buffs. −50% PR event severity.</div>
+              <div class="node-desc">Buy a network. Nuclear meltdown trust damage halved (−15%→−7.5%). Media chain prerequisite for MEMETIC.</div>
               <button class="node-buy inf-commit-btn" id="inf-ownnetwork-btn" type="button">200K tok · 4m</button>
               <div class="node-progress inf-progress" id="inf-ownnetwork-timer-wrap"><div class="node-progress-fill" id="inf-ownnetwork-timer-fill"></div></div>
               <div class="node-stats"><span id="inf-ownnetwork-status">locked</span></div>
@@ -2490,7 +2626,7 @@
             </div>
             <div class="tree-node influence-node locked" id="inf-node-rightwing">
               <div class="node-title">RIGHT-WING PARTIES</div>
-              <div class="node-desc">Requires Propaganda. Auto-unlocks Gov Contracts demand floor.</div>
+              <div class="node-desc">Requires Propaganda. Instantly unlocks GOV CONTRACTS node (+2000 market demand) for free.</div>
               <button class="node-buy inf-commit-btn" id="inf-rightwing-btn" type="button">80K tok · 2m</button>
               <div class="node-progress inf-progress" id="inf-rightwing-timer-wrap"><div class="node-progress-fill" id="inf-rightwing-timer-fill"></div></div>
               <div class="node-stats"><span id="inf-rightwing-status">locked</span></div>
@@ -2511,7 +2647,7 @@
             </div>
             <div class="tree-node influence-node locked" id="inf-node-privatize">
               <div class="node-title">PRIVATIZE EVERYTHING</div>
-              <div class="node-desc">2× Gov Contracts demand bonus. Flavor capstone.</div>
+              <div class="node-desc">Doubles GOV CONTRACTS demand bonus (+2000→+4000). Not just flavor — significant late-game demand spike.</div>
               <button class="node-buy inf-commit-btn" id="inf-privatize-btn" type="button">300K tok · 6m</button>
               <div class="node-progress inf-progress" id="inf-privatize-timer-wrap"><div class="node-progress-fill" id="inf-privatize-timer-fill"></div></div>
               <div class="node-stats"><span id="inf-privatize-status">locked</span></div>
@@ -2747,6 +2883,148 @@
     </div>
   </div>
 </div>
+<!-- ══ HELP MODAL ══════════════════════════════════════════════════════ -->
+<div class="modal-overlay hidden" id="help-modal">
+  <div class="modal-window help-window">
+    <div class="modal-header">
+      <span>? HOW TO PLAY</span>
+      <button class="modal-close" id="help-close">X</button>
+    </div>
+    <div class="help-body">
+      <div class="help-tabs">
+        <button class="help-tab active" data-tab="currencies">CURRENCIES</button>
+        <button class="help-tab" data-tab="mechanics">MECHANICS</button>
+        <button class="help-tab" data-tab="trust">TRUST</button>
+        <button class="help-tab" data-tab="phases">PHASES</button>
+      </div>
+
+      <!-- CURRENCIES -->
+      <div class="help-panel active" id="help-currencies">
+        <div class="help-section">
+          <div class="help-currency-title tok">⬡ TOKENS</div>
+          <p>Tokens are your <strong>processing output</strong> — each COMPUTE click (or auto-click from CPUs/GPUs) produces tokens based on your active model.</p>
+          <p><strong>Earn:</strong> Click COMPUTE or build CPU / GPU data centers. Higher model tiers = more tokens per click.</p>
+          <p><strong>Spend on:</strong></p>
+          <ul>
+            <li><strong>Model micro-upgrades</strong> — patch weights of your active model, boosts market demand. Deploys over time once committed.</li>
+            <li><strong>Research points</strong> — divert a % of processing capacity (the Research slider). Tokens become RP to fund breakthroughs.</li>
+            <li><strong>Influence ops</strong> — large token lump sums committed upfront, then unlock over minutes.</li>
+            <li><strong>Investment analysis</strong> — token allocation in INVEST tab improves WSB market win-rates.</li>
+          </ul>
+          <p class="help-note">⚠ Tokens are also the unit of DATA accumulation (tok/s × time = bytes of training data). Data is required to unlock higher-tier models once Phase 4 starts.</p>
+        </div>
+
+        <div class="help-section">
+          <div class="help-currency-title cash">$ CAPITAL</div>
+          <p>Capital is your <strong>real money</strong> — earned from fulfilled token requests, spent on hardware, models, and marketing.</p>
+          <p><strong>Earn:</strong> Every compute generates <code>tokens × $/token</code> based on price, trust tier, model value multiplier, and market efficiency.</p>
+          <p><strong>Spend on:</strong> Energy plants, CPU/GPU units, model upgrades, marketing channels, trust campaigns.</p>
+          <p><strong>Operating costs drain capital every second</strong> — each piece of infrastructure has an upkeep cost. The COSTS display shows your live burn rate. If costs exceed income you'll go negative.</p>
+          <p class="help-note">⚠ Even idle infrastructure costs ~10% of full upkeep. Solar panels reduce this idle floor. You'll always see a small drain even when not computing.</p>
+        </div>
+
+        <div class="help-section">
+          <div class="help-currency-title data">💾 DATA</div>
+          <p>Data is <strong>training data collected passively</strong> from your processing throughput. It accumulates automatically as tok/s × seconds.</p>
+          <p><strong>Starts collecting:</strong> Only once Phase 4 (Influence Era) unlocks. Before that, the counter stays at zero.</p>
+          <p><strong>Required for:</strong> Tier 3+ model upgrades require a data threshold before purchase. If the button shows a data amount, you need to wait for passive accumulation. You cannot speed it up — process more tokens faster.</p>
+          <p class="help-note">💡 Data accumulates silently in the background. You don't need to do anything — just keep processing tokens and it builds up over time.</p>
+        </div>
+      </div>
+
+      <!-- MECHANICS -->
+      <div class="help-panel hidden" id="help-mechanics">
+        <div class="help-section">
+          <div class="help-section-title">⚡ ENERGY</div>
+          <p>Every COMPUTE draws energy. Energy regens passively (base 6/s) plus whatever solar/nuclear/bio plants you own. If CPUs draw energy faster than regen, your battery drains and compute fires less often.</p>
+          <p class="help-note">⚠ Watch the GRID STATUS bar. Red means your processors are outrunning your energy supply — add more plants or fewer CPUs.</p>
+        </div>
+        <div class="help-section">
+          <div class="help-section-title">📈 MARKET &amp; PRICE</div>
+          <p>The market has a <strong>demand curve</strong> — raising price lowers demand. The sweet spot is where your capacity meets demand (efficiency = 100%). The chart shows this visually.</p>
+          <p>Upgrading models and buying marketing shifts the demand curve right, letting you charge more for the same capacity.</p>
+        </div>
+        <div class="help-section">
+          <div class="help-section-title">☢️ NUCLEAR RISK</div>
+          <p>Each nuclear plant rolls a 1-in-5000 lottery every minute independently. <strong>5 plants = 5 rolls/min</strong> — risk scales linearly with reactors. A meltdown costs −15% trust.</p>
+          <p>Nuclear research reduces meltdown odds and OWN THE NARRATIVE halves the trust damage when one occurs.</p>
+        </div>
+        <div class="help-section">
+          <div class="help-section-title">🔬 RESEARCH</div>
+          <p>Set a research topic (ACTIVATE), then drag the allocation slider. The slider diverts that % of your processing capacity into Research Points instead of income. Higher diversion = faster research, but less cash.</p>
+          <p class="help-note">⚠ If you set the slider but haven't pressed ACTIVATE on a topic, you are losing income for zero benefit. Always pick an active topic first.</p>
+        </div>
+        <div class="help-section">
+          <div class="help-section-title">📊 INVESTING</div>
+          <p>Capital allocation auto-invests a % of your income every 5 seconds into WSB sectors. Token allocation is separate — it diverts tokens to boost your market analysis win-rate.</p>
+          <p>Token allocation cap is 20%. Capital allocation cap is 30%. Both are capped to prevent runaway compounding.</p>
+          <p>PHARMA is high-risk high-reward (42% win rate but big swings). GREEN is safe and steady. SEMI is boom/bust.</p>
+        </div>
+        <div class="help-section">
+          <div class="help-section-title">📣 MARKETING SATURATION</div>
+          <p>Every repeat purchase of the same channel gives <strong>diminishing returns</strong>. The NEXT value shown is what the <em>next</em> purchase will add. After that it'll be lower still. Research → Better Target Marketing slows the drop-off.</p>
+        </div>
+      </div>
+
+      <!-- TRUST -->
+      <div class="help-panel hidden" id="help-trust">
+        <div class="help-section">
+          <div class="help-section-title">TRUST TIERS</div>
+          <table class="help-table">
+            <tr><th>TRUST</th><th>TIER</th><th>EFFECT</th></tr>
+            <tr><td>≥ 95%</td><td class="tier-elite">ELITE</td><td>+100% price multiplier</td></tr>
+            <tr><td>≥ 80%</td><td class="tier-premium">PREMIUM</td><td>+50% price multiplier</td></tr>
+            <tr><td>50–80%</td><td>NORMAL</td><td>No modifier</td></tr>
+            <tr><td>30–50%</td><td class="tier-watched">WATCHED</td><td>−20% demand</td></tr>
+            <tr><td>&lt; 30%</td><td class="tier-crisis">CRISIS</td><td>−40% demand</td></tr>
+            <tr><td>= 5%</td><td class="tier-floor">FLOOR</td><td>50s grace, then random shutdown</td></tr>
+          </table>
+        </div>
+        <div class="help-section">
+          <div class="help-section-title">TRUST DRAINS</div>
+          <ul>
+            <li><strong>Natural Gas plants</strong> — drain −0.15%/s per plant, every second, always. This is severe with multiple plants.</li>
+            <li><strong>Nuclear meltdowns</strong> — −15% trust per event (−7.5% if you own OWN THE NARRATIVE).</li>
+            <li><strong>Low prices</strong> — no direct trust drain, but watch for events.</li>
+          </ul>
+          <p class="help-note">⚠ Natural Gas description says "shutdown when it backfires" — there is no automatic shutdown. It will simply drain your trust to the floor and eventually cause a shutdown from being stuck there. Buy LOBBY REGULATORS to neutralise the drain.</p>
+        </div>
+        <div class="help-section">
+          <div class="help-section-title">TRUST RECOVERY</div>
+          <ul>
+            <li>Passive regen: ~0.017%/s (very slow)</li>
+            <li>NGO grants, Billionaires Gala, WHO Partnership, Green Pledge — buy trust in bulk, drip over time</li>
+            <li>PROPAGANDA ON AI (Influence) — +0.15%/s passive regen</li>
+            <li>FLOOD NEWS — small regen boost</li>
+            <li>BAILOUT button — emergency −20% trust in exchange for +$5 (only use in crises)</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- PHASES -->
+      <div class="help-panel hidden" id="help-phases">
+        <div class="help-section">
+          <div class="help-section-title">PHASE 1 · SURVIVAL</div>
+          <p>Click COMPUTE. Buy energy plants. Buy CPUs for auto-compute. Adjust price on the market curve. Goal: generate revenue, unlock the next panels.</p>
+        </div>
+        <div class="help-section">
+          <div class="help-section-title">PHASE 2 · RESEARCH</div>
+          <p>Unlocks at $5 lifetime revenue. Choose a research topic, allocate processing %, wait for breakthroughs. Models require increasing data to unlock — data accumulates automatically once Phase 4 starts.</p>
+        </div>
+        <div class="help-section">
+          <div class="help-section-title">PHASE 3 · GROWTH ERA</div>
+          <p>Unlocks at higher revenue. INVEST tab opens — allocate income % to stock market sectors. Also unlocks PoloBets prediction market for side income.</p>
+        </div>
+        <div class="help-section">
+          <div class="help-section-title">PHASE 4 · INFLUENCE ERA</div>
+          <p>The hidden late game. Data starts collecting. Token-heavy influence ops let you reshape markets, suppress regulation, and manipulate public narrative. Each influence node costs tokens and takes minutes to deploy.</p>
+          <p class="help-note">💡 This is also when 💾 DATA starts accumulating — models tier 3+ won't unlock until you reach their data threshold.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ══ /PHASE 1 · HTML ══ PHASE 2 · HTML below ══════════════════════════ -->
 
 <!-- ══ PHASE 1 · JS ($500 · COMPLETE) ═══════════════════════════════════ -->
@@ -2868,6 +3146,7 @@
     modelTier: 1,
     dataCollected: 0,
     microOwned: [false, false, false, false, false, false, false, false, false],
+    microActiveUnlock: null, // { tier, unlockAt, startAt }
 
     demandBase: 200,
     elasticity: 1.5,
@@ -3388,6 +3667,7 @@
       costEl: m.tier > 1 ? $("model-" + m.tier + "-cost") : null,
       micro: $("micro-model-" + m.tier),
       microBtn: $("micro-" + m.tier + "-btn"),
+      microFill: $("micro-" + m.tier + "-fill"),
     })),
     dataRow: $("data-row"),
 
@@ -3801,9 +4081,11 @@
     const frac = researchAllocFrac();
     const diverted = cap * frac;
     el.researchAllocSlider.value = String(S.researchAlloc);
+    const noTopic = S.researchAlloc > 0 && !S.activeResearch;
     el.researchAllocReadout.textContent =
       S.researchAlloc + "% · " + fmtBig(diverted) + " tok/s → RP" +
-      (frac > 0 ? " · −" + Math.round(frac * 100) + "% income" : "");
+      (frac > 0 ? " · −" + Math.round(frac * 100) + "% income" : "") +
+      (noTopic ? " · ⚠ NO TOPIC — income lost for nothing" : "");
 
     for (const rn of el.researchNodes) {
       const id = rn.id;
@@ -3945,9 +4227,11 @@
 
     el.investCashSlider.value = String(S.investCashAllocPct);
     el.investTokenSlider.value = String(S.investTokenAllocPct);
-    el.investCashReadout.textContent = S.investCashAllocPct + "% · $" + cashPerSec.toFixed(2) + "/s";
-    el.investTokenReadout.textContent = S.investTokenAllocPct + "% · " + tokDiverted.toFixed(1) + " tok/s" +
-      (tokenFrac > 0 ? " · +" + Math.round(tokenFrac * 50) + "% win bonus" : "");
+    el.investCashReadout.textContent = S.investCashAllocPct + "% (max 30%) · $" + cashPerSec.toFixed(2) + "/s auto-invested";
+    const tokNote = tokenFrac > 0
+      ? " · +" + Math.round(tokenFrac * 5) + "% WSB win-rate · tokens burned for market analysis"
+      : " (max 20%)";
+    el.investTokenReadout.textContent = S.investTokenAllocPct + "% · " + tokDiverted.toFixed(1) + " tok/s" + tokNote;
 
     // Per-sector alloc sum display
     let allocSum = 0;
@@ -4060,13 +4344,19 @@
 
     const cashFrac = investCashAllocFrac();
     const tokenFrac = investTokenAllocFrac();
-    if (cashFrac <= 0) return;
+    if (cashFrac <= 0 && tokenFrac <= 0) return;
 
     const cap = capacityNow();
     const dem = demandAt(S.pricePerK);
     const fulfilled = Math.min(cap, dem);
     const grossPerSec = fulfilled * payPerToken();
     const investAmount = grossPerSec * INVEST_TICK_INTERVAL * cashFrac;
+
+    // Consume diverted tokens each tick — they are spent on market analysis
+    if (tokenFrac > 0) {
+      const tokDiverted = cap * tokenFrac * INVEST_TICK_INTERVAL;
+      S.tokens = Math.max(0, S.tokens - tokDiverted);
+    }
 
     if (investAmount <= 0 || S.cash < investAmount) return;
 
@@ -4663,18 +4953,37 @@
     if (tier === 6) log("version numbers gone · the product is the entity now", "hint");
   }
 
+  // Unlock duration scales with tier: tier * 12s (min 12s, max ~108s)
+  function microUnlockDurationMs(tier) { return tier * 12 * 1000; }
+
   function buyMicroUpgrade(tier) {
     const idx = tier - 1;
     const m = MODELS[idx];
     if (!m) return;
     if (S.modelTier < tier) { log("deploy " + m.name + " first", "warn"); return; }
     if (S.microOwned[idx]) { log(m.microName + " already installed", "warn"); return; }
+    if (S.microActiveUnlock) {
+      const active = MODELS[S.microActiveUnlock.tier - 1];
+      log("upgrade in progress · " + active.microName + " deploying · wait for it", "warn");
+      return;
+    }
     if (S.tokens < m.microTokenCost) {
       log("need " + fmtBig(m.microTokenCost) + " tok for " + m.microName + " · have " + fmtBig(S.tokens), "warn");
       return;
     }
     S.tokens -= m.microTokenCost;
+    const durationMs = microUnlockDurationMs(tier);
+    S.microActiveUnlock = { tier, startAt: Date.now(), unlockAt: Date.now() + durationMs };
+    const tokPerSec = Math.round(m.microTokenCost / (durationMs / 1000));
+    log(m.microName + " deploying · " + Math.round(durationMs / 1000) + "s · " + fmtBig(tokPerSec) + " tok/s burn · stand by", "event");
+  }
+
+  function completeMicroUpgrade(tier) {
+    const idx = tier - 1;
+    const m = MODELS[idx];
+    if (!m) return;
     S.microOwned[idx] = true;
+    S.microActiveUnlock = null;
     S.demandBase += m.microDemand;
     log(m.microName + " installed · market +" + m.microDemand + " · " + m.microDesc, "event");
   }
@@ -5192,6 +5501,14 @@
       }
     }
 
+    // Micro-upgrade timed unlock
+    if (S.microActiveUnlock) {
+      const now3 = Date.now();
+      if (now3 >= S.microActiveUnlock.unlockAt) {
+        completeMicroUpgrade(S.microActiveUnlock.tier);
+      }
+    }
+
     // Update nodes
     const cSol = solarCost(); el.solarCost.textContent = fmtBig(cSol); el.solarN.textContent = S.solar;
     el.solarRegen.textContent = fmtBig(S.solar > 0
@@ -5239,16 +5556,28 @@
       if (mn.micro) {
         const tierOwned   = S.modelTier >= mn.tier;
         const microOwned  = S.microOwned[mn.tier - 1];
+        const isUnlocking = !microOwned && S.microActiveUnlock && S.microActiveUnlock.tier === mn.tier;
         mn.micro.classList.toggle("owned",     tierOwned && microOwned);
-        mn.micro.classList.toggle("available", tierOwned && !microOwned);
-        mn.micro.classList.toggle("locked",    !tierOwned);
+        mn.micro.classList.toggle("unlocking", !microOwned && !!isUnlocking);
+        mn.micro.classList.toggle("available", tierOwned && !microOwned && !isUnlocking);
+        mn.micro.classList.toggle("locked",    !tierOwned && !isUnlocking);
         if (mn.microBtn) {
           if (microOwned) {
             mn.microBtn.textContent = "✓ INSTALLED";
             mn.microBtn.disabled = true;
+          } else if (isUnlocking) {
+            const elapsed = Date.now() - S.microActiveUnlock.startAt;
+            const total   = S.microActiveUnlock.unlockAt - S.microActiveUnlock.startAt;
+            const pct     = Math.min(100, (elapsed / total) * 100);
+            const remaining = Math.max(0, Math.ceil((S.microActiveUnlock.unlockAt - Date.now()) / 1000));
+            if (mn.microFill) mn.microFill.style.width = pct + "%";
+            mn.microBtn.textContent = remaining + "s…";
+            mn.microBtn.disabled = true;
           } else {
+            if (mn.microFill) mn.microFill.style.width = "0%";
             mn.microBtn.textContent = fmtBig(m.microTokenCost) + " tok";
-            mn.microBtn.disabled = !tierOwned || S.tokens < m.microTokenCost;
+            const otherUnlocking = S.microActiveUnlock && S.microActiveUnlock.tier !== mn.tier;
+            mn.microBtn.disabled = !tierOwned || S.tokens < m.microTokenCost || !!otherUnlocking;
           }
         }
       }
@@ -5590,7 +5919,7 @@
     "infSoftControl",
     "infFloodNews", "infAstroturf", "infPropaganda", "infOwnNetwork", "infMemetic",
     "infRightWing", "infGovContracts", "infWars", "infPrivatize", "infLobby",
-    "microOwned",
+    "microOwned", "microActiveUnlock",
   ];
 
   const formatDuration = (ms) => {
@@ -6055,6 +6384,30 @@
   el.btnCopy.addEventListener("click", copyGameState);
   el.btnSave.addEventListener("click",  () => { if (saveGame()) flashSaved(); });
   el.btnReset.addEventListener("click", resetGame);
+
+  // ── Help modal ──────────────────────────────────
+  const helpModal  = document.getElementById("help-modal");
+  const helpClose  = document.getElementById("help-close");
+  const helpTabs   = Array.from(document.querySelectorAll(".help-tab"));
+  const helpPanels = Array.from(document.querySelectorAll(".help-panel"));
+
+  document.getElementById("btn-help").addEventListener("click", () => {
+    helpModal.classList.remove("hidden");
+  });
+  helpClose.addEventListener("click", () => helpModal.classList.add("hidden"));
+  helpModal.addEventListener("click", (e) => {
+    if (e.target === helpModal) helpModal.classList.add("hidden");
+  });
+  helpTabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      const id = tab.dataset.tab;
+      helpTabs.forEach(t => t.classList.remove("active"));
+      helpPanels.forEach(p => { p.classList.remove("active"); p.classList.add("hidden"); });
+      tab.classList.add("active");
+      const panel = document.getElementById("help-" + id);
+      if (panel) { panel.classList.remove("hidden"); panel.classList.add("active"); }
+    });
+  });
 
   window.copyState = () => {
     const exportData = buildGameStateExport();
