@@ -4629,7 +4629,7 @@
     if (el.wsbAvailCash)    el.wsbAvailCash.textContent = "$" + S.cash.toFixed(2);
     if (el.wsbAvailTokens)  el.wsbAvailTokens.textContent = fmtBig(S.tokens);
     if (el.wsbTokPct)       el.wsbTokPct.textContent = S.investTokenAllocPct + "%";
-    if (el.wsbTokHint)      el.wsbTokHint.textContent = "+" + Math.round(S.investTokenAllocPct * 0.15) + "% win";
+    if (el.wsbTokHint)      el.wsbTokHint.textContent = "+" + Math.round(S.investTokenAllocPct * 0.5) + "% win";
     if (el.wsbCashPct)      el.wsbCashPct.textContent = S.investCashAllocPct + "%";
     if (el.wsbCashHint) {
       const gross2 = Math.min(capacityNow(), demandNow()) * payPerToken() * (1 - researchAllocFrac());
@@ -4856,6 +4856,7 @@
     investTickAccum -= INVEST_TICK_INTERVAL;
 
     const analysisBonus = 1;
+    const tokenFrac = investTokenAllocFrac(); // 0–0.20; at 20% gives +10% win rate
 
     for (const sector of WSB_SECTORS) {
       const key = "wsb" + sector.charAt(0).toUpperCase() + sector.slice(1);
@@ -4871,7 +4872,7 @@
         : Math.max(-0.03, profile.streak * 0.01);  // cold streak: slight recovery
       const mediaBonus = S.infFloodNews ? MEDIA_WINRATE_BONUS : 0;
       const effectiveWinRate = Math.min(0.90, Math.max(0.20,
-        profile.winRate + streakBias + tokenFrac * 0.05 + mediaBonus));
+        profile.winRate + streakBias + tokenFrac * 0.5 + mediaBonus));
 
       const success = Math.random() < effectiveWinRate;
       const streakMagMult = success
@@ -5189,12 +5190,33 @@
     sec.withdrawBtn.addEventListener("click", () => withdrawSector(sec.id));
   }
 
-  // ── Priority slider handlers ──────────────────
+  // ── Priority slider handlers (linked — always sum to 100) ────────────────
   for (const sec of el.wsbSectors) {
     if (!sec.allocSlider) continue;
     sec.allocSlider.addEventListener("input", () => {
-      const key = "wsbAlloc" + sec.id.charAt(0).toUpperCase() + sec.id.slice(1);
-      S[key] = parseInt(sec.allocSlider.value, 10);
+      const sectors = el.wsbSectors;
+      const newVal = Math.max(0, Math.min(100, parseInt(sec.allocSlider.value, 10)));
+      sec.allocSlider.value = String(newVal);
+      const remaining = 100 - newVal;
+      const others = sectors.filter(s => s.id !== sec.id);
+      const othersSum = others.reduce((sum, s) => sum + parseInt(s.allocSlider.value, 10), 0);
+      if (othersSum > 0) {
+        let distributed = 0;
+        for (let i = 0; i < others.length - 1; i++) {
+          const v = Math.round((parseInt(others[i].allocSlider.value, 10) / othersSum) * remaining);
+          others[i].allocSlider.value = String(Math.max(0, v));
+          distributed += Math.max(0, v);
+        }
+        others[others.length - 1].allocSlider.value = String(Math.max(0, remaining - distributed));
+      } else {
+        const share = Math.floor(remaining / others.length);
+        const extra = remaining - share * others.length;
+        others.forEach((s, i) => { s.allocSlider.value = String(share + (i === 0 ? extra : 0)); });
+      }
+      for (const s of sectors) {
+        const key = "wsbAlloc" + s.id.charAt(0).toUpperCase() + s.id.slice(1);
+        S[key] = parseInt(s.allocSlider.value, 10);
+      }
       if (activeModal === "invest") renderInvestUI();
     });
   }
@@ -5738,6 +5760,10 @@
   // ── Game loop ──────────────────────────────────
   let last = performance.now();
   function tick(now) {
+    try { _tickBody(now); } catch(e) { console.error("tick error:", e); }
+    requestAnimationFrame(tick);
+  }
+  function _tickBody(now) {
     const dt = Math.min(0.1, (now - last) / 1000); // clamp dt
     last = now;
 
@@ -5883,7 +5909,6 @@
     const tput = capacityNow();
 
     render(tput, dt);
-    requestAnimationFrame(tick);
   }
 
   // ── Render ─────────────────────────────────────
