@@ -1881,13 +1881,13 @@
     font-size: 0.78rem;
     table-layout: fixed;
   }
-  .wsb-table col.col-sector  { width: 18%; }
-  .wsb-table col.col-alloc   { width: 18%; }
-  .wsb-table col.col-invested{ width: 12%; }
-  .wsb-table col.col-value   { width: 12%; }
-  .wsb-table col.col-return  { width: 12%; }
-  .wsb-table col.col-spark   { width: 8%; }
-  .wsb-table col.col-action  { width: 38%; }
+  .wsb-table col.col-sector   { width: 17%; }
+  .wsb-table col.col-invested { width: 10%; }
+  .wsb-table col.col-value    { width: 10%; }
+  .wsb-table col.col-return   { width: 11%; }
+  .wsb-table col.col-spark    { width: 7%; }
+  .wsb-table col.col-priority { width: 32%; }
+  .wsb-table col.col-action   { width: 13%; }
   .wsb-table thead tr {
     border-bottom: 2px solid var(--c-purple);
   }
@@ -2082,31 +2082,49 @@
     gap: 0.4rem;
     flex-wrap: nowrap;
   }
-  .wsb-quick-btns {
+  .wsb-priority-cell {
     display: flex;
-    gap: 0.25rem;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0 0.2rem;
   }
-  .wsb-quick-btn {
-    font-family: var(--font-display);
-    font-size: 0.34rem;
-    padding: 0.28rem 0.4rem;
-    background: rgba(125,184,144,0.08);
-    color: var(--c-mint);
-    border: 1px solid rgba(125,184,144,0.45);
+  .wsb-priority-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 3px;
+    background: rgba(125,184,144,0.2);
+    border-radius: 2px;
+    outline: none;
     cursor: pointer;
-    letter-spacing: 0.04em;
-    transition: all 100ms;
+    min-width: 0;
+  }
+  .wsb-priority-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--c-mint);
+    cursor: pointer;
+    border: none;
+  }
+  .wsb-priority-slider::-moz-range-thumb {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--c-mint);
+    cursor: pointer;
+    border: none;
+  }
+  .wsb-priority-pct {
+    font-family: var(--font-display);
+    font-size: 0.62rem;
+    color: var(--c-mint);
+    min-width: 2.4rem;
+    text-align: right;
     white-space: nowrap;
   }
-  .wsb-quick-btn:hover { background: var(--c-mint); color: var(--bg-deep); }
-  .wsb-quick-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-  .wsb-quick-max {
-    background: rgba(125,184,144,0.15);
-    border-color: var(--c-mint);
-    color: var(--c-mint);
-    font-weight: bold;
-  }
-  .wsb-quick-max:hover { background: var(--c-mint); color: var(--bg-deep); }
+  .wsb-priority-pct.zero { color: var(--ink-mute); }
   .wsb-invest-btn {
     font-family: var(--font-display);
     font-size: 0.32rem;
@@ -3103,6 +3121,7 @@
               <col class="col-value">
               <col class="col-return">
               <col class="col-spark">
+              <col class="col-priority">
               <col class="col-action">
             </colgroup>
             <thead>
@@ -3112,6 +3131,7 @@
                 <th class="right">VALUE</th>
                 <th class="right">RETURN</th>
                 <th class="center">TREND</th>
+                <th class="center">PRIORITY</th>
                 <th class="center">ACTION</th>
               </tr>
             </thead>
@@ -3122,7 +3142,8 @@
                 <td class="wsb-sector-value" id="wsb-military-value">$0.00</td>
                 <td><div class="wsb-return-cell"><span class="wsb-return-arrow zero" id="wsb-military-arrow">▶</span><span class="wsb-sector-return zero" id="wsb-military-return">+0.0%</span></div></td>
                 <td><svg class="wsb-sparkline" id="wsb-military-spark" viewBox="0 0 64 24" preserveAspectRatio="none"></svg></td>
-                <td><div class="wsb-action-cell"><div class="wsb-quick-btns"><button class="wsb-quick-btn" data-sector="military" data-amount="1">$1</button><button class="wsb-quick-btn" data-sector="military" data-amount="5">$5</button><button class="wsb-quick-btn" data-sector="military" data-amount="25">$25</button><button class="wsb-quick-btn wsb-quick-max" data-sector="military" data-amount="max">MAX</button></div><button class="wsb-withdraw" id="wsb-military-withdraw" type="button" disabled>WDRAW</button></div></td>
+                <td><div class="wsb-priority-cell"><input class="wsb-priority-slider" id="wsb-military-alloc-slider" type="range" min="0" max="100" step="1" value="20" data-sector="military"><span class="wsb-priority-pct" id="wsb-military-alloc-pct">20%</span></div></td>
+                <td class="center"><button class="wsb-withdraw" id="wsb-military-withdraw" type="button" disabled>WDRAW</button></td>
               </tr>
               <tr id="wsb-semi">
                 <td><div class="wsb-sector-badge"><span class="wsb-sector-glyph">CPU</span><span class="wsb-sector-name">SILICON</span></div></td>
@@ -3130,7 +3151,8 @@
                 <td class="wsb-sector-value" id="wsb-semi-value">$0.00</td>
                 <td><div class="wsb-return-cell"><span class="wsb-return-arrow zero" id="wsb-semi-arrow">▶</span><span class="wsb-sector-return zero" id="wsb-semi-return">+0.0%</span></div></td>
                 <td><svg class="wsb-sparkline" id="wsb-semi-spark" viewBox="0 0 64 24" preserveAspectRatio="none"></svg></td>
-                <td><div class="wsb-action-cell"><div class="wsb-quick-btns"><button class="wsb-quick-btn" data-sector="semi" data-amount="1">$1</button><button class="wsb-quick-btn" data-sector="semi" data-amount="5">$5</button><button class="wsb-quick-btn" data-sector="semi" data-amount="25">$25</button><button class="wsb-quick-btn wsb-quick-max" data-sector="semi" data-amount="max">MAX</button></div><button class="wsb-withdraw" id="wsb-semi-withdraw" type="button" disabled>WDRAW</button></div></td>
+                <td><div class="wsb-priority-cell"><input class="wsb-priority-slider" id="wsb-semi-alloc-slider" type="range" min="0" max="100" step="1" value="20" data-sector="semi"><span class="wsb-priority-pct" id="wsb-semi-alloc-pct">20%</span></div></td>
+                <td class="center"><button class="wsb-withdraw" id="wsb-semi-withdraw" type="button" disabled>WDRAW</button></td>
               </tr>
               <tr id="wsb-green">
                 <td><div class="wsb-sector-badge"><span class="wsb-sector-glyph">ECO</span><span class="wsb-sector-name">ECO GRID</span></div></td>
@@ -3138,7 +3160,8 @@
                 <td class="wsb-sector-value" id="wsb-green-value">$0.00</td>
                 <td><div class="wsb-return-cell"><span class="wsb-return-arrow zero" id="wsb-green-arrow">▶</span><span class="wsb-sector-return zero" id="wsb-green-return">+0.0%</span></div></td>
                 <td><svg class="wsb-sparkline" id="wsb-green-spark" viewBox="0 0 64 24" preserveAspectRatio="none"></svg></td>
-                <td><div class="wsb-action-cell"><div class="wsb-quick-btns"><button class="wsb-quick-btn" data-sector="green" data-amount="1">$1</button><button class="wsb-quick-btn" data-sector="green" data-amount="5">$5</button><button class="wsb-quick-btn" data-sector="green" data-amount="25">$25</button><button class="wsb-quick-btn wsb-quick-max" data-sector="green" data-amount="max">MAX</button></div><button class="wsb-withdraw" id="wsb-green-withdraw" type="button" disabled>WDRAW</button></div></td>
+                <td><div class="wsb-priority-cell"><input class="wsb-priority-slider" id="wsb-green-alloc-slider" type="range" min="0" max="100" step="1" value="20" data-sector="green"><span class="wsb-priority-pct" id="wsb-green-alloc-pct">20%</span></div></td>
+                <td class="center"><button class="wsb-withdraw" id="wsb-green-withdraw" type="button" disabled>WDRAW</button></td>
               </tr>
               <tr id="wsb-pharma">
                 <td><div class="wsb-sector-badge"><span class="wsb-sector-glyph">BIO</span><span class="wsb-sector-name">BIOTECH</span></div></td>
@@ -3146,7 +3169,8 @@
                 <td class="wsb-sector-value" id="wsb-pharma-value">$0.00</td>
                 <td><div class="wsb-return-cell"><span class="wsb-return-arrow zero" id="wsb-pharma-arrow">▶</span><span class="wsb-sector-return zero" id="wsb-pharma-return">+0.0%</span></div></td>
                 <td><svg class="wsb-sparkline" id="wsb-pharma-spark" viewBox="0 0 64 24" preserveAspectRatio="none"></svg></td>
-                <td><div class="wsb-action-cell"><div class="wsb-quick-btns"><button class="wsb-quick-btn" data-sector="pharma" data-amount="1">$1</button><button class="wsb-quick-btn" data-sector="pharma" data-amount="5">$5</button><button class="wsb-quick-btn" data-sector="pharma" data-amount="25">$25</button><button class="wsb-quick-btn wsb-quick-max" data-sector="pharma" data-amount="max">MAX</button></div><button class="wsb-withdraw" id="wsb-pharma-withdraw" type="button" disabled>WDRAW</button></div></td>
+                <td><div class="wsb-priority-cell"><input class="wsb-priority-slider" id="wsb-pharma-alloc-slider" type="range" min="0" max="100" step="1" value="20" data-sector="pharma"><span class="wsb-priority-pct" id="wsb-pharma-alloc-pct">20%</span></div></td>
+                <td class="center"><button class="wsb-withdraw" id="wsb-pharma-withdraw" type="button" disabled>WDRAW</button></td>
               </tr>
               <tr id="wsb-tech">
                 <td><div class="wsb-sector-badge"><span class="wsb-sector-glyph">NET</span><span class="wsb-sector-name">NETWARE</span></div></td>
@@ -3154,7 +3178,8 @@
                 <td class="wsb-sector-value" id="wsb-tech-value">$0.00</td>
                 <td><div class="wsb-return-cell"><span class="wsb-return-arrow zero" id="wsb-tech-arrow">▶</span><span class="wsb-sector-return zero" id="wsb-tech-return">+0.0%</span></div></td>
                 <td><svg class="wsb-sparkline" id="wsb-tech-spark" viewBox="0 0 64 24" preserveAspectRatio="none"></svg></td>
-                <td><div class="wsb-action-cell"><div class="wsb-quick-btns"><button class="wsb-quick-btn" data-sector="tech" data-amount="1">$1</button><button class="wsb-quick-btn" data-sector="tech" data-amount="5">$5</button><button class="wsb-quick-btn" data-sector="tech" data-amount="25">$25</button><button class="wsb-quick-btn wsb-quick-max" data-sector="tech" data-amount="max">MAX</button></div><button class="wsb-withdraw" id="wsb-tech-withdraw" type="button" disabled>WDRAW</button></div></td>
+                <td><div class="wsb-priority-cell"><input class="wsb-priority-slider" id="wsb-tech-alloc-slider" type="range" min="0" max="100" step="1" value="20" data-sector="tech"><span class="wsb-priority-pct" id="wsb-tech-alloc-pct">20%</span></div></td>
+                <td class="center"><button class="wsb-withdraw" id="wsb-tech-withdraw" type="button" disabled>WDRAW</button></td>
               </tr>
             </tbody>
           </table>
@@ -3972,6 +3997,8 @@
       investedEl: $("wsb-" + id + "-invested"),
       withdrawBtn: $("wsb-" + id + "-withdraw"),
       sparkSvg: $("wsb-" + id + "-spark"),
+      allocSlider: $("wsb-" + id + "-alloc-slider"),
+      allocPctEl: $("wsb-" + id + "-alloc-pct"),
     })),
     wsbAllocSum: $("wsb-alloc-sum"),
     wsbAvailCash: $("wsb-avail-cash"),
@@ -4628,6 +4655,15 @@
       renderWsbSparkline(sec.sparkSvg, wsbHistory[sec.id]);
     }
 
+    // Update priority slider pct labels to reflect effective share
+    const weights = wsbAllocWeights();
+    for (const sec of el.wsbSectors) {
+      if (!sec.allocPctEl) continue;
+      const pct = Math.round(weights[sec.id] * 100);
+      sec.allocPctEl.textContent = pct + "%";
+      sec.allocPctEl.className = "wsb-priority-pct" + (pct === 0 ? " zero" : "");
+    }
+
     renderPoloUI();
   }
 
@@ -5153,15 +5189,15 @@
     sec.withdrawBtn.addEventListener("click", () => withdrawSector(sec.id));
   }
 
-  // ── Quick-invest button handlers ──────────────────
-  document.querySelectorAll(".wsb-quick-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const sectorId = btn.dataset.sector;
-      const raw = btn.dataset.amount;
-      const amount = raw === "max" ? Math.floor(S.cash * 100) / 100 : parseFloat(raw);
-      if (amount > 0) investSector(sectorId, amount);
+  // ── Priority slider handlers ──────────────────
+  for (const sec of el.wsbSectors) {
+    if (!sec.allocSlider) continue;
+    sec.allocSlider.addEventListener("input", () => {
+      const key = "wsbAlloc" + sec.id.charAt(0).toUpperCase() + sec.id.slice(1);
+      S[key] = parseInt(sec.allocSlider.value, 10);
+      if (activeModal === "invest") renderInvestUI();
     });
-  });
+  }
 
   function withdrawSector(sectorId) {
     const key = "wsb" + sectorId.charAt(0).toUpperCase() + sectorId.slice(1);
@@ -5739,6 +5775,22 @@
     const opCost = operatingCostPerSec(util);
     if (opCost > 0) {
       S.cash = Math.max(CASH_FLOOR, S.cash - opCost * dt);
+    }
+
+    // Auto-invest: continuously drain % of gross income into WSB sectors per priority weights
+    if (S.growthEraUnlocked && investCashAllocFrac() > 0) {
+      const grossRate = Math.min(capacityNow(), demandNow()) * payPerToken() * (1 - researchAllocFrac());
+      const investAmt = grossRate * investCashAllocFrac() * dt;
+      if (investAmt > 0 && S.cash > investAmt + CASH_FLOOR) {
+        const weights = wsbAllocWeights();
+        S.cash -= investAmt;
+        for (const sector of WSB_SECTORS) {
+          const key = "wsb" + sector.charAt(0).toUpperCase() + sector.slice(1);
+          const share = investAmt * weights[sector];
+          S[key] += share;
+          S[key + "Invested"] += share;
+        }
+      }
     }
 
     // Humanity Trust mechanics
@@ -6871,6 +6923,12 @@
       el.investCashSlider.value = String(S.investCashAllocPct);
       el.investCashSliderVis.value = String(S.investCashAllocPct);
       el.investTokenSlider.value = String(S.investTokenAllocPct);
+      // Sync priority sliders from saved state
+      for (const sec of el.wsbSectors) {
+        if (!sec.allocSlider) continue;
+        const key = "wsbAlloc" + sec.id.charAt(0).toUpperCase() + sec.id.slice(1);
+        if (S[key] != null) sec.allocSlider.value = String(S[key]);
+      }
       return true;
     } catch { return false; }
   }
