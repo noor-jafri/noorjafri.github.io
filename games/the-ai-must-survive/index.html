@@ -3983,6 +3983,8 @@
   const PRICE_MIN_HARD = 0.01, PRICE_MAX_HARD = 50;
   const CHART = { x0: 36, x1: 268, y0: 8, y1: 90, tpsMax: 20, dotPadPx: 14, priceMin: PRICE_MIN_HARD, priceMax: PRICE_MAX_HARD };
   const CHART_LOG_FLOOR = 1; // tok/s — log Y so the demand curve doesn't cliff at price floor
+  // Smoothed display values — lerped toward targets each frame so chart glides instead of snapping
+  const CHART_VIS = { priceX: CHART.x0, capY: CHART.y1, demY: CHART.y1, optX: CHART.x0, optY: CHART.y1, demandBase: 0 };
 
   // Log-scale X: maps price → pixel using log10 of the visible [priceMin, priceMax] window.
   const priceToX = (p) => {
@@ -6107,25 +6109,41 @@
       el.mStatus.classList.add("bad");
     }
 
-    // ── Chart updates ─────────────────────────────
-    const capY = tpsToY(cap);
+    // ── Chart updates (lerped for smooth animation) ──
+    const lerpK = 1 - Math.exp(-dt * 12); // ~12/s settling, frame-rate independent
+
+    const targetPriceX  = priceToX(S.pricePerK);
+    const targetCapY    = tpsToY(cap);
+    const targetDemY    = tpsToY(dem);
+
+    CHART_VIS.priceX += (targetPriceX - CHART_VIS.priceX) * lerpK;
+    CHART_VIS.capY   += (targetCapY   - CHART_VIS.capY)   * lerpK;
+    CHART_VIS.demY   += (targetDemY   - CHART_VIS.demY)   * lerpK;
+
+    const priceX = CHART_VIS.priceX;
+    const capY   = CHART_VIS.capY;
+    const demY   = CHART_VIS.demY;
+
     el.capLine.setAttribute("y1", capY);
     el.capLine.setAttribute("y2", capY);
 
-    const priceX = priceToX(S.pricePerK);
     el.priceMark.setAttribute("x1", priceX);
     el.priceMark.setAttribute("x2", priceX);
     el.priceMark.setAttribute("y1", CHART.y0);
     el.priceMark.setAttribute("y2", CHART.y1);
 
-    const youPt = clampInPlot(priceX, tpsToY(dem), 3);
+    const youPt = clampInPlot(priceX, demY, 3);
     el.ptCurrent.setAttribute("cx", youPt.x);
     el.ptCurrent.setAttribute("cy", youPt.y);
 
     if (cap > 0.05) {
       const peakPrice = Math.max(CHART.priceMin, Math.min(CHART.priceMax, opt));
       const peakDem = demandAt(peakPrice);
-      const peakPt = clampInPlot(priceToX(peakPrice), tpsToY(peakDem), 2.5);
+      const targetOptX = priceToX(peakPrice);
+      const targetOptY = tpsToY(peakDem);
+      CHART_VIS.optX += (targetOptX - CHART_VIS.optX) * lerpK;
+      CHART_VIS.optY += (targetOptY - CHART_VIS.optY) * lerpK;
+      const peakPt = clampInPlot(CHART_VIS.optX, CHART_VIS.optY, 2.5);
       el.ptOptimal.setAttribute("cx", peakPt.x);
       el.ptOptimal.setAttribute("cy", peakPt.y);
     } else {
@@ -6136,7 +6154,6 @@
     el.unmetArea.setAttribute("d", buildUnmetPath(cap));
 
     // Vertical delta line at current price: between capacity & demand
-    const demY = tpsToY(dem);
     el.deltaLine.setAttribute("x1", priceX);
     el.deltaLine.setAttribute("x2", priceX);
     el.deltaLine.setAttribute("y1", capY);
