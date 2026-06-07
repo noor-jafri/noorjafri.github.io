@@ -5830,12 +5830,12 @@
     while (S.clickTimes.length && S.clickTimes[0] < cutoff) S.clickTimes.shift();
     const tput = capacityNow();
 
-    render(tput);
+    render(tput, dt);
     requestAnimationFrame(tick);
   }
 
   // ── Render ─────────────────────────────────────
-  function render(tput) {
+  function render(tput, dt = 0.016) {
     if (el.treeViewport && !el.treeViewport.classList.contains("hidden")) {
       const _now = performance.now();
       if (_now - _lastTreeLayout > 400) { _lastTreeLayout = _now; layoutWorld(); }
