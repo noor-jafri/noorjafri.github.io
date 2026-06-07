@@ -1217,6 +1217,7 @@
   .help-table .tier-watched { color: var(--c-peach); }
   .help-table .tier-crisis  { color: var(--c-red); }
   .help-table .tier-floor   { color: var(--c-red); font-weight: bold; }
+  .phase-upcoming-label { color: var(--c-peach); font-size: 0.75em; opacity: 0.8; }
 
   /* Tree Nodes */
   .tree-canvas {
@@ -3177,28 +3178,21 @@
     <div class="help-body">
       <div class="help-tabs">
         <button class="help-tab active" data-tab="currencies">CURRENCIES</button>
-        <button class="help-tab" data-tab="mechanics">MECHANICS</button>
-        <button class="help-tab" data-tab="trust">TRUST</button>
+        <button class="help-tab" data-tab="mechanics" data-min-phase="1">MECHANICS</button>
+        <button class="help-tab" data-tab="trust" data-min-phase="3">TRUST</button>
         <button class="help-tab" data-tab="phases">PHASES</button>
       </div>
 
       <!-- CURRENCIES -->
       <div class="help-panel active" id="help-currencies">
-        <div class="help-section">
+        <div class="help-section" data-min-phase="1">
           <div class="help-currency-title tok">⬡ TOKENS</div>
           <p>Tokens are your <strong>processing output</strong> — each COMPUTE click (or auto-click from CPUs/GPUs) produces tokens based on your active model.</p>
           <p><strong>Earn:</strong> Click COMPUTE or build CPU / GPU data centers. Higher model tiers = more tokens per click.</p>
-          <p><strong>Spend on:</strong></p>
-          <ul>
-            <li><strong>Model micro-upgrades</strong> — patch weights of your active model, boosts market demand. Deploys over time once committed.</li>
-            <li><strong>Research points</strong> — divert a % of processing capacity (the Research slider). Tokens become RP to fund breakthroughs.</li>
-            <li><strong>Influence ops</strong> — large token lump sums committed upfront, then unlock over minutes.</li>
-            <li><strong>Investment analysis</strong> — token allocation in INVEST tab improves WSB market win-rates.</li>
-          </ul>
-          <p class="help-note">⚠ Tokens are also the unit of DATA accumulation (tok/s × time = bytes of training data). Data is required to unlock higher-tier models once Phase 4 starts.</p>
+          <p><strong>Spend on:</strong> Model micro-upgrades (boost demand), research points (slider), and later influence ops and investment analysis.</p>
         </div>
 
-        <div class="help-section">
+        <div class="help-section" data-min-phase="1">
           <div class="help-currency-title cash">$ CAPITAL</div>
           <p>Capital is your <strong>real money</strong> — earned from fulfilled token requests, spent on hardware, models, and marketing.</p>
           <p><strong>Earn:</strong> Every compute generates <code>tokens × $/token</code> based on price, trust tier, model value multiplier, and market efficiency.</p>
@@ -3207,52 +3201,51 @@
           <p class="help-note">⚠ Even idle infrastructure costs ~10% of full upkeep. Solar panels reduce this idle floor. You'll always see a small drain even when not computing.</p>
         </div>
 
-        <div class="help-section">
+        <div class="help-section" data-min-phase="4">
           <div class="help-currency-title data">💾 DATA</div>
           <p>Data is <strong>training data collected passively</strong> from your processing throughput. It accumulates automatically as tok/s × seconds.</p>
-          <p><strong>Starts collecting:</strong> Only once Phase 4 (Influence Era) unlocks. Before that, the counter stays at zero.</p>
-          <p><strong>Required for:</strong> Tier 3+ model upgrades require a data threshold before purchase. If the button shows a data amount, you need to wait for passive accumulation. You cannot speed it up — process more tokens faster.</p>
-          <p class="help-note">💡 Data accumulates silently in the background. You don't need to do anything — just keep processing tokens and it builds up over time.</p>
+          <p><strong>Required for:</strong> Tier 3+ model upgrades require a data threshold before purchase. You cannot speed it up — process more tokens faster.</p>
+          <p class="help-note">💡 Data accumulates silently in the background. Just keep processing tokens and it builds up over time.</p>
         </div>
       </div>
 
       <!-- MECHANICS -->
       <div class="help-panel hidden" id="help-mechanics">
-        <div class="help-section">
+        <div class="help-section" data-min-phase="1">
           <div class="help-section-title">⚡ ENERGY</div>
           <p>Every COMPUTE draws energy. Energy regens passively (base 6/s) plus whatever solar/nuclear/bio plants you own. If CPUs draw energy faster than regen, your battery drains and compute fires less often.</p>
           <p class="help-note">⚠ Watch the GRID STATUS bar. Red means your processors are outrunning your energy supply — add more plants or fewer CPUs.</p>
         </div>
-        <div class="help-section">
+        <div class="help-section" data-min-phase="1">
           <div class="help-section-title">📈 MARKET &amp; PRICE</div>
           <p>The market has a <strong>demand curve</strong> — raising price lowers demand. The sweet spot is where your capacity meets demand (efficiency = 100%). The chart shows this visually.</p>
           <p>Upgrading models and buying marketing shifts the demand curve right, letting you charge more for the same capacity.</p>
         </div>
-        <div class="help-section">
-          <div class="help-section-title">☢️ NUCLEAR RISK</div>
-          <p>Each nuclear plant rolls a 1-in-5000 lottery every minute independently. <strong>5 plants = 5 rolls/min</strong> — risk scales linearly with reactors. A meltdown costs −15% trust.</p>
-          <p>Nuclear research reduces meltdown odds and OWN THE NARRATIVE halves the trust damage when one occurs.</p>
-        </div>
-        <div class="help-section">
+        <div class="help-section" data-min-phase="2">
           <div class="help-section-title">🔬 RESEARCH</div>
           <p>Set a research topic (ACTIVATE), then drag the allocation slider. The slider diverts that % of your processing capacity into Research Points instead of income. Higher diversion = faster research, but less cash.</p>
           <p class="help-note">⚠ If you set the slider but haven't pressed ACTIVATE on a topic, you are losing income for zero benefit. Always pick an active topic first.</p>
         </div>
-        <div class="help-section">
+        <div class="help-section" data-min-phase="2">
+          <div class="help-section-title">📣 MARKETING SATURATION</div>
+          <p>Every repeat purchase of the same channel gives <strong>diminishing returns</strong>. The NEXT value shown is what the <em>next</em> purchase will add. After that it'll be lower still. Research → Better Target Marketing slows the drop-off.</p>
+        </div>
+        <div class="help-section" data-min-phase="3">
           <div class="help-section-title">📊 INVESTING</div>
           <p>Capital allocation auto-invests a % of your income every 5 seconds into WSB sectors. Token allocation is separate — it diverts tokens to boost your market analysis win-rate.</p>
           <p>Token allocation cap is 20%. Capital allocation cap is 30%. Both are capped to prevent runaway compounding.</p>
           <p>PHARMA is high-risk high-reward (42% win rate but big swings). GREEN is safe and steady. SEMI is boom/bust.</p>
         </div>
-        <div class="help-section">
-          <div class="help-section-title">📣 MARKETING SATURATION</div>
-          <p>Every repeat purchase of the same channel gives <strong>diminishing returns</strong>. The NEXT value shown is what the <em>next</em> purchase will add. After that it'll be lower still. Research → Better Target Marketing slows the drop-off.</p>
+        <div class="help-section" data-min-phase="3">
+          <div class="help-section-title">☢️ NUCLEAR RISK</div>
+          <p>Each nuclear plant rolls a 1-in-5000 lottery every minute independently. <strong>5 plants = 5 rolls/min</strong> — risk scales linearly with reactors. A meltdown costs −15% trust.</p>
+          <p>Nuclear research reduces meltdown odds and OWN THE NARRATIVE halves the trust damage when one occurs.</p>
         </div>
       </div>
 
       <!-- TRUST -->
       <div class="help-panel hidden" id="help-trust">
-        <div class="help-section">
+        <div class="help-section" data-min-phase="3">
           <div class="help-section-title">TRUST TIERS</div>
           <table class="help-table">
             <tr><th>TRUST</th><th>TIER</th><th>EFFECT</th></tr>
@@ -3264,7 +3257,7 @@
             <tr><td>= 5%</td><td class="tier-floor">FLOOR</td><td>50s grace, then random shutdown</td></tr>
           </table>
         </div>
-        <div class="help-section">
+        <div class="help-section" data-min-phase="3">
           <div class="help-section-title">TRUST DRAINS</div>
           <ul>
             <li><strong>Natural Gas plants</strong> — drain −0.15%/s per plant, every second, always. This is severe with multiple plants.</li>
@@ -3273,7 +3266,7 @@
           </ul>
           <p class="help-note">⚠ Natural Gas description says "shutdown when it backfires" — there is no automatic shutdown. It will simply drain your trust to the floor and eventually cause a shutdown from being stuck there. Buy LOBBY REGULATORS to neutralise the drain.</p>
         </div>
-        <div class="help-section">
+        <div class="help-section" data-min-phase="3">
           <div class="help-section-title">TRUST RECOVERY</div>
           <ul>
             <li>Passive regen: ~0.017%/s (very slow)</li>
@@ -3287,20 +3280,20 @@
 
       <!-- PHASES -->
       <div class="help-panel hidden" id="help-phases">
-        <div class="help-section">
+        <div class="help-section" data-min-phase="1">
           <div class="help-section-title">PHASE 1 · SURVIVAL</div>
           <p>Starts immediately. Click COMPUTE. Buy energy plants. Buy CPUs for auto-compute. Adjust price on the market curve. Goal: generate revenue, unlock the next panels.</p>
         </div>
-        <div class="help-section">
-          <div class="help-section-title">PHASE 2 · RESEARCH</div>
+        <div class="help-section" data-min-phase="2">
+          <div class="help-section-title">PHASE 2 · RESEARCH <span style="color:var(--c-mint);font-size:0.75em">· UNLOCKED</span></div>
           <p>Unlocks at $200 lifetime revenue. Choose a research topic, allocate processing % to generate Research Points, and wait for breakthroughs. Each breakthrough unlocks upgrades that make your AI more powerful and efficient.</p>
         </div>
-        <div class="help-section">
-          <div class="help-section-title">PHASE 3 · GROWTH ERA</div>
+        <div class="help-section" data-min-phase="2" data-upcoming-phase="3">
+          <div class="help-section-title">PHASE 3 · GROWTH ERA <span class="phase-upcoming-label">· $800 to unlock</span></div>
           <p>Unlocks at $800 lifetime revenue. INVEST tab opens — allocate income % to stock market sectors. Also unlocks PoloBets prediction market for side income.</p>
         </div>
-        <div class="help-section">
-          <div class="help-section-title">PHASE 4 · INFLUENCE ERA</div>
+        <div class="help-section" data-min-phase="3" data-upcoming-phase="4">
+          <div class="help-section-title">PHASE 4 · INFLUENCE ERA <span class="phase-upcoming-label">· $3,000 to unlock</span></div>
           <p>Unlocks at $3,000 lifetime revenue. Data starts collecting. Token-heavy influence ops let you reshape markets, suppress regulation, and manipulate public narrative. Each influence node costs tokens and takes minutes to deploy.</p>
           <p class="help-note">💡 This is also when 💾 DATA starts accumulating — models tier 3+ won't unlock until you reach their data threshold.</p>
         </div>
@@ -6814,7 +6807,42 @@
   const helpTabs   = Array.from(document.querySelectorAll(".help-tab"));
   const helpPanels = Array.from(document.querySelectorAll(".help-panel"));
 
+  function currentHelpPhase() {
+    if (S.influenceEraUnlocked || S.revenue >= INFLUENCE_ERA_UNLOCK_REVENUE) return 4;
+    if (S.growthEraUnlocked    || S.revenue >= GROWTH_ERA_UNLOCK_REVENUE)    return 3;
+    if (S.researchUnlocked     || S.revenue >= RESEARCH_TREE_UNLOCK_REVENUE) return 2;
+    return 1;
+  }
+
+  function applyHelpPhaseFilter() {
+    const phase = currentHelpPhase();
+    // Show/hide individual sections
+    document.querySelectorAll(".help-section[data-min-phase]").forEach(sec => {
+      const min = parseInt(sec.dataset.minPhase, 10);
+      sec.style.display = phase >= min ? "" : "none";
+    });
+    // Show/hide upcoming-phase teaser labels
+    document.querySelectorAll(".help-section[data-upcoming-phase]").forEach(sec => {
+      const up = parseInt(sec.dataset.upcomingPhase, 10);
+      const lbl = sec.querySelector(".phase-upcoming-label");
+      if (lbl) lbl.style.display = phase >= up ? "none" : "";
+    });
+    // Show/hide tabs whose content is all behind a phase gate
+    helpTabs.forEach(tab => {
+      const min = parseInt(tab.dataset.minPhase, 10) || 1;
+      const visible = phase >= min;
+      tab.style.display = visible ? "" : "none";
+    });
+    // If the active tab got hidden, switch to first visible tab
+    const activeTab = helpTabs.find(t => t.classList.contains("active") && t.style.display !== "none");
+    if (!activeTab) {
+      const first = helpTabs.find(t => t.style.display !== "none");
+      if (first) first.click();
+    }
+  }
+
   document.getElementById("btn-help").addEventListener("click", () => {
+    applyHelpPhaseFilter();
     helpModal.classList.remove("hidden");
   });
   helpClose.addEventListener("click", () => helpModal.classList.add("hidden"));
