@@ -4,8 +4,31 @@
 > **Phase 2 · SHIPPED** (Research) · checkpoint **2026-05-30**  
 > **Phase 3 · SHIPPED** (Growth Era + Investments) · checkpoint **2026-05-30**  
 > **Phase 4 · SHIPPED** (Influence Era) · checkpoint **2026-06-06**  
+> **Phase 4.1 · SHIPPED** (Polish + WSB rework) · checkpoint **2026-06-07**  
 > **Source of truth:** `index.html` (search `PHASE 1` / `PHASE 2` / `PHASE 3` / `PHASE 4`)  
 > **Design specs:** `phase1.md`, `phase2.md`, `phase3.md`, `phase4.md`
+
+---
+
+## Phase 4.1 — Polish & Rework (2026-06-07)
+
+| Change | Status |
+|--------|--------|
+| Phase description thresholds fixed in help modal ($200/$800/$3,000) | ✅ |
+| Advanced Energy Research, Inference Cost Collapse, Self-Optimising Models locked behind Phase 4 with golden padlock | ✅ |
+| RESEARCH ERA badge added (Survival → Research → Growth → Influence) | ✅ |
+| RDU node renamed to "RDU INFERENCE CHIPS" with updated description | ✅ |
+| Phase 3 unlock dramatic multi-message sequence (user's exact words) | ✅ |
+| Tab name spacing: "PoloBets" → "POLO BETS", "WallStreetBets" → "WALL STREET BETS" | ✅ |
+| PoloBets full UI rework: stake slider, quick-bet buttons ($1/$5/$10/$25/50%/MAX), P&L stats | ✅ |
+| 100 PoloBets questions, 25–40s resolve time, no repeat questions | ✅ |
+| Resolution only on bet placement (no timer-driven auto-resolve without active bet) | ✅ |
+| Polo winnings count toward lifetime revenue | ✅ |
+| YES/NO bold selection with solid fill + glow; unselected dimmed | ✅ |
+| Default starting state: cash = $2,000, revenue = $2,000 | ✅ |
+| WSB redesign: manual lump-sum INVEST per sector (input + INVEST button); removed per-second auto-drain | ✅ |
+| WSB available cash shown at top of panel | ✅ |
+| Flood News unlock gives +15 demandBase boost on completion | ✅ |
 
 ---
 
@@ -55,11 +78,11 @@
 
 | System | Status |
 |--------|--------|
-| Era badge (Survival → Growth) | ✅ |
+| Era badge (Survival → Research → Growth → Influence) | ✅ |
 | INVEST tab unlock ($800 revenue) | ✅ |
-| WallStreetBets (5 sectors) | ✅ |
-| PoloBets (political betting) | ✅ |
-| Cash + token allocation sliders | ✅ |
+| WallStreetBets — manual lump-sum invest per sector | ✅ |
+| PoloBets — 100 questions, no-repeat pool, 25–40s resolve | ✅ |
+| Polo winnings count toward lifetime revenue | ✅ |
 | Random returns with streak + analysis bonus | ✅ |
 | Withdraw to cash per sector | ✅ |
 | Save/load v5 | ✅ |
@@ -76,9 +99,12 @@
 
 ### PoloBets
 
-- Random satirical headlines (+ war headlines when Manufacture Conflict active)
-- Resolves in 2–5 minutes · Payout 1.8–2.5× + analysis bonus
+- 100 satirical/political headlines (+ war headlines when Manufacture Conflict active)
+- No-repeat question pool; reshuffles when exhausted
+- Resolves in 25–40s · Payout 2× + analysis bonus
 - Base win chance 50% (65% with Astroturf Comments influence node)
+- Resolution only fires when a bet is placed (no idle auto-resolve)
+- Winnings added to both cash and lifetime revenue
 
 ---
 
@@ -92,10 +118,11 @@
 | Serial unlock queue (one at a time, token cost + timer) | ✅ |
 | Media chain (5 nodes, top-to-bottom) | ✅ |
 | Political chain (4 nodes + Lobby branch) | ✅ |
-| RDU Cluster Farms → Processing tree | ✅ |
-| 3 new Research topics (Advanced Energy / Inference Collapse / Self-Optimising) | ✅ |
+| RDU Inference Chips → Processing tree | ✅ |
+| 3 new Research topics (Advanced Energy / Inference Collapse / Self-Optimising) locked behind Phase 4 | ✅ |
 | Vertical Marketing expansion (4 nodes after iTube) | ✅ |
 | All effects wired into existing systems | ✅ |
+| Flood News completion → +15 demandBase boost | ✅ |
 | Save/load v6 | ✅ |
 
 ### Influence Era unlock
@@ -117,7 +144,7 @@
 
 | Node | Prereq | Tokens | Timer | Effect |
 |------|--------|--------|-------|--------|
-| Flood News | Soft Control | 40K | 1m | +6% WSB win-rate · passive trust regen |
+| Flood News | Soft Control | 40K | 1m | +6% WSB win-rate · passive trust regen · +15 demandBase |
 | Astroturf Comments | Flood News | 80K | 2m | PoloBets win 50%→65% |
 | Propaganda on AI | Astroturf | 90K | 2.5m | Trust regen ↑↑ · demand +500 base · gates Political |
 | Own the Narrative | Propaganda | 200K | 4m | Stacks media buffs · −50% PR event severity |
@@ -137,7 +164,7 @@
 
 | Node | Base $ | Mult | Effect | Gate |
 |------|--------|------|--------|------|
-| RDU Cluster Farms | 2,500 | 3.5× | 4× compute throughput (same energy) | GPU + Influence Era |
+| RDU Inference Chips | 2,500 | 3.5× | 4× compute throughput (same energy) | GPU + Influence Era |
 
 ### Vertical Marketing expansion (Phase 4)
 
@@ -153,7 +180,7 @@
 | Influence node / research | System hooked |
 |---------------------------|---------------|
 | Soft Control | WSB all sectors ×1.05 on wins |
-| Flood News | `effectiveWinRate +0.06` all WSB sectors |
+| Flood News | `effectiveWinRate +0.06` all WSB sectors · demandBase +15 on unlock |
 | Astroturf | `poloWinChance` 0.50→0.65 |
 | Propaganda | trust regen +0.15%/s · demandBase +500 |
 | Own Network | trust regen +0.08%/s · nuclear meltdown trust loss ×0.5 |
@@ -174,8 +201,8 @@
 |----------|---------|-------|
 | **Energy** | 50 / 50 | Base regen **6.0/s**. Scaled by Adv. Energy Research. |
 | **Tokens** | 0 | Lifetime processed; also spent on Influence unlocks. |
-| **Cash** | $0 | Spendable. Floors at **$0.50**. |
-| **Revenue** | $0 | Lifetime gross (unlock gates key off this). |
+| **Cash** | $2,000 | Spendable. Floors at **$0.50**. |
+| **Revenue** | $2,000 | Lifetime gross (unlock gates key off this). Starting in Growth Era. |
 | **Humanity Trust** | 100% | **5% floor**. Passive regen **0.04%/s** + influence media boosts. |
 
 ---
@@ -246,9 +273,9 @@ operatingCostGross = (all hardware + marketing burns + thermal) × max(0.10, 1 �
 | **$1.50** | PROCESSING |
 | **$5.00** | MARKETING |
 | **$25.00** | MODELS |
-| **$200** | RESEARCH |
-| **$800** | INVEST + Growth Era |
-| **$3,000** | INFLUENCE + Influence Era |
+| **$200** | RESEARCH + Research Era badge |
+| **$800** | INVEST + Growth Era badge |
+| **$3,000** | INFLUENCE + Influence Era badge |
 
 ---
 
@@ -260,7 +287,7 @@ operatingCostGross = (all hardware + marketing burns + thermal) × max(0.10, 1 �
 | Save version | **6** |
 | Auto-save | every **5s** + on `beforeunload` |
 
-### New Phase 4 persisted fields
+### Persisted fields (Phase 4)
 `influenceEraUnlocked`, `influenceTokensSpent`, `influenceActiveUnlock`, `infSoftControl`, `infFloodNews`, `infAstroturf`, `infPropaganda`, `infOwnNetwork`, `infMemetic`, `infRightWing`, `infGovContracts`, `infWars`, `infPrivatize`, `infLobby`, `rduClusters`, `researchAdvEnergy`, `researchInfCollapse`, `researchSelfKernels`, `mktBillboard`, `mktInfluencerArmy`, `mktNeuralAds`, `mktDreamSponsor`
 
 ---
@@ -269,7 +296,7 @@ operatingCostGross = (all hardware + marketing burns + thermal) × max(0.10, 1 �
 
 ```js
 cheats.addCash(10)          // +$10
-cheats.addTokens(100000)    // +100K tokens  ← new Phase 4
+cheats.addTokens(100000)    // +100K tokens
 cheats.addEnergy(50)        // +50 energy
 cheats.unlockAll()          // all trees + Influence Era
 cheats.reset()              // reload
@@ -278,4 +305,4 @@ cheats.reset()              // reload
 
 ---
 
-*Updated 2026-06-06 when Phase 4 shipped. Update again when Phase 5 scope is locked.*
+*Updated 2026-06-07 after Phase 4.1 polish pass. Next: Phase 5 scope TBD.*
