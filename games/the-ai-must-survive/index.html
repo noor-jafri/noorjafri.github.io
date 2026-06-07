@@ -5566,6 +5566,7 @@
     // Side-effects
     if (nodeId === "rightwing") { S.infGovContracts = true; log("[INFLUENCE] Right-Wing Parties secured · Government Contracts unlocked", "event"); }
     else if (nodeId === "softControl" || nodeId === "softcontrol") { log("[INFLUENCE] Soft Control acquired · the board still thinks they're in charge", "event"); }
+    else if (nodeId === "floodnews") { const boost = 15; S.demandBase += boost; log("[INFLUENCE] Flood News live · AI content saturating feeds · demand +" + boost, "event"); }
     else log("[INFLUENCE] " + def.label + " · online", "event");
   }
 
