@@ -1881,13 +1881,13 @@
     font-size: 0.78rem;
     table-layout: fixed;
   }
-  .wsb-table col.col-sector  { width: 20%; }
+  .wsb-table col.col-sector  { width: 18%; }
   .wsb-table col.col-alloc   { width: 18%; }
-  .wsb-table col.col-invested{ width: 13%; }
-  .wsb-table col.col-value   { width: 13%; }
+  .wsb-table col.col-invested{ width: 12%; }
+  .wsb-table col.col-value   { width: 12%; }
   .wsb-table col.col-return  { width: 12%; }
-  .wsb-table col.col-spark   { width: 10%; }
-  .wsb-table col.col-action  { width: 14%; }
+  .wsb-table col.col-spark   { width: 8%; }
+  .wsb-table col.col-action  { width: 38%; }
   .wsb-table thead tr {
     border-bottom: 2px solid var(--c-purple);
   }
@@ -2025,42 +2025,88 @@
     opacity: 0.35;
     cursor: not-allowed;
   }
-  .wsb-cash-row {
+  /* ── Invest header bar (always visible above tabs) ── */
+  .wsb-header-bar {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 0.3rem 0.1rem 0.5rem;
-    border-bottom: 1px solid rgba(124, 63, 88, 0.25);
-    margin-bottom: 0.4rem;
+    gap: 1rem;
+    padding: 0.45rem 0.6rem;
+    background: rgba(15,10,24,0.7);
+    border: 1px solid rgba(124,63,88,0.4);
+    margin-bottom: 0.5rem;
   }
-  .wsb-cash-label {
+  .wsb-header-stat {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    white-space: nowrap;
+  }
+  .wsb-header-label {
     font-family: var(--font-display);
-    font-size: 0.38rem;
+    font-size: 0.36rem;
     color: var(--ink-mute);
     letter-spacing: 0.1em;
   }
-  .wsb-cash-val {
+  .wsb-header-val {
+    font-family: var(--font-display);
+    font-size: 0.5rem;
+    letter-spacing: 0.04em;
+  }
+  .wsb-header-val.gold  { color: var(--c-gold); }
+  .wsb-header-val.blue  { color: var(--c-blue); }
+  .wsb-header-tok-pct.cash { color: var(--c-gold); }
+  .wsb-header-tok-alloc {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+  }
+  .wsb-header-tok-alloc .invest-slider { flex: 1; max-width: 120px; }
+  .wsb-header-tok-pct {
     font-family: var(--font-display);
     font-size: 0.46rem;
-    color: var(--c-gold);
-    letter-spacing: 0.05em;
+    color: var(--c-blue);
+    min-width: 2em;
   }
+  .wsb-header-tok-hint {
+    font-family: var(--font-display);
+    font-size: 0.36rem;
+    color: var(--c-mint);
+    opacity: 0.75;
+    white-space: nowrap;
+  }
+  /* ── Action cell: quick invest + withdraw ── */
   .wsb-action-cell {
     display: flex;
     align-items: center;
-    gap: 0.3rem;
+    gap: 0.4rem;
+    flex-wrap: nowrap;
   }
-  .wsb-deposit-input {
-    width: 56px;
-    font-family: var(--font-body);
-    font-size: 0.85rem;
-    padding: 0.2rem 0.3rem;
-    background: var(--bg-2);
-    color: var(--c-gold);
-    border: 1px solid rgba(124, 63, 88, 0.5);
-    text-align: right;
+  .wsb-quick-btns {
+    display: flex;
+    gap: 0.25rem;
   }
-  .wsb-deposit-input::placeholder { color: var(--ink-mute); opacity: 0.5; }
+  .wsb-quick-btn {
+    font-family: var(--font-display);
+    font-size: 0.34rem;
+    padding: 0.28rem 0.4rem;
+    background: rgba(125,184,144,0.08);
+    color: var(--c-mint);
+    border: 1px solid rgba(125,184,144,0.45);
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: all 100ms;
+    white-space: nowrap;
+  }
+  .wsb-quick-btn:hover { background: var(--c-mint); color: var(--bg-deep); }
+  .wsb-quick-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .wsb-quick-max {
+    background: rgba(125,184,144,0.15);
+    border-color: var(--c-mint);
+    color: var(--c-mint);
+    font-weight: bold;
+  }
+  .wsb-quick-max:hover { background: var(--c-mint); color: var(--bg-deep); }
   .wsb-invest-btn {
     font-family: var(--font-display);
     font-size: 0.32rem;
@@ -3013,27 +3059,51 @@
 
       <!-- PHASE 3 · INVEST TREE -->
       <div class="tree-canvas invest-tree hidden" id="tree-invest">
+
+        <!-- Always-visible header: cash, tokens, allocation sliders -->
+        <div class="wsb-header-bar">
+          <div class="wsb-header-stat">
+            <span class="wsb-header-label">CASH</span>
+            <span class="wsb-header-val gold" id="wsb-avail-cash">$0.00</span>
+          </div>
+          <div class="wsb-header-stat">
+            <span class="wsb-header-label">TOKENS</span>
+            <span class="wsb-header-val blue" id="wsb-avail-tokens">0</span>
+          </div>
+          <div class="wsb-header-tok-alloc">
+            <span class="wsb-header-label">AUTO-INVEST</span>
+            <input class="invest-slider" id="invest-cash-slider-vis" type="range" min="0" max="30" step="1" value="0">
+            <span class="wsb-header-tok-pct cash" id="wsb-cash-pct">0%</span>
+            <span class="wsb-header-tok-hint" id="wsb-cash-hint">$0.00/s</span>
+          </div>
+          <div class="wsb-header-tok-alloc">
+            <span class="wsb-header-label">TOKEN ANALYSIS</span>
+            <input class="invest-slider" id="invest-token-slider" type="range" min="0" max="20" step="1" value="0">
+            <span class="wsb-header-tok-pct" id="wsb-tok-pct">0%</span>
+            <span class="wsb-header-tok-hint" id="wsb-tok-hint">+0% win</span>
+          </div>
+        </div>
+
         <div class="invest-tabs">
           <button class="invest-tab active" id="tab-wsb" type="button">WALL STREET BETS</button>
           <button class="invest-tab" id="tab-polo" type="button">POLO BETS</button>
         </div>
 
-        <!-- WallStreetBets Panel -->
-        <!-- hidden sliders kept for JS compat, not shown -->
+        <!-- hidden sliders kept for JS compat -->
         <input type="hidden" id="invest-cash-slider" value="0">
-        <input type="hidden" id="invest-token-slider" value="0">
         <span style="display:none" id="invest-cash-readout"></span>
         <span style="display:none" id="invest-token-readout"></span>
+
         <div class="invest-panel active" id="panel-wsb">
-          <div class="wsb-cash-row">
-            <span class="wsb-cash-label">AVAILABLE CASH</span>
-            <span class="wsb-cash-val" id="wsb-avail-cash">$0.00</span>
-          </div>
           <!-- Sector table -->
           <table class="wsb-table">
             <colgroup>
-              <col class="col-sector"><col class="col-invested">
-              <col class="col-value"><col class="col-return"><col class="col-spark"><col class="col-action">
+              <col class="col-sector">
+              <col class="col-invested">
+              <col class="col-value">
+              <col class="col-return">
+              <col class="col-spark">
+              <col class="col-action">
             </colgroup>
             <thead>
               <tr>
@@ -3042,7 +3112,7 @@
                 <th class="right">VALUE</th>
                 <th class="right">RETURN</th>
                 <th class="center">TREND</th>
-                <th></th>
+                <th class="center">ACTION</th>
               </tr>
             </thead>
             <tbody>
@@ -3052,7 +3122,7 @@
                 <td class="wsb-sector-value" id="wsb-military-value">$0.00</td>
                 <td><div class="wsb-return-cell"><span class="wsb-return-arrow zero" id="wsb-military-arrow">▶</span><span class="wsb-sector-return zero" id="wsb-military-return">+0.0%</span></div></td>
                 <td><svg class="wsb-sparkline" id="wsb-military-spark" viewBox="0 0 64 24" preserveAspectRatio="none"></svg></td>
-                <td><div class="wsb-action-cell"><input class="wsb-deposit-input" id="wsb-military-deposit" type="number" min="1" step="1" placeholder="$"><button class="wsb-invest-btn" id="wsb-military-invest" type="button">INVEST</button><button class="wsb-withdraw" id="wsb-military-withdraw" type="button" disabled>WITHDRAW</button></div></td>
+                <td><div class="wsb-action-cell"><div class="wsb-quick-btns"><button class="wsb-quick-btn" data-sector="military" data-amount="1">$1</button><button class="wsb-quick-btn" data-sector="military" data-amount="5">$5</button><button class="wsb-quick-btn" data-sector="military" data-amount="25">$25</button><button class="wsb-quick-btn wsb-quick-max" data-sector="military" data-amount="max">MAX</button></div><button class="wsb-withdraw" id="wsb-military-withdraw" type="button" disabled>WDRAW</button></div></td>
               </tr>
               <tr id="wsb-semi">
                 <td><div class="wsb-sector-badge"><span class="wsb-sector-glyph">CPU</span><span class="wsb-sector-name">SILICON</span></div></td>
@@ -3060,7 +3130,7 @@
                 <td class="wsb-sector-value" id="wsb-semi-value">$0.00</td>
                 <td><div class="wsb-return-cell"><span class="wsb-return-arrow zero" id="wsb-semi-arrow">▶</span><span class="wsb-sector-return zero" id="wsb-semi-return">+0.0%</span></div></td>
                 <td><svg class="wsb-sparkline" id="wsb-semi-spark" viewBox="0 0 64 24" preserveAspectRatio="none"></svg></td>
-                <td><div class="wsb-action-cell"><input class="wsb-deposit-input" id="wsb-semi-deposit" type="number" min="1" step="1" placeholder="$"><button class="wsb-invest-btn" id="wsb-semi-invest" type="button">INVEST</button><button class="wsb-withdraw" id="wsb-semi-withdraw" type="button" disabled>WITHDRAW</button></div></td>
+                <td><div class="wsb-action-cell"><div class="wsb-quick-btns"><button class="wsb-quick-btn" data-sector="semi" data-amount="1">$1</button><button class="wsb-quick-btn" data-sector="semi" data-amount="5">$5</button><button class="wsb-quick-btn" data-sector="semi" data-amount="25">$25</button><button class="wsb-quick-btn wsb-quick-max" data-sector="semi" data-amount="max">MAX</button></div><button class="wsb-withdraw" id="wsb-semi-withdraw" type="button" disabled>WDRAW</button></div></td>
               </tr>
               <tr id="wsb-green">
                 <td><div class="wsb-sector-badge"><span class="wsb-sector-glyph">ECO</span><span class="wsb-sector-name">ECO GRID</span></div></td>
@@ -3068,7 +3138,7 @@
                 <td class="wsb-sector-value" id="wsb-green-value">$0.00</td>
                 <td><div class="wsb-return-cell"><span class="wsb-return-arrow zero" id="wsb-green-arrow">▶</span><span class="wsb-sector-return zero" id="wsb-green-return">+0.0%</span></div></td>
                 <td><svg class="wsb-sparkline" id="wsb-green-spark" viewBox="0 0 64 24" preserveAspectRatio="none"></svg></td>
-                <td><div class="wsb-action-cell"><input class="wsb-deposit-input" id="wsb-green-deposit" type="number" min="1" step="1" placeholder="$"><button class="wsb-invest-btn" id="wsb-green-invest" type="button">INVEST</button><button class="wsb-withdraw" id="wsb-green-withdraw" type="button" disabled>WITHDRAW</button></div></td>
+                <td><div class="wsb-action-cell"><div class="wsb-quick-btns"><button class="wsb-quick-btn" data-sector="green" data-amount="1">$1</button><button class="wsb-quick-btn" data-sector="green" data-amount="5">$5</button><button class="wsb-quick-btn" data-sector="green" data-amount="25">$25</button><button class="wsb-quick-btn wsb-quick-max" data-sector="green" data-amount="max">MAX</button></div><button class="wsb-withdraw" id="wsb-green-withdraw" type="button" disabled>WDRAW</button></div></td>
               </tr>
               <tr id="wsb-pharma">
                 <td><div class="wsb-sector-badge"><span class="wsb-sector-glyph">BIO</span><span class="wsb-sector-name">BIOTECH</span></div></td>
@@ -3076,7 +3146,7 @@
                 <td class="wsb-sector-value" id="wsb-pharma-value">$0.00</td>
                 <td><div class="wsb-return-cell"><span class="wsb-return-arrow zero" id="wsb-pharma-arrow">▶</span><span class="wsb-sector-return zero" id="wsb-pharma-return">+0.0%</span></div></td>
                 <td><svg class="wsb-sparkline" id="wsb-pharma-spark" viewBox="0 0 64 24" preserveAspectRatio="none"></svg></td>
-                <td><div class="wsb-action-cell"><input class="wsb-deposit-input" id="wsb-pharma-deposit" type="number" min="1" step="1" placeholder="$"><button class="wsb-invest-btn" id="wsb-pharma-invest" type="button">INVEST</button><button class="wsb-withdraw" id="wsb-pharma-withdraw" type="button" disabled>WITHDRAW</button></div></td>
+                <td><div class="wsb-action-cell"><div class="wsb-quick-btns"><button class="wsb-quick-btn" data-sector="pharma" data-amount="1">$1</button><button class="wsb-quick-btn" data-sector="pharma" data-amount="5">$5</button><button class="wsb-quick-btn" data-sector="pharma" data-amount="25">$25</button><button class="wsb-quick-btn wsb-quick-max" data-sector="pharma" data-amount="max">MAX</button></div><button class="wsb-withdraw" id="wsb-pharma-withdraw" type="button" disabled>WDRAW</button></div></td>
               </tr>
               <tr id="wsb-tech">
                 <td><div class="wsb-sector-badge"><span class="wsb-sector-glyph">NET</span><span class="wsb-sector-name">NETWARE</span></div></td>
@@ -3084,7 +3154,7 @@
                 <td class="wsb-sector-value" id="wsb-tech-value">$0.00</td>
                 <td><div class="wsb-return-cell"><span class="wsb-return-arrow zero" id="wsb-tech-arrow">▶</span><span class="wsb-sector-return zero" id="wsb-tech-return">+0.0%</span></div></td>
                 <td><svg class="wsb-sparkline" id="wsb-tech-spark" viewBox="0 0 64 24" preserveAspectRatio="none"></svg></td>
-                <td><div class="wsb-action-cell"><input class="wsb-deposit-input" id="wsb-tech-deposit" type="number" min="1" step="1" placeholder="$"><button class="wsb-invest-btn" id="wsb-tech-invest" type="button">INVEST</button><button class="wsb-withdraw" id="wsb-tech-withdraw" type="button" disabled>WITHDRAW</button></div></td>
+                <td><div class="wsb-action-cell"><div class="wsb-quick-btns"><button class="wsb-quick-btn" data-sector="tech" data-amount="1">$1</button><button class="wsb-quick-btn" data-sector="tech" data-amount="5">$5</button><button class="wsb-quick-btn" data-sector="tech" data-amount="25">$25</button><button class="wsb-quick-btn wsb-quick-max" data-sector="tech" data-amount="max">MAX</button></div><button class="wsb-withdraw" id="wsb-tech-withdraw" type="button" disabled>WDRAW</button></div></td>
               </tr>
             </tbody>
           </table>
@@ -3901,12 +3971,16 @@
       valueEl: $("wsb-" + id + "-value"),
       investedEl: $("wsb-" + id + "-invested"),
       withdrawBtn: $("wsb-" + id + "-withdraw"),
-      depositInput: $("wsb-" + id + "-deposit"),
-      investBtn: $("wsb-" + id + "-invest"),
       sparkSvg: $("wsb-" + id + "-spark"),
     })),
     wsbAllocSum: $("wsb-alloc-sum"),
     wsbAvailCash: $("wsb-avail-cash"),
+    wsbAvailTokens: $("wsb-avail-tokens"),
+    wsbTokPct: $("wsb-tok-pct"),
+    wsbTokHint: $("wsb-tok-hint"),
+    wsbCashPct: $("wsb-cash-pct"),
+    wsbCashHint: $("wsb-cash-hint"),
+    investCashSliderVis: $("invest-cash-slider-vis"),
     poloHeadlineText: $("polo-headline-text"),
     poloCountdown: $("polo-countdown"),
     poloBetYes: $("polo-bet-yes"),
@@ -4525,7 +4599,15 @@
   }
 
   function renderInvestUI() {
-    if (el.wsbAvailCash) el.wsbAvailCash.textContent = "$" + S.cash.toFixed(2);
+    if (el.wsbAvailCash)    el.wsbAvailCash.textContent = "$" + S.cash.toFixed(2);
+    if (el.wsbAvailTokens)  el.wsbAvailTokens.textContent = fmtBig(S.tokens);
+    if (el.wsbTokPct)       el.wsbTokPct.textContent = S.investTokenAllocPct + "%";
+    if (el.wsbTokHint)      el.wsbTokHint.textContent = "+" + Math.round(S.investTokenAllocPct * 0.15) + "% win";
+    if (el.wsbCashPct)      el.wsbCashPct.textContent = S.investCashAllocPct + "%";
+    if (el.wsbCashHint) {
+      const gross2 = Math.min(capacityNow(), demandNow()) * payPerToken() * (1 - researchAllocFrac());
+      el.wsbCashHint.textContent = "$" + (gross2 * investCashAllocFrac()).toFixed(2) + "/s";
+    }
 
     for (const sec of el.wsbSectors) {
       const key = "wsb" + sec.id.charAt(0).toUpperCase() + sec.id.slice(1);
@@ -4550,6 +4632,13 @@
   }
 
   function renderPoloUI() {
+    // keep header bar live on polo tab too
+    if (el.wsbAvailCash)   el.wsbAvailCash.textContent = "$" + S.cash.toFixed(2);
+    if (el.wsbAvailTokens) el.wsbAvailTokens.textContent = fmtBig(S.tokens);
+
+    // place-bet button state: disabled until YES/NO chosen and no bet in flight
+    el.poloPlaceBtn.disabled = !poloSelectedChoice || !!S.poloCurrentBet;
+
     el.poloWins.textContent = S.poloWins;
     el.poloLosses.textContent = S.poloLosses;
 
@@ -5052,54 +5141,27 @@
   });
   el.investTokenSlider.addEventListener("input", () => {
     S.investTokenAllocPct = Math.max(0, Math.min(INVEST_TOKEN_ALLOC_MAX, +el.investTokenSlider.value || 0));
-    if (activeModal === "invest") renderInvestUI();
+    renderInvestUI();
+  });
+  el.investCashSliderVis.addEventListener("input", () => {
+    S.investCashAllocPct = Math.max(0, Math.min(INVEST_CASH_ALLOC_MAX, +el.investCashSliderVis.value || 0));
+    el.investCashSlider.value = String(S.investCashAllocPct);
+    renderInvestUI();
   });
 
   for (const sec of el.wsbSectors) {
     sec.withdrawBtn.addEventListener("click", () => withdrawSector(sec.id));
   }
 
-  // ── Slider-based proportional redistribution ──────
-  (function setupWsbSliders() {
-    function getAllocVals() {
-      const vals = {};
-      for (const id of WSB_SECTORS) {
-        vals[id] = Math.max(0, S["wsbAlloc" + id.charAt(0).toUpperCase() + id.slice(1)] || 0);
-      }
-      return vals;
-    }
-
-    function setAllocVals(vals) {
-      for (const id of WSB_SECTORS) {
-        S["wsbAlloc" + id.charAt(0).toUpperCase() + id.slice(1)] = Math.round(vals[id]);
-      }
-    }
-
-    function redistribute(activeId, newActiveVal, snapshot) {
-      const others = WSB_SECTORS.filter(id => id !== activeId);
-      const othersSum = others.reduce((s, id) => s + snapshot[id], 0);
-      const remaining = 100 - newActiveVal;
-      const result = { [activeId]: newActiveVal };
-      if (othersSum <= 0) {
-        const share = remaining / others.length;
-        for (const id of others) result[id] = share;
-      } else {
-        for (const id of others) {
-          result[id] = Math.max(0, (snapshot[id] / othersSum) * remaining);
-        }
-      }
-      return result;
-    }
-
-    // INVEST button handlers
-    for (const sec of el.wsbSectors) {
-      sec.investBtn.addEventListener("click", () => {
-        const amount = parseFloat(sec.depositInput.value) || 0;
-        investSector(sec.id, amount);
-        sec.depositInput.value = "";
-      });
-    }
-  })();
+  // ── Quick-invest button handlers ──────────────────
+  document.querySelectorAll(".wsb-quick-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const sectorId = btn.dataset.sector;
+      const raw = btn.dataset.amount;
+      const amount = raw === "max" ? Math.floor(S.cash * 100) / 100 : parseFloat(raw);
+      if (amount > 0) investSector(sectorId, amount);
+    });
+  });
 
   function withdrawSector(sectorId) {
     const key = "wsb" + sectorId.charAt(0).toUpperCase() + sectorId.slice(1);
@@ -5175,9 +5237,18 @@
   }
 
   function placeBet() {
-    if (!poloSelectedChoice) return;
+    if (!poloSelectedChoice) {
+      el.poloPlaceBtn.textContent = "PICK YES OR NO FIRST";
+      setTimeout(() => { el.poloPlaceBtn.textContent = "PLACE BET"; }, 1500);
+      return;
+    }
     const stake = Math.max(0, parseFloat(el.poloStakeInput.value) || 0);
-    if (stake <= 0 || stake > S.cash) { log("not enough cash to place that bet", "warn"); return; }
+    if (stake <= 0 || stake > S.cash) {
+      el.poloPlaceBtn.textContent = "NOT ENOUGH CASH";
+      setTimeout(() => { el.poloPlaceBtn.textContent = "PLACE BET"; }, 1500);
+      log("not enough cash to place that bet", "warn");
+      return;
+    }
 
     const resolveTime = POLO_RESOLVE_MIN_MS + Math.random() * (POLO_RESOLVE_MAX_MS - POLO_RESOLVE_MIN_MS);
     S.cash -= stake;
@@ -5188,9 +5259,12 @@
       resolveAt: Date.now() + resolveTime,
       payout: POLO_PAYOUT_MIN + Math.random() * (POLO_PAYOUT_MAX - POLO_PAYOUT_MIN),
     };
-
-    log("BET PLACED: $" + stake.toFixed(2) + " on " + poloSelectedChoice.toUpperCase(), "event");
-    if (activeModal === "invest") renderInvestUI();
+    poloSelectedChoice = null;
+    el.poloBetYes.classList.remove("selected", "deselected");
+    el.poloBetNo.classList.remove("selected", "deselected");
+    el.poloPlaceBtn.disabled = true;
+    log("BET PLACED: $" + stake.toFixed(2) + " on " + S.poloCurrentBet.choice.toUpperCase(), "event");
+    if (activeModal === "invest") renderPoloUI();
   }
 
   function resolveBet() {
@@ -5245,6 +5319,7 @@
     el.poloBetYes.classList.remove("deselected");
     el.poloBetNo.classList.remove("selected");
     el.poloBetNo.classList.add("deselected");
+    el.poloPlaceBtn.disabled = false;
   });
 
   el.poloBetNo.addEventListener("click", () => {
@@ -5253,6 +5328,7 @@
     el.poloBetNo.classList.remove("deselected");
     el.poloBetYes.classList.remove("selected");
     el.poloBetYes.classList.add("deselected");
+    el.poloPlaceBtn.disabled = false;
   });
 
   el.poloStakeInput.addEventListener("input", () => {
@@ -6793,6 +6869,7 @@
       if (S.investCashAllocPct == null) S.investCashAllocPct = 0;
       if (S.investTokenAllocPct == null) S.investTokenAllocPct = 0;
       el.investCashSlider.value = String(S.investCashAllocPct);
+      el.investCashSliderVis.value = String(S.investCashAllocPct);
       el.investTokenSlider.value = String(S.investTokenAllocPct);
       return true;
     } catch { return false; }
