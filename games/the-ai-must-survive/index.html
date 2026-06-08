@@ -3636,6 +3636,7 @@
     poloWins: 0,
     poloLosses: 0,
     poloHeadlineIdx: 0,
+    poloCurrentHeadline: "",
     poloResolveAt: 0,
 
     // Phase 4 — Influence Era
@@ -5267,6 +5268,10 @@
   ];
 
   function getPoloHeadline() {
+    return S.poloCurrentHeadline || POLO_HEADLINES[S.poloHeadlineIdx % POLO_HEADLINES.length];
+  }
+
+  function pickPoloHeadline() {
     if (S.infWars && Math.random() < 0.6) {
       return WAR_POLO_HEADLINES[Math.floor(Math.random() * WAR_POLO_HEADLINES.length)];
     }
@@ -5297,7 +5302,8 @@
 
   function generateNewHeadline() {
     S.poloHeadlineIdx = nextPoloIdx([]);
-    el.poloHeadlineText.textContent = getPoloHeadline();
+    S.poloCurrentHeadline = pickPoloHeadline();
+    el.poloHeadlineText.textContent = S.poloCurrentHeadline;
     // refresh queue with unused questions
     const q1 = pickDistinctIdx([S.poloHeadlineIdx]);
     const q2 = pickDistinctIdx([S.poloHeadlineIdx, q1]);
@@ -6511,7 +6517,7 @@
     "wsbGreen", "wsbGreenInvested",
     "wsbPharma", "wsbPharmaInvested",
     "wsbTech", "wsbTechInvested",
-    "poloCurrentBet", "poloHistory", "poloWins", "poloLosses", "poloHeadlineIdx", "poloResolveAt",
+    "poloCurrentBet", "poloHistory", "poloWins", "poloLosses", "poloHeadlineIdx", "poloCurrentHeadline", "poloResolveAt",
     "influenceEraUnlocked", "influenceTokensSpent", "influenceActiveUnlock",
     "infSoftControl",
     "infFloodNews", "infAstroturf", "infPropaganda", "infOwnNetwork", "infMemetic",
