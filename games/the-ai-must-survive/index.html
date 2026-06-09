@@ -4751,9 +4751,9 @@
     }
 
     // cash + stake display
-    el.poloCashDisplay.textContent = "$" + S.cash.toFixed(2);
+    el.poloCashDisplay.textContent = fmtBigCash(S.cash);
     const stakeVal = parseFloat(el.poloStakeInput.value) || 1;
-    el.poloStakeDisplay.textContent = "$" + stakeVal.toFixed(2);
+    el.poloStakeDisplay.textContent = fmtBigCash(stakeVal);
 
     // clamp slider max to available cash
     const sliderMax = Math.max(1, Math.floor(S.cash * 10) / 10);
@@ -4761,7 +4761,7 @@
 
     // P&L
     const pnl = S.poloHistory.reduce((acc, h) => acc + (h.won ? h.payout - h.stake : -h.stake), 0);
-    el.poloPnl.textContent = (pnl >= 0 ? "+" : "") + "$" + pnl.toFixed(2);
+    el.poloPnl.textContent = (pnl >= 0 ? "+" : "-") + fmtBigCash(Math.abs(pnl));
     el.poloPnl.style.color = pnl >= 0 ? "var(--c-mint)" : "var(--c-red)";
 
     if (S.poloCurrentBet) {
@@ -4771,7 +4771,7 @@
       const secsLeft = Math.ceil(msLeft / 1000);
       el.poloWaiting.textContent = "⏳ " + S.poloCurrentBet.headline +
         " — " + (S.poloCurrentBet.choice === "yes" ? "YES" : "NO") +
-        " · $" + S.poloCurrentBet.stake.toFixed(2) +
+        " · " + fmtBigCash(S.poloCurrentBet.stake) +
         " · RESOLVES IN " + secsLeft + "s";
     } else {
       el.poloHeadlineCard.classList.remove("hidden");
@@ -4790,7 +4790,7 @@
     let historyHtml = "";
     for (const h of S.poloHistory.slice(-5).reverse()) {
       const cls = h.won ? "win" : "loss";
-      const result = h.won ? "WON $" + h.payout.toFixed(2) : "LOST $" + h.stake.toFixed(2);
+      const result = h.won ? "WON " + fmtBigCash(h.payout) : "LOST " + fmtBigCash(h.stake);
       historyHtml += '<div class="polo-history-item ' + cls + '"><span>' + h.headline.slice(0, 28) + "…</span><span>" + result + "</span></div>";
     }
     el.poloHistoryList.innerHTML = historyHtml || '<div class="polo-history-item" style="color:var(--ink-mute)">No bets yet</div>';
