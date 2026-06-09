@@ -1428,6 +1428,10 @@
     box-shadow: 0 0 12px rgba(255,119,168,0.35), 4px 4px 0 0 rgba(0,0,0,0.5);
   }
   .tree-node.active-tier .node-title { color: var(--c-pink); }
+  .tree-node.active-tier .node-buy:disabled {
+    background: rgba(255,119,168,0.12); color: var(--c-pink);
+    border-color: rgba(255,119,168,0.5); cursor: default; opacity: 0.8;
+  }
 
   /* ── Generic progress / loading fill bar (any node) ── */
   .node-progress {
