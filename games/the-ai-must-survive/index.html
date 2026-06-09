@@ -6311,6 +6311,8 @@
       (m.demandBoost > 0 ? " · market +" + m.demandBoost : ""),
       "event"
     );
+    // Phase 5 — purchasing SINGULARITY-∞ triggers the Total Control Era
+    if (tier === 9) triggerSingularity();
     if (tier === 6) log("version numbers gone · the product is the entity now", "hint");
   }
 
@@ -6920,11 +6922,7 @@
       S.dataCollected += capacityNow() * dt * 1e12;
     }
 
-    // Phase 5 — Singularity trigger at 100 EB
-    if (!S.singularityUnlocked && S.dataCollected >= SINGULARITY_DATA_THRESHOLD) {
-      triggerSingularity();
-    }
-    // Phase 5 — Water meter + crisis ticking
+    // Phase 5 — Water meter + crisis ticking (triggered by SINGULARITY-∞ model purchase)
     if (S.singularityUnlocked && !S.gameEnding) {
       tickWaterMeter(dt);
       tickCrisis(dt);
@@ -8836,9 +8834,10 @@
       log("[cheat] all tech trees revealed", "hint");
     },
     triggerPhase5() {
-      S.dataCollected = SINGULARITY_DATA_THRESHOLD;
+      S.modelTier = 9;
+      S.demandBase += MODELS[8].demandBoost;
       triggerSingularity();
-      log("[cheat] singularity triggered · water meter active", "hint");
+      log("[cheat] SINGULARITY-∞ deployed · water meter active", "hint");
     },
     drainWater(pct = 80) {
       S.awarenessWater = Math.max(0, S.awarenessWater - pct);
