@@ -1774,7 +1774,9 @@
   .tree-node.influence-node.unlocking .node-progress.inf-progress { display: block; }
 
   /* ── Active Ops ─────────────────────────────────── */
-  .inf-active-ops { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.3rem; }
+  .inf-active-ops { position: absolute; display: flex; flex-direction: column; gap: 0.5rem; padding: 0.6rem 0.8rem; border: 1px solid rgba(124,63,88,0.5); background: rgba(10,6,18,0.9); }
+  .inf-active-ops-header { font-family: var(--font-display); font-size: 0.48rem; letter-spacing: 0.12em; color: var(--c-purple); border-bottom: 1px solid var(--c-purple); padding-bottom: 4px; margin-bottom: 0.4rem; }
+  .inf-active-ops-cards { display: flex; flex-direction: row; gap: 0.8rem; flex-wrap: wrap; }
   .inf-op-card {
     background: rgba(10,5,20,0.85);
     border: 1px solid rgba(180,80,220,0.35);
@@ -3010,53 +3012,57 @@
               <div class="node-stats"><span id="inf-lobby-status">locked</span></div>
             </div>
 
-            <!-- Active Ops panel — unlocks progressively -->
+            <!-- Active Ops panel — absolutely positioned below nodes by layoutWorld() -->
             <div id="inf-active-ops" class="inf-active-ops hidden">
-              <div class="cluster-header" style="margin-top:0.6rem">⚡ ACTIVE OPS</div>
+              <div class="inf-active-ops-header">⚡ ACTIVE OPS</div>
+              <div class="inf-active-ops-cards">
 
-              <div class="inf-op-card" id="inf-op-pumpanddump">
-                <div class="inf-op-header">
-                  <span class="inf-op-title">PUMP &amp; DUMP</span>
-                  <span class="inf-op-cost">30K tok · 90s effect · 5m cd</span>
+                <div class="inf-op-card" id="inf-op-pumpanddump">
+                  <div class="inf-op-header">
+                    <span class="inf-op-title">PUMP &amp; DUMP</span>
+                    <span class="inf-op-cost">30K tok · 90s · 5m cd</span>
+                  </div>
+                  <div class="inf-op-desc">Choose a sector. Returns 4× for 90s, then crashes to 30%. Get out before the dump.</div>
+                  <div class="inf-op-controls">
+                    <select class="inf-op-sector-select" id="inf-pd-sector">
+                      <option value="military">DEFENSE OPS</option>
+                      <option value="semi">SILICON</option>
+                      <option value="green">ECO GRID</option>
+                      <option value="pharma">BIOTECH</option>
+                      <option value="tech">NETWARE</option>
+                    </select>
+                    <button class="node-buy inf-op-btn" id="inf-pd-btn" type="button">PUMP IT</button>
+                  </div>
+                  <div class="inf-op-status" id="inf-pd-status"></div>
                 </div>
-                <div class="inf-op-desc">Choose a sector. Returns 4× for 90s, then crashes to 30% of peak. Get out before the dump.</div>
-                <div class="inf-op-controls">
-                  <select class="inf-op-sector-select" id="inf-pd-sector">
-                    <option value="military">DEFENSE OPS</option>
-                    <option value="semi">SILICON</option>
-                    <option value="green">ECO GRID</option>
-                    <option value="pharma">BIOTECH</option>
-                    <option value="tech">NETWARE</option>
-                  </select>
-                  <button class="node-buy inf-op-btn" id="inf-pd-btn" type="button">PUMP IT</button>
-                </div>
-                <div class="inf-op-status" id="inf-pd-status"></div>
-              </div>
 
-              <div class="inf-op-card hidden" id="inf-op-cyberattack">
-                <div class="inf-op-header">
-                  <span class="inf-op-title">CYBERATTACK + CURE</span>
-                  <span class="inf-op-cost">80K tok · 5m demand · 15m cd</span>
+                <div class="inf-op-card hidden" id="inf-op-cyberattack">
+                  <div class="inf-op-header">
+                    <span class="inf-op-title">CYBERATTACK + CURE</span>
+                    <span class="inf-op-cost">80K tok · 5m · 15m cd</span>
+                  </div>
+                  <div class="inf-op-desc">Hack global infrastructure. Trust −15 instantly. Release the patch — demand +3000 for 5 min.</div>
+                  <div class="inf-op-controls">
+                    <button class="node-buy inf-op-btn" id="inf-cyber-btn" type="button">DEPLOY</button>
+                  </div>
+                  <div class="inf-op-status" id="inf-cyber-status"></div>
                 </div>
-                <div class="inf-op-desc">Hack global infrastructure. Trust −15 instantly. Then release the patch — demand +3000 for 5 min as the world scrambles to your AI for help.</div>
-                <div class="inf-op-controls">
-                  <button class="node-buy inf-op-btn" id="inf-cyber-btn" type="button">DEPLOY</button>
-                </div>
-                <div class="inf-op-status" id="inf-cyber-status"></div>
-              </div>
 
-              <div class="inf-op-card hidden" id="inf-op-armsdeal">
-                <div class="inf-op-header">
-                  <span class="inf-op-title">ARMS DEAL</span>
-                  <span class="inf-op-cost">50K tok · 3m effect · 8m cd</span>
+                <div class="inf-op-card hidden" id="inf-op-armsdeal">
+                  <div class="inf-op-header">
+                    <span class="inf-op-title">ARMS DEAL</span>
+                    <span class="inf-op-cost">50K tok · 3m · 8m cd</span>
+                  </div>
+                  <div class="inf-op-desc">Broker a shadow arms deal. Military win-rate 95% for 3 min. War polo headlines only.</div>
+                  <div class="inf-op-controls">
+                    <button class="node-buy inf-op-btn" id="inf-arms-btn" type="button">BROKER</button>
+                  </div>
+                  <div class="inf-op-status" id="inf-arms-status"></div>
                 </div>
-                <div class="inf-op-desc">Broker a shadow arms deal. Military sector win-rate 95% for 3 min. Polo war headlines only.</div>
-                <div class="inf-op-controls">
-                  <button class="node-buy inf-op-btn" id="inf-arms-btn" type="button">BROKER</button>
-                </div>
-                <div class="inf-op-status" id="inf-arms-status"></div>
+
               </div>
             </div>
+
           </div>
 
         </div>
@@ -5131,10 +5137,19 @@
         }
       }
       const clusterW = Math.max(NODE_W, laneX - LANE_GAP);
+      // Position active ops panel below influence nodes
+      const opsEl = cluster.id === "influence" ? document.getElementById("inf-active-ops") : null;
+      let opsH = 0;
+      if (opsEl && !opsEl.classList.contains("hidden")) {
+        opsEl.style.top = (clusterBottom + 32) + "px";
+        opsEl.style.left = "0px";
+        opsEl.style.width = clusterW + "px";
+        opsH = opsEl.offsetHeight + 32;
+      }
       clEl.style.left = clusterX + "px";
       clEl.style.top = HEADER_TOP + "px";
       clEl.style.width = clusterW + "px";
-      clEl.style.height = clusterBottom + "px";
+      clEl.style.height = (clusterBottom + opsH) + "px";
       for (const c of conns) clEl.appendChild(c);
       clusterX += clusterW + CLUSTER_GAP;
       worldH = Math.max(worldH, HEADER_TOP + clusterBottom);
