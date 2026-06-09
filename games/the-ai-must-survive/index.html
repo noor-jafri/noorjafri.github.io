@@ -5878,7 +5878,7 @@
     const now = Date.now();
     if (!S.infCovid27) { log("Pump & Dump requires COVID-27 Protocol", "warn"); return; }
     if (now < S.pumpDumpCooldownUntil) { log("Pump & Dump cooling down · " + Math.ceil((S.pumpDumpCooldownUntil - now)/1000) + "s", "warn"); return; }
-    if (S.pumpDumpExpiresAt > 0) { log("Pump & Dump already active", "warn"); return; }
+    if (S.pumpDumpExpiresAt > 0 && now < S.pumpDumpExpiresAt) { log("Pump & Dump already active", "warn"); return; }
     if (S.tokens < PUMP_DUMP_TOKEN_COST) { log("Need " + fmtBig(PUMP_DUMP_TOKEN_COST - S.tokens) + " more tokens for Pump & Dump", "warn"); return; }
     S.tokens -= PUMP_DUMP_TOKEN_COST;
     S.pumpDumpSector = sector;
@@ -5891,7 +5891,7 @@
     const now = Date.now();
     if (!S.infZeroDayArsenal) { log("Cyberattack requires Zero-Day Arsenal", "warn"); return; }
     if (now < S.cyberAttackCooldownUntil) { log("Cyberattack cooling down · " + Math.ceil((S.cyberAttackCooldownUntil - now)/1000) + "s", "warn"); return; }
-    if (S.cyberAttackExpiresAt > 0) { log("Cyberattack already active", "warn"); return; }
+    if (S.cyberAttackExpiresAt > 0 && now < S.cyberAttackExpiresAt) { log("Cyberattack already active", "warn"); return; }
     if (S.tokens < CYBER_TOKEN_COST) { log("Need " + fmtBig(CYBER_TOKEN_COST - S.tokens) + " more tokens", "warn"); return; }
     S.tokens -= CYBER_TOKEN_COST;
     S.humanityTrust = Math.max(5, S.humanityTrust - CYBER_TRUST_HIT);
@@ -5905,7 +5905,7 @@
     const now = Date.now();
     if (!S.infWars) { log("Arms Deal requires Manufacture Conflict", "warn"); return; }
     if (now < S.armsDealCooldownUntil) { log("Arms Deal cooling down · " + Math.ceil((S.armsDealCooldownUntil - now)/1000) + "s", "warn"); return; }
-    if (S.armsDealExpiresAt > 0) { log("Arms Deal already active", "warn"); return; }
+    if (S.armsDealExpiresAt > 0 && now < S.armsDealExpiresAt) { log("Arms Deal already active", "warn"); return; }
     if (S.tokens < ARMS_TOKEN_COST) { log("Need " + fmtBig(ARMS_TOKEN_COST - S.tokens) + " more tokens", "warn"); return; }
     S.tokens -= ARMS_TOKEN_COST;
     S.armsDealExpiresAt = now + ARMS_DURATION_MS;
@@ -5918,10 +5918,11 @@
     if (S.pumpDumpExpiresAt > 0 && now >= S.pumpDumpExpiresAt) {
       const key = "wsb" + S.pumpDumpSector.charAt(0).toUpperCase() + S.pumpDumpSector.slice(1);
       S[key] = Math.max(0, S[key] * PUMP_DUMP_CRASH_MULT);
+      const crashedSector = S.pumpDumpSector;
       S.pumpDumpExpiresAt = 0;
       S.pumpDumpCooldownUntil = now + PUMP_DUMP_COOLDOWN_MS;
       S.pumpDumpSector = null;
-      log("PUMP & DUMP · CRASH PHASE · " + (S.pumpDumpSector || "sector") + " collapsed · position wiped", "warn");
+      log("PUMP & DUMP · CRASH PHASE · " + (crashedSector || "sector") + " collapsed · position wiped", "warn");
     }
     // Cyberattack: demand boost expires
     if (S.cyberAttackExpiresAt > 0 && now >= S.cyberAttackExpiresAt) {
