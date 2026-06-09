@@ -4711,8 +4711,8 @@
       const isNeg = returnPct < -0.05;
       const cls = isPos ? "positive" : isNeg ? "negative" : "zero";
 
-      sec.valueEl.textContent = "$" + value.toFixed(2);
-      sec.investedEl.textContent = "$" + invested.toFixed(2);
+      sec.valueEl.textContent = fmtBigCash(value);
+      sec.investedEl.textContent = fmtBigCash(invested);
       sec.returnEl.textContent = fmtPct(returnPct);
       sec.returnEl.className = "wsb-sector-return " + cls;
       sec.arrowEl.textContent = isPos ? "▲" : isNeg ? "▼" : "▶";
