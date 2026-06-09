@@ -6552,11 +6552,12 @@
     const pay = payPerCompute();
     const payTok = payPerToken();
     const fulfilled = Math.min(cap, dem);
-    const grossRate = fulfilled * payTok;
+    const grossRate = fulfilled * payTok * (1 - researchAllocFrac());
     const util = utilizationNow();
     const costGross = operatingCostGrossPerSec();
     const costRate = operatingCostPerSec(util);
-    const netRate = grossRate - costRate;
+    const wsbDrainRate = grossRate * investCashAllocFrac();
+    const netRate = grossRate - costRate - wsbDrainRate;
     const tier = trustTier(S.humanityTrust);
     const isUnmet = dem > cap + 0.01;
     const delta = Math.abs(dem - cap);
@@ -6628,6 +6629,8 @@
         idleOpFloorPercent: Math.round(idleOpFloor() * 100),
         costsGrossPerSec: +costGross.toFixed(3),
         costsPerSec: +costRate.toFixed(2),
+        wsbDrainPerSec: +wsbDrainRate.toFixed(2),
+        investCashAllocPct: S.investCashAllocPct,
         netPerSec: +netRate.toFixed(2),
         cashFloor: CASH_FLOOR,
         demandBase: +S.demandBase.toFixed(1),
