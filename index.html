@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1a1230">
+
+  <title>Noor Jafri · Nooremberg</title>
+  <meta name="description" content="Noor Jafri — Cloud Engineer & pixel-art adventurer. A gamified portfolio: skill cards, quest log, blog, easter eggs.">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://noorjafri.com/">
+  <meta property="og:title" content="Noor Jafri · Nooremberg">
+  <meta property="og:description" content="A gamified, pixel-art portfolio for a cloud-loving wizard.">
+  <meta property="og:image" content="https://noorjafri.com/assets/images/snake.png">
+
+  <link rel="shortcut icon" type="image/png" href="./assets/images/favicon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./assets/css/animations.css">
+  <link rel="stylesheet" href="./assets/css/styles.css">
+</head>
+<body>
+
+  <!-- Background layers -->
+  <div class="world-bg" aria-hidden="true"></div>
+  <div class="stars" aria-hidden="true"></div>
+  <div class="scanlines" aria-hidden="true"></div>
+  <div class="crt-vignette" aria-hidden="true"></div>
+
+  <!-- HUD -->
+  <header class="hud" role="banner">
+    <div class="hud-inner">
+      <span class="stat" title="Player">
+        <span class="label">PLAYER</span>
+        <span class="value">NOOR</span>
+      </span>
+      <span class="stat" title="Class">
+        <span class="label">CLASS</span>
+        <span class="value">CLOUD&nbsp;WIZARD</span>
+      </span>
+      <span class="stat" title="Hit points">
+        <span class="label">HP</span>
+        <span class="heart"></span><span class="heart"></span><span class="heart"></span><span class="heart"></span><span class="heart empty"></span>
+      </span>
+      <span class="stat" title="Years adventuring">
+        <span class="label">YRS</span>
+        <span class="value" id="hud-years">—</span>
+      </span>
+      <span class="stat" title="Local time">
+        <span class="label">CLOCK</span>
+        <span class="value" id="hud-clock">--:--</span>
+      </span>
+
+      <span class="hud-spacer"></span>
+
+      <button class="hud-btn" id="theme-toggle" title="Toggle day/night">☾/☀</button>
+      <button class="hud-btn" id="sound-toggle" title="Sound (TODO)">🔇</button>
+      <a class="hud-btn" href="blog.html">BLOG</a>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-avatar">
+      <img src="./assets/images/avatar.gif" alt="Pixel-art avatar of Noor">
+    </div>
+
+    <div>
+      <h1 class="hero-title">NOOR JAFRI</h1>
+      <p class="hero-tag">Cloud Wizard · Lvl. 28 · <span class="blink">_</span> press start</p>
+
+      <div class="dialogue" role="status" aria-live="polite">
+        <p style="margin:0;"><span class="typed"></span></p>
+        <div class="dialogue-controls">
+          <span class="dialogue-dots" aria-hidden="true"></span>
+          <span style="margin-left:auto;">click to skip ▸</span>
+        </div>
+      </div>
+
+      <div class="social-row">
+        <a class="social-btn" href="https://github.com/noor-jafri" target="_blank" rel="noopener noreferrer">🐙 GITHUB</a>
+        <a class="social-btn" href="https://www.linkedin.com/in/nooralijafri/" target="_blank" rel="noopener noreferrer">💼 LINKEDIN</a>
+        <a class="social-btn" href="https://medium.com/@noorjafri" target="_blank" rel="noopener noreferrer">✍️ MEDIUM</a>
+        <a class="social-btn" href="mailto:noor.jafri@live.com">✉️ EMAIL</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main menu (game tile grid) -->
+  <nav class="menu-grid" aria-label="Main menu">
+    <a class="menu-tile" data-id="about" href="#about">
+      <span class="icon">📜</span>
+      <span class="title">ABOUT</span>
+      <span class="desc">Read the lore of the wandering wizard.</span>
+      <span class="arrow">▸ ENTER</span>
+    </a>
+    <a class="menu-tile" data-id="skills" href="#skills">
+      <span class="icon">⚔️</span>
+      <span class="title">STATS</span>
+      <span class="desc">Inspect skill cards & XP bars.</span>
+      <span class="arrow">▸ ENTER</span>
+    </a>
+    <a class="menu-tile" data-id="quests" href="#quests">
+      <span class="icon">🗺️</span>
+      <span class="title">QUESTS</span>
+      <span class="desc">Past & present adventures.</span>
+      <span class="arrow">▸ ENTER</span>
+    </a>
+    <a class="menu-tile" data-id="education" href="#education">
+      <span class="icon">🎓</span>
+      <span class="title">SCROLLS</span>
+      <span class="desc">Studied at far-away academies.</span>
+      <span class="arrow">▸ ENTER</span>
+    </a>
+    <a class="menu-tile" data-id="blog" href="blog.html">
+      <span class="icon">📚</span>
+      <span class="title">LIBRARY</span>
+      <span class="desc">Tales, rants, and tech blogs.</span>
+      <span class="arrow">▸ ENTER</span>
+    </a>
+    <a class="menu-tile" data-id="arcade" href="games/index.html">
+      <span class="icon">🎮</span>
+      <span class="title">ARCADE</span>
+      <span class="desc">Small browser games. Currently: an AI fighting for its life.</span>
+      <span class="arrow">▸ ENTER</span>
+    </a>
+    <a class="menu-tile" data-id="contact" href="#contact">
+      <span class="icon">✉️</span>
+      <span class="title">PIGEON</span>
+      <span class="desc">Send a message to the wizard.</span>
+      <span class="arrow">▸ ENTER</span>
+    </a>
+  </nav>
+
+  <!-- About -->
+  <section class="section" id="about">
+    <div class="section-header">
+      <h2>ABOUT ME</h2>
+      <span class="sub">// the long lore</span>
+    </div>
+    <div class="panel is-accent">
+      <div class="panel-title">📜 Lore</div>
+      <p class="lore">
+        O' adventurer, not all who wander are lost. Welcome to <b>Nooremberg</b>. I am a curious
+        spirit who's been chasing problems across the cloud since 2015. Right now I am the
+        Technical CoFounder of <b>DeepMask</b>, a unified AI command center. Here, I'm forging
+        a secure nexus of 25+ powerful AI minds, helping adventurers tame the chaos of
+        fragmented tools and summon the perfect model for any quest.
+      </p>
+      <p class="lore">
+        If you're assembling a guild to craft resilient solutions, potions, or weapons, I'd love
+        to accompany you. Beyond my ancient knowledge of <b>Cloud, DevOps, IoT, and full-stack
+        development</b>, I bring the strategic vision to lead adventuring parties and conquer
+        complex business quests. Guided by a relentless obsession for the users we serve, I listen
+        closely to their needs. Together, we shall build legendary products and slay the down-time
+        dragon.
+      </p>
+    </div>
+  </section>
+
+  <!-- Stats / skills -->
+  <section class="section" id="skills">
+    <div class="section-header">
+      <h2>STATS &amp; SKILL CARDS</h2>
+      <span class="sub">// click cards to flip ✦ filter by type</span>
+    </div>
+    <div class="filter-row" id="skill-filters" role="toolbar" aria-label="Filter skills"></div>
+    <div class="cards" id="skills-grid"></div>
+  </section>
+
+  <!-- Quests / experience -->
+  <section class="section" id="quests">
+    <div class="section-header">
+      <h2>QUEST LOG</h2>
+      <span class="sub">// past &amp; present adventures</span>
+    </div>
+    <div class="questlog" id="quests-list"></div>
+  </section>
+
+  <!-- Education -->
+  <section class="section" id="education">
+    <div class="section-header">
+      <h2>SCROLLS &amp; SAGES</h2>
+      <span class="sub">// places of learning</span>
+    </div>
+    <div class="questlog" id="education-list"></div>
+  </section>
+
+  <!-- Achievements -->
+  <section class="section" id="achievements">
+    <div class="section-header">
+      <h2>ACHIEVEMENTS</h2>
+      <span class="sub">// hover, click, scroll, type — unlock them all</span>
+    </div>
+    <div class="achievement-list" id="achievements-list"></div>
+    <p style="margin-top:1rem; color: var(--ink-mute); font-size: 1rem;">
+      Hint: try <kbd>↑↑↓↓←→←→ B A</kbd> · or press <kbd>/</kbd> to open the console.
+    </p>
+  </section>
+
+  <!-- Contact -->
+  <section class="section" id="contact">
+    <div class="section-header">
+      <h2>SEND A PIGEON</h2>
+      <span class="sub">// contact</span>
+    </div>
+    <div class="panel">
+      <div class="panel-title">✉️ Pigeon Post</div>
+      <p class="lore">
+        The fastest way to reach me is via
+        <a href="mailto:noor.jafri@live.com">noor.jafri@live.com</a>
+        or <a href="https://www.linkedin.com/in/nooralijafri/" rel="noopener">LinkedIn</a>.
+        I respond between dragon-slaying sessions.
+      </p>
+      <div class="social-row">
+        <a class="social-btn" href="https://github.com/noor-jafri" target="_blank" rel="noopener noreferrer">🐙 GITHUB</a>
+        <a class="social-btn" href="https://www.linkedin.com/in/nooralijafri/" target="_blank" rel="noopener noreferrer">💼 LINKEDIN</a>
+        <a class="social-btn" href="https://medium.com/@noorjafri" target="_blank" rel="noopener noreferrer">✍️ MEDIUM</a>
+        <a class="social-btn" href="mailto:noor.jafri@live.com">✉️ EMAIL</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Hidden chest -->
+  <section class="section secret" id="secret-room">
+    <div class="section-header">
+      <h2 style="color: var(--c-gold);">SECRET CHAMBER</h2>
+      <span class="sub">// you found it</span>
+    </div>
+    <div class="panel is-gold">
+      <div class="panel-title" style="color: var(--c-gold);">🗝️ Chest unlocked</div>
+      <p class="lore">
+        Welcome, traveler. You found the secret. Here is a tiny gift: a
+        <a href="https://www.youtube.com/@BJGpixel" target="_blank" rel="noopener noreferrer">pixel-art tutorial</a>
+        I love and the <a href="https://lospec.com/palette-list/beepmini" target="_blank" rel="noopener noreferrer">BeepMini palette</a> I use most often.
+      </p>
+      <p class="lore">
+        Type <kbd>secret</kbd> in the console any time to come back here.
+      </p>
+    </div>
+  </section>
+
+  <!-- Tiny clickable chest, half-hidden in the corner. Click to find the room. -->
+  <button class="secret-chest" title="A suspicious coin..." aria-label="Open the chest">🪙</button>
+
+  <footer class="foot">
+    <p>© <span id="foot-year"></span> Noor Jafri · made with pixels &amp; coffee</p>
+    <p class="sig">PRESS START · NOOREMBERG · v2</p>
+  </footer>
+
+  <script>document.getElementById("foot-year").textContent = new Date().getFullYear();</script>
+  <script type="module" src="./assets/js/main.js"></script>
+</body>
+</html>

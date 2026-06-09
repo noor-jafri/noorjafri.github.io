@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1a1230">
+
+  <title>Library · Noor Jafri</title>
+  <meta name="description" content="The library of Nooremberg — blog posts on cloud, AWS, serverless, pixel art, and the occasional rant.">
+
+  <link rel="shortcut icon" type="image/png" href="./assets/images/favicon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./assets/css/animations.css">
+  <link rel="stylesheet" href="./assets/css/styles.css">
+  <link rel="stylesheet" href="./assets/css/blog.css">
+</head>
+<body>
+
+  <div class="world-bg" aria-hidden="true"></div>
+  <div class="stars" aria-hidden="true"></div>
+  <div class="scanlines" aria-hidden="true"></div>
+  <div class="crt-vignette" aria-hidden="true"></div>
+
+  <header class="hud" role="banner">
+    <div class="hud-inner">
+      <a class="hud-btn" href="./index.html">◂ HUB</a>
+      <span class="stat"><span class="label">AREA</span><span class="value">LIBRARY</span></span>
+      <span class="stat"><span class="label">CLOCK</span><span class="value" id="hud-clock">--:--</span></span>
+      <span class="hud-spacer"></span>
+      <button class="hud-btn" id="theme-toggle">☾/☀</button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-avatar">
+      <img src="./assets/images/avatar.gif" alt="">
+      <div class="platform" aria-hidden="true"></div>
+    </div>
+    <div>
+      <h1 class="hero-title">LIBRARY</h1>
+      <p class="hero-tag">scrolls, rants &amp; tech blogs · <span class="blink">_</span></p>
+      <div class="dialogue">
+        <p style="margin:0;">Welcome to the library, traveler. Take any scroll you like — they don't bite. Some have code in them.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <h2>SCROLLS</h2>
+      <span class="sub">// latest first</span>
+    </div>
+    <div id="post-list"></div>
+  </section>
+
+  <footer class="foot">
+    <p class="sig">RETURN TO HUB ▸ <a href="./index.html">./index.html</a></p>
+  </footer>
+
+  <script type="module" src="./assets/js/blog.js"></script>
+</body>
+</html>

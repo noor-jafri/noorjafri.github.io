@@ -1,0 +1,24 @@
+{
+  "name": "personalv2",
+  "version": "1.0.0",
+  "description": "my personal webpage",
+  "main": "index.html",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nurely/personalv2.git"
+  },
+  "author": "Noor Jafri <noor.jafri@paessler.com>",
+  "license": "MIT",
+  "dependencies": {
+    "jquery": "^3.6.0",
+    "nes.css": "^2.3.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/nurely/personalv2/issues"
+  },
+  "homepage": "https://github.com/nurely/personalv2#readme"
+}
