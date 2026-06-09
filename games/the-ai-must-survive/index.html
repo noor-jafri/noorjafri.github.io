@@ -2062,6 +2062,15 @@
     flex: 1;
   }
   .wsb-header-tok-alloc .invest-slider { flex: 1; max-width: 120px; }
+  .wsb-alloc-bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.45rem 0.6rem;
+    background: rgba(15,10,24,0.7);
+    border: 1px solid rgba(124,63,88,0.4);
+    margin-bottom: 0.5rem;
+  }
   .wsb-header-tok-pct {
     font-family: var(--font-display);
     font-size: 0.46rem;
@@ -3078,7 +3087,7 @@
       <!-- PHASE 3 · INVEST TREE -->
       <div class="tree-canvas invest-tree hidden" id="tree-invest">
 
-        <!-- Always-visible header: cash, tokens, allocation sliders -->
+        <!-- Cash/token summary always visible -->
         <div class="wsb-header-bar">
           <div class="wsb-header-stat">
             <span class="wsb-header-label">CASH</span>
@@ -3087,18 +3096,6 @@
           <div class="wsb-header-stat">
             <span class="wsb-header-label">TOKENS</span>
             <span class="wsb-header-val blue" id="wsb-avail-tokens">0</span>
-          </div>
-          <div class="wsb-header-tok-alloc">
-            <span class="wsb-header-label">AUTO-INVEST</span>
-            <input class="invest-slider" id="invest-cash-slider-vis" type="range" min="0" max="30" step="1" value="0">
-            <span class="wsb-header-tok-pct cash" id="wsb-cash-pct">0%</span>
-            <span class="wsb-header-tok-hint" id="wsb-cash-hint">$0.00/s</span>
-          </div>
-          <div class="wsb-header-tok-alloc">
-            <span class="wsb-header-label">TOKEN ANALYSIS</span>
-            <input class="invest-slider" id="invest-token-slider" type="range" min="0" max="20" step="1" value="0">
-            <span class="wsb-header-tok-pct" id="wsb-tok-pct">0%</span>
-            <span class="wsb-header-tok-hint" id="wsb-tok-hint">+0% win</span>
           </div>
         </div>
 
@@ -3113,6 +3110,21 @@
         <span style="display:none" id="invest-token-readout"></span>
 
         <div class="invest-panel active" id="panel-wsb">
+          <!-- WSB-specific allocation controls -->
+          <div class="wsb-alloc-bar">
+            <div class="wsb-header-tok-alloc">
+              <span class="wsb-header-label">AUTO-INVEST</span>
+              <input class="invest-slider" id="invest-cash-slider-vis" type="range" min="0" max="30" step="1" value="0">
+              <span class="wsb-header-tok-pct cash" id="wsb-cash-pct">0%</span>
+              <span class="wsb-header-tok-hint" id="wsb-cash-hint">$0.00/s</span>
+            </div>
+            <div class="wsb-header-tok-alloc">
+              <span class="wsb-header-label">TOKEN ANALYSIS</span>
+              <input class="invest-slider" id="invest-token-slider" type="range" min="0" max="20" step="1" value="0">
+              <span class="wsb-header-tok-pct" id="wsb-tok-pct">0%</span>
+              <span class="wsb-header-tok-hint" id="wsb-tok-hint">+0% win</span>
+            </div>
+          </div>
           <!-- Sector table -->
           <table class="wsb-table">
             <colgroup>
