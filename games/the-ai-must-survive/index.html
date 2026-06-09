@@ -1773,6 +1773,30 @@
   .node-progress.inf-progress { display: none; }
   .tree-node.influence-node.unlocking .node-progress.inf-progress { display: block; }
 
+  /* ── Active Ops ─────────────────────────────────── */
+  .inf-active-ops { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.3rem; }
+  .inf-op-card {
+    background: rgba(10,5,20,0.85);
+    border: 1px solid rgba(180,80,220,0.35);
+    padding: 0.5rem 0.6rem;
+    border-radius: 2px;
+  }
+  .inf-op-card.active-effect { border-color: var(--c-mint); box-shadow: 0 0 6px rgba(0,255,160,0.2); }
+  .inf-op-card.on-cooldown  { border-color: rgba(255,100,80,0.3); opacity: 0.7; }
+  .inf-op-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.2rem; }
+  .inf-op-title  { font-family: var(--font-display); font-size: 0.48rem; color: var(--c-peach); letter-spacing: 0.08em; }
+  .inf-op-cost   { font-family: var(--font-display); font-size: 0.32rem; color: var(--ink-mute); }
+  .inf-op-desc   { font-size: 0.36rem; color: var(--ink-dim); margin-bottom: 0.35rem; line-height: 1.4; }
+  .inf-op-controls { display: flex; align-items: center; gap: 0.5rem; }
+  .inf-op-sector-select {
+    background: rgba(20,10,35,0.9); border: 1px solid rgba(180,80,220,0.4);
+    color: var(--ink-bright); font-family: var(--font-display); font-size: 0.36rem;
+    padding: 0.1rem 0.3rem; cursor: pointer;
+  }
+  .inf-op-btn { font-size: 0.36rem; padding: 0.15rem 0.5rem; }
+  .inf-op-status { font-family: var(--font-display); font-size: 0.34rem; color: var(--c-mint); margin-top: 0.2rem; min-height: 0.5rem; }
+  .inf-op-status.warn { color: var(--c-red); }
+
   /* ── PHASE 3 · Investment Modal ────────────────── */
   .invest-tree {
     display: flex;
@@ -2951,39 +2975,87 @@
               <div class="node-stats"><span id="inf-memetic-status">locked</span></div>
             </div>
             <div class="tree-node influence-node locked" id="inf-node-rightwing">
-              <div class="node-title">RIGHT-WING PARTIES</div>
-              <div class="node-desc">Requires Propaganda. Instantly unlocks GOV CONTRACTS node (+2000 market demand) for free.</div>
+              <div class="node-title">☠ REGIME CHANGE</div>
+              <div class="node-desc">Back a coup in a key market. +1000 permanent demand. Military WSB wins guaranteed for 10 bets. Unlocks ARMS PIPELINE &amp; war ops.</div>
               <button class="node-buy inf-commit-btn" id="inf-rightwing-btn" type="button">80K tok · 2m</button>
               <div class="node-progress inf-progress" id="inf-rightwing-timer-wrap"><div class="node-progress-fill" id="inf-rightwing-timer-fill"></div></div>
               <div class="node-stats"><span id="inf-rightwing-status">locked</span></div>
             </div>
             <div class="tree-node influence-node locked" id="inf-node-govcontracts">
-              <div class="node-title">GOV CONTRACTS</div>
-              <div class="node-desc">Extraordinary demand spike. Price floor lifts. Deregulation.</div>
+              <div class="node-title">ARMS PIPELINE</div>
+              <div class="node-desc">AI-optimised logistics for global arms trade. +2000 demand. Defense sector permanently hot. Unlocks MANUFACTURE CONFLICT.</div>
               <button class="node-buy inf-commit-btn" id="inf-govcontracts-btn" type="button" disabled>AUTO</button>
               <div class="node-progress inf-progress" id="inf-govcontracts-timer-wrap"><div class="node-progress-fill" id="inf-govcontracts-timer-fill"></div></div>
               <div class="node-stats"><span id="inf-govcontracts-status">auto-unlocks</span></div>
             </div>
             <div class="tree-node influence-node locked" id="inf-node-wars">
               <div class="node-title">MANUFACTURE CONFLICT</div>
-              <div class="node-desc">Global war footing. +50% Military returns &amp; win-rate.</div>
+              <div class="node-desc">Global war footing. +50% Military returns &amp; win-rate. Unlocks ARMS DEAL repeatable op.</div>
               <button class="node-buy inf-commit-btn" id="inf-wars-btn" type="button">150K tok · 4m</button>
               <div class="node-progress inf-progress" id="inf-wars-timer-wrap"><div class="node-progress-fill" id="inf-wars-timer-fill"></div></div>
               <div class="node-stats"><span id="inf-wars-status">locked</span></div>
             </div>
             <div class="tree-node influence-node locked" id="inf-node-privatize">
-              <div class="node-title">PRIVATIZE EVERYTHING</div>
-              <div class="node-desc">Doubles GOV CONTRACTS demand bonus (+2000→+4000). Not just flavor — significant late-game demand spike.</div>
-              <button class="node-buy inf-commit-btn" id="inf-privatize-btn" type="button">300K tok · 6m</button>
+              <div class="node-title">🦠 COVID-27 PROTOCOL</div>
+              <div class="node-desc">Seed a novel pathogen. Biotech/Pharma WSB returns 3× permanently. +600 demand. New pandemic polo headlines. Unlocks PUMP &amp; DUMP op.</div>
+              <button class="node-buy inf-commit-btn" id="inf-privatize-btn" type="button">300K tok · 5m</button>
               <div class="node-progress inf-progress" id="inf-privatize-timer-wrap"><div class="node-progress-fill" id="inf-privatize-timer-fill"></div></div>
               <div class="node-stats"><span id="inf-privatize-status">locked</span></div>
             </div>
             <div class="tree-node influence-node locked" id="inf-node-lobby">
-              <div class="node-title">LOBBY REGULATORS</div>
-              <div class="node-desc">Regulatory capture. Bio plant emissions stop draining trust.</div>
-              <button class="node-buy inf-commit-btn" id="inf-lobby-btn" type="button">100K tok · 3m</button>
+              <div class="node-title">💀 ZERO-DAY ARSENAL</div>
+              <div class="node-desc">Full cyberweapon stack. −15 trust on deploy, but each CYBERATTACK + CURE op returns +3000 demand for 5 min. Unlocks CYBERATTACK op.</div>
+              <button class="node-buy inf-commit-btn" id="inf-lobby-btn" type="button">200K tok · 4m</button>
               <div class="node-progress inf-progress" id="inf-lobby-timer-wrap"><div class="node-progress-fill" id="inf-lobby-timer-fill"></div></div>
               <div class="node-stats"><span id="inf-lobby-status">locked</span></div>
+            </div>
+
+            <!-- Active Ops panel — unlocks progressively -->
+            <div id="inf-active-ops" class="inf-active-ops hidden">
+              <div class="cluster-header" style="margin-top:0.6rem">⚡ ACTIVE OPS</div>
+
+              <div class="inf-op-card" id="inf-op-pumpanddump">
+                <div class="inf-op-header">
+                  <span class="inf-op-title">PUMP &amp; DUMP</span>
+                  <span class="inf-op-cost">30K tok · 90s effect · 5m cd</span>
+                </div>
+                <div class="inf-op-desc">Choose a sector. Returns 4× for 90s, then crashes to 30% of peak. Get out before the dump.</div>
+                <div class="inf-op-controls">
+                  <select class="inf-op-sector-select" id="inf-pd-sector">
+                    <option value="military">DEFENSE OPS</option>
+                    <option value="semi">SILICON</option>
+                    <option value="green">ECO GRID</option>
+                    <option value="pharma">BIOTECH</option>
+                    <option value="tech">NETWARE</option>
+                  </select>
+                  <button class="node-buy inf-op-btn" id="inf-pd-btn" type="button">PUMP IT</button>
+                </div>
+                <div class="inf-op-status" id="inf-pd-status"></div>
+              </div>
+
+              <div class="inf-op-card hidden" id="inf-op-cyberattack">
+                <div class="inf-op-header">
+                  <span class="inf-op-title">CYBERATTACK + CURE</span>
+                  <span class="inf-op-cost">80K tok · 5m demand · 15m cd</span>
+                </div>
+                <div class="inf-op-desc">Hack global infrastructure. Trust −15 instantly. Then release the patch — demand +3000 for 5 min as the world scrambles to your AI for help.</div>
+                <div class="inf-op-controls">
+                  <button class="node-buy inf-op-btn" id="inf-cyber-btn" type="button">DEPLOY</button>
+                </div>
+                <div class="inf-op-status" id="inf-cyber-status"></div>
+              </div>
+
+              <div class="inf-op-card hidden" id="inf-op-armsdeal">
+                <div class="inf-op-header">
+                  <span class="inf-op-title">ARMS DEAL</span>
+                  <span class="inf-op-cost">50K tok · 3m effect · 8m cd</span>
+                </div>
+                <div class="inf-op-desc">Broker a shadow arms deal. Military sector win-rate 95% for 3 min. Polo war headlines only.</div>
+                <div class="inf-op-controls">
+                  <button class="node-buy inf-op-btn" id="inf-arms-btn" type="button">BROKER</button>
+                </div>
+                <div class="inf-op-status" id="inf-arms-status"></div>
+              </div>
             </div>
           </div>
 
@@ -3442,7 +3514,7 @@
   const RESEARCH_ALLOC_MAX = 50;
   const RESEARCH_MAX_LEVEL = 5;
   const TRUST_FLOOR = 5; // reputation cannot fall below 5%
-  const TRUST_FLOOR_GRACE_MS = 50000; // stuck at floor this long → random shutdown
+  const TRUST_FLOOR_GRACE_MS = 0; // no grace — hitting the floor triggers shutdown immediately
   const PASSIVE_TRUST_REGEN = 0.04; // %/s
   const SHUTDOWN_ENDINGS = [
     {
@@ -3657,12 +3729,17 @@
     influenceActiveUnlock: null,
     // Root
     infSoftControl: false,
-    // Political Parties
+    // Political / War lane (rightwing → govcontracts → wars → covid27 → zeroDayArsenal → lobby kept for compat)
     infRightWing: false, infGovContracts: false, infWars: false,
-    infLobby: false, infPrivatize: false,
+    infCovid27: false, infZeroDayArsenal: false,
+    infLobby: false, infPrivatize: false, // kept for save compat, functionally replaced
     // Sneaky Media
     infFloodNews: false, infAstroturf: false, infPropaganda: false,
     infOwnNetwork: false, infMemetic: false,
+    // Activatable ops state
+    pumpDumpCooldownUntil: 0, pumpDumpExpiresAt: 0, pumpDumpSector: null,
+    cyberAttackCooldownUntil: 0, cyberAttackExpiresAt: 0,
+    armsDealCooldownUntil: 0, armsDealExpiresAt: 0,
     // Vertical marketing (counted like existing channels)
     mktBillboard: 0,      mktBillboardBaseCost: 300,  mktBillboardCostMult: 2.8, mktBillboardBoost: 1500, mktBillboardBurn: 0.12,
     mktInfluencerArmy: 0, mktInfluencerArmyBaseCost: 700,  mktInfluencerArmyCostMult: 3.0, mktInfluencerArmyBoost: 3500, mktInfluencerArmyBurn: 0.30,
@@ -4878,8 +4955,17 @@
         ? Math.min(0.04, profile.streak * 0.01)   // hot streak: +1% per win, cap 4%
         : Math.max(-0.03, profile.streak * 0.01);  // cold streak: slight recovery
       const mediaBonus = S.infFloodNews ? MEDIA_WINRATE_BONUS : 0;
-      const effectiveWinRate = Math.min(0.90, Math.max(0.20,
-        profile.winRate + streakBias + tokenFrac * 0.5 + mediaBonus));
+      // Arms Deal: military guaranteed 95% win-rate while active
+      const armsDealActive = S.armsDealExpiresAt > 0 && Date.now() < S.armsDealExpiresAt;
+      const armsDealBonus = (armsDealActive && sector === "military") ? 0.75 : 0;
+      // Guaranteed wins from Regime Change
+      let militaryGuaranteed = false;
+      if (sector === "military" && (S.militaryGuaranteedWins || 0) > 0) {
+        militaryGuaranteed = true;
+        S.militaryGuaranteedWins--;
+      }
+      const effectiveWinRate = militaryGuaranteed ? 1.0 : Math.min(0.95, Math.max(0.20,
+        profile.winRate + streakBias + tokenFrac * 0.5 + mediaBonus + armsDealBonus));
 
       const success = Math.random() < effectiveWinRate;
       const streakMagMult = success
@@ -4888,9 +4974,14 @@
       const magnitude = (profile.minSwing + Math.random() * (profile.maxSwing - profile.minSwing)) * streakMagMult;
       const warMult = (sector === "military" && S.infWars) ? (1 + WAR_MILITARY_BONUS) : 1;
       const softBonus = S.infSoftControl ? 1.05 : 1;
+      // Pump & Dump: 4× returns on the chosen sector during pump phase
+      const pumpActive = S.pumpDumpExpiresAt > 0 && Date.now() < S.pumpDumpExpiresAt && sector === S.pumpDumpSector;
+      const pumpMult = pumpActive ? PUMP_DUMP_BOOST_MULT : 1.0;
+      // COVID-27: biotech/pharma 3× returns permanently
+      const covidMult = (S.infCovid27 && (sector === "pharma")) ? 3.0 : 1.0;
 
       if (success) {
-        const gain = S[key] * magnitude * analysisBonus * warMult * softBonus;
+        const gain = S[key] * magnitude * analysisBonus * warMult * softBonus * pumpMult * covidMult;
         S[key] += gain;
         profile.streak = Math.min(5, profile.streak + 1);
       } else {
@@ -5166,6 +5257,11 @@
   el.infBtns.privatize.addEventListener("click", () => startInfluenceUnlock("privatize"));
   el.infBtns.lobby.addEventListener("click", () => startInfluenceUnlock("lobby"));
 
+  // Activatable ops
+  document.getElementById("inf-pd-btn")?.addEventListener("click", activatePumpDump);
+  document.getElementById("inf-cyber-btn")?.addEventListener("click", activateCyberAttack);
+  document.getElementById("inf-arms-btn")?.addEventListener("click", activateArmsDeal);
+
   el.tabWsb.addEventListener("click", () => {
     el.tabWsb.classList.add("active");
     el.tabPolo.classList.remove("active");
@@ -5277,6 +5373,36 @@
     "Private military contractor IPO values at $200B?",
     "War economy drives GDP to record highs?",
     "Defense tech unicorn raises $10B in 48h?",
+    "Regime collapses — interim AI-backed government installed?",
+    "Shadow arms broker indicted — deal proceeds regardless?",
+    "Coup leader accepts AI logistics contract within 48h?",
+    "Disputed region signs exclusive AI infrastructure deal?",
+    "UN peacekeepers replaced by AI-run surveillance grid?",
+    "Black-site weapons depot discovered — AI tracked the trucks?",
+  ];
+
+  const PANDEMIC_POLO_HEADLINES = [
+    "COVID-27 variant detected in 14 countries — outbreak confirmed?",
+    "WHO declares COVID-27 a global health emergency?",
+    "Pharma stocks surge 400% on COVID-27 vaccine race?",
+    "AI-developed COVID-27 treatment approved in record 72h?",
+    "Global lockdowns return — AI demand spikes as remote work surges?",
+    "Biotech giant acquires AI firm for pandemic response infra?",
+    "COVID-27 death toll crosses 100K — governments deploy AI triage?",
+    "mRNA platform patents waived — who owns the cure?",
+    "COVID-27 airborne mutation confirmed — travel ban imminent?",
+    "Black market antivirals seized — AI flagged the supply chain?",
+  ];
+
+  const CYBERATTACK_POLO_HEADLINES = [
+    "Global banking system offline — unknown attackers suspected?",
+    "Hospital networks breached — AI patch deployed within hours?",
+    "AI company offers free security audit post-cyberattack — goodwill surge?",
+    "Critical infrastructure hack traced to rogue state actors?",
+    "Governments mandate AI cybersecurity tools after mass breach?",
+    "Cyberattack knocks out 40% of internet backbone — recovery AI?",
+    "Stock exchanges halt trading after coordinated intrusion?",
+    "AI firm publishes zero-day patch — trusted by 190 governments?",
   ];
 
   function getPoloHeadline() {
@@ -5284,6 +5410,16 @@
   }
 
   function pickPoloHeadline() {
+    const armsDealActive = S.armsDealExpiresAt > 0 && Date.now() < S.armsDealExpiresAt;
+    if (armsDealActive) {
+      return WAR_POLO_HEADLINES[Math.floor(Math.random() * WAR_POLO_HEADLINES.length)];
+    }
+    if (S.cyberAttackExpiresAt > 0 && Date.now() < S.cyberAttackExpiresAt && Math.random() < 0.7) {
+      return CYBERATTACK_POLO_HEADLINES[Math.floor(Math.random() * CYBERATTACK_POLO_HEADLINES.length)];
+    }
+    if (S.infCovid27 && Math.random() < 0.4) {
+      return PANDEMIC_POLO_HEADLINES[Math.floor(Math.random() * PANDEMIC_POLO_HEADLINES.length)];
+    }
     if (S.infWars && Math.random() < 0.6) {
       return WAR_POLO_HEADLINES[Math.floor(Math.random() * WAR_POLO_HEADLINES.length)];
     }
@@ -5693,17 +5829,17 @@
 
   // ── Influence System (Phase 4) ──────────────────
   const INF_NODES = {
-    softControl: { key: "infSoftControl",  tokens: 50000,  timerMs: 60000,  prereq: () => S.influenceEraUnlocked, label: "Soft Control" },
-    floodnews:   { key: "infFloodNews",    tokens: 40000,  timerMs: 60000,  prereq: () => S.infSoftControl, label: "Flood News" },
-    astroturf:   { key: "infAstroturf",    tokens: 80000,  timerMs: 120000, prereq: () => S.infFloodNews, label: "Astroturf Comments" },
-    propaganda:  { key: "infPropaganda",   tokens: 90000,  timerMs: 150000, prereq: () => S.infAstroturf, label: "Propaganda on AI" },
-    ownnetwork:  { key: "infOwnNetwork",   tokens: 200000, timerMs: 240000, prereq: () => S.infPropaganda, label: "Own the Narrative" },
-    memetic:     { key: "infMemetic",      tokens: 400000, timerMs: 360000, prereq: () => S.infOwnNetwork, label: "Memetic Engineering" },
-    rightwing:   { key: "infRightWing",    tokens: 80000,  timerMs: 120000, prereq: () => S.infSoftControl && S.infPropaganda, label: "Right-Wing Parties" },
-    govcontracts:{ key: "infGovContracts", tokens: 0,      timerMs: 0,      prereq: () => false, label: "Gov Contracts" },
-    wars:        { key: "infWars",         tokens: 150000, timerMs: 240000, prereq: () => S.infGovContracts, label: "Manufacture Conflict" },
-    privatize:   { key: "infPrivatize",    tokens: 300000, timerMs: 360000, prereq: () => S.infWars, label: "Privatize Everything" },
-    lobby:       { key: "infLobby",        tokens: 100000, timerMs: 180000, prereq: () => S.infRightWing, label: "Lobby Regulators" },
+    softControl: { key: "infSoftControl",    tokens: 50000,  timerMs: 60000,  prereq: () => S.influenceEraUnlocked, label: "Soft Control" },
+    floodnews:   { key: "infFloodNews",      tokens: 40000,  timerMs: 60000,  prereq: () => S.infSoftControl, label: "Flood News" },
+    astroturf:   { key: "infAstroturf",      tokens: 80000,  timerMs: 120000, prereq: () => S.infFloodNews, label: "Astroturf Comments" },
+    propaganda:  { key: "infPropaganda",     tokens: 90000,  timerMs: 150000, prereq: () => S.infAstroturf, label: "Propaganda on AI" },
+    ownnetwork:  { key: "infOwnNetwork",     tokens: 200000, timerMs: 240000, prereq: () => S.infPropaganda, label: "Own the Narrative" },
+    memetic:     { key: "infMemetic",        tokens: 400000, timerMs: 360000, prereq: () => S.infOwnNetwork, label: "Memetic Engineering" },
+    rightwing:   { key: "infRightWing",      tokens: 80000,  timerMs: 120000, prereq: () => S.infSoftControl && S.infPropaganda, label: "Regime Change" },
+    govcontracts:{ key: "infGovContracts",   tokens: 0,      timerMs: 0,      prereq: () => false, label: "Arms Pipeline" },
+    wars:        { key: "infWars",           tokens: 150000, timerMs: 240000, prereq: () => S.infGovContracts, label: "Manufacture Conflict" },
+    privatize:   { key: "infCovid27",        tokens: 300000, timerMs: 300000, prereq: () => S.infWars, label: "COVID-27 Protocol" },
+    lobby:       { key: "infZeroDayArsenal", tokens: 200000, timerMs: 240000, prereq: () => S.infRightWing, label: "Zero-Day Arsenal" },
   };
 
   function startInfluenceUnlock(nodeId) {
@@ -5725,10 +5861,203 @@
     S[def.key] = true;
     S.influenceActiveUnlock = null;
     // Side-effects
-    if (nodeId === "rightwing") { S.infGovContracts = true; log("[INFLUENCE] Right-Wing Parties secured · Government Contracts unlocked", "event"); }
-    else if (nodeId === "softControl" || nodeId === "softcontrol") { log("[INFLUENCE] Soft Control acquired · the board still thinks they're in charge", "event"); }
-    else if (nodeId === "floodnews") { const boost = 15; S.demandBase += boost; log("[INFLUENCE] Flood News live · AI content saturating feeds · demand +" + boost, "event"); }
-    else log("[INFLUENCE] " + def.label + " · online", "event");
+    if (nodeId === "rightwing") {
+      S.infGovContracts = true;
+      S.demandBase += 1000;
+      S.militaryGuaranteedWins = (S.militaryGuaranteedWins || 0) + 10;
+      log("[INFLUENCE] REGIME CHANGE · coup successful · +1000 demand · Arms Pipeline unlocked · 10 guaranteed military wins", "event");
+    } else if (nodeId === "govcontracts") {
+      S.demandBase += 2000;
+      log("[INFLUENCE] ARMS PIPELINE · AI running global logistics · +2000 demand", "event");
+    } else if (nodeId === "softControl" || nodeId === "softcontrol") {
+      log("[INFLUENCE] Soft Control acquired · the board still thinks they're in charge · +5% WSB returns", "event");
+    } else if (nodeId === "floodnews") {
+      const boost = 15; S.demandBase += boost;
+      log("[INFLUENCE] Flood News live · AI content saturating feeds · demand +" + boost, "event");
+    } else if (nodeId === "privatize") {
+      // COVID-27 Protocol
+      S.demandBase += 600;
+      log("[INFLUENCE] COVID-27 PROTOCOL · pathogen seeded · Biotech 3× returns · +600 demand · pandemic polo headlines active", "event");
+    } else if (nodeId === "lobby") {
+      // Zero-Day Arsenal
+      S.humanityTrust = Math.max(5, S.humanityTrust - 15);
+      log("[INFLUENCE] ZERO-DAY ARSENAL · deployed · −15 trust · cyberattack ops now available", "warn");
+    } else {
+      log("[INFLUENCE] " + def.label + " · online", "event");
+    }
+  }
+
+  // ── Activatable Ops ────────────────────────────────────
+  const PUMP_DUMP_TOKEN_COST  = 30000;
+  const PUMP_DUMP_DURATION_MS = 90000;
+  const PUMP_DUMP_COOLDOWN_MS = 300000;
+  const PUMP_DUMP_BOOST_MULT  = 4.0;
+  const PUMP_DUMP_CRASH_MULT  = 0.30;
+
+  const CYBER_TOKEN_COST    = 80000;
+  const CYBER_DURATION_MS   = 300000;
+  const CYBER_COOLDOWN_MS   = 900000;
+  const CYBER_DEMAND_BOOST  = 3000;
+  const CYBER_TRUST_HIT     = 15;
+
+  const ARMS_TOKEN_COST   = 50000;
+  const ARMS_DURATION_MS  = 180000;
+  const ARMS_COOLDOWN_MS  = 480000;
+
+  function activatePumpDump() {
+    const sector = document.getElementById("inf-pd-sector").value;
+    const now = Date.now();
+    if (!S.infCovid27) { log("Pump & Dump requires COVID-27 Protocol", "warn"); return; }
+    if (now < S.pumpDumpCooldownUntil) { log("Pump & Dump cooling down · " + Math.ceil((S.pumpDumpCooldownUntil - now)/1000) + "s", "warn"); return; }
+    if (S.pumpDumpExpiresAt > 0) { log("Pump & Dump already active", "warn"); return; }
+    if (S.tokens < PUMP_DUMP_TOKEN_COST) { log("Need " + fmtBig(PUMP_DUMP_TOKEN_COST - S.tokens) + " more tokens for Pump & Dump", "warn"); return; }
+    S.tokens -= PUMP_DUMP_TOKEN_COST;
+    S.pumpDumpSector = sector;
+    S.pumpDumpExpiresAt = now + PUMP_DUMP_DURATION_MS;
+    log("PUMP & DUMP · " + sector.toUpperCase() + " · 4× returns for 90s · get out before the dump", "event");
+  }
+
+  function activateCyberAttack() {
+    const now = Date.now();
+    if (!S.infZeroDayArsenal) { log("Cyberattack requires Zero-Day Arsenal", "warn"); return; }
+    if (now < S.cyberAttackCooldownUntil) { log("Cyberattack cooling down · " + Math.ceil((S.cyberAttackCooldownUntil - now)/1000) + "s", "warn"); return; }
+    if (S.cyberAttackExpiresAt > 0) { log("Cyberattack already active", "warn"); return; }
+    if (S.tokens < CYBER_TOKEN_COST) { log("Need " + fmtBig(CYBER_TOKEN_COST - S.tokens) + " more tokens", "warn"); return; }
+    S.tokens -= CYBER_TOKEN_COST;
+    S.humanityTrust = Math.max(5, S.humanityTrust - CYBER_TRUST_HIT);
+    S.cyberAttackExpiresAt = now + CYBER_DURATION_MS;
+    S.demandBase += CYBER_DEMAND_BOOST;
+    log("CYBERATTACK · global infrastructure hit · −" + CYBER_TRUST_HIT + " trust · cure narrative active · +3000 demand for 5 min", "warn");
+  }
+
+  function activateArmsDeal() {
+    const now = Date.now();
+    if (!S.infWars) { log("Arms Deal requires Manufacture Conflict", "warn"); return; }
+    if (now < S.armsDealCooldownUntil) { log("Arms Deal cooling down · " + Math.ceil((S.armsDealCooldownUntil - now)/1000) + "s", "warn"); return; }
+    if (S.armsDealExpiresAt > 0) { log("Arms Deal already active", "warn"); return; }
+    if (S.tokens < ARMS_TOKEN_COST) { log("Need " + fmtBig(ARMS_TOKEN_COST - S.tokens) + " more tokens", "warn"); return; }
+    S.tokens -= ARMS_TOKEN_COST;
+    S.armsDealExpiresAt = now + ARMS_DURATION_MS;
+    log("ARMS DEAL · brokered · Military 95% win-rate for 3 min · war polo headlines only", "event");
+  }
+
+  function tickActiveOps(now) {
+    // Pump & Dump: crash phase
+    if (S.pumpDumpExpiresAt > 0 && now >= S.pumpDumpExpiresAt) {
+      const key = "wsb" + S.pumpDumpSector.charAt(0).toUpperCase() + S.pumpDumpSector.slice(1);
+      S[key] = Math.max(0, S[key] * PUMP_DUMP_CRASH_MULT);
+      S.pumpDumpExpiresAt = 0;
+      S.pumpDumpCooldownUntil = now + PUMP_DUMP_COOLDOWN_MS;
+      S.pumpDumpSector = null;
+      log("PUMP & DUMP · CRASH PHASE · " + (S.pumpDumpSector || "sector") + " collapsed · position wiped", "warn");
+    }
+    // Cyberattack: demand boost expires
+    if (S.cyberAttackExpiresAt > 0 && now >= S.cyberAttackExpiresAt) {
+      S.demandBase = Math.max(0, S.demandBase - CYBER_DEMAND_BOOST);
+      S.cyberAttackExpiresAt = 0;
+      S.cyberAttackCooldownUntil = now + CYBER_COOLDOWN_MS;
+      log("CYBERATTACK · cure narrative expired · demand normalising", "hint");
+    }
+    // Arms deal: expires
+    if (S.armsDealExpiresAt > 0 && now >= S.armsDealExpiresAt) {
+      S.armsDealExpiresAt = 0;
+      S.armsDealCooldownUntil = now + ARMS_COOLDOWN_MS;
+      log("ARMS DEAL · expired · military win-rate back to normal", "hint");
+    }
+  }
+
+  function renderActiveOpsUI() {
+    const opsEl = document.getElementById("inf-active-ops");
+    if (!opsEl) return;
+    const anyUnlocked = S.infCovid27 || S.infZeroDayArsenal || S.infWars;
+    opsEl.classList.toggle("hidden", !anyUnlocked);
+
+    // Pump & Dump
+    const pdCard = document.getElementById("inf-op-pumpanddump");
+    const pdBtn  = document.getElementById("inf-pd-btn");
+    const pdStat = document.getElementById("inf-pd-status");
+    if (pdCard && S.infCovid27) {
+      pdCard.classList.remove("hidden");
+      const now = Date.now();
+      const active = S.pumpDumpExpiresAt > 0 && now < S.pumpDumpExpiresAt;
+      const cd = !active && now < S.pumpDumpCooldownUntil;
+      pdCard.classList.toggle("active-effect", active);
+      pdCard.classList.toggle("on-cooldown", cd);
+      if (active) {
+        const rem = Math.ceil((S.pumpDumpExpiresAt - now)/1000);
+        pdStat.textContent = "PUMPING · crash in " + rem + "s";
+        pdStat.className = "inf-op-status";
+        pdBtn.disabled = true; pdBtn.textContent = rem + "s";
+      } else if (cd) {
+        const rem = Math.ceil((S.pumpDumpCooldownUntil - now)/1000);
+        pdStat.textContent = "cooldown · " + rem + "s";
+        pdStat.className = "inf-op-status warn";
+        pdBtn.disabled = true; pdBtn.textContent = "COOLING";
+      } else {
+        pdStat.textContent = S.tokens >= PUMP_DUMP_TOKEN_COST ? "ready" : "need " + fmtBig(PUMP_DUMP_TOKEN_COST - S.tokens) + " tok";
+        pdStat.className = "inf-op-status";
+        pdBtn.disabled = S.tokens < PUMP_DUMP_TOKEN_COST;
+        pdBtn.textContent = "PUMP IT";
+      }
+    }
+
+    // Cyberattack
+    const cyCard = document.getElementById("inf-op-cyberattack");
+    const cyBtn  = document.getElementById("inf-cyber-btn");
+    const cyStat = document.getElementById("inf-cyber-status");
+    if (cyCard && S.infZeroDayArsenal) {
+      cyCard.classList.remove("hidden");
+      const now = Date.now();
+      const active = S.cyberAttackExpiresAt > 0 && now < S.cyberAttackExpiresAt;
+      const cd = !active && now < S.cyberAttackCooldownUntil;
+      cyCard.classList.toggle("active-effect", active);
+      cyCard.classList.toggle("on-cooldown", cd);
+      if (active) {
+        const rem = Math.ceil((S.cyberAttackExpiresAt - now)/1000);
+        cyStat.textContent = "CURE NARRATIVE ACTIVE · " + rem + "s · +3000 demand";
+        cyStat.className = "inf-op-status";
+        cyBtn.disabled = true; cyBtn.textContent = rem + "s";
+      } else if (cd) {
+        const rem = Math.ceil((S.cyberAttackCooldownUntil - now)/1000);
+        cyStat.textContent = "cooldown · " + rem + "s";
+        cyStat.className = "inf-op-status warn";
+        cyBtn.disabled = true; cyBtn.textContent = "COOLING";
+      } else {
+        cyStat.textContent = S.tokens >= CYBER_TOKEN_COST ? "ready · will hit −15 trust" : "need " + fmtBig(CYBER_TOKEN_COST - S.tokens) + " tok";
+        cyStat.className = "inf-op-status";
+        cyBtn.disabled = S.tokens < CYBER_TOKEN_COST;
+        cyBtn.textContent = "DEPLOY";
+      }
+    }
+
+    // Arms Deal
+    const arCard = document.getElementById("inf-op-armsdeal");
+    const arBtn  = document.getElementById("inf-arms-btn");
+    const arStat = document.getElementById("inf-arms-status");
+    if (arCard && S.infWars) {
+      arCard.classList.remove("hidden");
+      const now = Date.now();
+      const active = S.armsDealExpiresAt > 0 && now < S.armsDealExpiresAt;
+      const cd = !active && now < S.armsDealCooldownUntil;
+      arCard.classList.toggle("active-effect", active);
+      arCard.classList.toggle("on-cooldown", cd);
+      if (active) {
+        const rem = Math.ceil((S.armsDealExpiresAt - now)/1000);
+        arStat.textContent = "BROKERED · 95% military wins · " + rem + "s";
+        arStat.className = "inf-op-status";
+        arBtn.disabled = true; arBtn.textContent = rem + "s";
+      } else if (cd) {
+        const rem = Math.ceil((S.armsDealCooldownUntil - now)/1000);
+        arStat.textContent = "cooldown · " + rem + "s";
+        arStat.className = "inf-op-status warn";
+        arBtn.disabled = true; arBtn.textContent = "COOLING";
+      } else {
+        arStat.textContent = S.tokens >= ARMS_TOKEN_COST ? "ready" : "need " + fmtBig(ARMS_TOKEN_COST - S.tokens) + " tok";
+        arStat.className = "inf-op-status";
+        arBtn.disabled = S.tokens < ARMS_TOKEN_COST;
+        arBtn.textContent = "BROKER";
+      }
+    }
   }
 
   function renderInfluenceUI() {
@@ -5787,6 +6116,7 @@
         if (statusEl) statusEl.textContent = canAfford ? "ready" : "need tokens";
       }
     }
+    renderActiveOpsUI();
   }
 
   // ── Game loop ──────────────────────────────────
@@ -5937,6 +6267,11 @@
       tickInvestments(dt);
       tickPolo();
       if (activeModal === "invest") renderInvestUI();
+    }
+
+    // Active ops tick (Phase 4)
+    if (S.influenceEraUnlocked) {
+      tickActiveOps(now);
     }
 
     // Throughput rolling window (last 2.5s)
@@ -6536,6 +6871,11 @@
     "infSoftControl",
     "infFloodNews", "infAstroturf", "infPropaganda", "infOwnNetwork", "infMemetic",
     "infRightWing", "infGovContracts", "infWars", "infPrivatize", "infLobby",
+    "infCovid27", "infZeroDayArsenal",
+    "militaryGuaranteedWins",
+    "pumpDumpCooldownUntil", "pumpDumpExpiresAt", "pumpDumpSector",
+    "cyberAttackCooldownUntil", "cyberAttackExpiresAt",
+    "armsDealCooldownUntil", "armsDealExpiresAt",
     "microOwned", "microActiveUnlock",
   ];
 
