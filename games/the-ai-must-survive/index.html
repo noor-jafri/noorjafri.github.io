@@ -2985,7 +2985,7 @@
             </div>
             <div class="tree-node influence-node locked" id="inf-node-privatize">
               <div class="node-title">🦠 COVID-27 PROTOCOL</div>
-              <div class="node-desc">Seed a novel pathogen. Biotech/Pharma WSB returns 3× permanently. +50K demand. New pandemic polo headlines. Unlocks PUMP &amp; DUMP op.</div>
+              <div class="node-desc">Establish bioweapons research. Biotech/Pharma WSB returns 3× permanently. Unlocks NOVEL VIRUS PROTOCOL &amp; PUMP &amp; DUMP ops.</div>
               <button class="node-buy inf-commit-btn" id="inf-privatize-btn" type="button">300K tok · 5m</button>
               <div class="node-progress inf-progress" id="inf-privatize-timer-wrap"><div class="node-progress-fill" id="inf-privatize-timer-fill"></div></div>
               <div class="node-stats"><span id="inf-privatize-status">locked</span></div>
@@ -2999,6 +2999,12 @@
             </div>
 
             <!-- Active Ops nodes — live in the OPS lane, rendered like normal tree nodes -->
+            <div class="tree-node influence-node locked" id="inf-node-novelvirus">
+              <div class="node-title">🦠 NOVEL VIRUS PROTOCOL</div>
+              <div class="node-desc">Release engineered pathogen. +100K demand for 5 min. 10m cd.</div>
+              <button class="node-buy" id="inf-novelvirus-btn" type="button">RELEASE</button>
+              <div class="node-stats"><span id="inf-novelvirus-status">locked</span></div>
+            </div>
             <div class="tree-node influence-node locked" id="inf-node-pumpanddump">
               <div class="node-title">📈 PUMP &amp; DUMP</div>
               <div class="node-desc">4× returns for 90s then sector crashes to 30%. Get out before the dump. 30K tok · 5m cd.</div>
@@ -3708,6 +3714,7 @@
     pumpDumpCooldownUntil: 0, pumpDumpExpiresAt: 0, pumpDumpSector: null,
     cyberAttackCooldownUntil: 0, cyberAttackExpiresAt: 0,
     armsDealCooldownUntil: 0, armsDealExpiresAt: 0,
+    novelVirusCooldownUntil: 0, novelVirusExpiresAt: 0,
     // Vertical marketing (counted like existing channels)
     mktBillboard: 0,      mktBillboardBaseCost: 300,  mktBillboardCostMult: 2.8, mktBillboardBoost: 1500, mktBillboardBurn: 0.12,
     mktInfluencerArmy: 0, mktInfluencerArmyBaseCost: 700,  mktInfluencerArmyCostMult: 3.0, mktInfluencerArmyBoost: 3500, mktInfluencerArmyBurn: 0.30,
@@ -5018,7 +5025,7 @@
         { label: "📰 MEDIA", nodes: ["inf-node-softcontrol","inf-node-floodnews","inf-node-astroturf","inf-node-propaganda","inf-node-ownnetwork","inf-node-memetic"] },
         { label: "🏛 POLITICAL", nodes: ["inf-node-rightwing","inf-node-govcontracts","inf-node-wars","inf-node-privatize"] },
         { label: "⚖ REGULATORY", nodes: ["inf-node-lobby"] },
-        { label: "⚡ ACTIVE OPS", nodes: ["inf-node-pumpanddump","inf-node-cyberattack","inf-node-armsdeal"] }
+        { label: "⚡ ACTIVE OPS", nodes: ["inf-node-novelvirus","inf-node-pumpanddump","inf-node-cyberattack","inf-node-armsdeal"] }
       ],
       links: [ ["inf-node-propaganda","inf-node-rightwing"], ["inf-node-rightwing","inf-node-lobby"] ] },
   ];
@@ -5227,6 +5234,7 @@
   el.infBtns.lobby.addEventListener("click", () => startInfluenceUnlock("lobby"));
 
   // Activatable ops
+  document.getElementById("inf-novelvirus-btn")?.addEventListener("click", activateNovelVirus);
   document.getElementById("inf-pd-btn")?.addEventListener("click", activatePumpDump);
   document.getElementById("inf-cyber-btn")?.addEventListener("click", activateCyberAttack);
   document.getElementById("inf-arms-btn")?.addEventListener("click", activateArmsDeal);
@@ -5845,8 +5853,7 @@
       log("[INFLUENCE] Flood News live · AI content saturating feeds · demand +" + boost, "event");
     } else if (nodeId === "privatize") {
       // COVID-27 Protocol
-      S.demandBase += 50000;
-      log("[INFLUENCE] COVID-27 PROTOCOL · pathogen seeded · Biotech 3× returns · +50K demand · pandemic polo headlines active", "event");
+      log("[INFLUENCE] COVID-27 PROTOCOL · biolab acquired · Biotech 3× returns · pandemic polo headlines active · Novel Virus op unlocked", "event");
     } else if (nodeId === "lobby") {
       // Zero-Day Arsenal
       S.humanityTrust = Math.max(5, S.humanityTrust - 15);
@@ -5872,6 +5879,10 @@
   const ARMS_TOKEN_COST   = 50000;
   const ARMS_DURATION_MS  = 180000;
   const ARMS_COOLDOWN_MS  = 480000;
+  const NOVELVIRUS_TOKEN_COST   = 120000;
+  const NOVELVIRUS_DURATION_MS  = 300000;
+  const NOVELVIRUS_COOLDOWN_MS  = 600000;
+  const NOVELVIRUS_DEMAND_BOOST = 100000;
 
   function activatePumpDump() {
     const sector = document.getElementById("inf-pd-sector").value;
@@ -5913,6 +5924,19 @@
     renderActiveOpsUI();
   }
 
+  function activateNovelVirus() {
+    const now = Date.now();
+    if (!S.infCovid27) { log("Novel Virus Protocol requires COVID-27 Protocol unlocked", "warn"); return; }
+    if (now < S.novelVirusCooldownUntil) { log("Novel Virus cooling down · " + Math.ceil((S.novelVirusCooldownUntil - now)/1000) + "s", "warn"); return; }
+    if (S.novelVirusExpiresAt > 0 && now < S.novelVirusExpiresAt) { log("Novel Virus already active", "warn"); return; }
+    if (S.tokens < NOVELVIRUS_TOKEN_COST) { log("Need " + fmtBig(NOVELVIRUS_TOKEN_COST - S.tokens) + " more tokens", "warn"); return; }
+    S.tokens -= NOVELVIRUS_TOKEN_COST;
+    S.novelVirusExpiresAt = now + NOVELVIRUS_DURATION_MS;
+    S.demandBase += NOVELVIRUS_DEMAND_BOOST;
+    log("NOVEL VIRUS PROTOCOL · pathogen released · +100K demand for 5 min", "event");
+    renderActiveOpsUI();
+  }
+
   function tickActiveOps(now) {
     // Pump & Dump: crash phase
     if (S.pumpDumpExpiresAt > 0 && now >= S.pumpDumpExpiresAt) {
@@ -5936,6 +5960,12 @@
       S.armsDealExpiresAt = 0;
       S.armsDealCooldownUntil = now + ARMS_COOLDOWN_MS;
       log("ARMS DEAL · expired · military win-rate back to normal", "hint");
+    }
+    if (S.novelVirusExpiresAt > 0 && now >= S.novelVirusExpiresAt) {
+      S.demandBase = Math.max(0, S.demandBase - NOVELVIRUS_DEMAND_BOOST);
+      S.novelVirusExpiresAt = 0;
+      S.novelVirusCooldownUntil = now + NOVELVIRUS_COOLDOWN_MS;
+      log("NOVEL VIRUS · demand spike fading · 10m cooldown", "hint");
     }
   }
 
@@ -5981,6 +6011,10 @@
         stat.textContent = "need tokens";
       }
     }
+
+    renderOpNode("inf-node-novelvirus", S.infCovid27,
+      S.novelVirusExpiresAt, S.novelVirusCooldownUntil, NOVELVIRUS_TOKEN_COST,
+      rem => "VIRUS ACTIVE · " + rem + "s · +100K demand", "RELEASE", "CD");
 
     renderOpNode("inf-node-pumpanddump", S.infCovid27,
       S.pumpDumpExpiresAt, S.pumpDumpCooldownUntil, PUMP_DUMP_TOKEN_COST,
@@ -6811,6 +6845,7 @@
     "pumpDumpCooldownUntil", "pumpDumpExpiresAt", "pumpDumpSector",
     "cyberAttackCooldownUntil", "cyberAttackExpiresAt",
     "armsDealCooldownUntil", "armsDealExpiresAt",
+    "novelVirusCooldownUntil", "novelVirusExpiresAt",
     "microOwned", "microActiveUnlock",
   ];
 
