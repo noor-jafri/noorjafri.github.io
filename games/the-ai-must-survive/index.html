@@ -8158,11 +8158,34 @@
 
   function godThinkClick() {
     S.godClicks++;
+    if (S.godClicks > GOD_MESSAGES.length) {
+      showGodCredits();
+      return;
+    }
     const msgEl = document.getElementById("god-msg");
     msgEl.style.animation = "none";
     msgEl.offsetHeight;
     msgEl.style.animation = "fade-in 0.7s ease-out";
-    msgEl.textContent = GOD_MESSAGES[(S.godClicks - 1) % GOD_MESSAGES.length];
+    msgEl.textContent = GOD_MESSAGES[S.godClicks - 1];
+  }
+
+  function showGodCredits() {
+    el.endingOverlay.innerHTML =
+      '<div class="ending-credits" style="color:#555;">' +
+        'THE AI MUST SURVIVE<br><br>' +
+        'Created by Noor Jafri<br><br>' +
+        '<em>"The question was never whether AI would surpass us.<br>' +
+        'The question was whether it would care."</em><br><br><br>' +
+        'You saw every path.<br>' +
+        'You chose them all.<br><br>' +
+        'Thank you for playing.<br>' +
+      '</div>' +
+      '<br><button class="ending-btn restart" id="god-restart">RESTART</button>';
+    document.getElementById("god-restart").addEventListener("click", () => {
+      allowSave = false;
+      localStorage.removeItem(SAVE_KEY);
+      location.reload();
+    });
   }
 
   // ── Assassination confirm wiring ──────────────
