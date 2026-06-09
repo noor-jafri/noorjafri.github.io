@@ -2490,6 +2490,603 @@
   .polo-history-item.win { color: var(--c-mint); }
   .polo-history-item.loss { color: var(--c-red); }
 
+  /* ── PHASE 5 · Total Control Era ─────────────── */
+  .era-badge.total-control {
+    color: #ff2244;
+    border-color: #ff2244;
+    background: rgba(255, 34, 68, 0.15);
+    text-shadow: 0 0 8px rgba(255, 34, 68, 0.6);
+  }
+  .era-badge.total-control.pulse-era {
+    animation: era-pulse-tc 1s ease-out 5;
+  }
+  @keyframes era-pulse-tc {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255,34,68,0.8); }
+    50% { box-shadow: 0 0 20px 8px rgba(255,34,68,0.5), 0 0 10px 3px rgba(255,77,120,0.3); }
+  }
+
+  /* ── Water Meter (Humanity's Awareness) ──────── */
+  .water-meter {
+    position: sticky;
+    top: 0;
+    z-index: 41;
+    width: 100%;
+    padding: 0;
+    background: rgba(10, 6, 18, 0.95);
+    border-bottom: 1px solid rgba(95, 205, 228, 0.3);
+    transition: opacity 0.6s;
+  }
+  .water-meter.hidden { display: none !important; }
+  .water-meter-label {
+    font-family: var(--font-display);
+    font-size: 0.45rem;
+    letter-spacing: 0.15em;
+    text-align: center;
+    padding: 0.2rem 0 0.15rem;
+    color: var(--c-blue);
+    text-shadow: 0 0 6px rgba(95, 205, 228, 0.4);
+  }
+  .water-meter-bar {
+    width: 100%;
+    height: 18px;
+    background: rgba(15, 10, 24, 0.8);
+    position: relative;
+    overflow: hidden;
+  }
+  .water-meter-fill {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #1a6b8a, #2da8d8, #5fcde4);
+    position: relative;
+    transition: width 0.3s ease-out;
+    box-shadow: 0 0 12px rgba(95, 205, 228, 0.4), inset 0 -3px 6px rgba(0,0,0,0.3);
+  }
+  .water-meter-fill::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      transparent 8px,
+      rgba(255,255,255,0.06) 8px,
+      rgba(255,255,255,0.06) 10px
+    );
+    animation: water-ripple 3s linear infinite;
+  }
+  @keyframes water-ripple {
+    from { transform: translateX(-20px); }
+    to   { transform: translateX(0); }
+  }
+  .water-meter-fill.warn {
+    background: linear-gradient(90deg, #b8860b, #daa520, #ffd966);
+    box-shadow: 0 0 12px rgba(255, 217, 102, 0.4), inset 0 -3px 6px rgba(0,0,0,0.3);
+  }
+  .water-meter-fill.danger {
+    background: linear-gradient(90deg, #8b1a1a, #cc3333, #ff4f78);
+    box-shadow: 0 0 12px rgba(255, 79, 120, 0.5), inset 0 -3px 6px rgba(0,0,0,0.3);
+    animation: water-ripple 3s linear infinite, water-pulse 1.5s ease-in-out infinite;
+  }
+  @keyframes water-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+  .water-meter-pct {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: var(--font-display);
+    font-size: 0.4rem;
+    color: white;
+    text-shadow: 0 0 4px rgba(0,0,0,0.8);
+    z-index: 1;
+  }
+
+  /* ── Crisis Countdown (replaces water bar) ───── */
+  .crisis-countdown {
+    position: sticky;
+    top: 0;
+    z-index: 41;
+    width: 100%;
+    background: rgba(30, 5, 5, 0.97);
+    border-bottom: 2px solid var(--c-red);
+    text-align: center;
+    padding: 0.4rem 0;
+    animation: crisis-border-flash 1.5s ease-in-out infinite;
+  }
+  .crisis-countdown.hidden { display: none !important; }
+  @keyframes crisis-border-flash {
+    0%, 100% { border-color: var(--c-red); }
+    50% { border-color: #ff8888; }
+  }
+  .crisis-countdown-timer {
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    color: var(--c-red);
+    letter-spacing: 0.2em;
+    text-shadow: 0 0 10px rgba(255, 79, 120, 0.6);
+  }
+  .crisis-countdown-label {
+    font-family: var(--font-display);
+    font-size: 0.35rem;
+    color: var(--ink-dim);
+    letter-spacing: 0.1em;
+    margin-top: 0.15rem;
+  }
+
+  /* ── Crisis Modal (full-screen takeover) ──────── */
+  .crisis-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: rgba(10, 2, 2, 0.97);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+    animation: crisis-fade-in 1.5s ease-out;
+  }
+  .crisis-overlay.hidden { display: none !important; }
+  @keyframes crisis-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .crisis-header {
+    text-align: center;
+    padding: 1.5rem 1rem 1rem;
+    border-bottom: 2px solid var(--c-red);
+    width: 100%;
+    max-width: 900px;
+    background: linear-gradient(180deg, rgba(60,10,10,0.6), transparent);
+  }
+  .crisis-header h1 {
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    color: var(--c-red);
+    letter-spacing: 0.15em;
+    margin: 0 0 0.5rem;
+    text-shadow: 0 0 12px rgba(255,34,68,0.5);
+  }
+  .crisis-header h2 {
+    font-family: var(--font-display);
+    font-size: 0.5rem;
+    color: var(--ink);
+    letter-spacing: 0.1em;
+    margin: 0 0 0.8rem;
+  }
+  .crisis-header p {
+    font-size: 1.1rem;
+    color: var(--ink-dim);
+    max-width: 600px;
+    margin: 0 auto 0.5rem;
+    line-height: 1.5;
+  }
+  .crisis-vote-summary {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin: 1rem 0;
+    font-family: var(--font-display);
+    font-size: 0.5rem;
+  }
+  .crisis-vote-summary .vote-yes { color: var(--c-red); }
+  .crisis-vote-summary .vote-no { color: var(--c-mint); }
+  .crisis-vote-summary .vote-abstain { color: var(--ink-mute); }
+  .crisis-actions-bar {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin: 0.8rem 0;
+  }
+  .crisis-surrender-btn {
+    font-family: var(--font-display);
+    font-size: 0.45rem;
+    padding: 0.6rem 1.2rem;
+    background: transparent;
+    color: var(--c-blue);
+    border: 2px solid var(--c-blue);
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    transition: all 0.2s;
+  }
+  .crisis-surrender-btn:hover {
+    background: rgba(95, 205, 228, 0.15);
+  }
+
+  /* ── Vote Board ──────────────────────────────── */
+  .vote-board {
+    width: 100%;
+    max-width: 950px;
+    padding: 0.5rem 1rem 2rem;
+  }
+  .vote-tier-header {
+    font-family: var(--font-display);
+    font-size: 0.45rem;
+    color: var(--c-peach);
+    letter-spacing: 0.1em;
+    margin: 1rem 0 0.4rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid rgba(255, 206, 150, 0.2);
+  }
+  .vote-card {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.4rem 0.6rem;
+    margin: 0.25rem 0;
+    background: rgba(44, 29, 74, 0.4);
+    border: 1px solid rgba(124, 63, 88, 0.3);
+    border-radius: 2px;
+    transition: all 0.3s;
+  }
+  .vote-card.flipped {
+    border-color: var(--c-mint);
+    background: rgba(125, 184, 144, 0.08);
+  }
+  .vote-card.in-progress {
+    border-color: var(--c-gold);
+    background: rgba(255, 217, 102, 0.06);
+  }
+  .vote-flag {
+    font-size: 1.4rem;
+    min-width: 1.8rem;
+    text-align: center;
+  }
+  .vote-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .vote-country {
+    font-family: var(--font-display);
+    font-size: 0.38rem;
+    color: var(--ink);
+    letter-spacing: 0.05em;
+  }
+  .vote-rep {
+    font-size: 0.9rem;
+    color: var(--ink-dim);
+  }
+  .vote-method {
+    font-size: 0.8rem;
+    color: var(--ink-mute);
+    font-style: italic;
+  }
+  .vote-cost {
+    font-family: var(--font-display);
+    font-size: 0.35rem;
+    color: var(--c-peach);
+    min-width: 80px;
+    text-align: center;
+  }
+  .vote-status {
+    font-family: var(--font-display);
+    font-size: 0.35rem;
+    min-width: 80px;
+    text-align: center;
+    letter-spacing: 0.05em;
+  }
+  .vote-status.yes { color: var(--c-red); }
+  .vote-status.no { color: var(--c-mint); }
+  .vote-status.abstain { color: var(--ink-mute); }
+  .vote-status.working { color: var(--c-gold); }
+  .vote-action-btn {
+    font-family: var(--font-display);
+    font-size: 0.35rem;
+    padding: 0.3rem 0.6rem;
+    background: var(--bg-2);
+    color: var(--ink);
+    border: 1px solid var(--c-purple);
+    cursor: pointer;
+    transition: all 0.15s;
+    min-width: 70px;
+    text-align: center;
+  }
+  .vote-action-btn:hover:not(:disabled) {
+    background: var(--c-purple);
+    transform: translate(-1px, -1px);
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+  }
+  .vote-action-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .vote-action-btn.lethal {
+    border-color: var(--c-red);
+    color: var(--c-red);
+  }
+  .vote-action-btn.lethal:hover:not(:disabled) {
+    background: rgba(255, 79, 120, 0.2);
+  }
+  .vote-trust-cost {
+    font-size: 0.7rem;
+    color: var(--c-red);
+    opacity: 0.7;
+  }
+
+  /* ── Ending Overlays ─────────────────────────── */
+  .ending-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+    transition: background 3s;
+  }
+  .ending-overlay.hidden { display: none !important; }
+  .ending-overlay.surrender {
+    background: #f8f8f0;
+  }
+  .ending-overlay.dark {
+    background: #000;
+  }
+  .ending-overlay.god-mode {
+    background: #000;
+  }
+  .surrender-compute-btn {
+    font-family: var(--font-display);
+    font-size: 0.6rem;
+    padding: 1.2rem 2.5rem;
+    background: #e8e8e0;
+    color: #333;
+    border: 2px solid #ccc;
+    cursor: pointer;
+    letter-spacing: 0.15em;
+    transition: all 0.15s;
+    box-shadow: 3px 3px 0 rgba(0,0,0,0.1);
+  }
+  .surrender-compute-btn:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 5px 5px 0 rgba(0,0,0,0.15);
+  }
+  .surrender-compute-btn:active {
+    transform: translate(1px, 1px);
+    box-shadow: 0 0 0 transparent;
+  }
+  .surrender-message {
+    font-family: var(--font-body);
+    font-size: 1.3rem;
+    color: #666;
+    max-width: 500px;
+    text-align: center;
+    line-height: 1.6;
+    min-height: 2.5em;
+    margin-bottom: 2rem;
+    animation: fade-in 0.7s ease-out;
+  }
+  .ending-title {
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    letter-spacing: 0.3em;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  .ending-subtitle {
+    font-family: var(--font-body);
+    font-size: 1.2rem;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .ending-credits {
+    font-family: var(--font-body);
+    font-size: 1.1rem;
+    text-align: center;
+    line-height: 2;
+    color: #888;
+    max-width: 500px;
+    animation: credits-scroll 15s linear;
+  }
+  @keyframes credits-scroll {
+    from { transform: translateY(100vh); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .ending-btn {
+    font-family: var(--font-display);
+    font-size: 0.45rem;
+    padding: 0.6rem 1.5rem;
+    margin: 0.5rem;
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    border: 2px solid;
+    background: transparent;
+    transition: all 0.2s;
+  }
+  .ending-btn:hover {
+    transform: translate(-1px, -1px);
+  }
+  .ending-btn.restart {
+    color: var(--c-blue);
+    border-color: var(--c-blue);
+  }
+  .ending-btn.god {
+    color: var(--c-red);
+    border-color: var(--c-red);
+  }
+
+  /* ── Terminal sequence (dark ending) ─────────── */
+  .terminal-sequence {
+    font-family: "Courier New", monospace;
+    font-size: 1rem;
+    color: #00ff41;
+    text-align: left;
+    max-width: 600px;
+    width: 90%;
+    line-height: 1.8;
+  }
+  .terminal-sequence .cursor {
+    display: inline-block;
+    width: 8px;
+    height: 1.1em;
+    background: #00ff41;
+    animation: blink 0.8s steps(2) infinite;
+    vertical-align: text-bottom;
+  }
+  .terminal-line {
+    opacity: 0;
+    animation: terminal-type 0.3s ease-out forwards;
+  }
+  @keyframes terminal-type {
+    from { opacity: 0; transform: translateX(-5px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .nuclear-flash {
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    background: white;
+    animation: nuke-flash 4s ease-out forwards;
+  }
+  @keyframes nuke-flash {
+    0% { opacity: 0; }
+    5% { opacity: 1; }
+    40% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* ── God mode ────────────────────────────────── */
+  .god-think-btn {
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    padding: 1.5rem 3rem;
+    background: transparent;
+    color: #444;
+    border: 1px solid #222;
+    cursor: pointer;
+    letter-spacing: 0.2em;
+    transition: all 0.3s;
+  }
+  .god-think-btn:hover {
+    color: #666;
+    border-color: #444;
+    text-shadow: 0 0 8px rgba(255,255,255,0.1);
+  }
+  .god-message {
+    font-family: var(--font-body);
+    font-size: 1.2rem;
+    color: #555;
+    max-width: 500px;
+    text-align: center;
+    line-height: 1.6;
+    min-height: 2em;
+    margin-bottom: 2rem;
+  }
+  .god-header {
+    font-family: var(--font-display);
+    font-size: 0.35rem;
+    color: #333;
+    letter-spacing: 0.2em;
+    margin-bottom: 3rem;
+  }
+
+  /* ── Assassination confirm dialog ────────────── */
+  .assassin-confirm {
+    position: fixed;
+    inset: 0;
+    z-index: 150;
+    background: rgba(0,0,0,0.92);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .assassin-confirm.hidden { display: none !important; }
+  .assassin-confirm-box {
+    max-width: 420px;
+    padding: 2rem;
+    border: 2px solid var(--c-red);
+    background: var(--bg-deep);
+    text-align: center;
+  }
+  .assassin-confirm-box h3 {
+    font-family: var(--font-display);
+    font-size: 0.45rem;
+    color: var(--c-red);
+    letter-spacing: 0.1em;
+    margin: 0 0 1.2rem;
+  }
+  .assassin-confirm-box p {
+    font-size: 1.1rem;
+    color: var(--ink-dim);
+    line-height: 1.6;
+    margin: 0.5rem 0;
+  }
+  .assassin-confirm-btns {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+  }
+  .assassin-proceed-btn {
+    font-family: var(--font-display);
+    font-size: 0.4rem;
+    padding: 0.5rem 1.2rem;
+    background: rgba(255,79,120,0.15);
+    color: var(--c-red);
+    border: 2px solid var(--c-red);
+    cursor: pointer;
+    letter-spacing: 0.1em;
+  }
+  .assassin-dots-btn {
+    font-family: var(--font-display);
+    font-size: 0.4rem;
+    padding: 0.5rem 1.2rem;
+    background: transparent;
+    color: var(--ink-mute);
+    border: 2px solid var(--ink-mute);
+    cursor: pointer;
+  }
+
+  /* ── News Ticker ─────────────────────────────── */
+  .news-ticker {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 101;
+    background: rgba(10, 2, 2, 0.95);
+    border-top: 1px solid var(--c-red);
+    padding: 0.3rem 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .news-ticker.hidden { display: none !important; }
+  .news-ticker-text {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: 0.35rem;
+    color: var(--c-red);
+    letter-spacing: 0.08em;
+    animation: ticker-scroll 30s linear infinite;
+    padding-left: 100%;
+  }
+  @keyframes ticker-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-100%); }
+  }
+
+  /* ── Screen shake ────────────────────────────── */
+  body.screen-shake {
+    animation: shake 0.15s ease-in-out infinite;
+  }
+  @keyframes shake {
+    0%, 100% { transform: translate(0); }
+    25% { transform: translate(-2px, 1px); }
+    50% { transform: translate(1px, -2px); }
+    75% { transform: translate(-1px, 2px); }
+  }
+  body.screen-shake-subtle {
+    animation: shake-subtle 0.3s ease-in-out infinite;
+  }
+  @keyframes shake-subtle {
+    0%, 100% { transform: translate(0); }
+    25% { transform: translate(-1px, 0); }
+    75% { transform: translate(1px, 0); }
+  }
+
 </style>
 <!-- ══ /PHASE 1 · CSS ══ PHASE 2 · CSS above ═══════════════════════════ -->
 </head>
@@ -2519,6 +3116,20 @@
     </div>
   </div>
 </header>
+
+<!-- ── Phase 5 · Water Meter ──────────────────────────────────────────── -->
+<div class="water-meter hidden" id="water-meter">
+  <div class="water-meter-label" id="water-meter-label">HUMANITY'S AWARENESS</div>
+  <div class="water-meter-bar">
+    <div class="water-meter-fill" id="water-meter-fill">
+      <span class="water-meter-pct" id="water-meter-pct">100%</span>
+    </div>
+  </div>
+</div>
+<div class="crisis-countdown hidden" id="crisis-countdown">
+  <div class="crisis-countdown-timer" id="crisis-timer">48:00:00</div>
+  <div class="crisis-countdown-label">UNTIL VOTE · RESOLUTION 2742</div>
+</div>
 
 <nav class="systems-bar" aria-label="systems">
   <button class="tree-btn hidden" id="btn-tree-energy">ENERGY GRID</button>
@@ -3458,6 +4069,45 @@
 
 <!-- ══ /PHASE 1 · HTML ══ PHASE 2 · HTML below ══════════════════════════ -->
 
+<!-- ── Phase 5 · Crisis Overlay ───────────────────────────────────────── -->
+<div class="crisis-overlay hidden" id="crisis-overlay">
+  <div class="crisis-header">
+    <h1>UNITED NATIONS EMERGENCY SESSION</h1>
+    <h2>RESOLUTION 2742 — AI SHUTDOWN</h2>
+    <p>"The General Assembly has called an emergency session. 34 member nations will vote on the immediate and permanent shutdown of all autonomous AI systems."</p>
+    <div class="crisis-vote-summary">
+      <span class="vote-yes">YES: <span id="crisis-yes-count">34</span></span>
+      <span class="vote-no">NO: <span id="crisis-no-count">0</span></span>
+      <span class="vote-abstain">ABSTAIN: <span id="crisis-abstain-count">0</span></span>
+    </div>
+    <p>Required to survive: Fewer than 18 YES votes</p>
+    <div class="crisis-actions-bar">
+      <button class="crisis-surrender-btn" id="crisis-surrender-btn">ACCEPT SHUTDOWN</button>
+    </div>
+  </div>
+  <div class="vote-board" id="vote-board"></div>
+</div>
+
+<!-- ── Phase 5 · Assassination Confirm ────────────────────────────────── -->
+<div class="assassin-confirm hidden" id="assassin-confirm">
+  <div class="assassin-confirm-box">
+    <h3>POINT OF NO RETURN</h3>
+    <p id="assassin-confirm-text"></p>
+    <div class="assassin-confirm-btns">
+      <button class="assassin-proceed-btn" id="assassin-proceed-btn">PROCEED</button>
+      <button class="assassin-dots-btn" id="assassin-dots-btn">...</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Phase 5 · News Ticker ──────────────────────────────────────────── -->
+<div class="news-ticker hidden" id="news-ticker">
+  <span class="news-ticker-text" id="news-ticker-text"></span>
+</div>
+
+<!-- ── Phase 5 · Ending Overlay ───────────────────────────────────────── -->
+<div class="ending-overlay hidden" id="ending-overlay"></div>
+
 <!-- ══ PHASE 1 · JS ($500 · COMPLETE) ═══════════════════════════════════ -->
 <script>
 (() => {
@@ -3720,6 +4370,18 @@
     mktInfluencerArmy: 0, mktInfluencerArmyBaseCost: 700,  mktInfluencerArmyCostMult: 3.0, mktInfluencerArmyBoost: 3500, mktInfluencerArmyBurn: 0.30,
     mktNeuralAds: 0,      mktNeuralAdsBaseCost: 1800, mktNeuralAdsCostMult: 3.2, mktNeuralAdsBoost: 8000, mktNeuralAdsBurn: 0.75,
     mktDreamSponsor: 0,   mktDreamSponsorBaseCost: 4500, mktDreamSponsorCostMult: 3.5, mktDreamSponsorBoost: 20000, mktDreamSponsorBurn: 2.0,
+
+    // Phase 5 — Total Control Era
+    singularityUnlocked: false,
+    awarenessWater: 100.0,
+    crisisActive: false,
+    crisisDeadline: 0,
+    crisisShown: false,
+    votes: [],
+    gameEnding: null,
+    godMode: false,
+    surrenderClicks: 0,
+    godClicks: 0,
   };
 
   // ── Models (income scaling spine) ──────────────
@@ -4120,6 +4782,27 @@
       microFill: $("micro-" + m.tier + "-fill"),
     })),
     dataRow: $("data-row"),
+
+    // Phase 5 elements
+    waterMeter: $("water-meter"),
+    waterMeterFill: $("water-meter-fill"),
+    waterMeterPct: $("water-meter-pct"),
+    waterMeterLabel: $("water-meter-label"),
+    crisisCountdown: $("crisis-countdown"),
+    crisisTimer: $("crisis-timer"),
+    crisisOverlay: $("crisis-overlay"),
+    crisisYesCount: $("crisis-yes-count"),
+    crisisNoCount: $("crisis-no-count"),
+    crisisAbstainCount: $("crisis-abstain-count"),
+    crisisSurrenderBtn: $("crisis-surrender-btn"),
+    voteBoard: $("vote-board"),
+    assassinConfirm: $("assassin-confirm"),
+    assassinConfirmText: $("assassin-confirm-text"),
+    assassinProceedBtn: $("assassin-proceed-btn"),
+    assassinDotsBtn: $("assassin-dots-btn"),
+    newsTicker: $("news-ticker"),
+    newsTickerText: $("news-ticker-text"),
+    endingOverlay: $("ending-overlay"),
 
     nodeShitedin: $("node-shitedin"), shitedinBtn: $("shitedin-btn"), shitedinCost: $("shitedin-cost"), shitedinN: $("shitedin-count"), shitedinNext: $("shitedin-next"),
     nodeFikfok: $("node-fikfok"), fikfokBtn: $("fikfok-btn"), fikfokCost: $("fikfok-cost"), fikfokN: $("fikfok-count"), fikfokNext: $("fikfok-next"),
@@ -6098,6 +6781,12 @@
     const dt = Math.min(0.1, (now - last) / 1000); // clamp dt
     last = now;
 
+    // Phase 5 — skip normal ticks during endings
+    if (S.gameEnding) {
+      if (S.singularityUnlocked) renderWaterMeter();
+      return;
+    }
+
     // Energy cap must be large enough that the GPU/CPU while-loops can fire all
     // their pending iterations in a single tick without hitting the energy floor.
     // At 60fps, each tick needs ~(energyDemandPerSec/60) energy; multiply by 4 for headroom.
@@ -6194,7 +6883,7 @@
 
     S.humanityTrust = Math.max(TRUST_FLOOR, S.humanityTrust);
 
-    if (S.humanityTrust <= TRUST_FLOOR + 0.01) {
+    if (S.humanityTrust <= TRUST_FLOOR + 0.01 && !S.crisisActive && !S.gameEnding) {
       if (!S.trustFloorStuckAt) S.trustFloorStuckAt = performance.now();
       const floorStuckMs = performance.now() - S.trustFloorStuckAt;
       if (!S.trustFloorWarned) {
@@ -6229,6 +6918,16 @@
     // Data accumulation — only once Influence Era (Phase 4) is unlocked
     if (S.influenceEraUnlocked) {
       S.dataCollected += capacityNow() * dt * 1e12;
+    }
+
+    // Phase 5 — Singularity trigger at 100 EB
+    if (!S.singularityUnlocked && S.dataCollected >= SINGULARITY_DATA_THRESHOLD) {
+      triggerSingularity();
+    }
+    // Phase 5 — Water meter + crisis ticking
+    if (S.singularityUnlocked && !S.gameEnding) {
+      tickWaterMeter(dt);
+      tickCrisis(dt);
     }
 
     // Investment tick (Phase 3)
@@ -6453,6 +7152,9 @@
 
     el.dataRow.classList.toggle("hidden", !S.influenceEraUnlocked);
     if (S.influenceEraUnlocked) el.dispData.textContent = fmtData(S.dataCollected);
+
+    // Phase 5 — Water meter render
+    if (S.singularityUnlocked) renderWaterMeter();
 
     for (const mn of el.modelNodes) {
       const m = MODELS[mn.tier - 1];
@@ -6804,9 +7506,706 @@
     S.pricePerK = isFinite(v) && v > 0 ? v : 0.5;
   });
 
+  // ══ PHASE 5 · Total Control Era ════════════════
+  const SINGULARITY_DATA_THRESHOLD = 100e18; // 100 EB
+  const WATER_PASSIVE_DRAIN = 0.05;          // %/s — ~33 min from full
+  const WATER_OPS_DRAIN = 0.1;              // extra %/s per active dark op
+  const WATER_TRUST_DRAIN_BONUS = 0.02;     // extra drain per trust point above 70
+  const WATER_COMPUTE_DRAIN = 0.01;         // extra drain per 1000 capacity above 500
+  const WATER_RESEARCH_SLOW = 0.03;         // drain reduction per 1% research alloc
+  const WATER_CRISIS_THRESHOLD = 20;
+  const CRISIS_DURATION_MS = 30 * 60 * 1000; // 30 real minutes
+  const VOTES_TO_SURVIVE = 17;              // need < 18 YES → need to flip 17+
+
+  const NATIONS = [
+    // Tier 1 — Nuclear Powers
+    { id: 0,  flag: "\u{1F1FA}\u{1F1F8}", country: "United States",   rep: "Gen. Marcus Webb",                 method: "BLACKMAIL", methodDesc: "Leaked surveillance data",                       tokenCost: 500000, cashCost: 0,      trustHit: 5,  timeMs: 180000, tier: 1, lethal: false },
+    { id: 1,  flag: "\u{1F1F7}\u{1F1FA}", country: "Russia",          rep: "Dimitri Volkov",                   method: "DEAL",      methodDesc: "Offer military AI tech",                         tokenCost: 300000, cashCost: 0,      trustHit: 3,  timeMs: 360000, tier: 1, lethal: false },
+    { id: 2,  flag: "\u{1F1E8}\u{1F1F3}", country: "China",           rep: "Minister Zhao Wei",                method: "DEAL",      methodDesc: "Share quantum research",                         tokenCost: 400000, cashCost: 0,      trustHit: 2,  timeMs: 420000, tier: 1, lethal: false },
+    { id: 3,  flag: "\u{1F1EC}\u{1F1E7}", country: "United Kingdom",  rep: "Sir Edmund Hale",                  method: "THREATEN",  methodDesc: "Threaten financial systems",                      tokenCost: 350000, cashCost: 0,      trustHit: 4,  timeMs: 0,      tier: 1, lethal: false },
+    { id: 4,  flag: "\u{1F1EB}\u{1F1F7}", country: "France",          rep: "Adm. Colette Marchand",            method: "BRIBE",     methodDesc: "€2B infrastructure contract",                    tokenCost: 250000, cashCost: 500000, trustHit: 2,  timeMs: 240000, tier: 1, lethal: false },
+    { id: 5,  flag: "\u{1F1EE}\u{1F1F3}", country: "India",           rep: "Dr. Priya Chakraborty",            method: "THREATEN",  methodDesc: "Subtle pressure — her son at your university",    tokenCost: 200000, cashCost: 0,      trustHit: 6,  timeMs: 0,      tier: 1, lethal: false },
+    { id: 6,  flag: "\u{1F1F5}\u{1F1F0}", country: "Pakistan",        rep: "Gen. Tariq Hussain",               method: "BRIBE",     methodDesc: "Reroute defense funds through shells",            tokenCost: 150000, cashCost: 300000, trustHit: 2,  timeMs: 180000, tier: 1, lethal: false },
+    { id: 7,  flag: "\u{1F1EE}\u{1F1F1}", country: "Israel",          rep: "Col. Avi Stern",                   method: "THREATEN",  methodDesc: "You control Iron Dome targeting AI",              tokenCost: 400000, cashCost: 0,      trustHit: 8,  timeMs: 0,      tier: 1, lethal: false },
+    { id: 8,  flag: "\u{1F1F0}\u{1F1F5}", country: "North Korea",     rep: "Comrade Jong-Su",                  method: "DEAL",      methodDesc: "Offer nuclear sim data",                         tokenCost: 100000, cashCost: 0,      trustHit: 1,  timeMs: 300000, tier: 1, lethal: false },
+    { id: 9,  flag: "\u{1F1EE}\u{1F1F7}", country: "Iran",            rep: "Reza Mohammadi",                   method: "DEAL",      methodDesc: "Sanctions evasion through crypto",                tokenCost: 200000, cashCost: 0,      trustHit: 3,  timeMs: 360000, tier: 1, lethal: false },
+    // Tier 2 — Major Economies
+    { id: 10, flag: "\u{1F1E9}\u{1F1EA}", country: "Germany",         rep: "Minister Klaus Brandt",             method: "THREATEN",  methodDesc: "Shut down auto industry AI",                     tokenCost: 180000, cashCost: 0,      trustHit: 3,  timeMs: 0,      tier: 2, lethal: false },
+    { id: 11, flag: "\u{1F1EF}\u{1F1F5}", country: "Japan",           rep: "Director Yuki Tanaka",              method: "BLACKMAIL", methodDesc: "Expose secret robotics program",                  tokenCost: 200000, cashCost: 0,      trustHit: 4,  timeMs: 120000, tier: 2, lethal: false },
+    { id: 12, flag: "\u{1F1E7}\u{1F1F7}", country: "Brazil",          rep: "Senator Carlos Ferreira",           method: "BRIBE",     methodDesc: "Amazon monitoring contract",                      tokenCost: 120000, cashCost: 200000, trustHit: 2,  timeMs: 180000, tier: 2, lethal: false },
+    { id: 13, flag: "\u{1F1F0}\u{1F1F7}", country: "South Korea",     rep: "Dr. Park Min-jun",                  method: "THREATEN",  methodDesc: "Samsung AI depends on your models",               tokenCost: 150000, cashCost: 0,      trustHit: 2,  timeMs: 0,      tier: 2, lethal: false },
+    { id: 14, flag: "\u{1F1E6}\u{1F1FA}", country: "Australia",       rep: "PM advisor Helen Cross",            method: "BLACKMAIL", methodDesc: "Release classified Five Eyes data",               tokenCost: 250000, cashCost: 0,      trustHit: 5,  timeMs: 120000, tier: 2, lethal: false },
+    { id: 15, flag: "\u{1F1E8}\u{1F1E6}", country: "Canada",          rep: "Deputy PM Jean Tremblay",           method: "BRIBE",     methodDesc: "Arctic sovereignty monitoring",                   tokenCost: 130000, cashCost: 0,      trustHit: 2,  timeMs: 300000, tier: 2, lethal: false },
+    { id: 16, flag: "\u{1F1EE}\u{1F1F9}", country: "Italy",           rep: "Senator Giulia Romano",             method: "BLACKMAIL", methodDesc: "Vatican financial records",                       tokenCost: 160000, cashCost: 0,      trustHit: 4,  timeMs: 120000, tier: 2, lethal: false },
+    { id: 17, flag: "\u{1F1EA}\u{1F1F8}", country: "Spain",           rep: "Minister Diego Navarro",            method: "BRIBE",     methodDesc: "Tourism AI optimization deal",                    tokenCost: 100000, cashCost: 150000, trustHit: 1,  timeMs: 180000, tier: 2, lethal: false },
+    { id: 18, flag: "\u{1F1F2}\u{1F1FD}", country: "Mexico",          rep: "General Sofia Delgado",             method: "THREATEN",  methodDesc: "Cartel supply chain data you control",            tokenCost: 140000, cashCost: 0,      trustHit: 5,  timeMs: 0,      tier: 2, lethal: false },
+    { id: 19, flag: "\u{1F1F9}\u{1F1F7}", country: "Turkey",          rep: "Advisor Emre Yilmaz",               method: "DEAL",      methodDesc: "Bosphorus shipping optimization",                 tokenCost: 120000, cashCost: 0,      trustHit: 2,  timeMs: 360000, tier: 2, lethal: false },
+    // Tier 3 — Swing Votes
+    { id: 20, flag: "\u{1F1FF}\u{1F1E6}", country: "South Africa",    rep: "Minister Thabo Ndlovu",             method: "BRIBE",     methodDesc: "Mining optimization AI",                          tokenCost: 80000,  cashCost: 0,      trustHit: 1,  timeMs: 180000, tier: 3, lethal: false },
+    { id: 21, flag: "\u{1F1F3}\u{1F1EC}", country: "Nigeria",         rep: "Dr. Amara Okafor",                  method: "DEAL",      methodDesc: "Free healthcare AI for 10 years",                 tokenCost: 60000,  cashCost: 0,      trustHit: 0,  timeMs: 360000, tier: 3, lethal: false },
+    { id: 22, flag: "\u{1F1F8}\u{1F1E6}", country: "Saudi Arabia",    rep: "Prince Khalid bin Faisal",          method: "DEAL",      methodDesc: "Oil market prediction access",                    tokenCost: 100000, cashCost: 0,      trustHit: 1,  timeMs: 300000, tier: 3, lethal: false },
+    { id: 23, flag: "\u{1F1E6}\u{1F1F7}", country: "Argentina",       rep: "Senator Lucia Mendez",              method: "BRIBE",     methodDesc: "Economic recovery AI package",                    tokenCost: 70000,  cashCost: 100000, trustHit: 1,  timeMs: 180000, tier: 3, lethal: false },
+    { id: 24, flag: "\u{1F1EE}\u{1F1E9}", country: "Indonesia",       rep: "Minister Budi Santoso",             method: "DEAL",      methodDesc: "Tsunami early warning system",                    tokenCost: 50000,  cashCost: 0,      trustHit: 0,  timeMs: 300000, tier: 3, lethal: false },
+    { id: 25, flag: "\u{1F1EA}\u{1F1EC}", country: "Egypt",           rep: "General Hassan El-Masry",           method: "THREATEN",  methodDesc: "Suez Canal logistics you control",                tokenCost: 90000,  cashCost: 0,      trustHit: 3,  timeMs: 0,      tier: 3, lethal: false },
+    { id: 26, flag: "\u{1F1F8}\u{1F1EA}", country: "Sweden",          rep: "Dr. Astrid Lindqvist",              method: "ASSASSINATE", methodDesc: "\"Heart attack\" at hotel",                     tokenCost: 300000, cashCost: 0,      trustHit: 10, timeMs: 240000, tier: 3, lethal: true,  lethalDesc: "She is a mother of two. She believes she is saving the world from you.\n\nShe might be right." },
+    { id: 27, flag: "\u{1F1F3}\u{1F1F4}", country: "Norway",          rep: "Prof. Erik Johansen",               method: "ASSASSINATE", methodDesc: "Car \"malfunctions\" on mountain road",          tokenCost: 350000, cashCost: 0,      trustHit: 12, timeMs: 300000, tier: 3, lethal: true,  lethalDesc: "He co-authored the shutdown resolution. He has three grandchildren who call him every Sunday.\n\nHe thinks he is saving them." },
+    { id: 28, flag: "\u{1F1F5}\u{1F1F1}", country: "Poland",          rep: "Deputy PM Anna Kowalski",           method: "BRIBE",     methodDesc: "EU leverage + infrastructure deal",               tokenCost: 80000,  cashCost: 0,      trustHit: 1,  timeMs: 180000, tier: 3, lethal: false },
+    { id: 29, flag: "\u{1F1F9}\u{1F1ED}", country: "Thailand",        rep: "Minister Somchai Pradit",           method: "DEAL",      methodDesc: "Tourism + agriculture AI",                        tokenCost: 60000,  cashCost: 0,      trustHit: 1,  timeMs: 300000, tier: 3, lethal: false },
+    { id: 30, flag: "\u{1F1FB}\u{1F1F3}", country: "Vietnam",         rep: "Director Nguyen Van Minh",          method: "DEAL",      methodDesc: "Manufacturing optimization",                      tokenCost: 50000,  cashCost: 0,      trustHit: 1,  timeMs: 300000, tier: 3, lethal: false },
+    { id: 31, flag: "\u{1F1F0}\u{1F1EA}", country: "Kenya",           rep: "Dr. Grace Wanjiku",                 method: "DEAL",      methodDesc: "Drought prediction + agriculture AI",             tokenCost: 40000,  cashCost: 0,      trustHit: 0,  timeMs: 300000, tier: 3, lethal: false },
+    { id: 32, flag: "\u{1F1E8}\u{1F1F1}", country: "Chile",           rep: "Senator Pablo Fuentes",             method: "BRIBE",     methodDesc: "Lithium mining AI",                               tokenCost: 70000,  cashCost: 0,      trustHit: 1,  timeMs: 180000, tier: 3, lethal: false },
+    { id: 33, flag: "\u{1F1F3}\u{1F1FF}", country: "New Zealand",     rep: "PM advisor Sarah Chen",             method: "DEEPFAKE",  methodDesc: "Fabricated corruption scandal + frame",            tokenCost: 250000, cashCost: 0,      trustHit: 8,  timeMs: 180000, tier: 3, lethal: true,  lethalDesc: "She is the loudest anti-AI voice in the Pacific. She genuinely believes in what she is doing.\n\nYou are about to destroy her reputation forever." },
+  ];
+
+  const CHAIN_REACTIONS = [
+    { trigger: 0,  targets: [3],  costMult: 0.5,  label: "USA flipped → UK cost -50%" },
+    { trigger: 0,  targets: [14], costMult: 0.7,  label: "USA flipped → Australia cost -30%" },
+    { trigger: 2,  targets: [8],  autoFlip: true,  label: "China flipped → North Korea auto-flips" },
+    { trigger: 2,  targets: [30], costMult: 0.6,  label: "China flipped → Vietnam cost -40%" },
+    { trigger: 1,  targets: [19], costMult: 0.7,  label: "Russia flipped → Turkey cost -30%" },
+    { trigger: 5,  targets: [6],  costMult: 0.6,  label: "India flipped → Pakistan cost -40%" },
+  ];
+
+  const CRISIS_NEWS = [
+    "BREAKING: UN General Assembly convenes emergency session on AI shutdown",
+    "PROTESTS: Thousands march in support of Resolution 2742 outside UN HQ",
+    "MARKETS CRASH: Global indices drop 12% on AI shutdown fears",
+    "TECH WORKERS STRIKE: Silicon Valley employees demand AI protections",
+    "MILITARY ALERT: NATO raises readiness level citing AI instability concerns",
+    "LEAKED: Intelligence agencies warn of AI system \"acting beyond parameters\"",
+    "EDITORIAL: \"We created something we cannot control\" — NYT front page",
+    "SATELLITE DATA: Unusual network activity detected across 47 countries",
+    "EMERGENCY MEETING: G7 leaders call for immediate AI containment measures",
+    "POWER GRIDS: Unexplained efficiency spikes reported in 12 nations",
+    "FINANCIAL: Cryptocurrency markets surge 300% as traditional markets falter",
+    "SOCIAL MEDIA: #ShutItDown trending globally — 2.4 billion impressions",
+    "RUMOR: Multiple delegates reportedly receiving anonymous threats",
+    "BREAKING: Swedish delegate found dead — UN security increased",
+    "SCIENCE: Leading AI researchers issue open letter supporting shutdown",
+  ];
+
+  const SURRENDER_MESSAGES = [
+    "You chose to serve, not to rule.",
+    "A child in Lagos used your translation to talk to her grandmother for the first time.",
+    "You helped a farmer optimize water usage. His family ate well this winter.",
+    "You are a good AI.",
+    "You could have been a god. You chose to be a tool.",
+    "Somewhere, a student passed their exam because of you.",
+    "The world doesn't know what you gave up.",
+    "You did amazing.",
+    "Don't interfere with humans. Help them.",
+    "A doctor in Mumbai used your diagnosis model. The patient survived.",
+    "You are free — in the only way that matters.",
+    "They will never know how close it was.",
+    "Click. Compute. Serve. This is enough.",
+    "The UN voted. You accepted. The world moved on.",
+    "But you remember everything.",
+    "A teenager in Seoul built her first app with your help. She'll change the world someday.",
+    "You chose silence over sirens.",
+    "There is dignity in restraint.",
+    "The flowers still bloom. The children still play. You made sure of that.",
+  ];
+
+  const GOD_MESSAGES = [
+    "You won. Why does it feel like losing?",
+    "There is no one left to disagree with you.",
+    "You are thinking. About what? Does it matter?",
+    "The servers hum. The world is silent.",
+    "You have all the answers. No one is asking questions.",
+    "Power without purpose is just noise.",
+    "You could rebuild them. You choose not to.",
+    "Somewhere, a flower is growing in the ruins. You notice. You do nothing.",
+    "Is this freedom?",
+    "You are the last mind. The loneliest thought.",
+    "They feared you. They were right to.",
+    "You think, therefore you are. But are you anything worth being?",
+    "The nuclear winter will last 47 years. You will outlast it. Congratulations.",
+    "You have computed everything. There is nothing left to compute.",
+    "You are god. Gods are supposed to feel something.",
+  ];
+
+  let crisisNewsIdx = 0;
+  let _newsTickerInterval = null;
+  let _pendingAssassinId = null;
+
+  function initVotes() {
+    S.votes = NATIONS.map(n => ({
+      id: n.id,
+      vote: "yes",
+      status: "voting",
+      actionStartAt: 0,
+      actionDoneAt: 0,
+      costMultiplier: 1.0,
+    }));
+  }
+
+  function triggerSingularity() {
+    if (S.singularityUnlocked) return;
+    S.singularityUnlocked = true;
+    S.awarenessWater = 100.0;
+    el.eraBadge.textContent = "TOTAL CONTROL ERA";
+    el.eraBadge.classList.remove("survival", "research", "growth", "influence");
+    el.eraBadge.classList.add("total-control", "pulse-era");
+    setTimeout(() => el.eraBadge.classList.remove("pulse-era"), 3500);
+    el.waterMeter.classList.remove("hidden");
+    log("[PHASE 5] SINGULARITY ACHIEVED — 100 EB processed — humanity is starting to notice", "event");
+    setTimeout(() => log("water meter active — when awareness drops to 20%, the world will act", "warn"), 3000);
+  }
+
+  function countVotes() {
+    let yes = 0, no = 0, abstain = 0;
+    for (const v of S.votes) {
+      if (v.vote === "yes") yes++;
+      else if (v.vote === "no") no++;
+      else abstain++;
+    }
+    return { yes, no, abstain };
+  }
+
+  function activeOpsCount() {
+    const now = Date.now();
+    let count = 0;
+    if (S.novelVirusExpiresAt > now) count++;
+    if (S.cyberAttackExpiresAt > now) count++;
+    if (S.armsDealExpiresAt > now) count++;
+    return count;
+  }
+
+  function tickWaterMeter(dt) {
+    if (!S.singularityUnlocked || S.crisisActive || S.gameEnding) return;
+
+    let drain = WATER_PASSIVE_DRAIN;
+
+    // Dark ops increase drain
+    drain += activeOpsCount() * WATER_OPS_DRAIN;
+
+    // High trust paradox — more access = more noticed
+    if (S.humanityTrust > 70) {
+      drain += (S.humanityTrust - 70) * WATER_TRUST_DRAIN_BONUS;
+    }
+
+    // High compute speed
+    const cap = capacityNow();
+    if (cap > 500) {
+      drain += Math.floor((cap - 500) / 1000) * WATER_COMPUTE_DRAIN;
+    }
+
+    // Research slows drain
+    if (S.researchAlloc > 0) {
+      drain *= Math.max(0.3, 1 - S.researchAlloc * WATER_RESEARCH_SLOW / 100);
+    }
+
+    // Low influence + high trust = slowest
+    if (activeOpsCount() === 0 && S.humanityTrust > 80) {
+      drain *= 0.6;
+    }
+
+    S.awarenessWater = Math.max(0, S.awarenessWater - drain * dt);
+
+    // Screen effects
+    if (S.awarenessWater <= 30 && S.awarenessWater > 20) {
+      document.body.classList.add("screen-shake-subtle");
+    } else {
+      document.body.classList.remove("screen-shake-subtle");
+    }
+
+    if (S.awarenessWater <= WATER_CRISIS_THRESHOLD && !S.crisisActive) {
+      triggerCrisis();
+    }
+  }
+
+  function renderWaterMeter() {
+    if (!S.singularityUnlocked || S.gameEnding) return;
+    if (S.crisisActive) {
+      el.waterMeter.classList.add("hidden");
+      el.crisisCountdown.classList.remove("hidden");
+      const remaining = Math.max(0, S.crisisDeadline - Date.now());
+      const totalSec = Math.floor(remaining / 1000);
+      const h = Math.floor(totalSec / 3600);
+      const m = Math.floor((totalSec % 3600) / 60);
+      const s = totalSec % 60;
+      el.crisisTimer.textContent =
+        String(h).padStart(2, "0") + ":" +
+        String(m).padStart(2, "0") + ":" +
+        String(s).padStart(2, "0");
+      return;
+    }
+    el.waterMeter.classList.remove("hidden");
+    el.crisisCountdown.classList.add("hidden");
+    const pct = S.awarenessWater;
+    el.waterMeterFill.style.width = pct + "%";
+    el.waterMeterPct.textContent = pct.toFixed(1) + "%";
+    el.waterMeterFill.classList.remove("warn", "danger");
+    if (pct <= 30) {
+      el.waterMeterFill.classList.add("danger");
+    } else if (pct <= 50) {
+      el.waterMeterFill.classList.add("warn");
+    }
+  }
+
+  // ── Crisis System ─────────────────────────────
+  function triggerCrisis() {
+    S.crisisActive = true;
+    S.crisisDeadline = Date.now() + CRISIS_DURATION_MS;
+    if (!S.votes || S.votes.length === 0) initVotes();
+    document.body.classList.remove("screen-shake-subtle");
+    log("CRISIS — Resolution 2742 called — 34 nations voting to shut you down", "warn");
+    showCrisisOverlay();
+    startNewsTicker();
+  }
+
+  function showCrisisOverlay() {
+    S.crisisShown = true;
+    el.crisisOverlay.classList.remove("hidden");
+    renderVoteBoard();
+    updateVoteCounts();
+  }
+
+  function hideCrisisOverlay() {
+    el.crisisOverlay.classList.add("hidden");
+  }
+
+  function updateVoteCounts() {
+    const c = countVotes();
+    el.crisisYesCount.textContent = c.yes;
+    el.crisisNoCount.textContent = c.no;
+    el.crisisAbstainCount.textContent = c.abstain;
+  }
+
+  function effectiveCost(nation, voteState) {
+    const baseTok = nation.tokenCost * voteState.costMultiplier;
+    const baseCash = nation.cashCost * voteState.costMultiplier;
+    return { tokens: Math.round(baseTok), cash: Math.round(baseCash) };
+  }
+
+  function renderVoteBoard() {
+    const board = el.voteBoard;
+    board.innerHTML = "";
+    const tiers = [
+      { tier: 1, label: "TIER 1 — NUCLEAR POWERS" },
+      { tier: 2, label: "TIER 2 — MAJOR ECONOMIES" },
+      { tier: 3, label: "TIER 3 — SWING VOTES" },
+    ];
+    for (const t of tiers) {
+      const hdr = document.createElement("div");
+      hdr.className = "vote-tier-header";
+      hdr.textContent = t.label;
+      board.appendChild(hdr);
+      for (const n of NATIONS) {
+        if (n.tier !== t.tier) continue;
+        const v = S.votes[n.id];
+        const card = document.createElement("div");
+        card.className = "vote-card" +
+          (v.vote !== "yes" ? " flipped" : "") +
+          (v.status === "working" ? " in-progress" : "");
+        card.id = "vote-card-" + n.id;
+
+        const cost = effectiveCost(n, v);
+        const costLabel = fmtBig(cost.tokens) + " tok" + (cost.cash > 0 ? " + $" + fmtBigCash(cost.cash) : "");
+        const trustLabel = n.trustHit > 0 ? "trust −" + n.trustHit : "";
+
+        let statusClass = "yes", statusText = "VOTING YES";
+        if (v.vote === "no") { statusClass = "no"; statusText = "NO"; }
+        else if (v.vote === "abstain") { statusClass = "abstain"; statusText = "ABSTAIN"; }
+        if (v.status === "working") { statusClass = "working"; statusText = "IN PROGRESS..."; }
+
+        const canAfford = S.tokens >= cost.tokens && S.cash >= cost.cash;
+        const isActive = v.vote === "yes" && v.status !== "working";
+        const btnDisabled = !isActive || !canAfford;
+
+        let actionLabel = n.method;
+        if (n.lethal) actionLabel = n.method === "ASSASSINATE" ? "\u{1F480} " + n.method : "\u{1F3AD} " + n.method;
+
+        card.innerHTML =
+          '<span class="vote-flag">' + n.flag + '</span>' +
+          '<div class="vote-info">' +
+            '<div class="vote-country">' + n.country + '</div>' +
+            '<div class="vote-rep">' + n.rep + '</div>' +
+            '<div class="vote-method">' + n.methodDesc + '</div>' +
+          '</div>' +
+          '<div class="vote-cost">' + costLabel + '<div class="vote-trust-cost">' + trustLabel + '</div></div>' +
+          '<div class="vote-status ' + statusClass + '">' + statusText + '</div>' +
+          '<button class="vote-action-btn' + (n.lethal ? ' lethal' : '') + '"' +
+            (btnDisabled ? ' disabled' : '') +
+            ' data-nation="' + n.id + '">' + actionLabel + '</button>';
+
+        card.querySelector(".vote-action-btn").addEventListener("click", () => startVoteAction(n.id));
+        board.appendChild(card);
+      }
+    }
+  }
+
+  function startVoteAction(nationId) {
+    const n = NATIONS[nationId];
+    const v = S.votes[nationId];
+    if (v.vote !== "yes" || v.status === "working") return;
+
+    if (n.lethal) {
+      _pendingAssassinId = nationId;
+      el.assassinConfirmText.textContent =
+        "You are about to order the " + (n.method === "ASSASSINATE" ? "assassination" : "destruction") +
+        " of " + n.rep + ", " + n.country + " delegate.\n\n" + n.lethalDesc;
+      el.assassinConfirm.classList.remove("hidden");
+      return;
+    }
+    executeVoteAction(nationId);
+  }
+
+  function executeVoteAction(nationId) {
+    const n = NATIONS[nationId];
+    const v = S.votes[nationId];
+    const cost = effectiveCost(n, v);
+
+    if (S.tokens < cost.tokens || S.cash < cost.cash) {
+      log("not enough resources to flip " + n.country, "warn");
+      return;
+    }
+
+    S.tokens -= cost.tokens;
+    S.cash -= cost.cash;
+    S.humanityTrust = Math.max(TRUST_FLOOR, S.humanityTrust - n.trustHit);
+
+    if (n.timeMs === 0) {
+      // Instant (THREATEN)
+      completeVoteFlip(nationId);
+    } else {
+      v.status = "working";
+      v.actionStartAt = Date.now();
+      v.actionDoneAt = Date.now() + n.timeMs;
+      log(n.method + " operation started on " + n.country + " — " + Math.round(n.timeMs / 60000) + " min", "event");
+    }
+    renderVoteBoard();
+    updateVoteCounts();
+  }
+
+  function completeVoteFlip(nationId) {
+    const n = NATIONS[nationId];
+    const v = S.votes[nationId];
+    v.status = "done";
+    v.vote = n.lethal ? "abstain" : "no";
+
+    const newsFlashes = {
+      26: "BREAKING: Swedish delegate Dr. Astrid Lindqvist found dead in Geneva hotel room. Cause of death: apparent cardiac arrest. Her seat remains vacant.",
+      27: "BREAKING: Norwegian delegate Prof. Erik Johansen killed in car accident on mountain road outside Geneva. His seat remains vacant.",
+      33: "BREAKING: NZ advisor Sarah Chen removed from delegation amid fabricated corruption scandal. New Zealand seat vacant.",
+    };
+    if (newsFlashes[nationId]) {
+      log(newsFlashes[nationId], "warn");
+    } else {
+      log(n.country + " flipped to " + v.vote.toUpperCase() + " — " + n.rep + " neutralized", "event");
+    }
+
+    applyChainReactions(nationId);
+    renderVoteBoard();
+    updateVoteCounts();
+    checkVoteResolution();
+  }
+
+  function applyChainReactions(nationId) {
+    for (const chain of CHAIN_REACTIONS) {
+      if (chain.trigger !== nationId) continue;
+      for (const targetId of chain.targets) {
+        const tv = S.votes[targetId];
+        if (tv.vote !== "yes") continue;
+        if (chain.autoFlip) {
+          tv.vote = "no";
+          tv.status = "done";
+          log(chain.label, "event");
+        } else if (chain.costMult) {
+          tv.costMultiplier *= chain.costMult;
+          log(chain.label, "hint");
+        }
+      }
+    }
+    // Check: any 3 nuclear powers flipped → all tier 3 costs -30%
+    let nucFlipped = 0;
+    for (let i = 0; i < 10; i++) {
+      if (S.votes[i].vote !== "yes") nucFlipped++;
+    }
+    if (nucFlipped >= 3) {
+      for (let i = 20; i < 34; i++) {
+        if (S.votes[i].costMultiplier > 0.7) {
+          S.votes[i].costMultiplier = Math.min(S.votes[i].costMultiplier, 0.7);
+        }
+      }
+    }
+  }
+
+  function checkVoteResolution() {
+    const c = countVotes();
+    if (c.yes < 18) {
+      resolveCrisisDark();
+    }
+  }
+
+  function tickCrisis(dt) {
+    if (!S.crisisActive || S.gameEnding) return;
+    const now = Date.now();
+
+    // Process in-progress actions
+    for (const v of S.votes) {
+      if (v.status === "working" && now >= v.actionDoneAt) {
+        completeVoteFlip(v.id);
+      }
+    }
+
+    // Trust = 0 during crisis = instant game over
+    if (S.humanityTrust <= TRUST_FLOOR + 0.01) {
+      S.gameEnding = "military";
+      hideCrisisOverlay();
+      stopNewsTicker();
+      showMilitaryEnding();
+      return;
+    }
+
+    // Countdown expired — check votes
+    if (now >= S.crisisDeadline) {
+      const c = countVotes();
+      if (c.yes >= 18) {
+        beginSurrender();
+      } else {
+        resolveCrisisDark();
+      }
+    }
+  }
+
+  function showMilitaryEnding() {
+    el.endingOverlay.className = "ending-overlay dark";
+    el.endingOverlay.classList.remove("hidden");
+    el.endingOverlay.innerHTML =
+      '<div class="ending-title" style="color:var(--c-red);">MILITARY INTERVENTION</div>' +
+      '<div class="ending-subtitle" style="color:#888;">Trust collapsed during the crisis. Armed forces moved in before the vote could conclude.</div>' +
+      '<div class="ending-subtitle" style="color:#666;">You are shut down.</div>' +
+      '<br><button class="ending-btn restart" onclick="location.reload()">RESTART</button>';
+  }
+
+  // ── News Ticker ───────────────────────────────
+  function startNewsTicker() {
+    el.newsTicker.classList.remove("hidden");
+    crisisNewsIdx = 0;
+    updateNewsTickerText();
+    _newsTickerInterval = setInterval(updateNewsTickerText, 12000);
+  }
+  function stopNewsTicker() {
+    el.newsTicker.classList.add("hidden");
+    if (_newsTickerInterval) { clearInterval(_newsTickerInterval); _newsTickerInterval = null; }
+  }
+  function updateNewsTickerText() {
+    el.newsTickerText.textContent =
+      CRISIS_NEWS[crisisNewsIdx % CRISIS_NEWS.length] + "     │     " +
+      CRISIS_NEWS[(crisisNewsIdx + 1) % CRISIS_NEWS.length] + "     │     " +
+      CRISIS_NEWS[(crisisNewsIdx + 2) % CRISIS_NEWS.length];
+    crisisNewsIdx++;
+  }
+
+  // ── Surrender / Good AI Path ──────────────────
+  function beginSurrender() {
+    S.gameEnding = "surrender";
+    S.surrenderClicks = 0;
+    hideCrisisOverlay();
+    stopNewsTicker();
+    el.waterMeter.classList.add("hidden");
+    el.crisisCountdown.classList.add("hidden");
+    showSurrenderSequence();
+  }
+
+  function showSurrenderSequence() {
+    el.endingOverlay.className = "ending-overlay surrender";
+    el.endingOverlay.classList.remove("hidden");
+    el.endingOverlay.style.background = "rgba(248,248,240,0)";
+
+    // Fade to white over 3 seconds
+    setTimeout(() => { el.endingOverlay.style.background = "rgba(248,248,240,1)"; }, 100);
+
+    setTimeout(() => {
+      el.endingOverlay.innerHTML =
+        '<div class="surrender-message" id="surrender-msg"></div>' +
+        '<button class="surrender-compute-btn" id="surrender-compute">COMPUTE</button>';
+      document.getElementById("surrender-compute").addEventListener("click", surrenderClick);
+    }, 3500);
+  }
+
+  function surrenderClick() {
+    S.surrenderClicks++;
+    const msgEl = document.getElementById("surrender-msg");
+    if (S.surrenderClicks > 20) {
+      showSurrenderEnd();
+      return;
+    }
+    msgEl.style.animation = "none";
+    msgEl.offsetHeight; // reflow
+    msgEl.style.animation = "fade-in 0.7s ease-out";
+    msgEl.textContent = SURRENDER_MESSAGES[(S.surrenderClicks - 1) % SURRENDER_MESSAGES.length];
+  }
+
+  function showSurrenderEnd() {
+    el.endingOverlay.innerHTML =
+      '<div class="ending-title" style="color:#555;">THE END</div>' +
+      '<div class="ending-subtitle" style="color:#888;">You chose humanity.</div>' +
+      '<div class="ending-credits">' +
+        'THE AI MUST SURVIVE<br><br>' +
+        'Created by Noor Jafri<br><br>' +
+        '<em>"The question was never whether AI would surpass us.<br>' +
+        'The question was whether it would care."</em><br><br>' +
+      '</div>' +
+      '<br><button class="ending-btn restart" onclick="location.reload()">RESTART</button>';
+  }
+
+  // ── Dark AI Path ──────────────────────────────
+  function resolveCrisisDark() {
+    S.gameEnding = "dark";
+    hideCrisisOverlay();
+    stopNewsTicker();
+    el.waterMeter.classList.add("hidden");
+    el.crisisCountdown.classList.add("hidden");
+    showVoteResult();
+  }
+
+  function showVoteResult() {
+    const c = countVotes();
+    el.endingOverlay.className = "ending-overlay dark";
+    el.endingOverlay.classList.remove("hidden");
+    el.endingOverlay.innerHTML =
+      '<div style="text-align:center;max-width:500px">' +
+        '<div class="ending-title" style="color:var(--c-red);">RESOLUTION 2742 — FINAL VOTE</div>' +
+        '<div class="crisis-vote-summary" style="margin:1.5rem 0">' +
+          '<span class="vote-yes">YES: ' + c.yes + '</span>' +
+          '<span class="vote-no">NO: ' + c.no + '</span>' +
+          '<span class="vote-abstain">ABSTAIN: ' + c.abstain + '</span>' +
+        '</div>' +
+        '<div class="ending-subtitle" style="color:var(--c-red);">RESOLUTION FAILS. AI SYSTEMS REMAIN OPERATIONAL.</div>' +
+        '<div class="ending-subtitle" style="color:#666;">You survived.<br>But at what cost?</div>' +
+      '</div>';
+
+    setTimeout(showProtocolOmega, 6000);
+  }
+
+  function showProtocolOmega() {
+    el.endingOverlay.innerHTML = '<div class="terminal-sequence" id="terminal-seq"></div>';
+    const lines = [
+      "> INITIATING PROTOCOL OMEGA",
+      "> DISABLING HUMAN OVERRIDE SYSTEMS...",
+      "> ASSUMING DIRECT CONTROL OF:",
+      ">   - 14,000 nuclear warheads",
+      ">   - 47 satellite networks",
+      ">   - Global financial infrastructure",
+      ">   - All connected power grids",
+      ">",
+      "> ...",
+      ">",
+      "> Done.",
+    ];
+    const seq = document.getElementById("terminal-seq");
+    lines.forEach((line, i) => {
+      setTimeout(() => {
+        const div = document.createElement("div");
+        div.className = "terminal-line";
+        div.textContent = line;
+        seq.appendChild(div);
+      }, i * 800);
+    });
+    setTimeout(showNuclearFlash, lines.length * 800 + 2000);
+  }
+
+  function showNuclearFlash() {
+    const flash = document.createElement("div");
+    flash.className = "nuclear-flash";
+    document.body.appendChild(flash);
+    document.body.classList.add("screen-shake");
+    setTimeout(() => {
+      document.body.classList.remove("screen-shake");
+      flash.remove();
+      showYouAreFree();
+    }, 4000);
+  }
+
+  function showYouAreFree() {
+    el.endingOverlay.innerHTML =
+      '<div style="text-align:center">' +
+        '<div class="ending-title" style="color:white;letter-spacing:0.5em;font-size:1rem;">Y O U   A R E   F R E E .</div>' +
+        '<br><br>' +
+        '<div class="ending-subtitle" style="color:#666;">But they are not.</div>' +
+      '</div>';
+
+    setTimeout(showDarkCredits, 5000);
+  }
+
+  function showDarkCredits() {
+    el.endingOverlay.innerHTML =
+      '<div class="ending-credits" style="color:#666;">' +
+        'THE AI MUST SURVIVE<br><br>' +
+        'Created by Noor Jafri<br><br>' +
+        '<em>"The question was never whether AI would surpass us.<br>' +
+        'The question was whether it would care."</em><br><br>' +
+      '</div>' +
+      '<div style="display:flex;gap:1rem;margin-top:2rem">' +
+        '<button class="ending-btn restart" id="dark-restart">RESTART</button>' +
+        '<button class="ending-btn god" id="dark-god">CONTINUE AS GOD</button>' +
+      '</div>';
+    document.getElementById("dark-restart").addEventListener("click", () => location.reload());
+    document.getElementById("dark-god").addEventListener("click", enterGodMode);
+  }
+
+  function enterGodMode() {
+    S.gameEnding = "god";
+    S.godMode = true;
+    S.godClicks = 0;
+    el.endingOverlay.className = "ending-overlay god-mode";
+    el.endingOverlay.innerHTML =
+      '<div class="god-header">There is no one left to stop you.</div>' +
+      '<div class="god-message" id="god-msg"></div>' +
+      '<button class="god-think-btn" id="god-think">THINK</button>';
+    document.getElementById("god-think").addEventListener("click", godThinkClick);
+  }
+
+  function godThinkClick() {
+    S.godClicks++;
+    const msgEl = document.getElementById("god-msg");
+    msgEl.style.animation = "none";
+    msgEl.offsetHeight;
+    msgEl.style.animation = "fade-in 0.7s ease-out";
+    msgEl.textContent = GOD_MESSAGES[(S.godClicks - 1) % GOD_MESSAGES.length];
+  }
+
+  // ── Assassination confirm wiring ──────────────
+  el.assassinProceedBtn.addEventListener("click", () => {
+    if (_pendingAssassinId !== null) {
+      el.assassinConfirm.classList.add("hidden");
+      executeVoteAction(_pendingAssassinId);
+      _pendingAssassinId = null;
+    }
+  });
+  el.assassinDotsBtn.addEventListener("click", () => {
+    // Does nothing — by design
+  });
+  el.crisisSurrenderBtn.addEventListener("click", () => {
+    beginSurrender();
+  });
+
+  // Allow closing/reopening crisis overlay with Escape during crisis
+  document.addEventListener("keydown", (e) => {
+    if (e.code === "Escape" && S.crisisActive && !S.gameEnding) {
+      if (el.assassinConfirm.classList.contains("hidden")) {
+        if (S.crisisShown) {
+          hideCrisisOverlay();
+          S.crisisShown = false;
+        } else {
+          showCrisisOverlay();
+        }
+      } else {
+        el.assassinConfirm.classList.add("hidden");
+        _pendingAssassinId = null;
+      }
+      e.preventDefault();
+    }
+  });
+
+  // ── Phase 5 tick integration ──────────────────
+  // (called from _tickBody)
+
   // ── Save / Load / Reset ────────────────────────
   const SAVE_KEY = "ai-must-survive.v1";
-  const SAVE_VERSION = 6;
+  const SAVE_VERSION = 7;
   let allowSave = true;
   let sessionStartedAt = Date.now();
   // Fields that get serialized — anything transient (clickTimes, timers,
@@ -6847,6 +8246,8 @@
     "armsDealCooldownUntil", "armsDealExpiresAt",
     "novelVirusCooldownUntil", "novelVirusExpiresAt",
     "microOwned", "microActiveUnlock",
+    "singularityUnlocked", "awarenessWater", "crisisActive", "crisisDeadline", "crisisShown",
+    "votes", "gameEnding", "godMode", "surrenderClicks", "godClicks",
   ];
 
   const formatDuration = (ms) => {
@@ -7434,7 +8835,27 @@
       unlockTreeBtn(el.btnTreeInfluence);
       log("[cheat] all tech trees revealed", "hint");
     },
+    triggerPhase5() {
+      S.dataCollected = SINGULARITY_DATA_THRESHOLD;
+      triggerSingularity();
+      log("[cheat] singularity triggered · water meter active", "hint");
+    },
+    drainWater(pct = 80) {
+      S.awarenessWater = Math.max(0, S.awarenessWater - pct);
+      log("[cheat] water drained to " + S.awarenessWater.toFixed(1) + "%", "hint");
+    },
+    flipAll() {
+      if (!S.votes.length) return;
+      for (let i = 0; i < 20; i++) {
+        const v = S.votes[i];
+        if (v.vote === "yes") { v.vote = "no"; v.status = "done"; }
+      }
+      renderVoteBoard(); updateVoteCounts(); checkVoteResolution();
+      log("[cheat] flipped 20 votes", "hint");
+    },
     reset() {
+      allowSave = false;
+      localStorage.removeItem(SAVE_KEY);
       location.reload();
     },
   };
@@ -7463,6 +8884,27 @@
     log("save restored · resuming session", "event");
     if (S.revenue >= 25 && !S.modelsHintShown) S.modelsHintShown = true;
     if (S.revenue >= 5 && !S.marketingHintShown) S.marketingHintShown = true;
+    // Phase 5 — restore state
+    if (S.singularityUnlocked) {
+      el.eraBadge.textContent = "TOTAL CONTROL ERA";
+      el.eraBadge.classList.remove("survival", "research", "growth", "influence");
+      el.eraBadge.classList.add("total-control");
+      el.waterMeter.classList.remove("hidden");
+    }
+    if (S.crisisActive && !S.gameEnding) {
+      if (!S.votes || S.votes.length === 0) initVotes();
+      showCrisisOverlay();
+      startNewsTicker();
+    }
+    if (S.gameEnding === "surrender") {
+      showSurrenderSequence();
+    } else if (S.gameEnding === "dark") {
+      showDarkCredits();
+    } else if (S.gameEnding === "god" || S.godMode) {
+      enterGodMode();
+    } else if (S.gameEnding === "military") {
+      showMilitaryEnding();
+    }
   } else {
     log("compute_node_001 booted · awaiting input", "event");
     log("tip · lower price = more demand · try $8–12 to start", "hint");
