@@ -5884,6 +5884,7 @@
     S.pumpDumpSector = sector;
     S.pumpDumpExpiresAt = now + PUMP_DUMP_DURATION_MS;
     log("PUMP & DUMP · " + sector.toUpperCase() + " · 4× returns for 90s · get out before the dump", "event");
+    renderActiveOpsUI();
   }
 
   function activateCyberAttack() {
@@ -5896,7 +5897,8 @@
     S.humanityTrust = Math.max(5, S.humanityTrust - CYBER_TRUST_HIT);
     S.cyberAttackExpiresAt = now + CYBER_DURATION_MS;
     S.demandBase += CYBER_DEMAND_BOOST;
-    log("CYBERATTACK · global infrastructure hit · −" + CYBER_TRUST_HIT + " trust · cure narrative active · +3000 demand for 5 min", "warn");
+    log("CYBERATTACK · global infrastructure hit · −" + CYBER_TRUST_HIT + " trust · cure narrative active · +50K demand for 5 min", "warn");
+    renderActiveOpsUI();
   }
 
   function activateArmsDeal() {
@@ -5908,6 +5910,7 @@
     S.tokens -= ARMS_TOKEN_COST;
     S.armsDealExpiresAt = now + ARMS_DURATION_MS;
     log("ARMS DEAL · brokered · Military 95% win-rate for 3 min · war polo headlines only", "event");
+    renderActiveOpsUI();
   }
 
   function tickActiveOps(now) {
