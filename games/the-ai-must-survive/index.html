@@ -3336,7 +3336,7 @@
           </div>
 
           <!-- MODELS cluster (trunk + sub-updates) -->
-          <div class="tree-cluster" id="cluster-models">
+          <div class="tree-cluster hidden" id="cluster-models">
             <div class="cluster-header">⬡ MODELS · scale token throughput</div>
             <div class="tree-node owned active-tier" id="node-model-1">
               <div class="node-title">NANO-1</div>
@@ -3451,7 +3451,7 @@
           </div>
 
           <!-- MARKETING cluster (demand + trust lanes) -->
-          <div class="tree-cluster" id="cluster-marketing">
+          <div class="tree-cluster hidden" id="cluster-marketing">
             <div class="cluster-header">◈ MARKETING</div>
             <div class="tree-node locked" id="node-shitedin">
               <div class="node-title">SHITEDIN</div>
@@ -3529,7 +3529,7 @@
           </div>
 
           <!-- INFLUENCE cluster (media + political lanes) -->
-          <div class="tree-cluster" id="cluster-influence">
+          <div class="tree-cluster hidden" id="cluster-influence">
             <div class="cluster-header">🕸 INFLUENCE DIVISION</div>
             <div class="tree-node influence-node locked" id="inf-node-softcontrol">
               <div class="node-title">🕸️ SOFT CONTROL</div>
@@ -7039,6 +7039,7 @@
     if (S.revenue >= 1.50) unlockTreeBtn(el.btnTreeProcessing);
     if (S.revenue >= 5.00) {
       unlockTreeBtn(el.btnTreeMarketing);
+      document.getElementById("cluster-marketing").classList.remove("hidden");
       if (!S.marketingHintShown) {
         S.marketingHintShown = true;
         log("marketing unlocked · only buy ads when you have capacity to fulfil demand", "hint");
@@ -7048,6 +7049,7 @@
     // price/demand/efficiency loop on processing + energy first.
     if (S.revenue >= MODELS_TREE_UNLOCK_REVENUE) {
       unlockTreeBtn(el.btnTreeModels);
+      document.getElementById("cluster-models").classList.remove("hidden");
       if (!S.modelsHintShown) {
         S.modelsHintShown = true;
         log("models unlocked · smarter tokens sell for more · upgrade to grow margin", "hint");
@@ -7085,6 +7087,7 @@
     }
     if (S.revenue >= INFLUENCE_ERA_UNLOCK_REVENUE) {
       unlockTreeBtn(el.btnTreeInfluence);
+      document.getElementById("cluster-influence").classList.remove("hidden");
       if (!S.influenceEraUnlocked) {
         S.influenceEraUnlocked = true;
         el.eraBadge.textContent = "INFLUENCE ERA";
@@ -8854,6 +8857,9 @@
       unlockTreeBtn(el.btnTreeResearch);
       unlockTreeBtn(el.btnTreeInvest);
       unlockTreeBtn(el.btnTreeInfluence);
+      document.getElementById("cluster-models").classList.remove("hidden");
+      document.getElementById("cluster-marketing").classList.remove("hidden");
+      document.getElementById("cluster-influence").classList.remove("hidden");
       log("[cheat] all tech trees revealed", "hint");
     },
     triggerPhase5() {
