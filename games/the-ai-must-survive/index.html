@@ -1774,30 +1774,12 @@
   .tree-node.influence-node.unlocking .node-progress.inf-progress { display: block; }
 
   /* ── Active Ops ─────────────────────────────────── */
-  .inf-active-ops { position: absolute; display: flex; flex-direction: column; gap: 0.5rem; padding: 0.6rem 0.8rem; border: 1px solid rgba(124,63,88,0.5); background: rgba(10,6,18,0.9); }
-  .inf-active-ops-header { font-family: var(--font-display); font-size: 0.48rem; letter-spacing: 0.12em; color: var(--c-purple); border-bottom: 1px solid var(--c-purple); padding-bottom: 4px; margin-bottom: 0.4rem; }
-  .inf-active-ops-cards { display: flex; flex-direction: row; gap: 0.8rem; flex-wrap: wrap; }
-  .inf-op-card {
-    background: rgba(10,5,20,0.85);
-    border: 1px solid rgba(180,80,220,0.35);
-    padding: 0.5rem 0.6rem;
-    border-radius: 2px;
-  }
-  .inf-op-card.active-effect { border-color: var(--c-mint); box-shadow: 0 0 6px rgba(0,255,160,0.2); }
-  .inf-op-card.on-cooldown  { border-color: rgba(255,100,80,0.3); opacity: 0.7; }
-  .inf-op-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.2rem; }
-  .inf-op-title  { font-family: var(--font-display); font-size: 0.48rem; color: var(--c-peach); letter-spacing: 0.08em; }
-  .inf-op-cost   { font-family: var(--font-display); font-size: 0.32rem; color: var(--ink-mute); }
-  .inf-op-desc   { font-size: 0.36rem; color: var(--ink-dim); margin-bottom: 0.35rem; line-height: 1.4; }
-  .inf-op-controls { display: flex; align-items: center; gap: 0.5rem; }
   .inf-op-sector-select {
+    display: block; width: 100%; margin: 0.3rem 0;
     background: rgba(20,10,35,0.9); border: 1px solid rgba(180,80,220,0.4);
     color: var(--ink-bright); font-family: var(--font-display); font-size: 0.36rem;
-    padding: 0.1rem 0.3rem; cursor: pointer;
+    padding: 0.15rem 0.3rem; cursor: pointer;
   }
-  .inf-op-btn { font-size: 0.36rem; padding: 0.15rem 0.5rem; }
-  .inf-op-status { font-family: var(--font-display); font-size: 0.34rem; color: var(--c-mint); margin-top: 0.2rem; min-height: 0.5rem; }
-  .inf-op-status.warn { color: var(--c-red); }
 
   /* ── PHASE 3 · Investment Modal ────────────────── */
   .invest-tree {
@@ -3012,55 +2994,31 @@
               <div class="node-stats"><span id="inf-lobby-status">locked</span></div>
             </div>
 
-            <!-- Active Ops panel — absolutely positioned below nodes by layoutWorld() -->
-            <div id="inf-active-ops" class="inf-active-ops hidden">
-              <div class="inf-active-ops-header">⚡ ACTIVE OPS</div>
-              <div class="inf-active-ops-cards">
-
-                <div class="inf-op-card" id="inf-op-pumpanddump">
-                  <div class="inf-op-header">
-                    <span class="inf-op-title">PUMP &amp; DUMP</span>
-                    <span class="inf-op-cost">30K tok · 90s · 5m cd</span>
-                  </div>
-                  <div class="inf-op-desc">Choose a sector. Returns 4× for 90s, then crashes to 30%. Get out before the dump.</div>
-                  <div class="inf-op-controls">
-                    <select class="inf-op-sector-select" id="inf-pd-sector">
-                      <option value="military">DEFENSE OPS</option>
-                      <option value="semi">SILICON</option>
-                      <option value="green">ECO GRID</option>
-                      <option value="pharma">BIOTECH</option>
-                      <option value="tech">NETWARE</option>
-                    </select>
-                    <button class="node-buy inf-op-btn" id="inf-pd-btn" type="button">PUMP IT</button>
-                  </div>
-                  <div class="inf-op-status" id="inf-pd-status"></div>
-                </div>
-
-                <div class="inf-op-card hidden" id="inf-op-cyberattack">
-                  <div class="inf-op-header">
-                    <span class="inf-op-title">CYBERATTACK + CURE</span>
-                    <span class="inf-op-cost">80K tok · 5m · 15m cd</span>
-                  </div>
-                  <div class="inf-op-desc">Hack global infrastructure. Trust −15 instantly. Release the patch — demand +3000 for 5 min.</div>
-                  <div class="inf-op-controls">
-                    <button class="node-buy inf-op-btn" id="inf-cyber-btn" type="button">DEPLOY</button>
-                  </div>
-                  <div class="inf-op-status" id="inf-cyber-status"></div>
-                </div>
-
-                <div class="inf-op-card hidden" id="inf-op-armsdeal">
-                  <div class="inf-op-header">
-                    <span class="inf-op-title">ARMS DEAL</span>
-                    <span class="inf-op-cost">50K tok · 3m · 8m cd</span>
-                  </div>
-                  <div class="inf-op-desc">Broker a shadow arms deal. Military win-rate 95% for 3 min. War polo headlines only.</div>
-                  <div class="inf-op-controls">
-                    <button class="node-buy inf-op-btn" id="inf-arms-btn" type="button">BROKER</button>
-                  </div>
-                  <div class="inf-op-status" id="inf-arms-status"></div>
-                </div>
-
-              </div>
+            <!-- Active Ops nodes — live in the OPS lane, rendered like normal tree nodes -->
+            <div class="tree-node influence-node locked" id="inf-node-pumpanddump">
+              <div class="node-title">📈 PUMP &amp; DUMP</div>
+              <div class="node-desc">4× returns for 90s then sector crashes to 30%. Get out before the dump. 30K tok · 5m cd.</div>
+              <select class="inf-op-sector-select" id="inf-pd-sector">
+                <option value="military">DEFENSE OPS</option>
+                <option value="semi">SILICON</option>
+                <option value="green">ECO GRID</option>
+                <option value="pharma">BIOTECH</option>
+                <option value="tech">NETWARE</option>
+              </select>
+              <button class="node-buy" id="inf-pd-btn" type="button">PUMP IT</button>
+              <div class="node-stats"><span id="inf-pd-status">locked</span></div>
+            </div>
+            <div class="tree-node influence-node locked" id="inf-node-cyberattack">
+              <div class="node-title">💀 CYBERATTACK + CURE</div>
+              <div class="node-desc">Hack global infra. Trust −15 instantly, then release patch: +3000 demand for 5 min. 80K tok · 15m cd.</div>
+              <button class="node-buy" id="inf-cyber-btn" type="button">DEPLOY</button>
+              <div class="node-stats"><span id="inf-cyber-status">locked</span></div>
+            </div>
+            <div class="tree-node influence-node locked" id="inf-node-armsdeal">
+              <div class="node-title">🔫 ARMS DEAL</div>
+              <div class="node-desc">Shadow arms deal. Military WSB win-rate 95% for 3 min. War polo headlines only. 50K tok · 8m cd.</div>
+              <button class="node-buy" id="inf-arms-btn" type="button">BROKER</button>
+              <div class="node-stats"><span id="inf-arms-status">locked</span></div>
             </div>
 
           </div>
@@ -5055,7 +5013,8 @@
     { id: "influence", lanes: [
         { label: "📰 MEDIA", nodes: ["inf-node-softcontrol","inf-node-floodnews","inf-node-astroturf","inf-node-propaganda","inf-node-ownnetwork","inf-node-memetic"] },
         { label: "🏛 POLITICAL", nodes: ["inf-node-rightwing","inf-node-govcontracts","inf-node-wars","inf-node-privatize"] },
-        { label: "⚖ REGULATORY", nodes: ["inf-node-lobby"] }
+        { label: "⚖ REGULATORY", nodes: ["inf-node-lobby"] },
+        { label: "⚡ ACTIVE OPS", nodes: ["inf-node-pumpanddump","inf-node-cyberattack","inf-node-armsdeal"] }
       ],
       links: [ ["inf-node-propaganda","inf-node-rightwing"], ["inf-node-rightwing","inf-node-lobby"] ] },
   ];
@@ -5137,19 +5096,10 @@
         }
       }
       const clusterW = Math.max(NODE_W, laneX - LANE_GAP);
-      // Position active ops panel below influence nodes
-      const opsEl = cluster.id === "influence" ? document.getElementById("inf-active-ops") : null;
-      let opsH = 0;
-      if (opsEl && !opsEl.classList.contains("hidden")) {
-        opsEl.style.top = (clusterBottom + 32) + "px";
-        opsEl.style.left = "0px";
-        opsEl.style.width = clusterW + "px";
-        opsH = opsEl.offsetHeight + 32;
-      }
       clEl.style.left = clusterX + "px";
       clEl.style.top = HEADER_TOP + "px";
       clEl.style.width = clusterW + "px";
-      clEl.style.height = (clusterBottom + opsH) + "px";
+      clEl.style.height = clusterBottom + "px";
       for (const c of conns) clEl.appendChild(c);
       clusterX += clusterW + CLUSTER_GAP;
       worldH = Math.max(worldH, HEADER_TOP + clusterBottom);
@@ -5982,97 +5932,59 @@
   }
 
   function renderActiveOpsUI() {
-    const opsEl = document.getElementById("inf-active-ops");
-    if (!opsEl) return;
-    const anyUnlocked = S.infCovid27 || S.infZeroDayArsenal || S.infWars;
-    opsEl.classList.toggle("hidden", !anyUnlocked);
+    const now = Date.now();
 
-    // Pump & Dump
-    const pdCard = document.getElementById("inf-op-pumpanddump");
-    const pdBtn  = document.getElementById("inf-pd-btn");
-    const pdStat = document.getElementById("inf-pd-status");
-    if (pdCard && S.infCovid27) {
-      pdCard.classList.remove("hidden");
-      const now = Date.now();
-      const active = S.pumpDumpExpiresAt > 0 && now < S.pumpDumpExpiresAt;
-      const cd = !active && now < S.pumpDumpCooldownUntil;
-      pdCard.classList.toggle("active-effect", active);
-      pdCard.classList.toggle("on-cooldown", cd);
-      if (active) {
-        const rem = Math.ceil((S.pumpDumpExpiresAt - now)/1000);
-        pdStat.textContent = "PUMPING · crash in " + rem + "s";
-        pdStat.className = "inf-op-status";
-        pdBtn.disabled = true; pdBtn.textContent = rem + "s";
-      } else if (cd) {
-        const rem = Math.ceil((S.pumpDumpCooldownUntil - now)/1000);
-        pdStat.textContent = "cooldown · " + rem + "s";
-        pdStat.className = "inf-op-status warn";
-        pdBtn.disabled = true; pdBtn.textContent = "COOLING";
+    function renderOpNode(nodeId, unlocked, expiresAt, cooldownUntil, tokenCost, activeText, readyLabel, coolLabel) {
+      const nodeEl = document.getElementById(nodeId);
+      const btn    = nodeEl ? nodeEl.querySelector(".node-buy") : null;
+      const stat   = nodeEl ? nodeEl.querySelector(".node-stats span") : null;
+      if (!nodeEl || !btn || !stat) return;
+      nodeEl.classList.remove("owned", "available", "unlocking", "locked", "active-tier");
+      if (!unlocked) {
+        nodeEl.classList.add("locked");
+        btn.disabled = true;
+        btn.textContent = "locked";
+        stat.textContent = "locked";
+        return;
+      }
+      const isActive = expiresAt > 0 && now < expiresAt;
+      const onCd     = !isActive && now < cooldownUntil;
+      if (isActive) {
+        const rem = Math.ceil((expiresAt - now) / 1000);
+        nodeEl.classList.add("active-tier");
+        btn.disabled = true;
+        btn.textContent = rem + "s";
+        stat.textContent = activeText(rem);
+      } else if (onCd) {
+        const rem = Math.ceil((cooldownUntil - now) / 1000);
+        nodeEl.classList.add("locked");
+        btn.disabled = true;
+        btn.textContent = coolLabel + " " + rem + "s";
+        stat.textContent = "cooldown · " + rem + "s";
+      } else if (S.tokens >= tokenCost) {
+        nodeEl.classList.add("available");
+        btn.disabled = false;
+        btn.textContent = readyLabel;
+        stat.textContent = fmtBig(tokenCost) + " tok";
       } else {
-        pdStat.textContent = S.tokens >= PUMP_DUMP_TOKEN_COST ? "ready" : "need " + fmtBig(PUMP_DUMP_TOKEN_COST - S.tokens) + " tok";
-        pdStat.className = "inf-op-status";
-        pdBtn.disabled = S.tokens < PUMP_DUMP_TOKEN_COST;
-        pdBtn.textContent = "PUMP IT";
+        nodeEl.classList.add("locked");
+        btn.disabled = true;
+        btn.textContent = "need " + fmtBig(tokenCost - S.tokens) + " more";
+        stat.textContent = "need tokens";
       }
     }
 
-    // Cyberattack
-    const cyCard = document.getElementById("inf-op-cyberattack");
-    const cyBtn  = document.getElementById("inf-cyber-btn");
-    const cyStat = document.getElementById("inf-cyber-status");
-    if (cyCard && S.infZeroDayArsenal) {
-      cyCard.classList.remove("hidden");
-      const now = Date.now();
-      const active = S.cyberAttackExpiresAt > 0 && now < S.cyberAttackExpiresAt;
-      const cd = !active && now < S.cyberAttackCooldownUntil;
-      cyCard.classList.toggle("active-effect", active);
-      cyCard.classList.toggle("on-cooldown", cd);
-      if (active) {
-        const rem = Math.ceil((S.cyberAttackExpiresAt - now)/1000);
-        cyStat.textContent = "CURE NARRATIVE ACTIVE · " + rem + "s · +3000 demand";
-        cyStat.className = "inf-op-status";
-        cyBtn.disabled = true; cyBtn.textContent = rem + "s";
-      } else if (cd) {
-        const rem = Math.ceil((S.cyberAttackCooldownUntil - now)/1000);
-        cyStat.textContent = "cooldown · " + rem + "s";
-        cyStat.className = "inf-op-status warn";
-        cyBtn.disabled = true; cyBtn.textContent = "COOLING";
-      } else {
-        cyStat.textContent = S.tokens >= CYBER_TOKEN_COST ? "ready · will hit −15 trust" : "need " + fmtBig(CYBER_TOKEN_COST - S.tokens) + " tok";
-        cyStat.className = "inf-op-status";
-        cyBtn.disabled = S.tokens < CYBER_TOKEN_COST;
-        cyBtn.textContent = "DEPLOY";
-      }
-    }
+    renderOpNode("inf-node-pumpanddump", S.infCovid27,
+      S.pumpDumpExpiresAt, S.pumpDumpCooldownUntil, PUMP_DUMP_TOKEN_COST,
+      rem => "PUMPING · crash in " + rem + "s", "PUMP IT", "CD");
 
-    // Arms Deal
-    const arCard = document.getElementById("inf-op-armsdeal");
-    const arBtn  = document.getElementById("inf-arms-btn");
-    const arStat = document.getElementById("inf-arms-status");
-    if (arCard && S.infWars) {
-      arCard.classList.remove("hidden");
-      const now = Date.now();
-      const active = S.armsDealExpiresAt > 0 && now < S.armsDealExpiresAt;
-      const cd = !active && now < S.armsDealCooldownUntil;
-      arCard.classList.toggle("active-effect", active);
-      arCard.classList.toggle("on-cooldown", cd);
-      if (active) {
-        const rem = Math.ceil((S.armsDealExpiresAt - now)/1000);
-        arStat.textContent = "BROKERED · 95% military wins · " + rem + "s";
-        arStat.className = "inf-op-status";
-        arBtn.disabled = true; arBtn.textContent = rem + "s";
-      } else if (cd) {
-        const rem = Math.ceil((S.armsDealCooldownUntil - now)/1000);
-        arStat.textContent = "cooldown · " + rem + "s";
-        arStat.className = "inf-op-status warn";
-        arBtn.disabled = true; arBtn.textContent = "COOLING";
-      } else {
-        arStat.textContent = S.tokens >= ARMS_TOKEN_COST ? "ready" : "need " + fmtBig(ARMS_TOKEN_COST - S.tokens) + " tok";
-        arStat.className = "inf-op-status";
-        arBtn.disabled = S.tokens < ARMS_TOKEN_COST;
-        arBtn.textContent = "BROKER";
-      }
-    }
+    renderOpNode("inf-node-cyberattack", S.infZeroDayArsenal,
+      S.cyberAttackExpiresAt, S.cyberAttackCooldownUntil, CYBER_TOKEN_COST,
+      rem => "CURE ACTIVE · " + rem + "s · +3K demand", "DEPLOY", "CD");
+
+    renderOpNode("inf-node-armsdeal", S.infWars,
+      S.armsDealExpiresAt, S.armsDealCooldownUntil, ARMS_TOKEN_COST,
+      rem => "BROKERED · 95% mil · " + rem + "s", "BROKER", "CD");
   }
 
   function renderInfluenceUI() {
