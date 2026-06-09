@@ -5787,8 +5787,10 @@
     const dt = Math.min(0.1, (now - last) / 1000); // clamp dt
     last = now;
 
-    // Energy cap scales with model so high-tier computes don't pin the bar at a low value
-    S.energyMax = Math.max(50, energyPerCompute() * 3);
+    // Energy cap must be large enough that the GPU/CPU while-loops can fire all
+    // their pending iterations in a single tick without hitting the energy floor.
+    // At 60fps, each tick needs ~(energyDemandPerSec/60) energy; multiply by 4 for headroom.
+    S.energyMax = Math.max(50, Math.ceil(energyDemandPerSec() / 60 * 4));
 
     // Energy regen (base + solar panels)
     if (S.energy < S.energyMax) {
