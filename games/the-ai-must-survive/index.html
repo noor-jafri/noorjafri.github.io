@@ -3283,6 +3283,8 @@
 
 </style>
 <!-- ══ /PHASE 1 · CSS ══ PHASE 2 · CSS above ═══════════════════════════ -->
+<script data-goatcounter="https://njafri.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
 </head>
 <!-- ══ PHASE 1 · HTML ($500 · COMPLETE) ════════════════════════════════ -->
 <body>
@@ -7963,12 +7965,21 @@
   }
 
   // ── Events ─────────────────────────────────────
-  el.btn.addEventListener("click", () => { compute(); });
+  // Count a "play" once per session, on the first compute interaction.
+  // Retries silently until the async analytics script has loaded.
+  let playCounted = false;
+  function countPlay() {
+    if (playCounted || !window.goatcounter || !window.goatcounter.count) return;
+    playCounted = true;
+    window.goatcounter.count({ path: "play/the-ai-must-survive", title: "The AI Must Survive · game started", event: true });
+  }
+  el.btn.addEventListener("click", () => { countPlay(); compute(); });
   // Spacebar = compute (feels good for fast clicking)
   document.addEventListener("keydown", (e) => {
     if (e.code === "Space" && !e.repeat) {
       e.preventDefault();
       if (!el.btn.disabled) {
+        countPlay();
         compute();
         el.btn.classList.add("kbd");
         setTimeout(() => el.btn.classList.remove("kbd"), 80);
