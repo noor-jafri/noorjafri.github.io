@@ -1,0 +1,38 @@
+/* Ebb & Flow — calm pond: flat leaves drifting over muted teal water */
+.ef-water { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.ef-glow { position: absolute; width: 90%; aspect-ratio: 1; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(220, 240, 230, 0.10), transparent 70%); will-change: transform; }
+.ef-glow.a { left: -20%; top: -10%; animation: ef-drift-a 22s ease-in-out infinite alternate; }
+.ef-glow.b { right: -25%; bottom: -15%; width: 110%; animation: ef-drift-b 28s ease-in-out infinite alternate;
+  background: radial-gradient(closest-side, rgba(10, 30, 34, 0.18), transparent 70%); }
+@keyframes ef-drift-a { to { transform: translate(18%, 22%) scale(1.15); } }
+@keyframes ef-drift-b { to { transform: translate(-16%, -14%) scale(0.9); } }
+.ef-ripple { position: absolute; width: 90px; height: 90px; margin: -45px 0 0 -45px; border-radius: 50%;
+  border: 1.5px solid rgba(225, 242, 236, 0.32); opacity: 0; animation: ef-ripple 3.2s ease-out forwards; }
+.ef-ripple.big { width: 180px; height: 180px; margin: -90px 0 0 -90px; animation-duration: 2.6s; }
+@keyframes ef-ripple { 0% { transform: scale(0.15); opacity: 0.8; } 100% { transform: scale(1); opacity: 0; } }
+
+.ef-field { position: absolute; inset: 0; overflow: hidden; touch-action: none; }
+.ef-field.fade { opacity: 0; transition: opacity 0.2s ease-in-out; }
+.ef-field.show { opacity: 1; transition: opacity 0.3s ease-in-out; }
+.ef-leaf { position: absolute; left: 0; top: 0; will-change: transform; pointer-events: none; }
+.ef-sh, .ef-lf { position: absolute; inset: 0; will-change: transform; }
+.ef-sh { opacity: 0.22; }
+.ef-leaf svg { display: block; overflow: visible; }
+
+.ef-legend { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); z-index: 2;
+  display: flex; gap: 8px; pointer-events: none; white-space: nowrap; }
+.ef-legend span { display: flex; align-items: center; gap: 6px; padding: 6px 12px 6px 10px; border-radius: 999px;
+  background: rgba(14, 34, 37, 0.38); font-size: 12px; letter-spacing: 0.03em; color: rgba(240, 246, 242, 0.85); }
+.ef-legend b { font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+
+.ef-hint { position: absolute; left: 50%; top: 50%; width: min(34vw, 150px); aspect-ratio: 1; margin: calc(min(34vw, 150px) / -2) 0 0 calc(min(34vw, 150px) / -2);
+  border-radius: 50%; background: rgba(14, 34, 37, 0.35); opacity: 0; pointer-events: none; z-index: 3;
+  display: flex; align-items: center; justify-content: center; }
+.ef-hint svg { width: 58%; height: 58%; transform: rotate(var(--r, 0deg)); }
+.ef-hint.pop { animation: ef-hint 0.9s ease-in-out; }
+@keyframes ef-hint { 0% { opacity: 0; transform: scale(0.92); } 25%, 70% { opacity: 1; transform: none; } 100% { opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .ef-glow { animation: none !important; }
+}

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#1a1230">
+<meta name="theme-color" content="#f4ede3">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -12,8 +12,21 @@
 <link rel="shortcut icon" type="image/png" href="../../assets/images/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="np.css">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="core/np.css">
+<link rel="stylesheet" href="games/tic-tac-toe/game.css">
+<link rel="stylesheet" href="games/sky-patrol/game.css">
+<link rel="stylesheet" href="games/memory-grid/game.css">
+<link rel="stylesheet" href="games/speed-match/game.css">
+<link rel="stylesheet" href="games/color-match/game.css">
+<link rel="stylesheet" href="games/migration/game.css">
+<link rel="stylesheet" href="games/ebb-flow/game.css">
+<link rel="stylesheet" href="games/memory-match/game.css">
+<link rel="stylesheet" href="games/spatial-match/game.css">
+<link rel="stylesheet" href="games/brain-shift/game.css">
+<link rel="stylesheet" href="games/star-search/game.css">
+<link rel="stylesheet" href="games/tide-pool/game.css">
+<link rel="stylesheet" href="games/trains/game.css">
 <script data-goatcounter="https://njafri.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
 </head>
@@ -21,21 +34,30 @@
 <div class="app">
 
   <section class="screen" id="menu">
-    <header class="menu-head">
-      <a href="../index.html">◂ ARCADE</a>
-      <h1 class="pixel">NEUROPLASTICITY</h1>
-      <button class="mute" aria-label="Toggle sound" style="width:60px;text-align:right;font-size:18px">🔊</button>
-    </header>
-    <p class="menu-sub">Pick a game · swipe for more</p>
-    <div class="pages" id="pages"></div>
-    <nav class="dots" id="dots" aria-label="Pages"></nav>
+    <div class="menu-scroll">
+      <header class="menu-head">
+        <a href="../index.html" class="m-back">‹ Arcade</a>
+        <button class="mute" aria-label="Toggle sound"></button>
+      </header>
+      <div class="hello">
+        <p class="eyebrow">Neuroplasticity</p>
+        <h1 id="greet">Good evening</h1>
+        <div class="hello-row">
+          <p>A little brain training, made for your phone.</p>
+          <span class="streak" id="streak"></span>
+        </div>
+      </div>
+      <div class="workout" id="workout"></div>
+      <div id="library"></div>
+      <footer class="menu-foot">Inspired by Lumosity · scores stay on this device</footer>
+    </div>
   </section>
 
   <section class="screen" id="game">
     <header class="hud">
       <button class="x" id="h-back" aria-label="Back to games">✕</button>
       <div class="h-name" id="h-name"></div>
-      <div class="h-box" id="h-scorebox"><small>Score</small><b id="h-score">0</b><span class="h-mult" id="h-mult"></span></div>
+      <div class="h-box" id="h-scorebox"><small>Score</small><b id="h-score">0</b><span class="h-mult" id="h-mult"></span><span class="h-dots" id="h-dots"></span></div>
       <div class="h-box" id="h-timebox"><small>Time</small><b id="h-time">0</b></div>
     </header>
     <div class="timebar" id="timebar"><i></i></div>
@@ -43,6 +65,7 @@
     <main class="stage" id="stage"></main>
     <div class="controls" id="controls"></div>
 
+    <div class="fx" id="fx" aria-hidden="true"></div>
     <div class="countdown" id="countdown"></div>
 
     <div class="overlay" id="intro">
@@ -61,7 +84,7 @@
       <div class="card">
         <div class="c-icon" id="r-icon"></div>
         <h2 id="r-title">Time!</h2>
-        <div class="c-new pixel" id="r-new">NEW BEST!</div>
+        <div class="c-new" id="r-new">NEW BEST!</div>
         <div class="c-score" id="r-score">0</div>
         <p class="c-tag" id="r-note"></p>
         <p class="c-tag" id="r-best"></p>
@@ -76,20 +99,20 @@
 </div>
 
 <!-- menu order = script order -->
-<script src="np.js"></script>
-<script src="games/tic-tac-toe.js"></script>
-<script src="games/sky-patrol.js"></script>
-<script src="games/memory-grid.js"></script>
-<script src="games/speed-match.js"></script>
-<script src="games/color-match.js"></script>
-<script src="games/migration.js"></script>
-<script src="games/ebb-flow.js"></script>
-<script src="games/memory-match.js"></script>
-<script src="games/spatial-match.js"></script>
-<script src="games/brain-shift.js"></script>
-<script src="games/star-search.js"></script>
-<script src="games/tide-pool.js"></script>
-<script src="games/trains.js"></script>
+<script src="core/np.js"></script>
+<script src="games/tic-tac-toe/game.js"></script>
+<script src="games/sky-patrol/game.js"></script>
+<script src="games/memory-grid/game.js"></script>
+<script src="games/speed-match/game.js"></script>
+<script src="games/color-match/game.js"></script>
+<script src="games/migration/game.js"></script>
+<script src="games/ebb-flow/game.js"></script>
+<script src="games/memory-match/game.js"></script>
+<script src="games/spatial-match/game.js"></script>
+<script src="games/brain-shift/game.js"></script>
+<script src="games/star-search/game.js"></script>
+<script src="games/tide-pool/game.js"></script>
+<script src="games/trains/game.js"></script>
 <script>NP.boot();</script>
 </body>
 </html>

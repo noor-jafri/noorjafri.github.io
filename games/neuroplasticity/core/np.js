@@ -6,8 +6,10 @@
  *   NP.register({
  *     id: 'speed-match',            // url hash + storage key
  *     name: 'Speed Match',
- *     icon: '⚡',
+ *     icon: '⚡',                    // emoji fallback
+ *     art: '<svg …>',               // optional SVG icon for the menu tile + intro card (viewBox 0 0 64 64)
  *     color: '#ff6b6b',             // tile tint
+ *     bg: ['#3a7bd5', '#1a1230'],   // game screen background gradient (top, bottom)
  *     tagline: 'Does this shape match the one right before it?',
  *     how: ['line', 'line'],        // shown on the intro card
  *     controls: 'Yes / No',
@@ -22,7 +24,10 @@
  *   api.timer(sec, onEnd?)    countdown in the HUD; at 0 calls onEnd or api.end()
  *   api.timeLeft()            seconds left
  *   api.addScore(n) / api.getScore()
- *   api.answer(correct, base=50)  streak multiplier (x1..x5), adds points, flash + sound + haptic; returns points
+ *   api.answer(correct, base=50, at?)  streak multiplier (x1..x5), adds points, flash + sound + haptic,
+ *                             "+150" popup and particle burst at `at` ({x,y} in stage px, or an Element;
+ *                             default: where the player last tapped, else stage center); returns points
+ *   api.fx.burst(x, y, color, count?) / api.fx.popup(text, x, y, color?) / api.fx.at(el) → {x,y}
  *   api.flash(good)           feedback only
  *   api.end(note?)            finish: shows results, saves best
  *   api.status(text)          small line under the HUD (level, round…)
@@ -45,7 +50,6 @@
 
   const games = [];
   const $ = (s) => document.querySelector(s);
-  const PER_PAGE = 6;
 
   const store = {
     get(k) { try { return JSON.parse(localStorage.getItem('np.' + k)); } catch (e) { return null; } },
@@ -113,46 +117,133 @@
     } catch (e) {}
   }
 
+  function setIcon(el, g) {
+    if (g.art) el.innerHTML = g.art;
+    else el.textContent = g.icon;
+  }
+
   /* ---------- menu ---------- */
-  function renderMenu() {
-    const pages = $('#pages');
-    const dots = $('#dots');
-    pages.innerHTML = '';
-    dots.innerHTML = '';
-    const n = Math.ceil(games.length / PER_PAGE);
-    for (let p = 0; p < n; p++) {
-      const page = document.createElement('div');
-      page.className = 'page';
-      games.slice(p * PER_PAGE, (p + 1) * PER_PAGE).forEach((g, i) => {
-        const t = document.createElement('button');
-        t.className = 'tile';
-        t.style.setProperty('--tc', g.color || '#ffcc4d');
-        const best = bestOf(g.id);
-        t.innerHTML =
-          '<span class="t-num">' + (p * PER_PAGE + i + 1) + '</span>' +
-          '<span class="t-icon"></span><span><div class="t-name"></div><div class="t-tag"></div>' +
-          (g.noScore ? '' : '<div class="t-best">' + (best ? '★ BEST ' + best.toLocaleString() : '— no score yet') + '</div>') +
-          '</span>';
-        t.querySelector('.t-icon').textContent = g.icon;
-        t.querySelector('.t-name').textContent = g.name;
-        t.querySelector('.t-tag').textContent = g.tagline;
-        t.onclick = () => { SFX.tap(); fromMenu = true; location.hash = g.id; };
-        page.appendChild(t);
-      });
-      pages.appendChild(page);
-      const d = document.createElement('button');
-      d.setAttribute('aria-label', 'Page ' + (p + 1));
-      d.onclick = () => pages.scrollTo({ left: p * pages.clientWidth, behavior: 'smooth' });
-      dots.appendChild(d);
+  // Lumosity-style skill areas. A game can override with def.category.
+  const CATEGORIES = [
+    { key: 'memory', name: 'Memory', color: '#5b8fb9', ids: ['memory-grid', 'memory-match', 'tide-pool'] },
+    { key: 'speed', name: 'Speed', color: '#e07a5f', ids: ['speed-match', 'spatial-match'] },
+    { key: 'attention', name: 'Attention', color: '#c9a227', ids: ['migration', 'star-search', 'trains'] },
+    { key: 'flexibility', name: 'Flexibility', color: '#81b29a', ids: ['color-match', 'ebb-flow', 'brain-shift'] },
+    { key: 'arcade', name: 'Arcade', color: '#9a7fb8', ids: ['tic-tac-toe', 'sky-patrol'] },
+  ];
+  const categoryOf = (g) => {
+    const key = g.category || (CATEGORIES.find((c) => c.ids.includes(g.id)) || CATEGORIES[4]).key;
+    return CATEGORIES.find((c) => c.key === key) || CATEGORIES[4];
+  };
+
+  const dayKey = (d) => {
+    d = d || new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  };
+  const playedToday = () => {
+    const p = store.get('played') || {};
+    return p.day === dayKey() ? p.ids : [];
+  };
+  function recordPlay(id) {
+    const today = dayKey();
+    const p = store.get('played') || {};
+    const ids = p.day === today ? p.ids : [];
+    if (!ids.includes(id)) ids.push(id);
+    store.set('played', { day: today, ids });
+    const st = store.get('streak') || { last: null, days: 0 };
+    if (st.last !== today) {
+      const y = new Date();
+      y.setDate(y.getDate() - 1);
+      st.days = st.last === dayKey(y) ? st.days + 1 : 1;
+      st.last = today;
+      store.set('streak', st);
     }
-    const sync = () => {
-      const p = Math.round(pages.scrollLeft / Math.max(1, pages.clientWidth));
-      [...dots.children].forEach((d, i) => d.classList.toggle('on', i === p));
-      store.set('page', p);
-    };
-    pages.onscroll = sync;
-    const saved = store.get('page') || 0;
-    requestAnimationFrame(() => { pages.scrollLeft = saved * pages.clientWidth; sync(); });
+  }
+  const streakDays = () => {
+    const st = store.get('streak');
+    if (!st) return 0;
+    const y = new Date();
+    y.setDate(y.getDate() - 1);
+    return st.last === dayKey() || st.last === dayKey(y) ? st.days : 0;
+  };
+
+  // Three brain games a day, one from each of three different skill areas, seeded by the date.
+  function todaysWorkout() {
+    let seed = 0;
+    for (const ch of dayKey()) seed = (seed * 31 + ch.charCodeAt(0)) >>> 0;
+    const rnd = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296);
+    const pools = CATEGORIES.filter((c) => c.key !== 'arcade')
+      .map((c) => games.filter((g) => categoryOf(g) === c))
+      .filter((p) => p.length);
+    for (let i = pools.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [pools[i], pools[j]] = [pools[j], pools[i]]; }
+    return pools.slice(0, 3).map((p) => p[Math.floor(rnd() * p.length)]);
+  }
+
+  const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const openFromMenu = (g) => { SFX.tap(); fromMenu = true; location.hash = g.id; };
+
+  function renderMenu() {
+    const h = new Date().getHours();
+    $('#greet').textContent = h < 5 ? 'Late night thinking' : h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
+
+    const played = playedToday();
+    const plan = todaysWorkout();
+    const done = plan.filter((g) => played.includes(g.id)).length;
+    const streak = streakDays();
+    $('#streak').innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c1 3.5 5 5.5 5 10.5A5 5 0 0 1 7 12.5c0-2 1-3.5 2-4.5.3 1.6 1.2 2.6 2.2 3C11 8 11 5 12 2z"/></svg>' +
+      (streak ? '<b>' + streak + '</b> day' + (streak === 1 ? '' : 's') : 'Start a streak');
+
+    const w = $('#workout');
+    w.innerHTML =
+      '<div class="w-head"><div><small>Today’s workout</small><h2>' +
+      (done === plan.length ? 'All done. Nice work.' : done ? done + ' of ' + plan.length + ' done' : 'Three games, five minutes') +
+      '</h2></div><div class="w-ring" style="--p:' + done / plan.length + '"><span>' + done + '/' + plan.length + '</span></div></div>' +
+      '<div class="w-list"></div>';
+    const list = w.querySelector('.w-list');
+    plan.forEach((g) => {
+      const c = categoryOf(g);
+      const item = document.createElement('button');
+      item.className = 'w-item' + (played.includes(g.id) ? ' done' : '');
+      item.style.setProperty('--tc', g.color || c.color);
+      item.innerHTML = '<span class="w-art"></span><span class="w-name">' + esc(g.name) + '</span><span class="w-cat">' + c.name + '</span><span class="w-check" aria-hidden="true"></span>';
+      setIcon(item.querySelector('.w-art'), g);
+      item.onclick = () => openFromMenu(g);
+      list.appendChild(item);
+    });
+    const next = plan.find((g) => !played.includes(g.id));
+    const go = document.createElement('button');
+    go.className = 'w-go';
+    go.textContent = next ? (done ? 'Continue workout' : 'Start workout') : 'Play again';
+    go.onclick = () => openFromMenu(next || plan[0]);
+    w.appendChild(go);
+
+    const lib = $('#library');
+    lib.innerHTML = '';
+    CATEGORIES.forEach((c) => {
+      const list = games.filter((g) => categoryOf(g) === c);
+      if (!list.length) return;
+      const sec = document.createElement('section');
+      sec.className = 'cat';
+      sec.style.setProperty('--cc', c.color);
+      sec.innerHTML = '<h3><i></i>' + c.name + '<span>' + list.length + '</span></h3><div class="cards"></div>';
+      const cards = sec.querySelector('.cards');
+      list.forEach((g) => {
+        const best = bestOf(g.id);
+        const t = document.createElement('button');
+        t.className = 'gcard';
+        t.style.setProperty('--tc', g.color || c.color);
+        t.innerHTML =
+          '<span class="g-art"></span>' +
+          '<span class="g-body"><span class="g-name">' + esc(g.name) + '</span>' +
+          '<span class="g-tag">' + esc(g.tagline) + '</span>' +
+          (g.noScore ? '<span class="g-best">Just for fun</span>' : '<span class="g-best">' + (best ? 'Best ' + best.toLocaleString() : 'Not played yet') + '</span>') +
+          '</span>' + (played.includes(g.id) ? '<span class="g-done" title="Played today"></span>' : '');
+        setIcon(t.querySelector('.g-art'), g);
+        t.onclick = () => openFromMenu(g);
+        cards.appendChild(t);
+      });
+      lib.appendChild(sec);
+    });
   }
 
   /* ---------- game session ---------- */
@@ -161,6 +252,8 @@
 
   function show(id) {
     document.querySelectorAll('.screen').forEach((s) => s.classList.toggle('active', s.id === id));
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.content = id === 'menu' ? '#f4ede3' : '#1c2333';
   }
 
   function openGame(def) {
@@ -177,7 +270,9 @@
     $('#h-mult').textContent = '';
 
     const intro = $('#intro');
-    $('#i-icon').textContent = def.icon;
+    setIcon($('#i-icon'), def);
+    const bg = def.bg || ['#2a3348', '#1c2333'];
+    $('#game').style.background = 'linear-gradient(180deg, ' + bg[0] + ' 0%, ' + bg[1] + ' 100%)';
     $('#i-name').textContent = def.name;
     $('#i-tag').textContent = def.tagline;
     const ul = $('#i-how');
@@ -261,6 +356,66 @@
       $('#h-score').textContent = s.score.toLocaleString();
       $('#h-mult').textContent = s.mult > 1 ? '×' + s.mult : '';
     };
+    // ----- particles & popups (live in #fx, above the stage) -----
+    const fxLayer = $('#fx');
+    fxLayer.innerHTML = '';
+    const stageOrigin = () => {
+      const a = stage.getBoundingClientRect(), b = $('#game').getBoundingClientRect();
+      return { x: a.left - b.left, y: a.top - b.top, w: a.width, h: a.height };
+    };
+    const fx = {
+      at(el) {
+        const r = el.getBoundingClientRect(), a = stage.getBoundingClientRect();
+        return { x: r.left - a.left + r.width / 2, y: r.top - a.top + r.height / 2 };
+      },
+      burst(x, y, color, count) {
+        const o = stageOrigin();
+        count = count || 14;
+        for (let i = 0; i < count; i++) {
+          const p = document.createElement('i');
+          p.className = 'fx-p';
+          const ang = Math.random() * Math.PI * 2, v = 40 + Math.random() * 70;
+          p.style.left = o.x + x + 'px';
+          p.style.top = o.y + y + 'px';
+          p.style.background = color || 'var(--accent)';
+          p.style.setProperty('--dx', Math.cos(ang) * v + 'px');
+          p.style.setProperty('--dy', Math.sin(ang) * v - 30 + 'px');
+          p.style.setProperty('--s', (0.5 + Math.random() * 0.9).toFixed(2));
+          fxLayer.appendChild(p);
+          setTimeout(() => p.remove(), 750);
+        }
+      },
+      popup(text, x, y, color) {
+        const o = stageOrigin();
+        const p = document.createElement('b');
+        p.className = 'fx-pop';
+        p.textContent = text;
+        p.style.left = o.x + x + 'px';
+        p.style.top = o.y + y + 'px';
+        if (color) p.style.color = color;
+        fxLayer.appendChild(p);
+        setTimeout(() => p.remove(), 900);
+      },
+    };
+    let lastTap = null;
+    on($('#game'), 'pointerdown', (e) => {
+      const a = stage.getBoundingClientRect();
+      lastTap = { x: e.clientX - a.left, y: e.clientY - a.top, t: performance.now() };
+    }, true);
+    const fxPoint = (at) => {
+      if (at instanceof Element) return fx.at(at);
+      if (at && at.x != null) return at;
+      const r = stage.getBoundingClientRect();
+      if (lastTap && performance.now() - lastTap.t < 500 && lastTap.x >= 0 && lastTap.y >= 0 && lastTap.x <= r.width && lastTap.y <= r.height) return lastTap;
+      return { x: r.width / 2, y: r.height / 2 };
+    };
+    const renderDots = () => {
+      const dots = $('#h-dots');
+      const n = s.mult >= 5 ? 4 : s.streak % 4;
+      dots.innerHTML = '<i></i><i></i><i></i><i></i>';
+      [...dots.children].forEach((d, i) => d.classList.toggle('on', i < n));
+    };
+
     let flashT = null;
     const flash = (good) => {
       stage.classList.remove('flash-good', 'flash-bad');
@@ -281,23 +436,31 @@
         return e;
       },
       alive: () => s.alive,
+      fx,
       addScore(n) { s.score = Math.max(0, s.score + Math.round(n)); renderScore(); },
       getScore: () => s.score,
-      answer(correct, base) {
+      answer(correct, base, at) {
         base = base == null ? 50 : base;
         flash(correct);
+        const pt = fxPoint(at);
         if (correct) {
           s.streak++;
+          const before = s.mult;
           s.mult = Math.min(5, 1 + Math.floor(s.streak / 4));
           const pts = base * s.mult;
           s.score += pts;
           renderScore();
-          SFX.good();
+          renderDots();
+          if (pts > 0) fx.popup('+' + pts, pt.x, pt.y);
+          fx.burst(pt.x, pt.y, s.mult > before ? '#f2c14e' : 'rgba(255,255,255,0.9)', s.mult > before ? 16 : 8);
+          if (s.mult > before) { fx.popup('×' + s.mult, pt.x, pt.y - 34, '#f2c14e'); SFX.level(); } else SFX.good();
           return pts;
         }
         s.streak = 0;
         s.mult = 1;
         renderScore();
+        renderDots();
+        fx.popup('✕', pt.x, pt.y, '#e8707e');
         SFX.bad();
         vibrate(80);
         return 0;
@@ -388,6 +551,7 @@
       },
     };
     s.api = api;
+    renderDots();
 
     try {
       if (window.goatcounter && window.goatcounter.count) {
@@ -395,6 +559,7 @@
       }
     } catch (e) {}
 
+    recordPlay(def.id);
     const ret = def.start(api);
     if (typeof ret === 'function') s.cleanup = ret;
   }
@@ -418,7 +583,7 @@
     const prev = bestOf(def.id);
     const isNew = !def.noScore && s.score > prev;
     if (isNew) store.set('best.' + def.id, s.score);
-    $('#r-icon').textContent = def.icon;
+    setIcon($('#r-icon'), def);
     $('#r-title').textContent = def.noScore ? def.name : 'Time!';
     $('#r-score').textContent = def.noScore ? '' : s.score.toLocaleString();
     $('#r-score').style.display = def.noScore ? 'none' : '';
@@ -448,10 +613,16 @@
     renderMenu();
   }
 
+  const SPEAKER = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor" stroke="none"/>';
+  function paintMute() {
+    const icon = SPEAKER + (muted ? '<path d="M16 9.5l5 5M21 9.5l-5 5"/></svg>' : '<path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>');
+    document.querySelectorAll('.mute').forEach((b) => { b.innerHTML = icon; b.setAttribute('aria-pressed', String(muted)); });
+  }
+
   function toggleMute() {
     muted = !muted;
     store.set('muted', muted);
-    document.querySelectorAll('.mute').forEach((b) => (b.textContent = muted ? '🔇' : '🔊'));
+    paintMute();
   }
 
   window.NP = {
@@ -461,7 +632,8 @@
       $('#h-back').onclick = toMenu;
       $('#r-menu').onclick = toMenu;
       $('#i-menu').onclick = toMenu;
-      document.querySelectorAll('.mute').forEach((b) => { b.textContent = muted ? '🔇' : '🔊'; b.onclick = toggleMute; });
+      document.querySelectorAll('.mute').forEach((b) => { b.onclick = toggleMute; });
+      paintMute();
       window.addEventListener('hashchange', route);
       document.addEventListener('dblclick', (e) => e.preventDefault(), { passive: false });
       document.addEventListener('gesturestart', (e) => e.preventDefault());

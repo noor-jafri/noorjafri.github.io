@@ -1,20 +1,26 @@
 // Color Match — does the left word's MEANING match the right word's INK color?
 (function () {
   const COLORS = [
-    { name: 'RED', ink: '#e53935' },
-    { name: 'BLUE', ink: '#1e66f5' },
-    { name: 'GREEN', ink: '#1f9d55' },
-    { name: 'YELLOW', ink: '#e6b400' },
-    { name: 'PURPLE', ink: '#8e3bd6' },
-    { name: 'ORANGE', ink: '#ff6a00' },
+    { name: 'RED', ink: '#cf3f3f' },
+    { name: 'BLUE', ink: '#2f68c4' },
+    { name: 'GREEN', ink: '#2c8f58' },
+    { name: 'YELLOW', ink: '#e0a81e' },
+    { name: 'PURPLE', ink: '#7b4fc0' },
+    { name: 'ORANGE', ink: '#e8742a' },
   ];
-  const NEUTRAL = '#2a2340';
+  const NEUTRAL = '#2b3240';
 
   NP.register({
     id: 'color-match',
     name: 'Color Match',
     icon: '🎨',
-    color: '#c77dff',
+    art: '<svg viewBox="0 0 64 64" aria-hidden="true">' +
+      '<g transform="rotate(-8 22 34)"><rect x="6" y="14" width="30" height="38" rx="6" fill="#1d2434" opacity=".18" transform="translate(1.5 2.5)"/><rect x="6" y="14" width="30" height="38" rx="6" fill="#fff"/>' +
+      '<rect x="12" y="31" width="18" height="5" rx="2.5" fill="#cf3f3f"/></g>' +
+      '<g transform="rotate(8 42 34)"><rect x="28" y="14" width="30" height="38" rx="6" fill="#1d2434" opacity=".18" transform="translate(1.5 2.5)"/><rect x="28" y="14" width="30" height="38" rx="6" fill="#f6f7f9"/>' +
+      '<rect x="34" y="31" width="18" height="5" rx="2.5" fill="#2f68c4"/></g></svg>',
+    color: '#8a7fc4',
+    bg: ['#3a3f5c', '#22253a'],
     tagline: "Does the left word's meaning match the right word's ink color?",
     how: [
       'LEFT card: read what the word SAYS.',
@@ -23,31 +29,15 @@
     ],
     controls: 'Yes / No',
     start(api) {
-      api.el('style', null, null, `
-        .cm-row { display: flex; gap: min(4vw, 18px); width: 100%; max-width: 460px; justify-content: center; }
-        .cm-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 10px; min-width: 0; }
-        .cm-lbl { font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #a99fd0;
-          background: rgba(255,255,255,.06); padding: 6px 12px; border-radius: 999px; white-space: nowrap; }
-        .cm-lbl b { color: #ffcc4d; }
-        .cm-card { width: 100%; aspect-ratio: 4/5; max-height: min(52vh, 300px); border-radius: 22px; background: #fff;
-          display: flex; align-items: center; justify-content: center; box-shadow: 0 12px 40px rgba(0,0,0,.4);
-          font-weight: 900; font-size: min(8.4vw, 40px); letter-spacing: .02em; }
-        .cm-card.in { animation: cm-in .2s ease-out both; }
-        .cm-col:nth-child(2) .cm-card.in { animation-delay: .04s; }
-        @keyframes cm-in { from { transform: translateY(18px) scale(.92); opacity: 0; } to { transform: none; opacity: 1; } }
-        .cm-q { margin-top: 18px; color: #a99fd0; font-size: 14px; text-align: center; }
-        .cm-q b { color: #f2eeff; }
-      `);
-
       const row = api.el('div', 'cm-row');
       const colL = api.el('div', 'cm-col', row);
       const colR = api.el('div', 'cm-col', row);
       const lblL = api.el('div', 'cm-lbl', colL);
-      lblL.innerHTML = 'Word <b>meaning</b>';
-      const cardL = api.el('div', 'cm-card', colL);
+      lblL.innerHTML = 'Meaning';
+      const cardL = api.el('div', 'cm-card', api.el('div', 'cm-float', colL));
       const lblR = api.el('div', 'cm-lbl', colR);
-      lblR.innerHTML = '<b>Ink</b> color';
-      const cardR = api.el('div', 'cm-card', colR);
+      lblR.innerHTML = 'Ink color';
+      const cardR = api.el('div', 'cm-card', api.el('div', 'cm-float', colR));
       const q = api.el('div', 'cm-q');
       q.innerHTML = 'Does the <b>left meaning</b> match the <b>right ink</b>?';
 
@@ -70,18 +60,26 @@
         let lInk = NEUTRAL;
         if (level >= 2) lInk = (Math.random() < 0.7 ? other(meaning) : meaning).ink;
 
-        cardL.textContent = meaning.name;
         cardL.style.color = lInk;
-        cardR.textContent = rWord.name;
         cardR.style.color = rInk.ink;
-        [cardL, cardR].forEach((c) => { c.classList.remove('in'); void c.offsetWidth; c.classList.add('in'); });
+        [cardL, cardR].forEach((c) => {
+          c.textContent = '';
+          c.classList.remove('in');
+          void c.offsetWidth;
+          c.classList.add('in');
+        });
+        cardL.appendChild(document.createElement('span')).textContent = meaning.name;
+        cardR.appendChild(document.createElement('span')).textContent = rWord.name;
       };
 
       const lvlText = () => api.status('Level ' + (level + 1));
 
       api.yesNo((yes) => {
         const ok = yes === match;
-        api.answer(ok, 50 + level * 10);
+        api.answer(ok, 50 + level * 10, row);
+        row.classList.remove('good', 'bad');
+        void row.offsetWidth;
+        row.classList.add(ok ? 'good' : 'bad');
         if (ok) {
           run++;
           if (run >= 4) { run = 0; if (level < 5) { level++; api.sfx('level'); } }

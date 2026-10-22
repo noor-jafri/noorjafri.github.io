@@ -2,10 +2,27 @@
 (function () {
   const LINES = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
   const MODES = [
-    { id: 'easy', label: 'CPU Easy', icon: '🙂', sub: 'Relaxed — makes mistakes' },
-    { id: 'hard', label: 'CPU Hard', icon: '🤖', sub: 'Perfect play — unbeatable' },
-    { id: 'duo', label: '2 Players', icon: '👥', sub: 'Pass the phone' },
+    { id: 'easy', label: 'CPU Easy', icon: 'easy', sub: 'Relaxed, makes mistakes' },
+    { id: 'hard', label: 'CPU Hard', icon: 'hard', sub: 'Perfect play, unbeatable' },
+    { id: 'duo', label: '2 Players', icon: 'duo', sub: 'Pass the phone' },
   ];
+
+  const X_SVG = '<svg viewBox="0 0 100 100" class="tt-mk tt-x"><path pathLength="1" d="M27 27L73 73"/><path pathLength="1" d="M73 27L27 73"/></svg>';
+  const O_SVG = '<svg viewBox="0 0 100 100" class="tt-mk tt-o"><circle pathLength="1" cx="50" cy="50" r="25" transform="rotate(-90 50 50)"/></svg>';
+  const MODE_ICON = {
+    easy: '<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="#5fb8b0" opacity=".18"/><path d="M13 13l8 8M21 13l-8 8" stroke="#5fb8b0" stroke-width="3.2" stroke-linecap="round" fill="none"/><circle cx="25" cy="25" r="5.5" stroke="#e58a73" stroke-width="3" fill="none" opacity=".55"/></svg>',
+    hard: '<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="#e58a73" opacity=".18"/><rect x="11" y="13" width="18" height="15" rx="5" fill="#e58a73"/><rect x="18.5" y="8" width="3" height="5" rx="1.5" fill="#e58a73"/><circle cx="16.5" cy="20.5" r="2" fill="#2a3450"/><circle cx="23.5" cy="20.5" r="2" fill="#2a3450"/></svg>',
+    duo: '<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="#a9b6d6" opacity=".18"/><circle cx="15" cy="16" r="4" fill="#5fb8b0"/><path d="M8 29c0-5 3-8 7-8s7 3 7 8z" fill="#5fb8b0"/><circle cx="25.5" cy="16" r="4" fill="#e58a73"/><path d="M18.5 29c0-5 3-8 7-8s7 3 7 8z" fill="#e58a73"/></svg>',
+  };
+  const ART = '<svg viewBox="0 0 64 64">' +
+    '<defs><linearGradient id="tti-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a4866"/><stop offset="1" stop-color="#28324b"/></linearGradient></defs>' +
+    '<rect x="2" y="2" width="60" height="60" rx="16" fill="url(#tti-bg)"/>' +
+    '<g fill="#cfd7ea" opacity=".35"><rect x="24.5" y="11" width="2.6" height="42" rx="1.3"/><rect x="36.9" y="11" width="2.6" height="42" rx="1.3"/>' +
+    '<rect x="11" y="24.5" width="42" height="2.6" rx="1.3"/><rect x="11" y="36.9" width="42" height="2.6" rx="1.3"/></g>' +
+    '<g stroke="#5fb8b0" stroke-width="3.4" stroke-linecap="round"><path d="M14 14l6 6M20 14l-6 6"/><path d="M42 42l6 6M48 42l-6 6"/></g>' +
+    '<circle cx="32" cy="32" r="4" fill="none" stroke="#e58a73" stroke-width="3.2"/>' +
+    '<circle cx="45" cy="19" r="4" fill="none" stroke="#e58a73" stroke-width="3.2"/>' +
+    '</svg>';
 
   function result(b) {
     for (const l of LINES) {
@@ -41,55 +58,18 @@
     id: 'tic-tac-toe',
     name: 'Tic Tac Toe',
     icon: '⭕',
-    color: '#4da3ff',
+    art: ART,
+    color: '#5fb8b0',
+    bg: ['#34415f', '#1d2438'],
     tagline: 'Classic X and O — vs the CPU (Easy or Hard) or 2 players',
     how: [
       'Pick a mode: CPU Easy, CPU Hard, or 2 Players.',
-      'Get three in a row — across, down or diagonal.',
+      'Get three in a row: across, down or diagonal.',
       'Vs the CPU you are X. Who starts alternates every round.',
     ],
     controls: 'Tap a square',
     noScore: true,
     start(api) {
-      api.el('style', null, null, `
-        .tt-wrap { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: min(4vh, 22px); }
-        .tt-tally { display: flex; gap: 10px; width: min(88vw, 52vh, 400px); }
-        .tt-tally div { flex: 1; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 14px;
-          padding: 8px 4px; text-align: center; transition: transform .2s, background .2s; }
-        .tt-tally small { display: block; font-size: 11px; color: #a99fd0; text-transform: uppercase; letter-spacing: .06em; white-space: nowrap; }
-        .tt-tally b { font-size: 24px; font-variant-numeric: tabular-nums; }
-        .tt-tally .x b { color: #4da3ff; } .tt-tally .o b { color: #ff6b9a; } .tt-tally .d b { color: #ffcc4d; }
-        .tt-tally div.turn { background: rgba(255,255,255,.14); transform: translateY(-2px); }
-        .tt-tally div.bump { animation: tt-bump .5s ease; }
-        @keyframes tt-bump { 40% { transform: scale(1.15); } }
-        .tt-board { position: relative; width: min(88vw, 52vh, 400px); aspect-ratio: 1; display: grid;
-          grid-template-columns: repeat(3, 1fr); gap: 8px; }
-        .tt-cell { border-radius: 18px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12);
-          display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: min(18vw, 11vh, 84px);
-          line-height: 1; transition: background .15s, transform .1s; cursor: pointer; }
-        .tt-cell:active { transform: scale(.96); }
-        .tt-cell.X { color: #4da3ff; text-shadow: 0 0 18px rgba(77,163,255,.6); }
-        .tt-cell.O { color: #ff6b9a; text-shadow: 0 0 18px rgba(255,107,154,.6); }
-        .tt-cell.X span, .tt-cell.O span { animation: tt-pop .22s cubic-bezier(.3,1.6,.6,1); }
-        @keyframes tt-pop { from { transform: scale(.2); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .tt-cell.win { background: rgba(255,204,77,.22); border-color: #ffcc4d; }
-        .tt-cell.dim { opacity: .35; }
-        .tt-line { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
-        .tt-line line { stroke: #ffcc4d; stroke-width: .12; stroke-linecap: round; stroke-dasharray: 4; stroke-dashoffset: 4;
-          animation: tt-draw .35s ease-out forwards; filter: drop-shadow(0 0 .08px #fff); }
-        @keyframes tt-draw { to { stroke-dashoffset: 0; } }
-        .tt-msg { font-size: 22px; font-weight: 800; min-height: 28px; text-align: center; }
-        .tt-pick { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
-          gap: 14px; padding: 16px; background: #1a1230; z-index: 2; }
-        .tt-pick h3 { font-size: 20px; margin-bottom: 4px; }
-        .tt-mode { width: min(88vw, 380px); display: flex; align-items: center; gap: 14px; padding: 14px 18px; border-radius: 18px;
-          background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14); text-align: left; transition: transform .1s, background .15s; }
-        .tt-mode:active { transform: scale(.97); background: rgba(255,255,255,.16); }
-        .tt-mode .i { font-size: 34px; }
-        .tt-mode b { display: block; font-size: 18px; }
-        .tt-mode small { color: #a99fd0; font-size: 13px; }
-        .tt-mode .t { margin-left: auto; font-size: 12px; color: #a99fd0; text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
-      `);
 
       const tallies = {}; // mode -> { X, O, D, rounds }
       MODES.forEach((m) => (tallies[m.id] = { X: 0, O: 0, D: 0, rounds: 0 }));
@@ -134,11 +114,13 @@
           const c = cells[i];
           const was = c.dataset.v || '';
           if (was !== (v || '')) {
-            c.innerHTML = v ? '<span>' + (v === 'X' ? '✕' : '◯') + '</span>' : '';
+            c.innerHTML = v ? (v === 'X' ? X_SVG : O_SVG) : '';
             c.dataset.v = v || '';
           }
           c.className = 'tt-cell' + (v ? ' ' + v : '');
         });
+        boardEl.classList.toggle('turn-X', !over && turn === 'X');
+        boardEl.classList.toggle('turn-O', !over && turn === 'O' && !vsCpu());
         renderTally();
       }
 
@@ -149,12 +131,13 @@
         if (pick) pick.remove();
         pick = api.el('div', 'tt-pick');
         api.el('h3', null, pick, 'Choose a mode');
+        boardEl.classList.remove('turn-X', 'turn-O');
         MODES.forEach((m) => {
           const b = api.el('button', 'tt-mode', pick);
           const t = tallies[m.id];
           b.innerHTML = '<span class="i"></span><span><b></b><small></small></span>' +
             (t.rounds ? '<span class="t">X ' + t.X + ' · O ' + t.O + '<br>Draws ' + t.D + '</span>' : '');
-          b.querySelector('.i').textContent = m.icon;
+          b.querySelector('.i').innerHTML = MODE_ICON[m.icon];
           b.querySelector('b').textContent = m.label;
           b.querySelector('small').textContent = m.sub;
           api.on(b, 'pointerdown', (e) => { e.preventDefault(); api.sfx('tap'); chooseMode(m.id); });
@@ -185,14 +168,14 @@
         if (lineSvg) { lineSvg.remove(); lineSvg = null; }
         msg.textContent = '';
         render();
-        api.buttons([{ label: '↺ Change mode', onClick: showPicker }]);
+        api.buttons([{ label: 'Change mode', onClick: showPicker }]);
         prompt();
       }
 
       function prompt() {
         if (vsCpu()) {
           if (turn === 'X') api.status((mode === 'hard' ? 'CPU Hard' : 'CPU Easy') + ' · Your move (X)');
-          else { api.status('CPU is thinking…'); cpuMove(); }
+          else { api.status('CPU is thinking'); msg.innerHTML = '<span class="tt-dots"><i></i><i></i><i></i></span>'; cpuMove(); }
         } else {
           api.status('Player ' + turn + '’s move');
         }
@@ -220,6 +203,7 @@
         api.after(380 + api.rand(320), () => {
           if (over || mode == null || board.join() !== roundAt.join()) return;
           busy = false;
+          msg.textContent = '';
           place(mode === 'hard' ? hardMove() : easyMove());
         });
       }
@@ -260,18 +244,21 @@
         } else {
           t[r.p]++;
           const who = name(r.p);
-          msg.textContent = vsCpu() ? (r.p === 'X' ? 'You win! 🎉' : 'CPU wins 🤖') : who + ' wins! 🎉';
+          msg.textContent = vsCpu() ? (r.p === 'X' ? 'You win!' : 'CPU wins') : who + ' wins!';
           api.status(vsCpu() && r.p === 'O' ? 'Better luck next round' : 'Three in a row!');
           cells.forEach((c, i) => c.classList.add(r.line.includes(i) ? 'win' : 'dim'));
           drawLine(r.line);
+          const mid = api.fx.at(cells[r.line[1]]);
+          if (!(vsCpu() && r.p === 'O')) api.fx.burst(mid.x, mid.y, r.p === 'X' ? '#5fb8b0' : '#e58a73', 10);
           (r.p === 'X' ? tX : tO).classList.add('bump');
           if (vsCpu() && r.p === 'O') { api.sfx('bad'); api.vibrate(60); } else api.sfx('level');
         }
         renderTally();
         api.after(600, () => [tX, tO, tD].forEach((e) => e.classList.remove('bump')));
+        boardEl.classList.remove('turn-X', 'turn-O');
         api.buttons([
-          { label: '↺ Change mode', onClick: showPicker },
-          { label: '▶ Play again', cls: 'primary', onClick: newRound },
+          { label: 'Change mode', onClick: showPicker },
+          { label: 'Play again', cls: 'primary', onClick: newRound },
         ]);
       }
 

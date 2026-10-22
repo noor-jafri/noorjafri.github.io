@@ -1,0 +1,76 @@
+/* Brain Shift — calm split frame, white card sliding between halves */
+.bs-frame {
+  position: relative; width: min(88vw, 380px); height: min(100%, 540px, 132vw);
+  display: flex; flex-direction: column; border-radius: 22px; overflow: hidden;
+  box-shadow: 0 14px 36px rgba(10,16,30,.28);
+}
+.bs-half { position: relative; flex: 1; overflow: hidden; }
+.bs-half::before { /* dims the inactive half */
+  content: ""; position: absolute; inset: 0; background: rgba(30,38,56,.16);
+  transition: opacity .35s ease-in-out; pointer-events: none;
+}
+.bs-half.on::before { opacity: 0; }
+.bs-top { background: linear-gradient(180deg, #6f8fb3 0%, #5a7aa0 100%); }
+.bs-bot { background: linear-gradient(180deg, #d0a27a 0%, #dcb18a 100%); }
+.bs-divider { position: absolute; left: 0; right: 0; top: 50%; height: 2px; margin-top: -1px; z-index: 1; background: rgba(255,255,255,.55); }
+.bs-orb {
+  position: absolute; width: 180px; height: 180px; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, rgba(255,255,255,.10), transparent 70%);
+  animation: bs-drift 14s ease-in-out infinite alternate;
+}
+.bs-orb:nth-child(1) { left: -50px; top: 10%; }
+.bs-orb:nth-child(2) { right: -40px; top: 40%; width: 140px; height: 140px; animation-delay: -6s; }
+.bs-orb:nth-child(3) { display: none; }
+@keyframes bs-drift { to { transform: translate(30px, 16px); } }
+
+.bs-label {
+  position: absolute; left: 0; right: 0; display: flex; align-items: center; justify-content: center; gap: 10px;
+  font-weight: 600; font-size: clamp(14px, 4.2vw, 17px); letter-spacing: .04em; color: rgba(255,255,255,.95);
+  transition: opacity .4s ease; pointer-events: none;
+}
+.bs-top .bs-label { top: 16px; }
+.bs-bot .bs-label { bottom: 16px; }
+.bs-chip { font-size: .72em; font-weight: 700; padding: 3px 9px; border-radius: 999px; letter-spacing: .08em; background: rgba(255,255,255,.2); }
+.bs-frame.dim .bs-label { opacity: .25; }
+
+/* card: slot (slides) > breathe (idle) > card (feedback) > inner (flip) > faces */
+.bs-slot {
+  position: absolute; left: 0; right: 0; top: 0; height: 50%; z-index: 2;
+  display: flex; align-items: center; justify-content: center; pointer-events: none;
+  transition: transform .3s cubic-bezier(.45,0,.25,1);
+}
+.bs-slot.bot { transform: translateY(100%); }
+.bs-breathe { animation: bs-breathe 3.2s ease-in-out infinite; }
+@keyframes bs-breathe { 50% { transform: translateY(-2px); } }
+.bs-card { width: min(46vw, 184px); height: min(30vw, 116px, 34vh); max-height: 70%; perspective: 700px; position: relative; }
+.bs-inner { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform .28s cubic-bezier(.45,0,.25,1); }
+.bs-inner.flipped { transform: rotateY(180deg); }
+.bs-face {
+  position: absolute; inset: 0; border-radius: 16px; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  box-shadow: 0 8px 20px rgba(15,22,40,.22); transition: box-shadow .25s ease;
+}
+.bs-front { background: #fbfaf7; display: flex; align-items: center; justify-content: center; }
+.bs-back {
+  transform: rotateY(180deg);
+  background: linear-gradient(135deg, #e9e4da, #dcd5c8);
+  display: flex; align-items: center; justify-content: center;
+}
+.bs-back-logo { width: 34px; height: 34px; border-radius: 50%; position: relative; background: rgba(255,255,255,.7); }
+.bs-back-logo::before, .bs-back-logo::after { content: ""; position: absolute; top: 9px; width: 7px; height: 16px; border-radius: 4px; }
+.bs-back-logo::before { left: 9px; background: #5a7aa0; }
+.bs-back-logo::after { right: 9px; background: #c98a5e; }
+.bs-big { display: flex; align-items: baseline; gap: .08em; font-size: min(14vw, 58px); font-weight: 700; letter-spacing: .02em; line-height: 1; }
+.bs-big .bs-l { color: #c4774a; }
+.bs-big .bs-n { color: #4a6b93; }
+.bs-corner { position: absolute; font-size: 11px; font-weight: 600; color: #a7a39a; letter-spacing: .06em; }
+.bs-corner.tl { left: 12px; top: 9px; }
+.bs-corner.br { right: 12px; bottom: 9px; transform: rotate(180deg); }
+
+.bs-card.good .bs-front { box-shadow: 0 0 0 3px rgba(110,196,160,.9), 0 0 22px rgba(110,196,160,.55); }
+.bs-card.bad { animation: bs-bad .3s ease-in-out; }
+.bs-card.bad .bs-front { box-shadow: 0 0 0 3px rgba(226,120,120,.9), 0 0 18px rgba(226,120,120,.5); }
+@keyframes bs-bad { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-7px); } 75% { transform: translateX(7px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .bs-orb, .bs-breathe { animation: none; }
+}

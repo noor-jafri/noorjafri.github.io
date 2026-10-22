@@ -7,7 +7,14 @@
     id: 'memory-grid',
     name: 'Memory Grid',
     icon: '🟦',
-    color: '#4da3ff',
+    art: '<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="mg-art-t" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fd6c9"/><stop offset="1" stop-color="#4fb3a6"/></linearGradient></defs>' +
+      '<rect x="5" y="5" width="54" height="54" rx="13" fill="#3a4a5e"/>' +
+      [0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => {
+        const on = [0, 4, 5, 7].indexOf(i) >= 0;
+        return '<rect x="' + (11 + (i % 3) * 15) + '" y="' + (11 + Math.floor(i / 3) * 15) + '" width="12" height="12" rx="3" fill="' + (on ? 'url(#mg-art-t)' : '#566a82') + '"/>';
+      }).join('') + '</svg>',
+    color: '#5fb8ad',
+    bg: ['#344457', '#1d2734'],
     tagline: 'Remember which tiles lit up, then tap them',
     how: [
       'Some tiles light up for a moment. Memorize them.',
@@ -17,26 +24,6 @@
     ],
     controls: 'Tap',
     start(api) {
-      api.el('style', null, null, `
-        .mg-board { display: grid; gap: 8px; padding: 10px; border-radius: 20px;
-          background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12);
-          box-shadow: 0 14px 40px rgba(0,0,0,.35); touch-action: none; }
-        .mg-board.rot { transition: transform .6s cubic-bezier(.5,0,.3,1); }
-        .mg-tile { border-radius: 12px; background: #3a2d6b; border: 0; padding: 0; cursor: pointer;
-          transition: background .18s ease, transform .12s ease, box-shadow .18s ease;
-          box-shadow: inset 0 -4px 0 rgba(0,0,0,.25); }
-        .mg-tile.in { animation: mg-in .3s ease both; }
-        @keyframes mg-in { from { transform: scale(.4); opacity: 0; } to { transform: none; opacity: 1; } }
-        .mg-tile.lit { background: #4da3ff; box-shadow: 0 0 22px rgba(77,163,255,.75), inset 0 -4px 0 rgba(0,0,0,.2); }
-        .mg-tile.hit { background: #3ddc84; box-shadow: 0 0 18px rgba(61,220,132,.6), inset 0 -4px 0 rgba(0,0,0,.2); transform: scale(.94); }
-        .mg-tile.miss { background: #ff5c7a; animation: mg-shake .3s ease; }
-        .mg-tile.reveal { background: rgba(77,163,255,.35); box-shadow: inset 0 0 0 3px #4da3ff; }
-        .mg-board.input .mg-tile:not(.hit):active { transform: scale(.94); }
-        @keyframes mg-shake { 0%,100% { transform: none; } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
-        .mg-msg { margin-top: 14px; font-weight: 800; font-size: 18px; min-height: 24px; color: #ffcc4d; text-align: center;
-          transition: opacity .2s ease; }
-      `);
-
       const board = api.el('div', 'mg-board');
       const msg = api.el('div', 'mg-msg');
 
@@ -62,9 +49,10 @@
         round++;
         n = gridFor(k);
         api.status('Round ' + round + '/' + ROUNDS + ' · ' + k + ' tiles · memorize!');
-        msg.textContent = '';
+        msg.textContent = 'Memorize';
+        msg.className = 'mg-msg';
         phase = 'show';
-        board.classList.remove('rot', 'input');
+        board.classList.remove('rot', 'input', 'clear');
         board.style.transform = 'none';
         board.innerHTML = '';
         board.style.gridTemplateColumns = 'repeat(' + n + ', 1fr)';
@@ -81,10 +69,11 @@
         found = new Set();
         const showMs = Math.min(2400, 1200 + 90 * k);
         api.after(420 + n * n * 12, () => {
-          targets.forEach((i) => tiles[i].classList.add('lit'));
+          tiles.forEach((x) => { x.classList.remove('in'); x.style.animationDelay = '0ms'; });
+          [...targets].forEach((i, j) => { tiles[i].style.animationDelay = (j * 25) + 'ms'; tiles[i].classList.add('lit'); });
           api.sfx('tap');
           api.after(showMs, () => {
-            targets.forEach((i) => tiles[i].classList.remove('lit'));
+            targets.forEach((i) => { tiles[i].classList.remove('lit'); tiles[i].classList.add('off'); });
             const rotate = k >= 6 && Math.random() < 0.5;
             if (rotate) {
               board.classList.add('rot');
@@ -101,23 +90,29 @@
       function goInput() {
         phase = 'input';
         board.classList.add('input');
+        msg.textContent = 'Your turn';
         api.status('Round ' + round + '/' + ROUNDS + ' · tap the ' + k + ' tiles');
       }
 
       function tap(i) {
         if (phase !== 'input' || found.has(i)) return;
         const t = tiles[i];
+        t.style.animationDelay = '0ms';
         if (targets.has(i)) {
           found.add(i);
           t.classList.add('hit');
-          api.answer(true, 10);
+          api.answer(true, 10, t);
           if (found.size === targets.size) {
             phase = 'done';
             perfects++;
             const bonus = 25 * k;
             api.addScore(bonus);
             api.sfx('level');
-            msg.textContent = 'Perfect! +' + bonus;
+            msg.textContent = 'Perfect  +' + bonus;
+            msg.className = 'mg-msg good';
+            board.classList.add('clear');
+            const c = api.fx.at(board);
+            api.fx.burst(c.x, c.y, '#7fd6c9', 16);
             maxK = Math.max(maxK, k);
             k = Math.min(20, k + 1);
             next(900);
@@ -125,9 +120,10 @@
         } else {
           phase = 'done';
           t.classList.add('miss');
-          api.answer(false);
+          api.answer(false, 0, t);
           targets.forEach((j) => { if (!found.has(j)) tiles[j].classList.add('reveal'); });
-          msg.textContent = 'Missed — here they were';
+          msg.textContent = 'Here they were';
+          msg.className = 'mg-msg bad';
           k = Math.max(3, k - 1);
           next(1600);
         }

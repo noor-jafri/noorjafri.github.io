@@ -1,0 +1,7 @@
+/* Sky Patrol — canvas over the shell's sky gradient */
+.sp-wrap { position: absolute; inset: 0; }
+.sp-wrap canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+.sp-hint { position: absolute; left: 50%; bottom: 30%; transform: translateX(-50%); white-space: nowrap;
+  background: rgba(32, 48, 76, .55); padding: 10px 18px; border-radius: 999px; letter-spacing: .02em;
+  font-size: 14px; font-weight: 500; color: #f4f6fa; pointer-events: none; transition: opacity .6s ease; }
+.sp-hint.gone { opacity: 0; }

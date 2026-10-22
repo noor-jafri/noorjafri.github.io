@@ -1,0 +1,3 @@
+/* Trains */
+.tr-wrap { position: absolute; inset: 4px 8px 6px; border-radius: 20px; box-shadow: 0 10px 28px rgba(15,30,15,.28); }
+.tr-wrap canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: pointer; border-radius: 20px; }

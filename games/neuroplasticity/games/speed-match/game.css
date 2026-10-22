@@ -1,0 +1,43 @@
+/* Speed Match — white cards, one flat symbol, muted slate table */
+.sm-felt { position: absolute; inset: 0; pointer-events: none; }
+.sm-spot { position: absolute; left: 50%; top: 44%; width: 140%; aspect-ratio: 1; transform: translate(-50%, -50%);
+  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.07), transparent 70%); }
+
+.sm-table { --cw: min(56vw, 31vh, 240px); position: relative; z-index: 1;
+  display: flex; flex-direction: column; align-items: center; gap: min(4vh, 26px); }
+.sm-play { position: relative; width: var(--cw); height: calc(var(--cw) * 4 / 3); perspective: 1100px; }
+
+.sm-card { position: absolute; inset: 0; transform-style: preserve-3d; will-change: transform; }
+.sm-inner { position: absolute; inset: 0; transform-style: preserve-3d; }
+.sm-face { position: absolute; inset: 0; border-radius: calc(var(--cw) * 0.09);
+  backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.sm-front { background: #fbfaf7; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 10px 28px rgba(8, 18, 26, 0.32), 0 2px 6px rgba(8, 18, 26, 0.18);
+  transition: box-shadow 0.3s ease; }
+.sm-big { width: 50%; aspect-ratio: 1; display: block; }
+.sm-big svg { width: 100%; height: 100%; display: block; }
+.sm-back { transform: rotateY(180deg); }
+.sm-back, .sm-mini {
+  background:
+    radial-gradient(circle at 50% 50%, transparent 0 22%, rgba(255, 255, 255, 0.10) 22.5% 24%, transparent 24.5%),
+    linear-gradient(160deg, #4d7187, #2f4c5e);
+  box-shadow: inset 0 0 0 calc(var(--cw) * 0.035) #f1efe9, 0 6px 16px rgba(8, 18, 26, 0.3);
+}
+.sm-card.good .sm-front { box-shadow: 0 0 0 4px rgba(129, 199, 160, 0.85), 0 10px 28px rgba(8, 18, 26, 0.32); }
+.sm-card.bad .sm-front { box-shadow: 0 0 0 4px rgba(224, 122, 95, 0.85), 0 10px 28px rgba(8, 18, 26, 0.32); }
+
+/* deck + discard */
+.sm-piles { display: flex; justify-content: space-between; width: calc(var(--cw) * 1.05); }
+.sm-pilewrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.sm-pilewrap small { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(240, 244, 247, 0.55); }
+.sm-pile { position: relative; width: calc(var(--cw) * 0.36); height: calc(var(--cw) * 0.48); }
+.sm-pile::before { content: ""; position: absolute; inset: 0; border-radius: calc(var(--cw) * 0.035);
+  border: 1.5px dashed rgba(255, 255, 255, 0.14); }
+.sm-mini { position: absolute; inset: 0; border-radius: calc(var(--cw) * 0.035);
+  box-shadow: inset 0 0 0 calc(var(--cw) * 0.014) #f1efe9, 0 3px 8px rgba(8, 18, 26, 0.3); }
+.sm-deck.lift .sm-mini:last-child { animation: sm-lift 0.3s ease-in-out; }
+@keyframes sm-lift { 50% { opacity: 0.4; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .sm-deck.lift .sm-mini:last-child { animation: none; }
+}

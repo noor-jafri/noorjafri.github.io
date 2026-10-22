@@ -1,0 +1,40 @@
+/* Spatial Match — white grid cards on a muted slate-blue table, previous cards in a receding stack */
+.sp-table { --cw: min(66vw, 34vh, 280px); position: relative; display: flex; align-items: center; justify-content: center;
+  padding-top: calc(var(--cw) * 0.36); }
+.sp-table::before { content: ""; position: absolute; left: 50%; top: 50%; width: 170%; aspect-ratio: 1;
+  transform: translate(-50%, -50%); pointer-events: none;
+  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.07), transparent 70%); }
+.sp-play { position: relative; width: var(--cw); height: calc(var(--cw) * 1.14); perspective: 1200px; }
+
+.sp-card { position: absolute; inset: 0; transform-style: preserve-3d; will-change: transform; }
+.sp-face { position: absolute; inset: 0; border-radius: calc(var(--cw) * 0.08);
+  backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.sp-front { background: #fbfaf7; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 12px 30px rgba(8, 14, 24, 0.35), 0 2px 6px rgba(8, 14, 24, 0.2); transition: box-shadow 0.3s ease; }
+.sp-back { transform: rotateX(180deg); }
+.sp-back, .sp-stack {
+  background:
+    repeating-linear-gradient(0deg, transparent 0 18%, rgba(255, 255, 255, 0.05) 18% 19%),
+    repeating-linear-gradient(90deg, transparent 0 18%, rgba(255, 255, 255, 0.05) 18% 19%),
+    linear-gradient(170deg, #6886a8, #46607f);
+  box-shadow: inset 0 0 0 calc(var(--cw) * 0.03) #eef1f4, 0 8px 20px rgba(8, 14, 24, 0.3);
+}
+.sp-card.good .sp-front { box-shadow: 0 0 0 4px rgba(120, 190, 170, 0.85), 0 12px 30px rgba(8, 14, 24, 0.35); }
+.sp-card.bad .sp-front { box-shadow: 0 0 0 4px rgba(217, 120, 95, 0.85), 0 12px 30px rgba(8, 14, 24, 0.35); }
+
+/* receding stack of previous (face-down) cards */
+.sp-stack { position: absolute; inset: 0; border-radius: calc(var(--cw) * 0.08); --k: 1;
+  transform: translateY(calc(var(--k) * -10%)) scale(calc(1 - var(--k) * 0.06));
+  filter: brightness(calc(1 - var(--k) * 0.14));
+  transition: transform 0.4s ease-in-out, filter 0.4s ease-in-out; }
+
+.sp-grid { display: grid; width: 82%; aspect-ratio: 1; gap: calc(var(--cw) * 0.035); }
+.sp-grid.big { gap: calc(var(--cw) * 0.028); }
+.sp-cell { border-radius: 18%; background: #e3e8ee; }
+.sp-cell.lit { background: #3f9b96; box-shadow: 0 0 0 calc(var(--cw) * 0.012) rgba(63, 155, 150, 0.22); }
+.sp-card.live .sp-cell.lit { animation: sp-glow 2.4s ease-in-out infinite; }
+@keyframes sp-glow { 50% { box-shadow: 0 0 0 calc(var(--cw) * 0.024) rgba(63, 155, 150, 0.16); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .sp-card.live .sp-cell.lit { animation: none; }
+}

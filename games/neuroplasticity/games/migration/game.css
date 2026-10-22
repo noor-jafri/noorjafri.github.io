@@ -1,0 +1,46 @@
+/* Migration */
+.mi-field { position: absolute; inset: 0; overflow: hidden; touch-action: none; }
+.mi-sky { position: absolute; inset: 0; opacity: 0; transition: opacity 1.6s ease-in-out; }
+.mi-sky.on { opacity: 1; }
+.mi-clouds, .mi-layer { position: absolute; inset: 0; pointer-events: none; }
+.mi-cloud { position: absolute; left: 0; top: 0; will-change: transform; }
+.mi-cloud svg { display: block; }
+.mi-far .mi-cloud { opacity: 0.16; }
+.mi-near .mi-cloud { opacity: 0.26; }
+
+.mi-flock { position: absolute; left: 0; top: 0; width: 0; height: 0; will-change: transform; }
+.mi-slot { position: absolute; transition: transform 0.6s cubic-bezier(.5, 0, .9, .6), opacity 0.6s ease-in; }
+.mi-hov { position: absolute; inset: 0; animation: mi-hover 3s ease-in-out infinite; animation-delay: var(--hd, 0s); }
+@keyframes mi-hover { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(1px, -3px); } }
+.mi-bird, .mi-shadow { position: absolute; inset: 0; transition: transform 0.22s ease-in-out; }
+.mi-shadow { opacity: 0.13; }
+.mi-shadow svg * { fill: #1d2a36 !important; }
+.mi-bird svg, .mi-shadow svg { display: block; overflow: visible; }
+
+/* wing beats: each wing folds toward the body (top-down view) */
+.mi-wing { transform-box: fill-box; animation: mi-flap var(--fs, .32s) ease-in-out infinite alternate; animation-delay: var(--fd, 0s); }
+.mi-wl { transform-origin: 50% 100%; }
+.mi-wr { transform-origin: 50% 0%; }
+@keyframes mi-flap { from { transform: scale(1, 1); } to { transform: scale(.92, .28); } }
+.mi-fast .mi-wing { animation-duration: .16s; }
+
+/* wrong answer: the flock flusters, then scatters */
+.mi-flust .mi-hov { animation: mi-flust .1s ease-in-out infinite alternate; }
+.mi-flust .mi-slot:nth-child(2n) .mi-hov { animation-delay: -.05s; }
+@keyframes mi-flust { from { transform: translate(-2px, 1px) rotate(-7deg); } to { transform: translate(2px, -1px) rotate(7deg); } }
+.mi-flust .mi-wing { animation-duration: .09s; }
+.mi-scatter .mi-slot:not(.mi-center) { opacity: 0; }
+.mi-scatter .mi-wing { animation-duration: .14s; }
+.mi-scatter .mi-center::before { content: ""; position: absolute; inset: -14%; border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, .8); box-shadow: 0 0 16px rgba(255, 255, 255, .45); animation: mi-ring .5s ease-out both; }
+@keyframes mi-ring { from { transform: scale(.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.mi-hint { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); white-space: nowrap;
+  color: rgba(255, 255, 255, .92); font-size: 13px; letter-spacing: .02em; pointer-events: none;
+  background: rgba(20, 35, 45, .22); padding: 6px 14px; border-radius: 999px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .mi-hov { animation: none; }
+  .mi-wing { animation-duration: .6s; }
+  .mi-sky { transition-duration: .4s; }
+}

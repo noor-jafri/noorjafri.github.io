@@ -1,0 +1,97 @@
+/* Tide Pool — flat top-down beach */
+.tp-info { display: flex; gap: 10px; align-items: center; justify-content: center; margin-bottom: 10px;
+  font-size: 14px; color: #f3f1ea; font-weight: 600; letter-spacing: .02em; min-height: 26px; }
+.tp-pill { background: rgba(20,40,48,.28); border-radius: 999px; padding: 4px 14px; }
+.tp-lives { display: flex; gap: 6px; align-items: center; padding: 8px 12px; }
+.tp-life { display: block; width: 9px; height: 9px; border-radius: 50%; background: #f1d9c9; transition: opacity .3s ease, transform .3s ease; }
+.tp-life.lost { opacity: .22; transform: scale(.8); }
+
+.tp-beach {
+  position: relative; width: min(100%, 440px); flex: 1; min-height: 0; max-height: 620px;
+  border-radius: 22px; overflow: hidden; touch-action: none;
+  background:
+    radial-gradient(circle at 30% 40%, rgba(255,255,255,.12) 0 1px, transparent 1.6px) 0 0 / 23px 23px,
+    radial-gradient(circle at 60% 70%, rgba(150,110,60,.09) 0 1px, transparent 1.6px) 0 0 / 31px 31px,
+    linear-gradient(180deg, #e3cfa6 0%, #ecdab6 40%, #e6cfa2 100%);
+  box-shadow: 0 12px 30px rgba(10,30,36,.28);
+}
+.tp-wet {
+  position: absolute; inset: 0; pointer-events: none; opacity: 0;
+  background: linear-gradient(180deg, rgba(140,108,70,.34) 0%, rgba(140,108,70,.22) 70%, rgba(140,108,70,.08) 100%);
+}
+.tp-wet.dry { animation: tp-dry 2s ease-out forwards; }
+@keyframes tp-dry { from { opacity: 1; } to { opacity: 0; } }
+.tp-layer { position: absolute; inset: 0; }
+
+/* treasures */
+.tp-item { position: absolute; transform: translate(-50%, -50%); padding: 0; cursor: pointer; }
+.tp-art { position: absolute; inset: 0; transform: rotate(var(--rot, 0deg)); }
+.tp-art svg { display: block; width: 100%; height: 100%; }
+.tp-shadow {
+  position: absolute; left: 12%; right: 12%; bottom: 0; height: 26%; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(110,80,40,.28), transparent);
+}
+.tp-item.settle .tp-art { animation: tp-settle .42s cubic-bezier(.3,.7,.4,1) var(--d, 0ms) both; }
+.tp-item.settle .tp-shadow { animation: tp-fade .42s ease-out var(--d, 0ms) both; }
+@keyframes tp-settle {
+  0% { transform: translateY(-7px) rotate(var(--rot, 0deg)) scale(.94); opacity: 0; }
+  70% { transform: translateY(1px) rotate(var(--rot, 0deg)) scale(1); opacity: 1; }
+  100% { transform: translateY(0) rotate(var(--rot, 0deg)); opacity: 1; }
+}
+@keyframes tp-fade { from { opacity: 0; } to { opacity: 1; } }
+.tp-item::before {
+  content: ""; position: absolute; inset: -8%; border-radius: 50%; opacity: 0;
+  transition: opacity .25s ease;
+}
+.tp-item.ok::before { opacity: 1; background: radial-gradient(closest-side, rgba(255,255,255,.55), rgba(255,255,255,0)); }
+.tp-item.was::before { opacity: 1; box-shadow: 0 0 0 3px rgba(95,168,160,.85); background: rgba(255,255,255,.25); }
+.tp-item.dup::before { opacity: 1; box-shadow: 0 0 0 3px rgba(214,112,104,.9); background: rgba(214,112,104,.18); }
+.tp-item.dup .tp-art { animation: tp-shake .36s ease-in-out; }
+@keyframes tp-shake {
+  0%,100% { transform: rotate(var(--rot, 0deg)); }
+  25% { transform: translateX(-5px) rotate(var(--rot, 0deg)); }
+  75% { transform: translateX(5px) rotate(var(--rot, 0deg)); }
+}
+
+/* the tide: water + scalloped foam edge, resting at the top, washing over the whole beach */
+.tp-wave {
+  position: absolute; left: 0; right: 0; top: 0; height: 112%; z-index: 2; pointer-events: none;
+  transform: translateY(-87.5%); transition: transform .7s cubic-bezier(.45,0,.3,1);
+}
+.tp-wave.in { transform: translateY(0); transition-duration: .55s; }
+.tp-wave.instant { transition: none; }
+.tp-lap { position: absolute; inset: 0; animation: tp-lap 4.5s ease-in-out infinite alternate; }
+@keyframes tp-lap { to { transform: translateY(8px); } }
+.tp-water {
+  position: absolute; left: 0; right: 0; top: -20px; bottom: 30px;
+  background: linear-gradient(180deg, #2f6f80 0%, #4d8f9b 70%, #6faeb0 100%);
+  overflow: hidden;
+}
+.tp-water::after {
+  content: ""; position: absolute; left: -50%; right: -50%; top: 0; bottom: 0; opacity: .35;
+  background:
+    radial-gradient(ellipse 26px 3px at 30% 40%, rgba(255,255,255,.2), transparent) 0 0 / 151px 67px,
+    radial-gradient(ellipse 18px 2px at 70% 70%, rgba(255,255,255,.14), transparent) 0 0 / 107px 53px,
+    radial-gradient(ellipse 14px 2px at 50% 20%, rgba(255,255,255,.12), transparent) 0 0 / 89px 79px;
+  animation: tp-shimmer 16s ease-in-out infinite alternate;
+}
+@keyframes tp-shimmer { to { transform: translateX(151px); } }
+.tp-edge {
+  position: absolute; left: 0; bottom: 0; width: calc(100% + 120px); height: 40px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='40'%3E%3Cpath d='M180 0V22Q165 30 150 22T120 22T90 22T60 22T30 22T0 22T-30 22T-60 22V0Z' fill='%236faeb0'/%3E%3Cpath d='M180 22Q165 30 150 22T120 22T90 22T60 22T30 22T0 22T-30 22T-60 22' stroke='%23f5f2ea' stroke-width='3.2' fill='none'/%3E%3Cpath d='M180 27Q165 35 150 27T120 27T90 27T60 27T30 27T0 27T-30 27T-60 27' stroke='%23f5f2ea' stroke-width='1.4' fill='none' opacity='.45'/%3E%3C/svg%3E") 0 0 / 120px 40px repeat-x;
+  animation: tp-roll 7s linear infinite;
+}
+.tp-edge.back { bottom: -7px; opacity: .45; animation-duration: 11s; animation-direction: reverse; }
+@keyframes tp-roll { to { transform: translateX(-120px); } }
+
+.tp-msg {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(.96); opacity: 0; z-index: 3;
+  background: rgba(30,52,60,.82); color: #f6f3ec; padding: 12px 22px; border-radius: 14px; font-weight: 600;
+  font-size: 17px; letter-spacing: .02em; text-align: center; pointer-events: none; white-space: nowrap;
+  transition: opacity .3s ease, transform .3s ease;
+}
+.tp-msg.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+
+@media (prefers-reduced-motion: reduce) {
+  .tp-lap, .tp-water::after, .tp-edge { animation: none; }
+}
