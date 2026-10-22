@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#1a1230">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Neuroplasticity · Nooremberg</title>
+<meta name="description" content="Neuroplasticity — 13 quick brain games inspired by Lumosity, built for your phone.">
+<link rel="shortcut icon" type="image/png" href="../../assets/images/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="np.css">
+<script data-goatcounter="https://njafri.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</head>
+<body>
+<div class="app">
+
+  <section class="screen" id="menu">
+    <header class="menu-head">
+      <a href="../index.html">◂ ARCADE</a>
+      <h1 class="pixel">NEUROPLASTICITY</h1>
+      <button class="mute" aria-label="Toggle sound" style="width:60px;text-align:right;font-size:18px">🔊</button>
+    </header>
+    <p class="menu-sub">Pick a game · swipe for more</p>
+    <div class="pages" id="pages"></div>
+    <nav class="dots" id="dots" aria-label="Pages"></nav>
+  </section>
+
+  <section class="screen" id="game">
+    <header class="hud">
+      <button class="x" id="h-back" aria-label="Back to games">✕</button>
+      <div class="h-name" id="h-name"></div>
+      <div class="h-box" id="h-scorebox"><small>Score</small><b id="h-score">0</b><span class="h-mult" id="h-mult"></span></div>
+      <div class="h-box" id="h-timebox"><small>Time</small><b id="h-time">0</b></div>
+    </header>
+    <div class="timebar" id="timebar"><i></i></div>
+    <div class="status" id="status"></div>
+    <main class="stage" id="stage"></main>
+    <div class="controls" id="controls"></div>
+
+    <div class="countdown" id="countdown"></div>
+
+    <div class="overlay" id="intro">
+      <div class="card">
+        <div class="c-icon" id="i-icon"></div>
+        <h2 id="i-name"></h2>
+        <p class="c-tag" id="i-tag"></p>
+        <ul id="i-how"></ul>
+        <div class="c-meta" id="i-meta"></div>
+        <button class="btn primary" id="i-start">▶ Start</button>
+        <button class="btn" id="i-menu" style="min-height:48px;font-size:16px">All games</button>
+      </div>
+    </div>
+
+    <div class="overlay" id="results">
+      <div class="card">
+        <div class="c-icon" id="r-icon"></div>
+        <h2 id="r-title">Time!</h2>
+        <div class="c-new pixel" id="r-new">NEW BEST!</div>
+        <div class="c-score" id="r-score">0</div>
+        <p class="c-tag" id="r-note"></p>
+        <p class="c-tag" id="r-best"></p>
+        <div class="c-row">
+          <button class="btn" id="r-menu" style="font-size:16px">All games</button>
+          <button class="btn primary" id="r-again">↻ Again</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- menu order = script order -->
+<script src="np.js"></script>
+<script src="games/tic-tac-toe.js"></script>
+<script src="games/sky-patrol.js"></script>
+<script src="games/memory-grid.js"></script>
+<script src="games/speed-match.js"></script>
+<script src="games/color-match.js"></script>
+<script src="games/migration.js"></script>
+<script src="games/ebb-flow.js"></script>
+<script src="games/memory-match.js"></script>
+<script src="games/spatial-match.js"></script>
+<script src="games/brain-shift.js"></script>
+<script src="games/star-search.js"></script>
+<script src="games/tide-pool.js"></script>
+<script src="games/trains.js"></script>
+<script>NP.boot();</script>
+</body>
+</html>
