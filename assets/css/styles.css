@@ -81,6 +81,8 @@ html, body {
   image-rendering: pixelated;
   overflow-x: hidden;
 }
+/* let the fixed .world-bg skyline (z-index < 0) show through */
+body { background: transparent; }
 
 img, .pixelated {
   image-rendering: pixelated;
@@ -136,11 +138,36 @@ button {
     linear-gradient(180deg, #ffe4b5 0%, #fff4d3 60%, #f1f2da 100%);
 }
 
+/* Pixel-art Nooremberg sunset skyline (drawn by skyline.js) */
+.world-bg .skyline {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+/* Scrim over the art: light at the top so the hero shows the city,
+   darker once you scroll into content (skyline.js sets --scrim). */
+.world-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgb(15 10 24 / var(--scrim, 0.3));
+  transition: background var(--t-slow);
+}
+[data-theme="day"] .world-bg::after {
+  background: rgb(255 244 211 / var(--scrim, 0.3));
+}
+
 .stars {
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: -2;
+  /* keep stars in the upper sky, never twinkling over rooftops */
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 35%, transparent 60%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 35%, transparent 60%);
 }
 .star {
   position: absolute;
@@ -296,6 +323,13 @@ button {
   gap: 0.75rem;
   margin-bottom: 1.5rem;
   flex-wrap: wrap;
+  /* backing plate so headers stay legible over the skyline */
+  width: fit-content;
+  max-width: 100%;
+  padding: 0.6rem 1rem;
+  background: var(--bg);
+  border: 3px solid var(--ink-mute);
+  box-shadow: var(--shadow-pixel);
 }
 .section-header h2 {
   margin: 0;
@@ -399,9 +433,13 @@ button {
   line-height: 1.3;
 }
 .hero-tag {
+  display: inline-block;
   font-size: 1.1rem;
-  color: var(--ink-dim);
+  color: var(--ink);
   margin-bottom: 1rem;
+  padding: 0.15rem 0.6rem;
+  background: var(--bg);
+  box-shadow: var(--shadow-pixel);
 }
 .hero-tag .blink { animation: blink 1s steps(2) infinite; color: var(--c-pink); }
 
@@ -854,8 +892,18 @@ footer.foot {
   margin: 4rem auto 2rem;
   padding: 1rem;
   text-align: center;
-  color: var(--ink-mute);
+  color: var(--ink-dim);
   font-size: 0.95rem;
+  background: var(--bg);
+  border: 3px solid var(--ink-mute);
+  box-shadow: var(--shadow-pixel);
+}
+/* loose hint text under the achievements grid */
+#achievements > p {
+  display: inline-block;
+  padding: 0.3rem 0.7rem;
+  background: var(--bg);
+  box-shadow: var(--shadow-pixel);
 }
 footer.foot .sig {
   font-family: var(--font-display);

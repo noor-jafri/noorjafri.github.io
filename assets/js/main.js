@@ -1,4 +1,5 @@
 import { profile, skills, quests, education, achievements, STORAGE_KEY } from "./data.js";
+import { initSkyline } from "./skyline.js";
 import { initEasterEggs, unlockAchievement, toast, hasAchievement } from "./easter-eggs.js";
 
 /* ---------- helpers ---------- */
@@ -306,6 +307,7 @@ export function renderAchievements() {
 /* ---------- Init ---------- */
 function init() {
   loadTheme();
+  initSkyline();
   spawnStars();
   spawnClouds();
   initDialogue();
