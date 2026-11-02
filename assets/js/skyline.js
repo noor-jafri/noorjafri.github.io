@@ -22,6 +22,7 @@ const PALETTES = {
     haze: "#9a4d6c",
     far: "#5a2d5a",
     mid: "#2c1a44",
+    roof: "#3a2152",
     front: "#140e22",
     rimFar: "#d9707e",
     rimMid: "#9a4068",
@@ -41,6 +42,7 @@ const PALETTES = {
     haze: "#e3a493",
     far: "#c27d8c",
     mid: "#7c3f58",
+    roof: "#8e4c66",
     front: "#4a2552",
     rimFar: "#f0b8a4",
     rimMid: "#c06a6e",
@@ -119,6 +121,17 @@ function draw(canvas, W, H, theme) {
       rect(x + inset, y, w - inset * 2, stepH, c);
       if (rim) rect(right ? x + w - inset - 2 : x + inset, y, 2, 1, rim);
     }
+  };
+  /* Eaves-side roof seen from the street: a steep, slightly tapered slab. */
+  const roofSlab = (x, baseY, w, h, c, rim) => {
+    const right = facesSun(x + w / 2);
+    for (let i = 0; i < h; i++) {
+      const inset = Math.floor(i / 3);
+      const rw = w - inset * 2;
+      rect(x + inset, baseY - i - 1, rw, 1, c);
+      if (rim) px(right ? x + inset + rw - 1 : x + inset, baseY - i - 1, rim);
+    }
+    if (rim) rect(x + Math.floor((h - 1) / 3), baseY - h, w - Math.floor((h - 1) / 3) * 2, 1, rim); // ridge catches the sun
   };
   const finial = (cx, topY, c, cross) => {
     rect(cx, topY - 3, 1, 3, c);
@@ -261,14 +274,33 @@ function draw(canvas, W, H, theme) {
     rect(x, horizon - h, 1, H, P.far);
     // sandstone ledges catch the light on the sun side of the rock
   }
-  // Burgviertel roofs on the far slopes
-  for (let x = 2; x < W; x += ri(5, 8)) {
-    if (Math.abs(x - castleX) < rockR * 0.8) continue;
-    const w = ri(4, 7);
-    const baseY = horizon - 3;
-    rect(x, baseY - 2, w, 3, P.far);
-    gable(x, baseY - 2, w, ri(3, 5), P.far, P.rimFar);
-    light(x + 1, baseY - 1, P.far, P.windowRate * 0.6);
+  // Burgviertel: an irregular jumble of big roofs, trees and wall towers
+  for (let x = -3; x < W; ) {
+    if (Math.abs(x - castleX) < rockR * 0.8) { x += 4; continue; }
+    const kind = rand();
+    const baseY = horizon - 1;
+    if (kind < 0.12) {
+      // tree
+      const r = ri(2, 3);
+      for (let dy = -r; dy <= r; dy++) {
+        const half = Math.round(Math.sqrt(r * r - dy * dy) * 1.3);
+        rect(x + r - half, baseY - r - 1 + dy, half * 2 + 1, 1, P.far);
+      }
+      x += r * 2 + ri(0, 2);
+    } else if (kind < 0.2) {
+      // square wall tower with a pointy roof
+      const h = ri(8, 12);
+      rect(x, baseY - h, 4, h, P.far);
+      gable(x - 1, baseY - h, 6, 5, P.far, P.rimFar);
+      x += ri(5, 8);
+    } else {
+      // eaves-to-street house: a tall slab of roof, slightly tapered
+      const w = ri(6, 15), wallH = ri(2, 5), roofH = ri(4, 7);
+      rect(x, baseY - wallH, w, wallH, P.far);
+      roofSlab(x, baseY - wallH, w, roofH, P.far, P.rimFar);
+      if (w > 9 && rand() < 0.5) light(x + ri(2, w - 3), baseY - wallH - 2, P.far, 0.6);
+      x += w - ri(0, 2);
+    }
   }
 
   const rockTop = horizon - rockH;
@@ -304,36 +336,78 @@ function draw(canvas, W, H, theme) {
   rect(castleX + 22, rockTop + 6, 24, rockH - 6, P.far);
   gable(castleX + 22, rockTop + 6, 24, 6, P.far, P.rimFar);
 
-  // evening mist pooling at the foot of the hills
-  for (let y = horizon - 3; y < horizon + 8; y++) {
-    const k = 0.25 * (1 - Math.abs(y - horizon) / 8);
-    for (let x = 0; x < W; x++) if (dither(k, x, y)) px(x, y, P.haze);
-  }
-
-  /* ---------- mid layer: Altstadt houses ---------- */
+  /* ---------- mid layer: Altstadt houses ----------
+     Nuremberg style: steep roofs, mostly eaves-to-street with tiers of
+     little dormers, mixed with narrow gable-fronted houses that have
+     clipped (Krüppelwalm) tips, hoist beams and the odd oriel window. */
   rect(0, bank - 2, W, H, P.mid);
-  for (let x = -4; x < W; ) {
-    const w = ri(7, 12);
-    const wallH = ri(9, 18);
-    const roofH = Math.round(w * (0.75 + rand() * 0.55));
-    const top = bank - wallH;
-    rect(x, top, w, wallH, P.mid);
-    if (rand() < 0.25) stepped(x, top, w, roofH, P.mid, P.rimMid);
-    else gable(x, top, w, roofH, P.mid, P.rimMid);
-    // dormer
-    if (rand() < 0.4 && w > 8) rect(x + Math.floor(w / 2) - 1, top - Math.round(roofH * 0.45) - 2, 3, 2, P.mid);
-    // chimney, sometimes smoking
-    if (rand() < 0.35) {
-      const cx = x + (rand() < 0.5 ? 2 : w - 3);
-      const cy = top - Math.round(roofH * 0.35);
-      rect(cx, cy - 3, 2, 3, P.mid);
-      if (rand() < 0.5) smoke(cx, cy - 3);
+  const dormer = (dx, dy) => {
+    rect(dx, dy - 2, 3, 3, P.mid);
+    px(dx + 1, dy - 3, P.mid);
+    light(dx + 1, dy - 1, P.mid, P.windowRate * 1.6);
+  };
+  const chimney = (cx, cy) => {
+    rect(cx, cy - 3, 2, 4, P.mid);
+    if (rand() < 0.45) smoke(cx, cy - 3);
+  };
+  for (let x = -6; x < W; ) {
+    const top = bank - ri(10, 17);
+    const floors = (y0) => {
+      for (let wy = y0 + 2; wy < bank - 3; wy += 4) {
+        for (let wx = x + 1; wx < x + wSpan - 1; wx += 3) light(wx, wy, P.mid, P.windowRate, 2);
+      }
+    };
+    let wSpan;
+    if (rand() < 0.58) {
+      // traufständig: long side to the street, big roof with dormer rows
+      wSpan = ri(13, 22);
+      const roofH = ri(10, 15);
+      rect(x, top, wSpan, bank - top, P.mid);
+      roofSlab(x, top, wSpan, roofH, P.roof, P.rimMid);
+      rect(x - 1, top, wSpan + 2, 1, P.mid); // eaves
+      for (let tier = 0; tier < 3; tier++) {
+        const dy = top - 3 - tier * 4;
+        if (dy < top - roofH + 3) break;
+        const inset = 2 + tier;
+        for (let dx = x + inset; dx < x + wSpan - inset - 3; dx += ri(4, 6)) {
+          if (rand() < 0.7) dormer(dx, dy);
+        }
+      }
+      // Zwerchhaus: a big street-facing gable cutting through the eaves
+      if (rand() < 0.45) {
+        const zw = ri(5, 7), zx = x + Math.floor((wSpan - zw) / 2);
+        rect(zx, top - 4, zw, 4, P.mid);
+        gable(zx, top - 4, zw, Math.ceil(zw * 0.9), P.mid, P.rimMid);
+        light(zx + Math.floor(zw / 2), top - 3, P.mid, P.windowRate * 1.5, 2);
+      }
+      if (rand() < 0.6) chimney(x + ri(3, wSpan - 4), top - roofH + 1);
+    } else {
+      // giebelständig: narrow, very steep gable to the street
+      wSpan = ri(8, 11);
+      const roofH = Math.round(wSpan * (1.2 + rand() * 0.4));
+      rect(x, top, wSpan, bank - top, P.mid);
+      gable(x, top, wSpan, roofH, P.mid, P.rimMid);
+      if (rand() < 0.5) rect(x + Math.floor(wSpan / 2) - 1, top - roofH, 3, 1, P.mid); // clipped tip
+      // attic storage floors: small windows stacked up the gable
+      for (let t = 0; t < 3; t++) {
+        const wy = top - 3 - t * 4;
+        if (wy < top - roofH + 3) break;
+        light(x + Math.floor(wSpan / 2), wy, P.mid, P.windowRate * 1.4);
+      }
+      // hoist beam poking out near the top
+      if (rand() < 0.5) px(x + Math.floor(wSpan / 2), top - roofH + 2, P.mid);
+      // Chörlein: a little oriel on the facade
+      if (rand() < 0.35) {
+        const ox = x + Math.floor(wSpan / 2) - 1, oy = top + 4;
+        rect(ox - 1, oy, 4, 5, P.mid);
+        gable(ox - 1, oy, 4, 2, P.mid);
+        rect(ox, oy + 1, 2, 2, P.windows[ri(0, P.windows.length - 1)]);
+        lights.push({ x: ox, y: oy + 1, h: 2, c: P.windows[0], base: P.mid, on: true });
+      }
+      if (rand() < 0.3) chimney(x + (rand() < 0.5 ? 2 : wSpan - 4), top - Math.round(roofH * 0.45));
     }
-    // windows on each floor, like timber-framed facades
-    for (let wy = top + 2; wy < bank - 2; wy += 4) {
-      for (let wx = x + 1; wx < x + w - 1; wx += 3) light(wx, wy, P.mid, P.windowRate, 2);
-    }
-    x += w + (rand() < 0.12 ? 1 : 0);
+    floors(top);
+    x += wSpan - ri(0, 2);
   }
 
   /* ---------- churches ---------- */
